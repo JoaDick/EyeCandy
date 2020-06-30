@@ -32,14 +32,9 @@ SOFTWARE.
 namespace EC
 {
 
-  /** An Animation that uses FastLED's builtin fill_rainbow() function.
-   * In case you observe a random red pixel in the pattern, that is a known bug:
-   * // https://github.com/FastLED/FastLED/issues/668
-   * @note This was a very early EyeCandy example.
-   * Consider using #Rainbow_FL, which offers many more configuration
-   * possibilities.
+  /** Many many Rainbow variations.
    */
-  class RainbowBuiltin_FL
+  class Rainbow_FL
       : public AnimationBase_FL
   {
     uint8_t _hue = 0;
@@ -61,13 +56,28 @@ namespace EC
      */
     uint16_t animationDelay = 35;
 
+    /** Brightness of the rainbow.
+     * This setting can be adjusted at runtime.
+     */
+    uint8_t volume = 255;
+
+    /** Put more emphasis on the red'ish colors when true.
+     * This setting can be adjusted at runtime.
+     */
+    bool moreRed = true;
+
+    /** Show the Animation in reverse direction.
+     * This setting can be adjusted at runtime.
+     */
+    bool mirrored = false;
+
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
      * @param deltahue  "Stretch" of the rainbow pattern.
      */
-    RainbowBuiltin_FL(CRGB *ledStrip,
-                      uint16_t ledCount)
+    Rainbow_FL(CRGB *ledStrip,
+               uint16_t ledCount)
         : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
     {
     }
@@ -76,7 +86,16 @@ namespace EC
     /// @see AnimationBase::showPattern()
     uint8_t showPattern(uint32_t currentMillis) override
     {
-      fill_rainbow(ledStrip, ledCount, _hue, deltahue);
+      for (uint16_t i = 0; i < ledCount; i++)
+      {
+        uint8_t pixelHue = _hue + i * deltahue;
+        if (moreRed)
+        {
+          pixelHue = redShift(pixelHue);
+        }
+        // inverting 'mirrored' because all other rainbows go the same direction...
+        pixel(i, !mirrored) = CHSV(pixelHue, 255, volume);
+      }
       return 0;
     }
 

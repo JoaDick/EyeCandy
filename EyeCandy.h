@@ -28,6 +28,7 @@ SOFTWARE.
 #include "FadeOut_FL.h"
 #include "Glitter_FL.h"
 #include "MovingDot_FL.h"
+#include "Rainbow_FL.h"
 #include "RainbowBuiltin_FL.h"
 #include "RainbowTwinkle_FL.h"
 #include "RgbBlocks_FL.h"

@@ -66,6 +66,7 @@ EC::FadeOut_FL fadeOut_FL(leds, NUM_LEDS);
 EC::Glitter_FL glitter_FL(leds, NUM_LEDS, false);
 EC::MovingDot_FL movingDot_FL(leds, NUM_LEDS, false);
 EC::StaticBackground_FL staticBackground_FL(leds, NUM_LEDS, CRGB(0, 10, 0));
+EC::Rainbow_FL rainbow_FL(leds, NUM_LEDS);
 EC::RainbowBuiltin_FL rainbowBuiltin_FL(leds, NUM_LEDS);
 EC::RgbBlocks_FL rgbBlocks_FL(leds, NUM_LEDS);
 EC::Twinkles_FL twinkles_FL(leds, NUM_LEDS, false);
@@ -107,6 +108,7 @@ void updateFlip()
 {
     const bool mirrored = !digitalRead(PIN_BUTTON_NEXT_PATTERN);
 
+    rainbow_FL.mirrored = mirrored;
     rgbBlocks_FL.mirrored = mirrored;
 }
 
@@ -129,14 +131,15 @@ void updateColor()
         glitter_FL.effectRate = hue;
         movingDot_FL.foregroundColor = CHSV(hue, 255, 255);
         movingDot_FL.backgroundColor = CHSV(hue + 128, 255, 64);
+        rainbow_FL.volume = hue;
         rainbowBuiltin_FL.deltahue = hue / 10;
         rgbBlocks_FL.blockSize = hue / 10;
         staticBackground_FL.backgroundColor = CHSV(hue + 128, 255, 128);
         twinkles_FL.effectRate = hue;
 
         glitterOverlay_FL.effectRate = hue;
-        movingDotOverlay_FL.foregroundColor = CHSV(hue, 255, 255);
-        movingDotOverlay_FL.backgroundColor = CHSV(hue + 128, 255, 64);
+        movingDotOverlay_FL.foregroundColor = CHSV(hue + 64, 255, 255);
+        movingDotOverlay_FL.backgroundColor = CHSV(hue + 192, 255, 64);
         twinklesOverlay_FL.effectRate = hue;
     }
 }
@@ -163,6 +166,7 @@ void updateSpeed()
         }
 
         movingDot_FL.animationDelay = animationDelay;
+        rainbow_FL.animationDelay = animationDelay;
         rainbowBuiltin_FL.animationDelay = animationDelay;
         rainbowTwinkle_FL.animationDelay = animationDelay;
         rgbBlocks_FL.animationDelay = 8 * animationDelay;
@@ -187,16 +191,17 @@ void loop()
     //mustShow = fadeOut_FL.process(mustShow);
     //mustShow = glitter_FL.process(mustShow);
     //mustShow = movingDot_FL.process(mustShow);
+    mustShow = rainbow_FL.process(mustShow);
     //mustShow = rainbowBuiltin_FL.process(mustShow);
     //mustShow = rainbowTwinkle_FL.process(mustShow);
-    mustShow = rgbBlocks_FL.process(mustShow);
+    //mustShow = rgbBlocks_FL.process(mustShow);
     //mustShow = staticBackground_FL.process(mustShow);
     //mustShow = twinkles_FL.process(mustShow);
 
     // Overlays
     //mustShow = glitterOverlay_FL.process(mustShow);
-    mustShow = movingDotOverlay_FL.process(mustShow);
-    mustShow = twinklesOverlay_FL.process(mustShow);
+    //mustShow = movingDotOverlay_FL.process(mustShow);
+    //mustShow = twinklesOverlay_FL.process(mustShow);
 
     if (mustShow)
     {
