@@ -39,19 +39,24 @@ namespace EC
   class RainbowBuiltin_FL
       : public AnimationBase_FL
   {
+    uint8_t _hue = 0;
+
   public:
     /** "Stretch" of the rainbow pattern.
      * 0 means all LEDs have the same color.
      * The higher the value, the more of the rainbow(s) are shown.
      * Values up to ~25 look fine.
-     * This value can be adjusted at runtime.
+     * This setting can be adjusted at runtime.
      */
-    uint8_t deltahue;
+    uint8_t deltahue = 4;
 
-    /** Delay between each Animation update (in ms).
-     * This value can be adjusted at runtime.
+    /** Delay between updating the Animation (in ms).
+     * 0 means freeze (don't update the animation).
+     * This setting can be adjusted at runtime.
+     * @note This delay influences the "Animation speed", but not the LED
+     * refresh rate.
      */
-    uint16_t animationDelay = 10;
+    uint8_t animationDelay = 35;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
@@ -59,29 +64,30 @@ namespace EC
      * @param deltahue  "Stretch" of the rainbow pattern.
      */
     RainbowBuiltin_FL(CRGB *ledStrip,
-                      uint16_t ledCount,
-                      uint8_t deltahue = 5)
-        : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount), deltahue(deltahue)
+                      uint16_t ledCount)
+        : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
     {
     }
 
   private:
+    /// @see AnimationBase::showPattern()
+    uint8_t showPattern(uint32_t currentMillis) override
+    {
+      fill_rainbow(ledStrip, ledCount, _hue, deltahue);
+      return 0;
+    }
+
+    /// @see AnimationBase::updateAnimation()
+    void updateAnimation(uint32_t currentMillis) override
+    {
+      ++_hue;
+    }
+
     /// @see AnimationBase::getAnimationDelay()
     uint16_t getAnimationDelay() override
     {
       return animationDelay;
     }
-
-    /// @see AnimationBase::showPattern()
-    bool showPattern(uint32_t currentMillis) override
-    {
-      ++_hue;
-      fill_rainbow(ledStrip, ledCount, _hue, deltahue);
-      return true;
-    }
-
-  private:
-    uint8_t _hue = 0;
   };
 
 } // namespace EC

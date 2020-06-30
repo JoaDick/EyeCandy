@@ -29,12 +29,6 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-#ifndef ARRAYLEN
-#define ARRAYLEN(x) (sizeof(x) / sizeof((x)[0]))
-#endif
-
-//------------------------------------------------------------------------------
-
 namespace EC
 {
 
@@ -44,11 +38,20 @@ namespace EC
   class RgbBlocks_FL
       : public AnimationBase_FL
   {
-    uint16_t animationCounter = 0;
+    static const uint8_t _blockCount = 6;
+    uint16_t _animationCounter = 0;
 
   public:
-    /** Delay between each Animation update (in ms).
-     * This value can be adjusted at runtime.
+    /** Number of LEDs per block.
+     * This setting can be adjusted at runtime.
+     */
+    uint8_t blockSize = 5;
+
+    /** Delay between updating the Animation (in ms).
+     * 0 means freeze (don't update the animation).
+     * This setting can be adjusted at runtime.
+     * @note This delay influences the "Animation speed", but not the LED
+     * refresh rate.
      */
     uint16_t animationDelay = 100;
 
@@ -63,16 +66,10 @@ namespace EC
     }
 
   private:
-    /// @see AnimationBase::getAnimationDelay()
-    uint16_t getAnimationDelay() override
-    {
-      return animationDelay;
-    }
-
     /// @see AnimationBase::showPattern()
-    bool showPattern(uint32_t currentMillis) override
+    uint8_t showPattern(uint32_t currentMillis) override
     {
-      static const CRGB colorTable[] =
+      static const CRGB colorTable[_blockCount] =
           {
               CRGB{0x10, 0x00, 0x00}, // red
               CRGB{0x00, 0x00, 0x00}, // black
@@ -82,20 +79,35 @@ namespace EC
               CRGB{0x00, 0x00, 0x00}  // black
           };
 
-      for (uint16_t i = 0; i < ledCount; ++i)
+      if (blockSize > 0)
       {
-        const uint16_t colorIndex = (i / 5) % ARRAYLEN(colorTable);
-        const CRGB color = colorTable[colorIndex];
-        const uint16_t ledIndex = (i + animationCounter) % ledCount;
-        ledStrip[ledIndex] = color;
+        for (uint16_t i = 0; i < ledCount; ++i)
+        {
+          const uint16_t colorIndex = ((i + _animationCounter) / blockSize) % _blockCount;
+          ledStrip[ledCount - 1 - i] = colorTable[colorIndex];
+        }
+      }
+      else
+      {
+        fill_solid(ledStrip, ledCount, CRGB::Black);
       }
 
-      if (++animationCounter >= ledCount)
-      {
-        animationCounter = 0;
-      }
+      return 0;
+    }
 
-      return true;
+    /// @see AnimationBase::updateAnimation()
+    void updateAnimation(uint32_t currentMillis) override
+    {
+      if (++_animationCounter >= _blockCount * blockSize)
+      {
+        _animationCounter = 0;
+      }
+    }
+
+    /// @see AnimationBase::getAnimationDelay()
+    uint16_t getAnimationDelay() override
+    {
+      return animationDelay;
     }
   };
 

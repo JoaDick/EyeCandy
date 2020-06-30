@@ -47,6 +47,9 @@ SOFTWARE.
 // Connect a pushbutton for selecting the first pattern to that pin (and GND).
 #define PIN_BUTTON_FIRST_PATTERN 3
 
+#define PIN_COLOR A0
+#define PIN_SPEED A1
+
 //------------------------------------------------------------------------------
 
 #define LED_TYPE WS2812B
@@ -78,6 +81,8 @@ void setup()
 {
     pinMode(PIN_BUTTON_NEXT_PATTERN, INPUT_PULLUP);
     pinMode(PIN_BUTTON_FIRST_PATTERN, INPUT_PULLUP);
+    pinMode(PIN_COLOR, INPUT_PULLUP);
+    pinMode(PIN_SPEED, INPUT_PULLUP);
 
     FastLED.addLeds<LED_TYPE, LED_PIN, LED_COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
 
@@ -87,35 +92,76 @@ void setup()
 
 //------------------------------------------------------------------------------
 
+template <typename IN_TYPE, typename OUT_TYPE>
+OUT_TYPE constrainAndMap(int x,
+                               const IN_TYPE &minThreshold, const IN_TYPE& maxThreshold,
+                               const OUT_TYPE &outMin, const OUT_TYPE &outMax)
+{
+    return map(constrain(x, minThreshold, maxThreshold), minThreshold, maxThreshold, outMin, outMax);
+}
+
+//------------------------------------------------------------------------------
+
+uint8_t lastHue = 0;
+uint8_t lastSpeed = 0;
+
 void updateColor()
 {
-    const uint16_t analogValue = analogRead(A0);
-    const uint8_t hue = map(analogValue, 0, 1023, 0, 255);
+    const uint16_t analogValue = constrainAndMap(analogRead(PIN_COLOR), 50, 900, 0, 256);
 
-    staticBackground_FL.backgroundColor = CHSV(hue + 128, 255, 128);
-    rainbowBuiltin_FL.deltahue = hue / 10;
-    movingDot_FL.foregroundColor = CHSV(hue, 255, 255);
-    movingDot_FL.backgroundColor = CHSV(hue + 128, 255, 64);
-    movingDotOverlay_FL.foregroundColor = CHSV(hue, 255, 255);
-    movingDotOverlay_FL.backgroundColor = CHSV(hue + 128, 255, 64);
+    if (analogValue < 256)
+    {
+        const uint8_t hue = analogValue;
+
+        if (hue != lastHue)
+        {
+            Serial.print("hue: ");
+            Serial.println(hue);
+            lastHue = hue;
+        }
+
+        glitter_FL.effectRate = hue;
+        movingDot_FL.foregroundColor = CHSV(hue, 255, 255);
+        movingDot_FL.backgroundColor = CHSV(hue + 128, 255, 64);
+        rainbowBuiltin_FL.deltahue = hue / 10;
+        rgbBlocks_FL.blockSize = hue / 10;
+        staticBackground_FL.backgroundColor = CHSV(hue + 128, 255, 128);
+        twinkles_FL.effectRate = hue;
+
+        glitterOverlay_FL.effectRate = hue;
+        movingDotOverlay_FL.foregroundColor = CHSV(hue, 255, 255);
+        movingDotOverlay_FL.backgroundColor = CHSV(hue + 128, 255, 64);
+    }
 }
 
 //------------------------------------------------------------------------------
 
 void updateSpeed()
 {
-    const uint16_t analogValue = analogRead(A1);
-    const uint16_t animationDelay = map(analogValue, 0, 1023, 1000, 0);
-    const uint16_t speed16 = map(analogValue, 0, 1023, 0, 0xFFFF);
-    const uint8_t speed8 = map(analogValue, 0, 1023, 0, 0xFF);
+    const uint16_t analogValue = constrainAndMap(analogRead(PIN_SPEED), 50, 900, 0, 256);
 
-    glitter_FL.effectRate = speed8;
-    movingDot_FL.animationDelay = animationDelay * 2;
-    movingDotOverlay_FL.animationDelay = animationDelay * 2;
-    rainbowBuiltin_FL.animationDelay = animationDelay;
-    rainbowTwinkle_FL.wheelDelay = map(analogValue, 0, 1023, 50, 0);
-    rgbBlocks_FL.animationDelay = animationDelay;
-    twinkles_FL.effectRate = speed8;
+    if (analogValue < 256)
+    {
+        const uint8_t animationSpeed = analogValue;
+        const uint8_t animationDelay = animationSpeed ? 256 - animationSpeed : 0;
+
+        if (animationSpeed != lastSpeed)
+        {
+            Serial.print("speed: ");
+            Serial.print(animationSpeed);
+            Serial.print(" delay: ");
+            Serial.println(animationDelay);
+            lastSpeed = animationSpeed;
+        }
+
+        movingDot_FL.animationDelay = animationDelay;
+        rainbowBuiltin_FL.animationDelay = animationDelay;
+        rainbowTwinkle_FL.animationDelay = animationDelay;
+        rgbBlocks_FL.animationDelay = 8 * animationDelay;
+        twinkles_FL.fadeRate = animationSpeed;
+
+        movingDotOverlay_FL.animationDelay = 2 * animationDelay;
+    }
 }
 
 //------------------------------------------------------------------------------
@@ -131,12 +177,12 @@ void loop()
     // Base Animation (enable one)
     //mustShow = fadeOut_FL.process(mustShow);
     //mustShow = glitter_FL.process(mustShow);
-    //mustShow = staticBackground_FL.process(mustShow);
-    mustShow = rainbowBuiltin_FL.process(mustShow);
     //mustShow = movingDot_FL.process(mustShow);
-    //mustShow = rgbBlocks_FL.process(mustShow);
-    //mustShow = twinkles_FL.process(mustShow);
+    //mustShow = rainbowBuiltin_FL.process(mustShow);
     //mustShow = rainbowTwinkle_FL.process(mustShow);
+    mustShow = rgbBlocks_FL.process(mustShow);
+    //mustShow = staticBackground_FL.process(mustShow);
+    //mustShow = twinkles_FL.process(mustShow);
 
     // Overlays
     mustShow = glitterOverlay_FL.process(mustShow);
@@ -144,7 +190,7 @@ void loop()
 
     if (mustShow)
     {
-#if(1)
+#if (1)
         static bool toggleFlag = false;
         toggleFlag ^= true;
         leds[0] = toggleFlag ? CRGB(0, 10, 0) : CRGB::Black;

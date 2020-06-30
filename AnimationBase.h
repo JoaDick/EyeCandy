@@ -39,7 +39,15 @@ namespace EC
       : public Animation
   {
     const bool _overlayMode;
-    uint32_t _lastTriggerTime = 0;
+    uint32_t _lastUpdateAnimation = 0;
+    uint32_t _nextShowPattern = 0;
+
+  public:
+    /** Default delay (in ms) between updating the LED strip.
+     * This value is used when showPattern() returns 0.
+     * Default of 20ms will result in a refresh rate of 50Hz.
+     */
+    uint8_t defaultPatternDelay = 20;
 
   protected:
     /** Constructor.
@@ -50,18 +58,27 @@ namespace EC
     {
     }
 
-  private:
     /** Render the Animation's Pattern content.
      * This method must be implemented by all child classes that provide a
      * Pattern type Animation (#TYPE_SOLID_PATTERN or #TYPE_FADING_PATTERN).
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
-     * @retval false  No changes to the LED strip.
-     * @retval true   LED strip must be updated.
+     * @return Delay (in ms) until calling this method again.
+     *         Returning 0 means use default delay (recommended).
      * @note This method is \e not called in Overlay mode.
      */
-    virtual bool showPattern(uint32_t currentMillis)
+    virtual uint8_t showPattern(uint32_t currentMillis)
     {
-      return false;
+      return 0;
+    }
+
+    /** Render the Animation's Overlay content.
+     * This method must be implemented by all child classes that provide an
+     * Overlay type Animation.
+     * @param currentMillis  Current time, i.e. the returnvalue of millis().
+     * @note This method is \e only called in Overlay mode.
+     */
+    virtual void showOverlay(uint32_t currentMillis)
+    {
     }
 
     /** Update the Animation's internal state (but don't show it yet).
@@ -69,28 +86,16 @@ namespace EC
      * Overlay type Animation.
      * It may also be implemented by Pattern type Animations, where the
      * animation algorithm is separated from showPattern().
+     * Timing is determined via getAnimationDelay().
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
      */
     virtual void updateAnimation(uint32_t currentMillis)
     {
     }
 
-    /** Render the Animation's Overlay content.
-     * This method must be implemented by all child classes that provide an
-     * Overlay type Animation.
-     * @param currentMillis  Current time, i.e. the returnvalue of millis().
-     * @retval false  No changes to the LED strip.
-     * @retval true   LED strip must be updated.
-     * @note This method is \e only called in Overlay mode.
-     */
-    virtual bool showOverlay(uint32_t currentMillis)
-    {
-      return false;
-    }
-
-    /** Get the delay (in ms) before calling updateAnimation() and showPattern()
-     * the next time. Defaults to 10ms. Child classes can override this method if
-     * they want a different timing.
+    /** Get the delay (in ms) before calling updateAnimation() the next time.
+     * Defaults to 10ms. Child classes can override this method if they want a
+     * different timing. 0 means don't call updateAnimation()
      */
     virtual uint16_t getAnimationDelay()
     {
@@ -109,24 +114,44 @@ namespace EC
     {
     }
 
+  private:
     /// @see Animation::processAnimation()
     bool processAnimation(uint32_t currentMillis, bool wasModified) override
     {
       processAnimationBackground(currentMillis);
-      bool retval = wasModified;
-      if (_lastTriggerTime + getAnimationDelay() <= currentMillis)
+
+      const uint16_t animationDelay = getAnimationDelay();
+      if (animationDelay > 0)
       {
-        updateAnimation(currentMillis);
-        if (!_overlayMode)
+        if (currentMillis >= _lastUpdateAnimation + animationDelay)
         {
-          retval = showPattern(currentMillis) || wasModified;
+          updateAnimation(currentMillis);
+          _lastUpdateAnimation = currentMillis;
         }
-        _lastTriggerTime = currentMillis;
       }
-      if (_overlayMode && wasModified)
+
+      bool retval = wasModified;
+      if (_overlayMode)
       {
-        retval = showOverlay(currentMillis) || wasModified;
+        if (wasModified)
+        {
+          showOverlay(currentMillis);
+        }
       }
+      else
+      {
+        if (currentMillis >= _nextShowPattern)
+        {
+          uint8_t patternDelay = showPattern(currentMillis);
+          if (patternDelay == 0)
+          {
+            patternDelay = defaultPatternDelay;
+          }
+          _nextShowPattern = currentMillis + patternDelay;
+          retval = true;
+        }
+      }
+
       return retval;
     }
   };

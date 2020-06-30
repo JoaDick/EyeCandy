@@ -41,7 +41,7 @@ namespace EC
   public:
     /** Fading speed.
      * Lower value = longer glowing.
-     * This value can be adjusted at runtime.
+     * This setting can be adjusted at runtime.
      */
     uint8_t fadeRate;
 
@@ -58,10 +58,10 @@ namespace EC
 
   private:
     /// @see AnimationBase::showPattern()
-    bool showPattern(uint32_t currentMillis) override
+    uint8_t showPattern(uint32_t currentMillis) override
     {
       fadeToBlackBy(ledStrip, ledCount, fadeRate);
-      return true;
+      return 0;
     }
   };
 

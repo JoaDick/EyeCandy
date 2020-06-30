@@ -40,7 +40,7 @@ namespace EC
   {
   public:
     /** Fill LED strip with this color.
-     * This value can be adjusted at runtime.
+     * This setting can be adjusted at runtime.
      */
     CRGB backgroundColor;
 
@@ -58,10 +58,10 @@ namespace EC
 
   private:
     /// @see AnimationBase::showPattern()
-    bool showPattern(uint32_t currentMillis) override
+    uint8_t showPattern(uint32_t currentMillis) override
     {
       fill_solid(ledStrip, ledCount, backgroundColor);
-      return true;
+      return 0;
     }
   };
 

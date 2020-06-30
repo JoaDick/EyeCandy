@@ -42,19 +42,20 @@ namespace EC
 
   public:
     /** Draw the Glitter with this color.
-     * This value can be adjusted at runtime.
+     * This setting can be adjusted at runtime.
      */
     CRGB foregroundColor = CRGB::White;
 
     /** Effect occurrence rate.
      * Higher value = more glitter.
-     * This value can be adjusted at runtime.
+     * 0 means freeze (don't update the animation).
+     * This setting can be adjusted at runtime.
      */
     uint8_t effectRate = 20;
 
     /** Fading speed.
      * Lower value = longer glowing.
-     * This value can be adjusted at runtime.
+     * This setting can be adjusted at runtime.
      * It is ignored in Overlay mode.
      */
     uint8_t fadeRate = 100;
@@ -73,10 +74,11 @@ namespace EC
 
   private:
     /// @see AnimationBase::showPattern()
-    bool showPattern(uint32_t currentMillis) override
+    uint8_t showPattern(uint32_t currentMillis) override
     {
       fadeToBlackBy(ledStrip, ledCount, fadeRate);
-      return showOverlay(currentMillis);
+      showOverlay(currentMillis);
+      return 0;
     }
 
     /// @see AnimationBase::updateAnimation()
@@ -89,14 +91,13 @@ namespace EC
     }
 
     /// @see AnimationBase::showOverlay()
-    bool showOverlay(uint32_t currentMillis) override
+    void showOverlay(uint32_t currentMillis) override
     {
       if (_mustAddGlitter)
       {
         ledStrip[random16(ledCount)] = foregroundColor;
         _mustAddGlitter = false;
       }
-      return true;
     }
   };
 

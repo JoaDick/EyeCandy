@@ -37,20 +37,22 @@ namespace EC
   class RainbowTwinkle_FL
       : public AnimationBase_FL
   {
-    uint8_t wheelCount = 0;
-    uint8_t wheelPos = random(0xFF);
+    uint8_t _hue = random(0xFF);
 
   public:
     /** Fading speed.
      * Lower value = longer glowing.
-     * This value can be adjusted at runtime.
+     * This setting can be adjusted at runtime.
      */
     uint8_t fadeRate = 5;
 
-    /** Rainbow speed.
-     * This value can be adjusted at runtime.
+    /** Delay between updating the Animation (in ms).
+     * 0 means freeze (don't update the animation).
+     * This setting can be adjusted at runtime.
+     * @note This delay influences the "Animation speed", but not the LED
+     * refresh rate.
      */
-    uint8_t wheelDelay = 10;
+    uint8_t animationDelay = 100;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
@@ -62,30 +64,37 @@ namespace EC
     {
       for (uint16_t i = 0; i < ledCount; i++)
       {
-        ledStrip[i] = CHSV(redShift(wheelPos), random(0x2F) + 0xD0, random(0xEF) + 0x10);
+        ledStrip[i] = CHSV(redShift(_hue), random(0x2F) + 0xD0, random(0xEF) + 0x10);
       }
     }
 
   private:
     /// @see AnimationBase::showPattern()
-    bool showPattern(uint32_t currentMillis) override
+    uint8_t showPattern(uint32_t currentMillis) override
     {
       fadeToBlackBy(ledStrip, ledCount, fadeRate);
 
-      if (++wheelCount >= wheelDelay)
-      {
-        ++wheelPos;
-        wheelCount = 0;
-      }
       for (uint16_t i = 0; i < ledCount; i++)
       {
         if (ledStrip[i].getLuma() <= 6)
         {
-          ledStrip[i] = CHSV(redShift(wheelPos), 0xFF, random(0x30) + 0xCF);
+          ledStrip[i] = CHSV(redShift(_hue), 0xFF, random(0x30) + 0xCF);
         }
       }
 
-      return true;
+      return 0;
+    }
+
+    /// @see AnimationBase::updateAnimation()
+    void updateAnimation(uint32_t currentMillis) override
+    {
+      ++_hue;
+    }
+
+    /// @see AnimationBase::getAnimationDelay()
+    uint16_t getAnimationDelay() override
+    {
+      return animationDelay;
     }
   };
 

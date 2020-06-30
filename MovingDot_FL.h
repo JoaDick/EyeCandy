@@ -43,20 +43,23 @@ namespace EC
 
   public:
     /** Draw the dot with this color.
-     * This value can be adjusted at runtime.
+     * This setting can be adjusted at runtime.
      */
     CRGB foregroundColor;
 
     /** Fill LED strip with this color.
-     * This value can be adjusted at runtime.
+     * This setting can be adjusted at runtime.
      * It is ignored in Overlay mode.
      */
     CRGB backgroundColor;
 
-    /** Delay between each Animation update (in ms).
-     * This value can be adjusted at runtime.
+    /** Delay between updating the Animation (in ms).
+     * 0 means freeze (don't update the animation).
+     * This setting can be adjusted at runtime.
+     * @note This delay influences the "Animation speed", but not the LED
+     * refresh rate.
      */
-    uint16_t animationDelay = 10;
+    uint8_t animationDelay = 20;
 
     /** Constructor
      * @param ledStrip  The LED strip.
@@ -75,17 +78,18 @@ namespace EC
     }
 
   private:
-    /// @see AnimationBase::getAnimationDelay()
-    uint16_t getAnimationDelay() override
-    {
-      return animationDelay;
-    }
-
     /// @see AnimationBase::showPattern()
-    bool showPattern(uint32_t currentMillis) override
+    uint8_t showPattern(uint32_t currentMillis) override
     {
       fill_solid(ledStrip, ledCount, backgroundColor);
-      return showOverlay(currentMillis);
+      showOverlay(currentMillis);
+      return 0;
+    }
+
+    /// @see AnimationBase::showOverlay()
+    void showOverlay(uint32_t currentMillis) override
+    {
+      ledStrip[_position] = foregroundColor;
     }
 
     /// @see AnimationBase::updateAnimation()
@@ -107,11 +111,10 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::showOverlay()
-    bool showOverlay(uint32_t currentMillis) override
+    /// @see AnimationBase::getAnimationDelay()
+    uint16_t getAnimationDelay() override
     {
-      ledStrip[_position] = foregroundColor;
-      return true;
+      return animationDelay;
     }
   };
 

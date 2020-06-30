@@ -40,13 +40,14 @@ namespace EC
   public:
     /** Effect occurrence rate.
      * Higher value = more twinkles.
-     * This value can be adjusted at runtime.
+     * 0 means freeze (don't update the animation).
+     * This setting can be adjusted at runtime.
      */
     uint8_t effectRate = 50;
 
     /** Fading speed.
      * Lower value = longer glowing.
-     * This value can be adjusted at runtime.
+     * This setting can be adjusted at runtime.
      */
     uint8_t fadeRate = 5;
 
@@ -62,7 +63,7 @@ namespace EC
 
   private:
     /// @see AnimationBase::showPattern()
-    bool showPattern(uint32_t currentMillis) override
+    uint8_t showPattern(uint32_t currentMillis) override
     {
       fadeToBlackBy(ledStrip, ledCount, fadeRate);
 
@@ -75,7 +76,7 @@ namespace EC
         }
       }
 
-      return true;
+      return 0;
     }
   };
 
