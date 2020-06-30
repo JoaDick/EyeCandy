@@ -103,9 +103,14 @@ OUT_TYPE constrainAndMap(int x,
 
 //------------------------------------------------------------------------------
 
-uint8_t lastHue = 0;
-uint8_t lastSpeed = 0;
+void updateFlip()
+{
+    const bool mirrored = !digitalRead(PIN_BUTTON_NEXT_PATTERN);
 
+    rgbBlocks_FL.mirrored = mirrored;
+}
+
+uint8_t lastHue = 0;
 void updateColor()
 {
     const uint16_t analogValue = constrainAndMap(analogRead(PIN_COLOR), 50, 900, 0, 256);
@@ -138,6 +143,7 @@ void updateColor()
 
 //------------------------------------------------------------------------------
 
+uint8_t lastSpeed = 0;
 void updateSpeed()
 {
     const uint16_t analogValue = constrainAndMap(analogRead(PIN_SPEED), 50, 900, 0, 256);
@@ -172,17 +178,18 @@ void loop()
 {
     updateColor();
     updateSpeed();
+    updateFlip();
 
     bool mustShow = false;
     //mustShow = true;
 
     // Base Animation (enable one)
-    mustShow = fadeOut_FL.process(mustShow);
+    //mustShow = fadeOut_FL.process(mustShow);
     //mustShow = glitter_FL.process(mustShow);
     //mustShow = movingDot_FL.process(mustShow);
     //mustShow = rainbowBuiltin_FL.process(mustShow);
     //mustShow = rainbowTwinkle_FL.process(mustShow);
-    //mustShow = rgbBlocks_FL.process(mustShow);
+    mustShow = rgbBlocks_FL.process(mustShow);
     //mustShow = staticBackground_FL.process(mustShow);
     //mustShow = twinkles_FL.process(mustShow);
 

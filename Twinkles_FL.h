@@ -81,7 +81,7 @@ namespace EC
         uint16_t i = random(ledCount);
         if (ledStrip[i].getLuma() < 3)
         {
-          ledStrip[i] = CHSV(redShift(random(256)), 255, random(64) + 192);
+          pixel(i) = CHSV(redShift(random(256)), 255, random(64) + 192);
         }
       }
     }

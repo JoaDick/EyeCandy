@@ -64,7 +64,7 @@ namespace EC
     {
       for (uint16_t i = 0; i < ledCount; i++)
       {
-        ledStrip[i] = CHSV(redShift(_hue), random(0x2F) + 0xD0, random(0xEF) + 0x10);
+        pixel(i) = CHSV(redShift(_hue), random(0x2F) + 0xD0, random(0xEF) + 0x10);
       }
     }
 
@@ -76,9 +76,9 @@ namespace EC
 
       for (uint16_t i = 0; i < ledCount; i++)
       {
-        if (ledStrip[i].getLuma() <= 6)
+        if (pixel(i).getLuma() <= 6)
         {
-          ledStrip[i] = CHSV(redShift(_hue), 0xFF, random(0x30) + 0xCF);
+          pixel(i) = CHSV(redShift(_hue), 0xFF, random(0x30) + 0xCF);
         }
       }
 

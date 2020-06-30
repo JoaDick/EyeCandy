@@ -89,7 +89,7 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      ledStrip[_position] = foregroundColor;
+      pixel(_position) = foregroundColor;
     }
 
     /// @see AnimationBase::updateAnimation()

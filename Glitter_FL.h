@@ -95,7 +95,7 @@ namespace EC
     {
       if (_mustAddGlitter)
       {
-        ledStrip[random16(ledCount)] = foregroundColor;
+        pixel(random16(ledCount)) = foregroundColor;
         _mustAddGlitter = false;
       }
     }

@@ -40,12 +40,6 @@ namespace EC
       : public AnimationBase
   {
   public:
-    /// The LED strip.
-    CRGB *ledStrip;
-
-    /// Number of LEDs.
-    uint16_t ledCount;
-
     /// Put more emphasis on the red'ish colors.
     static uint8_t redShift(uint8_t hue)
     {
@@ -53,6 +47,20 @@ namespace EC
     }
 
   protected:
+    /** The LED strip.
+     * Whenever feasible, child classes shall use the pixel() method for
+     * rendering the Animation instead of manipulating the LED strip directly.
+     * By following this recommendation, Animations can be mirrored without
+     * any effort.
+     */
+    CRGB *ledStrip;
+
+    /** Number of LEDs.
+     * Child classes shall always use this variable instead of storing that
+     * value in their own context.
+     */
+    uint16_t ledCount;
+
     /** Constructor.
      * @param animationType  Type of Animation.
      * @param ledStrip  The LED strip.
@@ -63,6 +71,21 @@ namespace EC
                      uint16_t ledCount)
         : AnimationBase(animationType), ledStrip(ledStrip), ledCount(ledCount)
     {
+    }
+
+    /// Access the pixel at position \a index.
+    CRGB &pixel(uint16_t index)
+    {
+      return ledStrip[index];
+    }
+
+    /** Access the pixel at position \a index.
+     * When the Animation is rendered in reverse direction, \a mirrored must be true.
+     */
+    CRGB &pixel(uint16_t index, bool mirrored)
+    {
+      const uint16_t transformedIndex = mirrored ? ledCount - 1 - index : index;
+      return ledStrip[transformedIndex];
     }
   };
 
