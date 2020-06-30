@@ -48,16 +48,19 @@ namespace EC
     /** Fading speed.
      * Lower value = longer glowing.
      * This setting can be adjusted at runtime.
+     * It is ignored in Overlay mode.
      */
     uint8_t fadeRate = 5;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
     Twinkles_FL(CRGB *ledStrip,
-                uint16_t ledCount)
-        : AnimationBase_FL(TYPE_FADING_PATTERN, ledStrip, ledCount)
+                uint16_t ledCount,
+                bool overlayMode)
+        : AnimationBase_FL(overlayMode ? TYPE_OVERLAY_FADING : TYPE_FADING_PATTERN, ledStrip, ledCount)
     {
     }
 
@@ -66,7 +69,13 @@ namespace EC
     uint8_t showPattern(uint32_t currentMillis) override
     {
       fadeToBlackBy(ledStrip, ledCount, fadeRate);
+      showOverlay(currentMillis);
+      return 0;
+    }
 
+    /// @see AnimationBase::updateAnimation()
+    void updateAnimation(uint32_t currentMillis) override
+    {
       if (random8() < effectRate)
       {
         uint16_t i = random(ledCount);
@@ -75,8 +84,6 @@ namespace EC
           ledStrip[i] = CHSV(redShift(random(256)), 255, random(64) + 192);
         }
       }
-
-      return 0;
     }
   };
 
