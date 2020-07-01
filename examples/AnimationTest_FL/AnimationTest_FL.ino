@@ -62,6 +62,7 @@ bool lastButtonState = false;
 //------------------------------------------------------------------------------
 
 // Patterns
+EC::BouncingBalls_FL<3> bouncingBalls_FL(leds, NUM_LEDS, false);
 EC::FadeOut_FL fadeOut_FL(leds, NUM_LEDS);
 EC::Glitter_FL glitter_FL(leds, NUM_LEDS, false);
 EC::MovingDot_FL movingDot_FL(leds, NUM_LEDS, false);
@@ -73,6 +74,7 @@ EC::Twinkles_FL twinkles_FL(leds, NUM_LEDS, false);
 EC::RainbowTwinkle_FL rainbowTwinkle_FL(leds, NUM_LEDS);
 
 // Overlays
+EC::BouncingBalls_FL<3> bouncingBallsOverlay_FL(leds, NUM_LEDS, true);
 EC::Glitter_FL glitterOverlay_FL(leds, NUM_LEDS, true);
 EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
 EC::Twinkles_FL twinklesOverlay_FL(leds, NUM_LEDS, true);
@@ -96,8 +98,8 @@ void setup()
 
 template <typename IN_TYPE, typename OUT_TYPE>
 OUT_TYPE constrainAndMap(int x,
-                               const IN_TYPE &minThreshold, const IN_TYPE& maxThreshold,
-                               const OUT_TYPE &outMin, const OUT_TYPE &outMax)
+                         const IN_TYPE &minThreshold, const IN_TYPE &maxThreshold,
+                         const OUT_TYPE &outMin, const OUT_TYPE &outMax)
 {
     return map(constrain(x, minThreshold, maxThreshold), minThreshold, maxThreshold, outMin, outMax);
 }
@@ -108,8 +110,11 @@ void updateFlip()
 {
     const bool mirrored = !digitalRead(PIN_BUTTON_NEXT_PATTERN);
 
+    bouncingBalls_FL.mirrored = mirrored;
     rainbow_FL.mirrored = mirrored;
     rgbBlocks_FL.mirrored = mirrored;
+
+    bouncingBallsOverlay_FL.mirrored = mirrored;
 }
 
 uint8_t lastHue = 0;
@@ -187,7 +192,12 @@ void loop()
     bool mustShow = false;
     //mustShow = true;
 
+    rainbow_FL.volume = 32;
+    rainbow_FL.deltahue = 1;
+    rainbow_FL.animationDelay = 500;
+
     // Base Animation (enable one)
+    //mustShow = bouncingBalls_FL.process(mustShow);
     //mustShow = fadeOut_FL.process(mustShow);
     //mustShow = glitter_FL.process(mustShow);
     //mustShow = movingDot_FL.process(mustShow);
@@ -199,6 +209,7 @@ void loop()
     //mustShow = twinkles_FL.process(mustShow);
 
     // Overlays
+    mustShow = bouncingBallsOverlay_FL.process(mustShow);
     //mustShow = glitterOverlay_FL.process(mustShow);
     //mustShow = movingDotOverlay_FL.process(mustShow);
     //mustShow = twinklesOverlay_FL.process(mustShow);

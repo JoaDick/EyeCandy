@@ -25,6 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
+#include "BouncingBalls_FL.h"
 #include "FadeOut_FL.h"
 #include "Glitter_FL.h"
 #include "MovingDot_FL.h"
