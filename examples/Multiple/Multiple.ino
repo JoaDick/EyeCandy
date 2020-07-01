@@ -1,6 +1,7 @@
 /*******************************************************************************
 
-A sketch for testing during EyeCandy development.
+An example showing how multiple Animations can be rendered side by side.
+Including an Overlay, which is partially covering both other Patterns.
 
 ********************************************************************************
 
@@ -53,20 +54,11 @@ CRGB leds[NUM_LEDS];
 //------------------------------------------------------------------------------
 
 // Patterns
-EC::FadeOut_FL fadeOut_FL(leds, NUM_LEDS);
-EC::Glitter_FL glitter_FL(leds, NUM_LEDS, false);
-EC::MovingDot_FL movingDot_FL(leds, NUM_LEDS, false);
 EC::Rainbow_FL rainbow_FL(leds, NUM_LEDS);
-EC::RainbowBuiltin_FL rainbowBuiltin_FL(leds, NUM_LEDS);
-EC::RainbowTwinkle_FL rainbowTwinkle_FL(leds, NUM_LEDS);
 EC::RgbBlocks_FL rgbBlocks_FL(leds, NUM_LEDS);
-EC::StaticBackground_FL staticBackground_FL(leds, NUM_LEDS, CRGB(0, 10, 0));
-EC::Twinkles_FL twinkles_FL(leds, NUM_LEDS, false);
 
 // Overlays
-EC::Glitter_FL glitterOverlay_FL(leds, NUM_LEDS, true);
 EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
-EC::Twinkles_FL twinklesOverlay_FL(leds, NUM_LEDS, true);
 
 //------------------------------------------------------------------------------
 
@@ -80,7 +72,16 @@ void setup()
 
     Serial.begin(115200);
     Serial.println(F("Welcome to EyeCandy"));
-    printMemoryUsage();
+
+    // Rainbow in the lower half
+    rainbow_FL.setLedCount(NUM_LEDS / 2);
+    rainbow_FL.volume = 128;
+
+    // RGB blocks in the upper half
+    rgbBlocks_FL.setLedOffset(NUM_LEDS / 2, NUM_LEDS / 2);
+
+    // Moving dot overlay in the middle, using 2/3 of the entire strip
+    movingDotOverlay_FL.setLedOffset(NUM_LEDS / 6, 2 * NUM_LEDS / 3);
 }
 
 //------------------------------------------------------------------------------
@@ -93,29 +94,15 @@ void loop()
 
     bool mustShow = false;
 
-    // Base Animation (enable one)
-    //mustShow = fadeOut_FL.process(mustShow);
-    //mustShow = glitter_FL.process(mustShow);
-    //mustShow = movingDot_FL.process(mustShow);
+    // Base Animations
     mustShow = rainbow_FL.process(mustShow);
-    //mustShow = rainbowBuiltin_FL.process(mustShow);
-    //mustShow = rainbowTwinkle_FL.process(mustShow);
-    //mustShow = rgbBlocks_FL.process(mustShow);
-    //mustShow = staticBackground_FL.process(mustShow);
-    //mustShow = twinkles_FL.process(mustShow);
+    mustShow = rgbBlocks_FL.process(mustShow);
 
-    // Overlays
-    //mustShow = glitterOverlay_FL.process(mustShow);
-    //mustShow = movingDotOverlay_FL.process(mustShow);
-    //mustShow = twinklesOverlay_FL.process(mustShow);
+    // Overlay
+    mustShow = movingDotOverlay_FL.process(mustShow);
 
     if (mustShow)
     {
-#if (0)
-        static bool toggleFlag = false;
-        toggleFlag ^= true;
-        leds[0] = toggleFlag ? CRGB(0, 10, 0) : CRGB::Black;
-#endif
         FastLED.show();
     }
 }
@@ -141,26 +128,11 @@ void updateColor()
     {
         const uint8_t hue = analogValue;
 
-        if (hue != lastHue)
-        {
-            Serial.print("hue: ");
-            Serial.println(hue);
-            lastHue = hue;
-        }
-
-        glitter_FL.effectRate = hue;
-        movingDot_FL.foregroundColor = CHSV(hue, 255, 255);
-        movingDot_FL.backgroundColor = CHSV(hue + 128, 255, 64);
         rainbow_FL.volume = hue;
-        rainbowBuiltin_FL.deltahue = hue / 10;
         rgbBlocks_FL.blockSize = hue / 10;
-        staticBackground_FL.backgroundColor = CHSV(hue + 128, 255, 128);
-        twinkles_FL.effectRate = hue;
 
-        glitterOverlay_FL.effectRate = hue;
         movingDotOverlay_FL.foregroundColor = CHSV(hue + 64, 255, 255);
         movingDotOverlay_FL.backgroundColor = CHSV(hue + 192, 255, 64);
-        twinklesOverlay_FL.effectRate = hue;
     }
 }
 
@@ -176,21 +148,8 @@ void updateSpeed()
         const uint8_t animationSpeed = analogValue;
         const uint8_t animationDelay = animationSpeed ? 256 - animationSpeed : 0;
 
-        if (animationSpeed != lastSpeed)
-        {
-            Serial.print("speed: ");
-            Serial.print(animationSpeed);
-            Serial.print(" delay: ");
-            Serial.println(animationDelay);
-            lastSpeed = animationSpeed;
-        }
-
-        movingDot_FL.animationDelay = animationDelay;
         rainbow_FL.animationDelay = animationDelay;
-        rainbowBuiltin_FL.animationDelay = animationDelay;
-        rainbowTwinkle_FL.animationDelay = animationDelay;
         rgbBlocks_FL.animationDelay = 8 * animationDelay;
-        twinkles_FL.fadeRate = animationSpeed;
 
         movingDotOverlay_FL.animationDelay = 2 * animationDelay;
     }
@@ -204,40 +163,6 @@ void updateFlip()
 
     rainbow_FL.mirrored = mirrored;
     rgbBlocks_FL.mirrored = mirrored;
-}
-
-//------------------------------------------------------------------------------
-
-void printMemoryUsage()
-{
-    Serial.println(F("Memory usage:"));
-
-    Serial.print(F("FadeOut_FL = "));
-    Serial.println(sizeof(EC::FadeOut_FL));
-
-    Serial.print(F("Glitter_FL = "));
-    Serial.println(sizeof(EC::Glitter_FL));
-
-    Serial.print(F("MovingDot_FL = "));
-    Serial.println(sizeof(EC::MovingDot_FL));
-
-    Serial.print(F("Rainbow_FL = "));
-    Serial.println(sizeof(EC::Rainbow_FL));
-
-    Serial.print(F("RainbowBuiltin_FL = "));
-    Serial.println(sizeof(EC::RainbowBuiltin_FL));
-
-    Serial.print(F("RainbowTwinkle_FL = "));
-    Serial.println(sizeof(EC::RainbowTwinkle_FL));
-
-    Serial.print(F("RgbBlocks_FL = "));
-    Serial.println(sizeof(EC::RgbBlocks_FL));
-
-    Serial.print(F("StaticBackground_FL = "));
-    Serial.println(sizeof(EC::StaticBackground_FL));
-
-    Serial.print(F("Twinkles_FL = "));
-    Serial.println(sizeof(EC::Twinkles_FL));
 }
 
 //------------------------------------------------------------------------------

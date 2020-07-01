@@ -66,11 +66,6 @@ namespace EC
      */
     bool moreRed = true;
 
-    /** Show the Animation in reverse direction.
-     * This setting can be adjusted at runtime.
-     */
-    bool mirrored = false;
-
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
@@ -78,7 +73,7 @@ namespace EC
      */
     Rainbow_FL(CRGB *ledStrip,
                uint16_t ledCount)
-        : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
+        : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount, true)
     {
     }
 
@@ -93,8 +88,7 @@ namespace EC
         {
           pixelHue = redShift(pixelHue);
         }
-        // inverting 'mirrored' because all other rainbows go the same direction...
-        pixel(i, !mirrored) = CHSV(pixelHue, 255, volume);
+        pixel(i) = CHSV(pixelHue, 255, volume);
       }
       return 0;
     }

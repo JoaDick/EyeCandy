@@ -46,6 +46,51 @@ namespace EC
       return cos8(128 + hue / 2);
     }
 
+    /** Show the Animation in reverse direction.
+     * This setting can be adjusted at runtime.
+     */
+    bool mirrored = false;
+
+    /** Make the Animation smaller.
+     * \a newLedCount must not be higher than #maxLedCount.
+     * This setting can be adjusted at runtime.
+     */
+    void setLedCount(uint16_t newLedCount)
+    {
+      if (newLedCount > maxLedCount)
+      {
+        alarmFlash(2);
+      }
+      else
+      {
+        ledCount = newLedCount;
+      }
+    }
+
+    /** Render the Animation somewhere in the middle of the LED strip.
+     * \a offset + \a newLedCount must not be higher than #maxLedCount.
+     * This setting can be adjusted at runtime.
+     */
+    void setLedOffset(uint16_t offset,
+                      uint16_t newLedCount)
+    {
+      if (offset + newLedCount > maxLedCount)
+      {
+        alarmFlash(3);
+      }
+      else
+      {
+        ledStrip = &_ledStrip[offset];
+        ledCount = newLedCount;
+      }
+    }
+
+    /** Physical number of LEDs of the LED strip.
+     * Use this one only if you really know what you are doing!
+     * Usually, #ledCount is the better choice to use.
+     */
+    const uint16_t maxLedCount;
+
   protected:
     /** The LED strip.
      * Whenever feasible, child classes shall use the pixel() method for
@@ -65,28 +110,46 @@ namespace EC
      * @param animationType  Type of Animation.
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
+     * @param mirrored  The "regular" Animation shall be shown in reverse direction.
      */
     AnimationBase_FL(Type animationType,
                      CRGB *ledStrip,
-                     uint16_t ledCount)
-        : AnimationBase(animationType), ledStrip(ledStrip), ledCount(ledCount)
+                     uint16_t ledCount,
+                     bool mirrored = false)
+        : AnimationBase(animationType), ledStrip(ledStrip), ledCount(ledCount), maxLedCount(ledCount), _defaultMirrored(mirrored), _ledStrip(ledStrip)
     {
     }
 
     /// Access the pixel at position \a index.
     CRGB &pixel(uint16_t index)
     {
-      return ledStrip[index];
-    }
-
-    /** Access the pixel at position \a index.
-     * When the Animation is rendered in reverse direction, \a mirrored must be true.
-     */
-    CRGB &pixel(uint16_t index, bool mirrored)
-    {
-      const uint16_t transformedIndex = mirrored ? ledCount - 1 - index : index;
+      if (index >= ledCount)
+      {
+        alarmFlash(1);
+        return ledStrip[0];
+      }
+      const uint16_t transformedIndex = (mirrored ^ _defaultMirrored) ? ledCount - 1 - index : index;
       return ledStrip[transformedIndex];
     }
+
+  private:
+    void alarmFlash(uint8_t count)
+    {
+      while (count--)
+      {
+        fill_solid(ledStrip, ledCount, CRGB(64, 0, 0));
+        FastLED.show();
+        delay(250);
+        fill_solid(ledStrip, ledCount, CRGB::Black);
+        FastLED.show();
+        delay(250);
+      }
+      delay(500);
+    }
+
+  private:
+    const bool _defaultMirrored;
+    CRGB *_ledStrip;
   };
 
 } // namespace EC
