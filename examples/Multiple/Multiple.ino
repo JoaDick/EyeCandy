@@ -132,7 +132,6 @@ void updateColor()
         rgbBlocks_FL.blockSize = hue / 10;
 
         movingDotOverlay_FL.foregroundColor = CHSV(hue + 64, 255, 255);
-        movingDotOverlay_FL.backgroundColor = CHSV(hue + 192, 255, 64);
     }
 }
 

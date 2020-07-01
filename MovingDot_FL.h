@@ -54,7 +54,7 @@ namespace EC
     CRGB backgroundColor;
 
     /** Delay between updating the Animation (in ms).
-     * 0 means freeze (don't update the animation).
+     * 0 makes the dot disappear.
      * This setting can be adjusted at runtime.
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
@@ -89,7 +89,10 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      pixel(_position) = foregroundColor;
+      if (animationDelay)
+      {
+        pixel(_position) = foregroundColor;
+      }
     }
 
     /// @see AnimationBase::updateAnimation()
