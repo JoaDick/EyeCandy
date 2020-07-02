@@ -54,6 +54,7 @@ CRGB leds[NUM_LEDS];
 
 // Patterns
 EC::FadeOut_FL fadeOut_FL(leds, NUM_LEDS);
+EC::Fire2012_FL<NUM_LEDS> fire2012_FL(leds, NUM_LEDS);
 EC::Glitter_FL glitter_FL(leds, NUM_LEDS, false);
 EC::MovingDot_FL movingDot_FL(leds, NUM_LEDS, false);
 EC::Pride2015_FL pride2015_FL(leds, NUM_LEDS);
@@ -96,9 +97,10 @@ void loop()
 
     // Base Animation (enable one)
     //mustShow = fadeOut_FL.process(mustShow);
+    mustShow = fire2012_FL.process(mustShow);
     //mustShow = glitter_FL.process(mustShow);
     //mustShow = movingDot_FL.process(mustShow);
-    mustShow = pride2015_FL.process(mustShow);
+    //mustShow = pride2015_FL.process(mustShow);
     //mustShow = rainbow_FL.process(mustShow);
     //mustShow = rainbowBuiltin_FL.process(mustShow);
     //mustShow = rainbowTwinkle_FL.process(mustShow);
@@ -150,6 +152,7 @@ void updateColor()
             lastHue = hue;
         }
 
+        fire2012_FL.SPARKING = hue;
         glitter_FL.effectRate = hue;
         movingDot_FL.foregroundColor = CHSV(hue, 255, 255);
         movingDot_FL.backgroundColor = CHSV(hue + 128, 255, 64);
@@ -186,6 +189,7 @@ void updateSpeed()
             lastSpeed = animationSpeed;
         }
 
+        fire2012_FL.COOLING = 255 - animationSpeed;
         movingDot_FL.animationDelay = animationDelay;
         rainbow_FL.animationDelay = animationDelay;
         rainbowBuiltin_FL.animationDelay = animationDelay;
@@ -205,16 +209,32 @@ void updateFlip()
 
     rainbow_FL.mirrored = mirrored;
     rgbBlocks_FL.mirrored = mirrored;
+
+    if (mirrored)
+    {
+        //fire2012_FL.gPal = EC::Fire2012_gPal_BlackBlueAquaWhite();
+        fire2012_FL.gPal = CRGBPalette16(CRGB::Black, CRGB::Green, CRGB::Blue, CRGB::White);
+    }
+    else
+    {
+        fire2012_FL.gPal = EC::Fire2012_gPal_default();
+    }
 }
 
 //------------------------------------------------------------------------------
 
 void printMemoryUsage()
 {
-    Serial.println(F("Memory usage:"));
+    Serial.print(F("Memory usage for "));
+    Serial.print(NUM_LEDS);
+    Serial.println(F(" LEDs:"));
+    Serial.println(F("(*) is dependant on NUM_LEDS"));
 
     Serial.print(F("FadeOut_FL = "));
     Serial.println(sizeof(EC::FadeOut_FL));
+
+    Serial.print(F("Fire2012_FL (*) = "));
+    Serial.println(sizeof(EC::Fire2012_FL<NUM_LEDS>));
 
     Serial.print(F("Glitter_FL = "));
     Serial.println(sizeof(EC::Glitter_FL));

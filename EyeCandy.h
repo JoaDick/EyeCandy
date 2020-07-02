@@ -26,6 +26,7 @@ SOFTWARE.
 *******************************************************************************/
 
 #include "FadeOut_FL.h"
+#include "Fire2012_FL.h"
 #include "Glitter_FL.h"
 #include "Kaleidoscope_FL.h"
 #include "MovingDot_FL.h"
