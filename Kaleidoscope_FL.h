@@ -52,6 +52,9 @@ namespace EC
       AnimationBase_FL::mirrored = true;
     }
 
+    /** Get the number of LEDs that may be used by the underlying Animation.
+     * Use other's #setLedCount() method to store this value.
+     */
     uint16_t remainLedCount()
     {
       return _remainLedCount;

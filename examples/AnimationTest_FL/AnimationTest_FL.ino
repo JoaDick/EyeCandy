@@ -123,7 +123,7 @@ void loop()
 //------------------------------------------------------------------------------
 
 template <typename IN_TYPE, typename OUT_TYPE>
-OUT_TYPE constrainAndMap(int x,
+OUT_TYPE constrainAndMap(const IN_TYPE &x,
                          const IN_TYPE &minThreshold, const IN_TYPE &maxThreshold,
                          const OUT_TYPE &outMin, const OUT_TYPE &outMax)
 {

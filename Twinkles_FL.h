@@ -43,14 +43,16 @@ namespace EC
      * 0 means freeze (don't update the animation).
      * This setting can be adjusted at runtime.
      */
-    uint8_t effectRate = 50;
+    uint8_t effectRate = effectRate_default();
+    static uint8_t effectRate_default() { return 50; }
 
     /** Fading speed.
      * Lower value = longer glowing.
      * This setting can be adjusted at runtime.
      * It is ignored in Overlay mode.
      */
-    uint8_t fadeRate = 5;
+    uint8_t fadeRate = fadeRate_default();
+    static uint8_t fadeRate_default() { return 5; }
 
     /** Constructor.
      * @param ledStrip  The LED strip.

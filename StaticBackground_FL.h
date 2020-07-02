@@ -42,7 +42,8 @@ namespace EC
     /** Fill LED strip with this color.
      * This setting can be adjusted at runtime.
      */
-    CRGB backgroundColor;
+    CRGB backgroundColor = backgroundColor_default();
+    static CRGB backgroundColor_default() { return CRGB::Black; }
 
     /** Constructor
      * @param ledStrip  The LED strip.
@@ -51,7 +52,7 @@ namespace EC
      */
     StaticBackground_FL(CRGB *ledStrip,
                         uint16_t ledCount,
-                        const CRGB &backgroundColor = CRGB::Black)
+                        const CRGB &backgroundColor = backgroundColor_default())
         : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount), backgroundColor(backgroundColor)
     {
     }

@@ -45,13 +45,15 @@ namespace EC
     /** Draw the dot with this color.
      * This setting can be adjusted at runtime.
      */
-    CRGB foregroundColor;
+    CRGB foregroundColor = foregroundColor_default();
+    static CRGB foregroundColor_default() { return CRGB(255, 0, 0); }
 
     /** Fill LED strip with this color.
      * This setting can be adjusted at runtime.
      * It is ignored in Overlay mode.
      */
-    CRGB backgroundColor;
+    CRGB backgroundColor = backgroundColor_default();
+    static CRGB backgroundColor_default() { return CRGB(0, 10, 0); }
 
     /** Delay between updating the Animation (in ms).
      * 0 makes the dot disappear.
@@ -59,7 +61,8 @@ namespace EC
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
      */
-    uint8_t animationDelay = 20;
+    uint8_t animationDelay = animationDelay_default();
+    static uint8_t animationDelay_default() { return 20; }
 
     /** Constructor
      * @param ledStrip  The LED strip.
@@ -71,8 +74,8 @@ namespace EC
     MovingDot_FL(CRGB *ledStrip,
                  uint16_t ledCount,
                  bool overlayMode,
-                 const CRGB &foregroundColor = CRGB(255, 0, 0),
-                 const CRGB &backgroundColor = CRGB(0, 10, 0))
+                 const CRGB &foregroundColor = foregroundColor_default(),
+                 const CRGB &backgroundColor = backgroundColor_default())
         : AnimationBase_FL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount), foregroundColor(foregroundColor), backgroundColor(backgroundColor)
     {
     }

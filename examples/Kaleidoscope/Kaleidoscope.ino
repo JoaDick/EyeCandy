@@ -84,7 +84,8 @@ void setup()
 
     // Rainbow in the upper 4/5
     rainbow_FL.setLedOffset(remainLedCount / 5, 4 * remainLedCount / 5);
-    rainbow_FL.animationDelay = 5;
+    rainbow_FL.mirrored = true;
+    rainbow_FL.animationDelay = 20;
     rainbow_FL.deltahue = 4;
     rainbow_FL.volume = 128;
     rainbow_FL.moreRed = false;
@@ -124,7 +125,7 @@ void loop()
 //------------------------------------------------------------------------------
 
 template <typename IN_TYPE, typename OUT_TYPE>
-OUT_TYPE constrainAndMap(int x,
+OUT_TYPE constrainAndMap(const IN_TYPE &x,
                          const IN_TYPE &minThreshold, const IN_TYPE &maxThreshold,
                          const OUT_TYPE &outMin, const OUT_TYPE &outMax)
 {
