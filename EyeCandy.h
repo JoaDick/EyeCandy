@@ -29,6 +29,7 @@ SOFTWARE.
 #include "Glitter_FL.h"
 #include "Kaleidoscope_FL.h"
 #include "MovingDot_FL.h"
+#include "Pride2015_FL.h"
 #include "Rainbow_FL.h"
 #include "RainbowBuiltin_FL.h"
 #include "RainbowTwinkle_FL.h"

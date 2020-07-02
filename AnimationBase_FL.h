@@ -49,7 +49,8 @@ namespace EC
     /** Show the Animation in reverse direction.
      * This setting can be adjusted at runtime.
      */
-    bool mirrored = false;
+    bool mirrored = mirrored_default();
+    static bool mirrored_default() { return false; }
 
     /** Make the Animation smaller.
      * \a newLedCount must not be higher than #maxLedCount.

@@ -56,6 +56,7 @@ CRGB leds[NUM_LEDS];
 EC::FadeOut_FL fadeOut_FL(leds, NUM_LEDS);
 EC::Glitter_FL glitter_FL(leds, NUM_LEDS, false);
 EC::MovingDot_FL movingDot_FL(leds, NUM_LEDS, false);
+EC::Pride2015_FL pride2015_FL(leds, NUM_LEDS);
 EC::Rainbow_FL rainbow_FL(leds, NUM_LEDS);
 EC::RainbowBuiltin_FL rainbowBuiltin_FL(leds, NUM_LEDS);
 EC::RainbowTwinkle_FL rainbowTwinkle_FL(leds, NUM_LEDS);
@@ -97,7 +98,8 @@ void loop()
     //mustShow = fadeOut_FL.process(mustShow);
     //mustShow = glitter_FL.process(mustShow);
     //mustShow = movingDot_FL.process(mustShow);
-    mustShow = rainbow_FL.process(mustShow);
+    mustShow = pride2015_FL.process(mustShow);
+    //mustShow = rainbow_FL.process(mustShow);
     //mustShow = rainbowBuiltin_FL.process(mustShow);
     //mustShow = rainbowTwinkle_FL.process(mustShow);
     //mustShow = rgbBlocks_FL.process(mustShow);
@@ -222,6 +224,9 @@ void printMemoryUsage()
 
     Serial.print(F("MovingDot_FL = "));
     Serial.println(sizeof(EC::MovingDot_FL));
+
+    Serial.print(F("Pride2015_FL = "));
+    Serial.println(sizeof(EC::Pride2015_FL));
 
     Serial.print(F("Rainbow_FL = "));
     Serial.println(sizeof(EC::Rainbow_FL));

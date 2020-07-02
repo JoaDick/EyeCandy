@@ -63,9 +63,11 @@ namespace EC
      */
     RgbBlocks_FL(CRGB *ledStrip,
                  uint16_t ledCount)
-        : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount, true)
+        : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount, mirrored_default())
     {
     }
+
+    static bool mirrored_default() { return true; }
 
   private:
     /// @see AnimationBase::showPattern()
