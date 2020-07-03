@@ -136,7 +136,6 @@ OUT_TYPE constrainAndMap(const IN_TYPE &x,
 
 //------------------------------------------------------------------------------
 
-uint8_t lastHue = 0;
 void updateColor()
 {
     const uint16_t analogValue = constrainAndMap(analogRead(PIN_COLOR), 50, 900, 0, 256);
@@ -145,14 +144,15 @@ void updateColor()
     {
         const uint8_t hue = analogValue;
 
+        static uint16_t lastHue = 0;
         if (hue != lastHue)
         {
             Serial.print("hue: ");
             Serial.println(hue);
-            lastHue = hue;
+            lastHue = analogValue;
         }
 
-        fire2012_FL.SPARKING = hue;
+        fire2012_FL.COOLING = 255 - hue;
         glitter_FL.effectRate = hue;
         movingDot_FL.foregroundColor = CHSV(hue, 255, 255);
         movingDot_FL.backgroundColor = CHSV(hue + 128, 255, 64);
@@ -170,7 +170,6 @@ void updateColor()
 
 //------------------------------------------------------------------------------
 
-uint8_t lastSpeed = 0;
 void updateSpeed()
 {
     const uint16_t analogValue = constrainAndMap(analogRead(PIN_SPEED), 50, 900, 0, 256);
@@ -180,16 +179,17 @@ void updateSpeed()
         const uint8_t animationSpeed = analogValue;
         const uint8_t animationDelay = animationSpeed ? 256 - animationSpeed : 0;
 
+        static uint16_t lastSpeed = 0;
         if (animationSpeed != lastSpeed)
         {
+            lastSpeed = analogValue;
             Serial.print("speed: ");
             Serial.print(animationSpeed);
             Serial.print(" delay: ");
             Serial.println(animationDelay);
-            lastSpeed = animationSpeed;
         }
 
-        fire2012_FL.COOLING = 255 - animationSpeed;
+        fire2012_FL.SPARKING = animationSpeed;
         movingDot_FL.animationDelay = animationDelay;
         rainbow_FL.animationDelay = animationDelay;
         rainbowBuiltin_FL.animationDelay = animationDelay;
@@ -205,18 +205,18 @@ void updateSpeed()
 
 void updateFlip()
 {
-    const bool mirrored = !digitalRead(PIN_BUTTON_FLIP);
+    const bool flipped = !digitalRead(PIN_BUTTON_FLIP);
 
-    rainbow_FL.mirrored = mirrored;
-    rgbBlocks_FL.mirrored = mirrored;
+    rainbow_FL.mirrored = flipped;
+    rgbBlocks_FL.mirrored = flipped;
 
-    if (mirrored)
+    if(flipped)
     {
-        //fire2012_FL.gPal = EC::Fire2012_gPal_BlackBlueAquaWhite();
-        fire2012_FL.gPal = CRGBPalette16(CRGB::Black, CRGB::Green, CRGB::Blue, CRGB::White);
+        fire2012_FL.animationDelay = 15;
     }
     else
     {
+        fire2012_FL.animationDelay = 0;
         fire2012_FL.gPal = EC::Fire2012_gPal_default();
     }
 }

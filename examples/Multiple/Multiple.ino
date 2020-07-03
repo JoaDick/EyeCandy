@@ -119,7 +119,6 @@ OUT_TYPE constrainAndMap(const IN_TYPE &x,
 
 //------------------------------------------------------------------------------
 
-uint8_t lastHue = 0;
 void updateColor()
 {
     const uint16_t analogValue = constrainAndMap(analogRead(PIN_COLOR), 50, 900, 0, 256);
@@ -137,7 +136,6 @@ void updateColor()
 
 //------------------------------------------------------------------------------
 
-uint8_t lastSpeed = 0;
 void updateSpeed()
 {
     const uint16_t analogValue = constrainAndMap(analogRead(PIN_SPEED), 50, 900, 0, 256);
@@ -158,10 +156,10 @@ void updateSpeed()
 
 void updateFlip()
 {
-    const bool mirrored = !digitalRead(PIN_BUTTON_FLIP);
+    const bool flipped = !digitalRead(PIN_BUTTON_FLIP);
 
-    rainbow_FL.mirrored = mirrored;
-    rgbBlocks_FL.mirrored = mirrored;
+    rainbow_FL.mirrored = flipped;
+    rgbBlocks_FL.mirrored = flipped;
 }
 
 //------------------------------------------------------------------------------

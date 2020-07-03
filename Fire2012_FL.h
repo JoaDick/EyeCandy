@@ -46,14 +46,9 @@ namespace EC
   /// Third, here's a simpler, three-step gradient, from black to red to white
   CRGBPalette16 Fire2012_gPal_BlackRedWhite() { return CRGBPalette16(CRGB::Black, CRGB::Red, CRGB::White); }
 
-  /// Fourth, the most sophisticated: this one sets up a new palette every
-  /// time through the loop, based on a hue that changes every time.
-  /// The palette is a gradient from black, to a dark color based on the hue,
-  /// to a light color based on the hue, to white.
-  bool Fire2012_rainbowFire_default() { return false; }
-
-  uint8_t Fire2012_COOLING_default() { return 55; }
-  uint8_t Fire2012_SPARKING_default() { return 120; }
+  uint8_t Fire2012_COOLING_default() { return 75 /* 55 */; }
+  fract8 Fire2012_SPARKING_default() { return 120; }
+  uint16_t Fire2012_animationDelay_default() { return 0; }
 
   /** Fire2012 with programmable Color Palette
   This code is the same fire simulation as the original "Fire2012",
@@ -90,11 +85,11 @@ namespace EC
   template <uint16_t NUM_LEDS>
   class Fire2012_FL : public AnimationBase_FL
   {
-    // mirroring can be done via base class: AnimationBase_FL::mirrored
-    // bool gReverseDirection = false;
+    static const uint16_t FRAMES_PER_SECOND = 60;
 
     // Array of temperature readings at each simulation cell
     byte heat[NUM_LEDS];
+    uint8_t hue = 0;
 
   public:
     /// This first palette is the basic 'black body radiation' colors,
@@ -103,19 +98,24 @@ namespace EC
 
     /// COOLING: How much does the air cool as it rises?
     /// Less cooling = taller flames.  More cooling = shorter flames.
-    /// Default 55, suggested range 20-100
+    /// suggested range 20-100
     uint8_t COOLING = Fire2012_COOLING_default();
 
     /// SPARKING: What chance (out of 255) is there that a new spark will be lit?
     /// Higher chance = more roaring fire.  Lower chance = more flickery fire.
-    /// Default 120, suggested range 50-200.
-    uint8_t SPARKING = Fire2012_SPARKING_default();
+    /// suggested range 50-200.
+    fract8 SPARKING = Fire2012_SPARKING_default();
 
     /// Fourth, the most sophisticated: this one sets up a new palette every
     /// time through the loop, based on a hue that changes every time.
     /// The palette is a gradient from black, to a dark color based on the hue,
     /// to a light color based on the hue, to white.
-    bool rainbowFire = Fire2012_rainbowFire_default();
+    ///
+    /// 0 means no rainbow effect; always using #gPal
+    /// Other means delay (in ms) between updating the hue (i.e. "rainbow speed").
+    /// @note This delay influences the "Animation speed", but not the LED
+    /// refresh rate.
+    uint16_t animationDelay = Fire2012_animationDelay_default();
 
     /** Constructor
      * @param ledStrip  The LED strip.
@@ -133,21 +133,9 @@ namespace EC
     {
       // Add entropy to random number generator; we use a lot of it.
       random16_add_entropy(random());
-
-      // Fourth, the most sophisticated: this one sets up a new palette every
-      // time through the loop, based on a hue that changes every time.
-      // The palette is a gradient from black, to a dark color based on the hue,
-      // to a light color based on the hue, to white.
-      //
-      //   static uint8_t hue = 0;
-      //   hue++;
-      //   CRGB darkcolor  = CHSV(hue,255,192); // pure hue, three-quarters brightness
-      //   CRGB lightcolor = CHSV(hue,128,255); // half 'whitened', full brightness
-      //   gPal = CRGBPalette16( CRGB::Black, darkcolor, lightcolor, CRGB::White);
-
       Fire2012WithPalette(); // run simulation frame, using palette colors
 
-      return 0;
+      return 1000 / FRAMES_PER_SECOND;
     }
 
     // Fire2012 by Mark Kriegsman, July 2012
@@ -216,6 +204,28 @@ namespace EC
         pixel(j) = color;
 #endif
       }
+    }
+
+    /// @see AnimationBase::updateAnimation()
+    void updateAnimation(uint32_t currentMillis) override
+    {
+      if (animationDelay)
+      {
+        // Fourth, the most sophisticated: this one sets up a new palette every
+        // time through the loop, based on a hue that changes every time.
+        // The palette is a gradient from black, to a dark color based on the hue,
+        // to a light color based on the hue, to white.
+        hue++;
+        CRGB darkcolor = CHSV(hue, 255, 192);  // pure hue, three-quarters brightness
+        CRGB lightcolor = CHSV(hue, 128, 255); // half 'whitened', full brightness
+        gPal = CRGBPalette16(CRGB::Black, darkcolor, lightcolor, CRGB::White);
+      }
+    }
+
+    /// @see AnimationBase::getAnimationDelay()
+    uint16_t getAnimationDelay() override
+    {
+      return animationDelay;
     }
   };
 
