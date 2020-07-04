@@ -1,7 +1,6 @@
 /*******************************************************************************
 
-An example showing how multiple Animations can be rendered side by side.
-Including an Overlay, which is partially covering both other Patterns.
+A nice example that combines Fire2012 and Pride2015 with a Kaleioscope.
 
 ********************************************************************************
 
@@ -37,12 +36,10 @@ SOFTWARE.
 // the LED strip
 CRGB leds[NUM_LEDS];
 
-// Patterns
-EC::Rainbow_FL rainbow_FL(leds, NUM_LEDS);
-EC::RgbBlocks_FL rgbBlocks_FL(leds, NUM_LEDS);
-
-// Overlays
-EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
+// Animations
+EC::Fire2012_FL<NUM_LEDS> fire2012_FL(leds, NUM_LEDS);
+EC::Pride2015_FL pride2015_FL(leds, NUM_LEDS);
+EC::Kaleidoscope_FL kaleidoscopeOverlay_FL(leds, NUM_LEDS);
 
 // run 3 Animations simultaneously
 EC::AnimationRunner<3> animations;
@@ -61,19 +58,21 @@ void setup()
     Serial.println(F("Welcome to EyeCandy"));
 
     // set up Animations to run
-    animations.add(rainbow_FL);
-    animations.add(rgbBlocks_FL);
-    animations.add(movingDotOverlay_FL);
+    animations.add(fire2012_FL);
+    animations.add(pride2015_FL);
+    // Kaleidoscope should be the last one
+    animations.add(kaleidoscopeOverlay_FL);
 
-    // Rainbow in the lower half
-    rainbow_FL.resizeStrip(NUM_LEDS / 2);
-    rainbow_FL.volume = 128;
+    // calculate new Animation sizes
+    const uint16_t ledCount = kaleidoscopeOverlay_FL.remainLedCount();
+    const uint16_t ledCount1 = ledCount / 2;
+    const uint16_t ledCount2 = ledCount - ledCount1;
+    // store new Animation sizes
+    fire2012_FL.resizeStrip(ledCount1);
+    pride2015_FL.resizeStrip(ledCount2, ledCount1);
 
-    // RGB blocks in the upper half
-    rgbBlocks_FL.resizeStrip(NUM_LEDS / 2, NUM_LEDS / 2);
-
-    // Moving dot overlay in the middle, using 2/3 of the entire strip
-    movingDotOverlay_FL.resizeStrip(2 * NUM_LEDS / 3, NUM_LEDS / 6);
+    // special Animation settings
+    pride2015_FL.mirrored = true;
 }
 
 //------------------------------------------------------------------------------
@@ -108,12 +107,7 @@ void updateColor()
 
     if (analogValue < 256)
     {
-        const uint8_t hue = analogValue;
-
-        rainbow_FL.volume = hue;
-        rgbBlocks_FL.blockSize = hue / 10;
-
-        movingDotOverlay_FL.foregroundColor = CHSV(hue + 64, 255, 255);
+        fire2012_FL.COOLING = 255 - analogValue;
     }
 }
 
@@ -125,13 +119,7 @@ void updateSpeed()
 
     if (analogValue < 256)
     {
-        const uint8_t animationSpeed = analogValue;
-        const uint8_t animationDelay = animationSpeed ? 256 - animationSpeed : 0;
-
-        rainbow_FL.animationDelay = animationDelay;
-        rgbBlocks_FL.animationDelay = 8 * animationDelay;
-
-        movingDotOverlay_FL.animationDelay = 2 * animationDelay;
+        fire2012_FL.SPARKING = analogValue;
     }
 }
 
@@ -141,8 +129,14 @@ void updateFlip()
 {
     const bool flipped = !digitalRead(PIN_FLIP_BTN);
 
-    rainbow_FL.mirrored = flipped;
-    rgbBlocks_FL.mirrored = flipped;
+    if (flipped)
+    {
+        fire2012_FL.animationDelay = 15;
+    }
+    else
+    {
+        fire2012_FL.animationDelay = 0;
+    }
 }
 
 //------------------------------------------------------------------------------

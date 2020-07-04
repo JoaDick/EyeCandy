@@ -25,6 +25,8 @@ SOFTWARE.
 
 *******************************************************************************/
 
+#include "AnimationRunner.h"
+
 #include "FadeOut_FL.h"
 #include "Fire2012_FL.h"
 #include "Glitter_FL.h"

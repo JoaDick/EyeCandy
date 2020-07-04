@@ -54,6 +54,9 @@ EC::Glitter_FL glitterOverlay_FL(leds, NUM_LEDS, true);
 EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
 EC::Twinkles_FL twinklesOverlay_FL(leds, NUM_LEDS, true);
 
+// run max. 10 Animations simultaneously
+EC::AnimationRunner<10> animations;
+
 //------------------------------------------------------------------------------
 
 void setup()
@@ -68,6 +71,24 @@ void setup()
     Serial.begin(115200);
     Serial.println(F("Welcome to EyeCandy"));
     printMemoryUsage();
+
+    // Base Animation (select one)
+    // animations.add(fire2012_FL);
+    // animations.add(glitter_FL);
+    // animations.add(movingDot_FL);
+    // animations.add(fadeOut_FL);
+    animations.add(pride2015_FL);
+    // animations.add(rainbow_FL);
+    // animations.add(rainbowBuiltin_FL);
+    // animations.add(rainbowTwinkle_FL);
+    // animations.add(rgbBlocks_FL);
+    // animations.add(staticBackground_FL);
+    // animations.add(twinkles_FL);
+
+    // Overlays
+    animations.add(glitterOverlay_FL);
+    animations.add(movingDotOverlay_FL);
+    // animations.add(twinklesOverlay_FL);
 }
 
 //------------------------------------------------------------------------------
@@ -78,27 +99,7 @@ void loop()
     updateSpeed();
     updateFlip();
 
-    bool mustShow = false;
-
-    // Base Animation (enable one)
-    //mustShow = fadeOut_FL.process(mustShow);
-    //mustShow = fire2012_FL.process(mustShow);
-    //mustShow = glitter_FL.process(mustShow);
-    //mustShow = movingDot_FL.process(mustShow);
-    mustShow = pride2015_FL.process(mustShow);
-    //mustShow = rainbow_FL.process(mustShow);
-    //mustShow = rainbowBuiltin_FL.process(mustShow);
-    //mustShow = rainbowTwinkle_FL.process(mustShow);
-    //mustShow = rgbBlocks_FL.process(mustShow);
-    //mustShow = staticBackground_FL.process(mustShow);
-    //mustShow = twinkles_FL.process(mustShow);
-
-    // Overlays
-    //mustShow = glitterOverlay_FL.process(mustShow);
-    //mustShow = movingDotOverlay_FL.process(mustShow);
-    //mustShow = twinklesOverlay_FL.process(mustShow);
-
-    if (mustShow)
+    if (animations.process())
     {
 #if (0)
         static bool toggleFlag = false;

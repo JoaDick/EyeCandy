@@ -44,6 +44,9 @@ EC::Rainbow_FL rainbow_FL(leds, NUM_LEDS);
 EC::Kaleidoscope_FL kaleidoscopeOverlay_FL(leds, NUM_LEDS);
 EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
 
+// run 4 Animations simultaneously
+EC::AnimationRunner<4> animations;
+
 //------------------------------------------------------------------------------
 
 void setup()
@@ -56,6 +59,13 @@ void setup()
 
     Serial.begin(115200);
     Serial.println(F("Welcome to EyeCandy"));
+
+    // set up Animations to run
+    animations.add(glitter_FL);
+    animations.add(rainbow_FL);
+    animations.add(movingDotOverlay_FL);
+    // Kaleidoscope should be the last one
+    animations.add(kaleidoscopeOverlay_FL);
 
     // get remaining size for the core Animations
     const uint16_t remainLedCount = kaleidoscopeOverlay_FL.remainLedCount();
@@ -88,19 +98,7 @@ void loop()
     updateSpeed();
     updateFlip();
 
-    bool mustShow = false;
-
-    // Base Animations
-    mustShow = glitter_FL.process(mustShow);
-    mustShow = rainbow_FL.process(mustShow);
-
-    // Overlay
-    mustShow = movingDotOverlay_FL.process(mustShow);
-
-    // eventually the Kaleidoscope on top of all others
-    mustShow = kaleidoscopeOverlay_FL.process(mustShow);
-
-    if (mustShow)
+    if (animations.process())
     {
         FastLED.show();
     }
