@@ -105,13 +105,33 @@ namespace EC
     {
     }
 
-    /// Access the pixel at position \a index.
+    /** Access the pixel at position \a index (with error feeback).
+     * If \a index is not within the LED strip, all LEDs will flash red as
+     * error feedback. Use safePixel() when such "off-strip-pixels" are intended
+     * by the Animation.
+     */
     CRGB &pixel(uint16_t index)
     {
       if (index >= ledCount)
       {
         alarmFlash(1);
         return ledStrip[0];
+      }
+      const uint16_t transformedIndex = (mirrored ^ _defaultMirrored) ? ledCount - 1 - index : index;
+      return ledStrip[transformedIndex];
+    }
+
+    /** Access the pixel at position \a index ("off-strip-pixels" are allowed).
+     * If \a index is not within the LED strip, the pixel's setting is ignored.
+     * May be useful for Animations where something "drops off" the strip.
+     * @note Don't abuse this feature to sweep programming errors under the rug!
+     */
+    CRGB &safePixel(int16_t index)
+    {
+      static CRGB trash;
+      if (index < 0 || index >= ledCount)
+      {
+        return trash;
       }
       const uint16_t transformedIndex = (mirrored ^ _defaultMirrored) ? ledCount - 1 - index : index;
       return ledStrip[transformedIndex];
