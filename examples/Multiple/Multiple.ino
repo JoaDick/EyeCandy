@@ -30,28 +30,12 @@ SOFTWARE.
 *******************************************************************************/
 
 #include <EyeCandy.h>
-
-//#define LED_COLOR_ORDER     RGB
-//#define LED_COLOR_ORDER     RBG
-#define LED_COLOR_ORDER GRB
-//#define LED_COLOR_ORDER     GBR
-//#define LED_COLOR_ORDER     BRG
-//#define LED_COLOR_ORDER     BGR
-
-#define LED_PIN 6
-
-#define PIN_BUTTON_FLIP 2
-#define PIN_COLOR A0
-#define PIN_SPEED A1
+#include <Animation_IO_config.h>
 
 //------------------------------------------------------------------------------
 
-#define LED_TYPE WS2812B
-#define NUM_LEDS 90
-
+// the LED strip
 CRGB leds[NUM_LEDS];
-
-//------------------------------------------------------------------------------
 
 // Patterns
 EC::Rainbow_FL rainbow_FL(leds, NUM_LEDS);
@@ -64,9 +48,9 @@ EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
 
 void setup()
 {
-    pinMode(PIN_BUTTON_FLIP, INPUT_PULLUP);
-    pinMode(PIN_COLOR, INPUT_PULLUP);
-    pinMode(PIN_SPEED, INPUT_PULLUP);
+    pinMode(PIN_FLIP_BTN, INPUT_PULLUP);
+    pinMode(PIN_COLOR_POT, INPUT_PULLUP);
+    pinMode(PIN_SPEED_POT, INPUT_PULLUP);
 
     FastLED.addLeds<LED_TYPE, LED_PIN, LED_COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
 
@@ -121,7 +105,7 @@ OUT_TYPE constrainAndMap(const IN_TYPE &x,
 
 void updateColor()
 {
-    const uint16_t analogValue = constrainAndMap(analogRead(PIN_COLOR), 50, 900, 0, 256);
+    const uint16_t analogValue = constrainAndMap(analogRead(PIN_COLOR_POT), 50, 900, 0, 256);
 
     if (analogValue < 256)
     {
@@ -138,7 +122,7 @@ void updateColor()
 
 void updateSpeed()
 {
-    const uint16_t analogValue = constrainAndMap(analogRead(PIN_SPEED), 50, 900, 0, 256);
+    const uint16_t analogValue = constrainAndMap(analogRead(PIN_SPEED_POT), 50, 900, 0, 256);
 
     if (analogValue < 256)
     {
@@ -156,7 +140,7 @@ void updateSpeed()
 
 void updateFlip()
 {
-    const bool flipped = !digitalRead(PIN_BUTTON_FLIP);
+    const bool flipped = !digitalRead(PIN_FLIP_BTN);
 
     rainbow_FL.mirrored = flipped;
     rgbBlocks_FL.mirrored = flipped;
