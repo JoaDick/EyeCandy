@@ -33,6 +33,7 @@ namespace EC
 {
 
   /** Some randomly twinkling pixels.
+   * Can be used as Pattern or as Overlay.
    */
   class Twinkles_FL
       : public AnimationBase_FL

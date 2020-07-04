@@ -45,9 +45,9 @@ namespace EC
   public:
     /** Default delay (in ms) between updating the LED strip.
      * This value is used when showPattern() returns 0.
-     * Default of 20ms will result in a refresh rate of 50Hz.
+     * Default of 10ms will result in a refresh rate of 100Hz.
      */
-    uint8_t defaultPatternDelay = 20;
+    uint8_t defaultPatternDelay = 10;
 
   protected:
     /** Constructor.
@@ -130,7 +130,6 @@ namespace EC
         }
       }
 
-      bool retval = wasModified;
       if (_overlayMode)
       {
         if (wasModified)
@@ -148,11 +147,11 @@ namespace EC
             patternDelay = defaultPatternDelay;
           }
           _nextShowPattern = currentMillis + patternDelay;
-          retval = true;
+          wasModified = true;
         }
       }
 
-      return retval;
+      return wasModified;
     }
   };
 

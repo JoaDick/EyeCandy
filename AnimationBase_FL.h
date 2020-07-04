@@ -52,36 +52,20 @@ namespace EC
     bool mirrored = mirrored_default();
     static bool mirrored_default() { return false; }
 
-    /** Make the Animation smaller.
-     * \a newLedCount must not be higher than #maxLedCount.
+    /** Resize the Animation and move it on the LED strip (optional).
+     * \a newLedCount + \a offset must not be higher than #maxLedCount.
      * This setting can be adjusted at runtime.
      */
-    void setLedCount(uint16_t newLedCount)
+    void resizeStrip(uint16_t newLedCount,
+                     uint16_t offset = 0)
     {
-      if (newLedCount > maxLedCount)
+      if (newLedCount + offset > maxLedCount)
       {
         alarmFlash(2);
       }
       else
       {
-        ledCount = newLedCount;
-      }
-    }
-
-    /** Render the Animation somewhere in the middle of the LED strip.
-     * \a offset + \a newLedCount must not be higher than #maxLedCount.
-     * This setting can be adjusted at runtime.
-     */
-    void setLedOffset(uint16_t offset,
-                      uint16_t newLedCount)
-    {
-      if (offset + newLedCount > maxLedCount)
-      {
-        alarmFlash(3);
-      }
-      else
-      {
-        ledStrip = &_ledStrip[offset];
+        ledStrip = _ledStrip + offset;
         ledCount = newLedCount;
       }
     }

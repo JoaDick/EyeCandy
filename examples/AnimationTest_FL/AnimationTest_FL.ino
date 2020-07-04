@@ -79,6 +79,7 @@ void setup()
     pinMode(PIN_SPEED, INPUT_PULLUP);
 
     FastLED.addLeds<LED_TYPE, LED_PIN, LED_COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
 
     Serial.begin(115200);
     Serial.println(F("Welcome to EyeCandy"));
@@ -97,10 +98,10 @@ void loop()
 
     // Base Animation (enable one)
     //mustShow = fadeOut_FL.process(mustShow);
-    mustShow = fire2012_FL.process(mustShow);
+    //mustShow = fire2012_FL.process(mustShow);
     //mustShow = glitter_FL.process(mustShow);
     //mustShow = movingDot_FL.process(mustShow);
-    //mustShow = pride2015_FL.process(mustShow);
+    mustShow = pride2015_FL.process(mustShow);
     //mustShow = rainbow_FL.process(mustShow);
     //mustShow = rainbowBuiltin_FL.process(mustShow);
     //mustShow = rainbowTwinkle_FL.process(mustShow);
@@ -210,7 +211,7 @@ void updateFlip()
     rainbow_FL.mirrored = flipped;
     rgbBlocks_FL.mirrored = flipped;
 
-    if(flipped)
+    if (flipped)
     {
         fire2012_FL.animationDelay = 15;
     }

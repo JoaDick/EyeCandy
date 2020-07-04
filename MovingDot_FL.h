@@ -55,14 +55,14 @@ namespace EC
     CRGB backgroundColor = backgroundColor_default();
     static CRGB backgroundColor_default() { return CRGB(0, 10, 0); }
 
-    /** Delay between updating the Animation (in ms).
+    /** Delay between moving the dot by 1 pixel (in ms).
      * 0 makes the dot disappear.
      * This setting can be adjusted at runtime.
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
      */
-    uint8_t animationDelay = animationDelay_default();
-    static uint8_t animationDelay_default() { return 20; }
+    uint16_t animationDelay = animationDelay_default();
+    static uint16_t animationDelay_default() { return 20; }
 
     /** Constructor
      * @param ledStrip  The LED strip.

@@ -74,14 +74,14 @@ void setup()
     Serial.println(F("Welcome to EyeCandy"));
 
     // Rainbow in the lower half
-    rainbow_FL.setLedCount(NUM_LEDS / 2);
+    rainbow_FL.resizeStrip(NUM_LEDS / 2);
     rainbow_FL.volume = 128;
 
     // RGB blocks in the upper half
-    rgbBlocks_FL.setLedOffset(NUM_LEDS / 2, NUM_LEDS / 2);
+    rgbBlocks_FL.resizeStrip(NUM_LEDS / 2, NUM_LEDS / 2);
 
     // Moving dot overlay in the middle, using 2/3 of the entire strip
-    movingDotOverlay_FL.setLedOffset(NUM_LEDS / 6, 2 * NUM_LEDS / 3);
+    movingDotOverlay_FL.resizeStrip(2 * NUM_LEDS / 3, NUM_LEDS / 6);
 }
 
 //------------------------------------------------------------------------------

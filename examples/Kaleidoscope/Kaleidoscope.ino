@@ -77,13 +77,13 @@ void setup()
     const uint16_t remainLedCount = kaleidoscopeOverlay_FL.remainLedCount();
 
     // Glitter in the lower 1/5
-    glitter_FL.setLedCount(remainLedCount / 5);
+    glitter_FL.resizeStrip(remainLedCount / 5);
     glitter_FL.foregroundColor = CRGB(64, 64, 64);
     glitter_FL.effectRate = 50;
     glitter_FL.fadeRate = 200;
 
     // Rainbow in the upper 4/5
-    rainbow_FL.setLedOffset(remainLedCount / 5, 4 * remainLedCount / 5);
+    rainbow_FL.resizeStrip(4 * remainLedCount / 5, remainLedCount / 5);
     rainbow_FL.mirrored = true;
     rainbow_FL.animationDelay = 20;
     rainbow_FL.deltahue = 4;
@@ -91,7 +91,7 @@ void setup()
     rainbow_FL.moreRed = false;
 
     // moving dot overlay shall cover lower 90% of the remaining strip
-    movingDotOverlay_FL.setLedCount(9 * remainLedCount / 10);
+    movingDotOverlay_FL.resizeStrip(9 * remainLedCount / 10);
     movingDotOverlay_FL.foregroundColor = CRGB::Red;
     movingDotOverlay_FL.animationDelay = 0;
 }
