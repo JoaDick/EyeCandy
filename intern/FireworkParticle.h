@@ -44,12 +44,12 @@ namespace EC
       uint8_t colorHue = random8();
 
       /// Effect brightness.
-      uint8_t colorVolume = 255;
+      uint8_t colorVolume = 64 + random(192);
 
       /** Height where the particle shall explode.
        * Range 0.0 ... 1.0
        */
-      float blowingPos = 0.6; // randomF(0.5, 0.75);
+      float blowingPos = randomF(0.5, 0.7);
 
       /** Height where the particle lifecycle is over.
        * Range 0.0 ... 1.0
@@ -60,6 +60,12 @@ namespace EC
        * Range 0.0 ... 1.0
        */
       float fadingDuration = randomF(0.05, 0.5);
+
+      /** Add glitter towards the end?
+       * Range 0.0 ... 1.0
+       * 0.0 means no glitter.
+       */
+      float glitterDuration = (random(100) < 25) ? randomF(0.4, 0.9) : 0.0;
 
       /// Starting speed offset.
       float launchVel = randomF(0.1, 0.25);
@@ -88,7 +94,7 @@ namespace EC
       Serial.print(_acc);
       Serial.println();
 
-      return 20;
+      return 0;
     }
 #endif
 
@@ -125,7 +131,7 @@ namespace EC
       }
       if (_debugPos_blow > 0.0)
       {
-        animation.safePixel(_debugPos_blow * animation.ledCount) = CRGB(64, 64, 64);
+        // animation.safePixel(_debugPos_blow * animation.ledCount) = CRGB(64, 64, 64);
       }
       if (_debugPos_gliding > 0.0)
       {
@@ -152,7 +158,7 @@ namespace EC
       case STATE_BLOW:
         animation.safePixel(pixelPos - 1) = CRGB::White;
         animation.safePixel(pixelPos) = CRGB::White;
-        _acc = randomF(-4.0 * _vel, -1.75 * _vel);
+        _acc = randomF(-3.75 * _vel, -1.75 * _vel);
         _state = STATE_RISING;
 
 #ifdef FIREWORK_DEBUG
@@ -172,7 +178,7 @@ namespace EC
 #ifdef FIREWORK_DEBUG
         if (fadingBeginPos > 0.0)
         {
-          animation.safePixel(fadingBeginPos * animation.ledCount) = CRGB(0, 16, 0);
+          animation.safePixel(fadingBeginPos * animation.ledCount) = CRGB(0, 0, 16);
         }
         if (fadingEndPos > 0.0)
         {
@@ -181,23 +187,53 @@ namespace EC
 #endif
 
         CRGB pixelColor = CRGB::Black;
+        // no faiding necessary?
         if (_pos > fadingBeginPos)
         {
           pixelColor = CHSV(_config->colorHue, 255, 255);
         }
+        // need faiding?
         else if (_pos >= fadingEndPos)
         {
           const float fadingRange = fadingBeginPos - fadingEndPos;
           const float pixelVolume = _config->colorVolume * (_pos - fadingEndPos) / fadingRange;
           pixelColor = CHSV(_config->colorHue, 255, pixelVolume);
         }
-        else
+        // else: particle off
+
+        // need glitter?
+        if (_config->glitterDuration > 0.0)
         {
-          // particle off
+          const float glitterBeginPos = fadingBeginPos + _config->glitterDuration / 10;
+          const float glitterEndPos = glitterBeginPos - (glitterBeginPos * _config->glitterDuration);
+
+#ifdef FIREWORK_DEBUG
+          if (glitterBeginPos > 0.0)
+          {
+            animation.safePixel(glitterBeginPos * animation.ledCount) = CRGB(0, 16, 0);
+          }
+          if (glitterEndPos > 0.0)
+          {
+            animation.safePixel(glitterEndPos * animation.ledCount) = CRGB(0, 16, 0);
+          }
+#endif
+
+          if (_pos <= glitterBeginPos &&
+              _pos >= glitterEndPos)
+          {
+            if (random(100) < 20)
+            {
+              pixelColor = CRGB::White;
+            }
+          }
         }
 
         if (1)
         {
+          if (pixelPos != _lastPixelPos)
+          {
+            animation.safePixel(_lastPixelPos) = pixelColor;
+          }
           animation.safePixel(pixelPos) = pixelColor;
         }
         break;
