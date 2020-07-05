@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#define FIREWORK_DEBUG
+// #define FIREWORK_DEBUG
 
 #include "AnimationBase_FL.h"
 #include "intern/FireworkParticle.h"
@@ -58,7 +58,7 @@ namespace EC
       fadeToBlackBy(ledStrip, ledCount, _fadeRate);
       showOverlay(currentMillis);
 #ifdef FIREWORK_DEBUG
-      return _particle.dump();
+      return _particles[0].dump();
 #endif
       return 0;
     }
@@ -66,23 +66,46 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      _particle.show(*this);
+      for (uint8_t i = 0; i < _particleCount; ++i)
+      {
+        _particles[i].show(*this);
+      }
     }
 
     /// @see AnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
     {
-      _particle.update(getAnimationDelay());
-      if (_particle.getState() == FireworkParticle::STATE_IDLE)
+      const uint16_t animationDelay = getAnimationDelay();
+
+      bool mustLaunch = true;
+      for (uint8_t i = 0; i < _particleCount; ++i)
       {
-        FireworkParticle::Config launchConfig;
-        _particle.launch(launchConfig);
+        _particles[i].update(animationDelay);
+        if (_particles[i].getState() != FireworkParticle::STATE_IDLE)
+        {
+          mustLaunch = false;
+        }
+      }
+
+      if (mustLaunch)
+      {
+        _particleConfig = FireworkParticle::Config();
+        for (uint8_t i = 0; i < _particleCount; ++i)
+        {
+          _particles[i].launch(_particleConfig);
+        }
       }
     }
 
   private:
     static const uint8_t _fadeRate = 50;
-    FireworkParticle _particle;
+#ifdef FIREWORK_DEBUG
+    static const uint8_t _particleCount = 1;
+#else
+    static const uint8_t _particleCount = 6;
+#endif
+    FireworkParticle::Config _particleConfig;
+    FireworkParticle _particles[_particleCount];
   };
 
 } // namespace EC
