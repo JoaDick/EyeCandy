@@ -76,7 +76,6 @@ namespace EC
      */
     const uint16_t maxLedCount;
 
-  protected:
     /** The LED strip.
      * Whenever feasible, child classes shall use the pixel() method for
      * rendering the Animation instead of manipulating the LED strip directly.
@@ -90,20 +89,6 @@ namespace EC
      * value in their own context.
      */
     uint16_t ledCount;
-
-    /** Constructor.
-     * @param animationType  Type of Animation.
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param mirrored  The "regular" Animation shall be shown in reverse direction.
-     */
-    AnimationBase_FL(Type animationType,
-                     CRGB *ledStrip,
-                     uint16_t ledCount,
-                     bool mirrored = false)
-        : AnimationBase(animationType), ledStrip(ledStrip), ledCount(ledCount), maxLedCount(ledCount), _defaultMirrored(mirrored), _ledStrip(ledStrip)
-    {
-    }
 
     /** Access the pixel at position \a index (with error feeback).
      * If \a index is not within the LED strip, all LEDs will flash red as
@@ -135,6 +120,21 @@ namespace EC
       }
       const uint16_t transformedIndex = (mirrored ^ _defaultMirrored) ? ledCount - 1 - index : index;
       return ledStrip[transformedIndex];
+    }
+
+  protected:
+    /** Constructor.
+     * @param animationType  Type of Animation.
+     * @param ledStrip  The LED strip.
+     * @param ledCount  Number of LEDs.
+     * @param mirrored  The "regular" Animation shall be shown in reverse direction.
+     */
+    AnimationBase_FL(Type animationType,
+                     CRGB *ledStrip,
+                     uint16_t ledCount,
+                     bool mirrored = false)
+        : AnimationBase(animationType), ledStrip(ledStrip), ledCount(ledCount), maxLedCount(ledCount), _defaultMirrored(mirrored), _ledStrip(ledStrip)
+    {
     }
 
   private:
