@@ -72,9 +72,11 @@ namespace EC
     /// @see AnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
     {
-      if (_particle.update(getAnimationDelay()) == FireworkParticle::STATE_IDLE)
+      _particle.update(getAnimationDelay());
+      if (_particle.getState() == FireworkParticle::STATE_IDLE)
       {
-        _particle.launch();
+        FireworkParticle::Config launchConfig;
+        _particle.launch(launchConfig);
       }
     }
 

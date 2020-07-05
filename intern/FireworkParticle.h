@@ -37,6 +37,24 @@ namespace EC
   class FireworkParticle
   {
   public:
+    /// Particle configuration.
+    struct Config
+    {
+      /// Starting speed offset.
+      float launchVel = randomF(0.25);
+
+      /// Rising acceleration.
+      float launchAcc = randomF(3.5, 5.0);
+
+      /// Height where the firework shall explode.
+      float blowingPos = 0.6; // randomF(0.5, 0.75);
+
+      /// Effect color.
+      uint8_t hue = random8();
+
+      Config() = default;
+    };
+
     enum State
     {
       STATE_IDLE = 0,
@@ -96,24 +114,13 @@ namespace EC
       case STATE_BLOWING:
         animation.safePixel(pixelPos - 1) = CRGB::White;
         animation.safePixel(pixelPos) = CRGB::White;
-#if (1)
-        _vel = randomF(0.5, _vel + 0.5);
-        _acc = -5.0;
-#else
-        {
-          float maxVel = _vel + 0.5;
-          float deltaV = randomF(0.01, maxVel);
-          deltaV = maxVel - maxVel / deltaV;
-          deltaV -= _vel;
-          _vel += deltaV;
-          _acc = -5.0;
-        }
-#endif
+        _vel = randomF(0.25, 2.0);
+        _acc = -2.5 * _vel;
         _state = STATE_FALLING;
         break;
 
       case STATE_FALLING:
-        animation.safePixel(pixelPos) = CHSV(_pixelHue, 255, _pixelVolume);
+        animation.safePixel(pixelPos) = CHSV(_config.hue, 255, _pixelVolume);
         break;
 
       default:
@@ -127,7 +134,12 @@ namespace EC
       }
     }
 
-    State update(uint16_t delta_ms)
+    State getState()
+    {
+      return _state;
+    }
+
+    void update(uint16_t delta_ms)
     {
 #ifdef FIREWORK_DEBUG
       _debugPos_last = _pos;
@@ -148,7 +160,7 @@ namespace EC
         {
           _acc = 0.0;
         }
-        if (_pos >= _blowingPos)
+        if (_pos >= _config.blowingPos)
         {
           _state = STATE_BLOWING;
 #ifdef FIREWORK_DEBUG
@@ -174,22 +186,39 @@ namespace EC
           }
         }
 #endif
+        // dim pixel
         if (_pixelVolume)
         {
           --_pixelVolume;
         }
-        if (_vel < -0.3)
+        // not gliding down yet?
+        if (_acc < 0.0)
+        {
+          // max. falling speed reached?
+          if (_vel < randomF(-0.3, -0.2))
+          {
+            // continue gliding down at constant velocity
+            _acc = 0.0;
+#ifdef FIREWORK_DEBUG
+            if (_debugPos_gliding <= 0.0)
+            {
+              _debugPos_gliding = _pos;
+            }
+#endif
+          }
+          // just beyond apex?
+          else if (_vel < 0.0)
+          {
+            // constant drag for falling
+            _acc = -1.0;
+          }
+        }
+        // reached the ground?
+        if (_pos <= 0.0)
         {
           _acc = 0.0;
-#ifdef FIREWORK_DEBUG
-          if (_debugPos_gliding <= 0.0)
-          {
-            _debugPos_gliding = _pos;
-          }
-#endif
-        }
-        if (_pos < 0.0)
-        {
+          _vel = 0.0;
+          _pos = 0.0;
           _state = STATE_IDLE;
         }
         break;
@@ -198,20 +227,17 @@ namespace EC
         _state = STATE_IDLE;
         break;
       }
-
-      return _state;
     }
 
-    void launch()
+    void launch(const Config &cfg)
     {
-      _acc = randomF(3.5, 5.0);
-      _vel = randomF(0.25);
+      _config = cfg;
+
+      _acc = _config.launchAcc;
+      _vel = _config.launchVel;
       _pos = 0.0;
 
       _pixelVolume = 255;
-      _pixelHue = random8();
-
-      _blowingPos = 0.6; // randomF(0.5, 0.75);
       _lastPixelPos = -1;
 
       _state = STATE_RISING;
@@ -227,10 +253,6 @@ namespace EC
   private:
     State _state = STATE_IDLE;
 
-    uint8_t _pixelVolume;
-    uint8_t _pixelHue;
-    float _blowingPos;
-
     // acceleration
     float _acc;
 
@@ -240,6 +262,8 @@ namespace EC
     // position: 1.0 = top end of strip
     float _pos;
 
+    Config _config;
+    uint8_t _pixelVolume;
     int16_t _lastPixelPos;
 
 #ifdef FIREWORK_DEBUG
