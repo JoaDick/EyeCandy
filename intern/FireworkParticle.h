@@ -152,7 +152,7 @@ namespace EC
       case STATE_BLOW:
         animation.safePixel(pixelPos - 1) = CRGB::White;
         animation.safePixel(pixelPos) = CRGB::White;
-        _acc = randomF(-4.25 * _vel, -1.75 * _vel);
+        _acc = randomF(-4.0 * _vel, -1.75 * _vel);
         _state = STATE_RISING;
 
 #ifdef FIREWORK_DEBUG
