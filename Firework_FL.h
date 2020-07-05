@@ -35,12 +35,15 @@ SOFTWARE.
 namespace EC
 {
 
-  /** AFirework Animation.
+  /** A Firework Animation.
    */
   class Firework_FL
       : public AnimationBase_FL
   {
   public:
+    /// Delay (in ms) before relaunching the Particles.
+    uint16_t launchDelay = 900;
+
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
@@ -89,10 +92,18 @@ namespace EC
 
       if (mustLaunch)
       {
-        _particleConfig = FireworkParticle::Config();
-        for (uint8_t i = 0; i < _particleCount; ++i)
+        if (_launchTime == 0)
         {
-          _particles[i].launch(_particleConfig);
+          _launchTime = currentMillis + launchDelay;
+        }
+        if (_launchTime <= currentMillis)
+        {
+          _particleConfig = FireworkParticle::Config();
+          for (uint8_t i = 0; i < _particleCount; ++i)
+          {
+            _particles[i].launch(_particleConfig);
+            _launchTime = 0;
+          }
         }
       }
     }
@@ -106,6 +117,7 @@ namespace EC
 #endif
     FireworkParticle::Config _particleConfig;
     FireworkParticle _particles[_particleCount];
+    uint32_t _launchTime = 0;
   };
 
 } // namespace EC
