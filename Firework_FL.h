@@ -121,7 +121,7 @@ namespace EC
 #ifdef FIREWORK_DEBUG
     static const uint8_t _particleCount = 1;
 #else
-    static const uint8_t _particleCount = 6;
+    static const uint8_t _particleCount = 5;
 #endif
     FireworkParticle::Config _particleConfig;
     FireworkParticle _particles[_particleCount];

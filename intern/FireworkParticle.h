@@ -66,12 +66,6 @@ namespace EC
        * 0.0 means no glitter.
        */
       float glitterDuration = (random(100) < 25) ? randomF(0.4, 0.9) : 0.0;
-
-      /// Starting speed offset.
-      float launchVel = randomF(0.1, 0.25);
-
-      /// Rising acceleration.
-      float launchAcc = randomF(3.5, 5.0);
     };
 
     enum State
@@ -107,8 +101,8 @@ namespace EC
     {
       _config = &cfg;
 
-      _acc = _config->launchAcc;
-      _vel = _config->launchVel;
+      _acc = randomF(3.5, 5.0);
+      _vel = randomF(0.1, 0.25);
       _pos = 0.0;
 
       _apexPos = 0.0;
@@ -167,7 +161,7 @@ namespace EC
         break;
 
       case STATE_RISING:
-        animation.safePixel(pixelPos) = CHSV(_config->colorHue, 255, _config->colorVolume);
+        animation.safePixel(pixelPos) = CHSV(animation.redShift(_config->colorHue), 255, _config->colorVolume);
         break;
 
       case STATE_FALLING:
@@ -190,14 +184,14 @@ namespace EC
         // no faiding necessary?
         if (_pos > fadingBeginPos)
         {
-          pixelColor = CHSV(_config->colorHue, 255, 255);
+          pixelColor = CHSV(animation.redShift(_config->colorHue), 255, _config->colorVolume);
         }
         // need faiding?
         else if (_pos >= fadingEndPos)
         {
           const float fadingRange = fadingBeginPos - fadingEndPos;
           const float pixelVolume = _config->colorVolume * (_pos - fadingEndPos) / fadingRange;
-          pixelColor = CHSV(_config->colorHue, 255, pixelVolume);
+          pixelColor = CHSV(animation.redShift(_config->colorHue), 255, pixelVolume);
         }
         // else: particle off
 
@@ -228,14 +222,11 @@ namespace EC
           }
         }
 
-        if (1)
+        if (pixelPos != _lastPixelPos)
         {
-          if (pixelPos != _lastPixelPos)
-          {
-            animation.safePixel(_lastPixelPos) = pixelColor;
-          }
-          animation.safePixel(pixelPos) = pixelColor;
+          animation.safePixel(_lastPixelPos) = pixelColor;
         }
+        animation.safePixel(pixelPos) = pixelColor;
         break;
       }
 
