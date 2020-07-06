@@ -44,21 +44,24 @@ namespace EC
     /** Draw the Glitter with this color.
      * This setting can be adjusted at runtime.
      */
-    CRGB foregroundColor = CRGB::White;
+    CRGB foregroundColor = foregroundColor_default();
+    static CRGB foregroundColor_default() { return CRGB::White; }
 
     /** Effect occurrence rate.
      * Higher value = more glitter.
      * 0 means freeze (don't update the animation).
      * This setting can be adjusted at runtime.
      */
-    uint8_t effectRate = 20;
+    uint8_t effectRate = effectRate_default();
+    static uint8_t effectRate_default() { return 20; }
 
     /** Fading speed.
      * Lower value = longer glowing.
      * This setting can be adjusted at runtime.
      * It is ignored in Overlay mode.
      */
-    uint8_t fadeRate = 100;
+    uint8_t fadeRate = fadeRate_default();
+    static uint8_t fadeRate_default() { return 100; }
 
     /** Constructor
      * @param ledStrip  The LED strip.

@@ -45,21 +45,24 @@ namespace EC
     /** Draw the dot with this color.
      * This setting can be adjusted at runtime.
      */
-    CRGB foregroundColor;
+    CRGB foregroundColor = foregroundColor_default();
+    static CRGB foregroundColor_default() { return CRGB(255, 0, 0); }
 
     /** Fill LED strip with this color.
      * This setting can be adjusted at runtime.
      * It is ignored in Overlay mode.
      */
-    CRGB backgroundColor;
+    CRGB backgroundColor = backgroundColor_default();
+    static CRGB backgroundColor_default() { return CRGB(0, 10, 0); }
 
-    /** Delay between updating the Animation (in ms).
-     * 0 means freeze (don't update the animation).
+    /** Delay between moving the dot by 1 pixel (in ms).
+     * 0 makes the dot disappear.
      * This setting can be adjusted at runtime.
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
      */
-    uint8_t animationDelay = 20;
+    uint16_t animationDelay = animationDelay_default();
+    static uint16_t animationDelay_default() { return 20; }
 
     /** Constructor
      * @param ledStrip  The LED strip.
@@ -71,8 +74,8 @@ namespace EC
     MovingDot_FL(CRGB *ledStrip,
                  uint16_t ledCount,
                  bool overlayMode,
-                 const CRGB &foregroundColor = CRGB(255, 0, 0),
-                 const CRGB &backgroundColor = CRGB(0, 10, 0))
+                 const CRGB &foregroundColor = foregroundColor_default(),
+                 const CRGB &backgroundColor = backgroundColor_default())
         : AnimationBase_FL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount), foregroundColor(foregroundColor), backgroundColor(backgroundColor)
     {
     }
@@ -89,7 +92,10 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      pixel(_position) = foregroundColor;
+      if (animationDelay)
+      {
+        pixel(_position) = foregroundColor;
+      }
     }
 
     /// @see AnimationBase::updateAnimation()

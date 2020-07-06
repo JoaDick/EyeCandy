@@ -46,7 +46,8 @@ namespace EC
      * Values up to ~25 look fine.
      * This setting can be adjusted at runtime.
      */
-    uint8_t deltahue = 4;
+    uint8_t deltahue = deltahue_default();
+    static uint8_t deltahue_default() { return 4; }
 
     /** Delay between updating the Animation (in ms).
      * 0 means freeze (don't update the animation).
@@ -54,22 +55,20 @@ namespace EC
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
      */
-    uint16_t animationDelay = 35;
+    uint16_t animationDelay = animationDelay_default();
+    static uint16_t animationDelay_default() { return 35; }
 
     /** Brightness of the rainbow.
      * This setting can be adjusted at runtime.
      */
-    uint8_t volume = 255;
+    uint8_t volume = volume_default();
+    static uint8_t volume_default() { return 255; }
 
     /** Put more emphasis on the red'ish colors when true.
      * This setting can be adjusted at runtime.
      */
-    bool moreRed = true;
-
-    /** Show the Animation in reverse direction.
-     * This setting can be adjusted at runtime.
-     */
-    bool mirrored = false;
+    bool moreRed = moreRed_default();
+    static bool moreRed_default() { return true; }
 
     /** Constructor.
      * @param ledStrip  The LED strip.
@@ -78,9 +77,11 @@ namespace EC
      */
     Rainbow_FL(CRGB *ledStrip,
                uint16_t ledCount)
-        : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
+        : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount, mirrored_default())
     {
     }
+
+    static bool mirrored_default() { return true; }
 
   private:
     /// @see AnimationBase::showPattern()
@@ -93,8 +94,7 @@ namespace EC
         {
           pixelHue = redShift(pixelHue);
         }
-        // inverting 'mirrored' because all other rainbows go the same direction...
-        pixel(i, !mirrored) = CHSV(pixelHue, 255, volume);
+        pixel(i) = CHSV(pixelHue, 255, volume);
       }
       return 0;
     }

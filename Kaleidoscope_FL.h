@@ -32,59 +32,59 @@ SOFTWARE.
 namespace EC
 {
 
-  /** Some randomly twinkling pixels.
-   * Can be used as Pattern or as Overlay.
+  /** An Overlay that multiplies a part of the LED strip like a Kaleidoscope.
    */
-  class Twinkles_FL
+  class Kaleidoscope_FL
       : public AnimationBase_FL
   {
+    uint16_t _remainLedCount;
+
   public:
-    /** Effect occurrence rate.
-     * Higher value = more twinkles.
-     * 0 means freeze (don't update the animation).
-     * This setting can be adjusted at runtime.
-     */
-    uint8_t effectRate = effectRate_default();
-    static uint8_t effectRate_default() { return 50; }
-
-    /** Fading speed.
-     * Lower value = longer glowing.
-     * This setting can be adjusted at runtime.
-     * It is ignored in Overlay mode.
-     */
-    uint8_t fadeRate = fadeRate_default();
-    static uint8_t fadeRate_default() { return 5; }
-
-    /** Constructor.
+    /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
-    Twinkles_FL(CRGB *ledStrip,
-                uint16_t ledCount,
-                bool overlayMode)
-        : AnimationBase_FL(overlayMode ? TYPE_OVERLAY_FADING : TYPE_FADING_PATTERN, ledStrip, ledCount)
+    Kaleidoscope_FL(CRGB *ledStrip,
+                    uint16_t ledCount)
+        : AnimationBase_FL(TYPE_OVERLAY, ledStrip, ledCount), _remainLedCount((ledCount + 1) / 2)
     {
+      // we want the mirror effect by default
+      AnimationBase_FL::mirrored = true;
+    }
+
+    /** Get the number of LEDs that may be used by the underlying Animation.
+     * Use other's #setLedCount() method to store this value.
+     */
+    uint16_t remainLedCount()
+    {
+      return _remainLedCount;
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    uint8_t showPattern(uint32_t currentMillis) override
+    /// @see AnimationBase::showOverlay()
+    void showOverlay(uint32_t currentMillis) override
     {
-      fadeToBlackBy(ledStrip, ledCount, fadeRate);
-      showOverlay(currentMillis);
-      return 0;
+      copyPixel(ledStrip, ledStrip + ledCount / 2, _remainLedCount, mirrored);
     }
 
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    void copyPixel(CRGB *from, CRGB *to, uint16_t count, bool flip)
     {
-      if (random8() < effectRate)
+      if (flip)
       {
-        uint16_t i = random(ledCount);
-        if (ledStrip[i].getLuma() < 3)
+        CRGB *src = from;
+        CRGB *dst = to + count - 1;
+        while (count--)
         {
-          pixel(i) = CHSV(redShift(random(256)), 255, random(64) + 192);
+          *(dst--) = *(src++);
+        }
+      }
+      else
+      {
+        CRGB *src = from;
+        CRGB *dst = to;
+        while (count--)
+        {
+          *(dst++) = *(src++);
         }
       }
     }

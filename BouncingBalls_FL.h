@@ -3,9 +3,8 @@
 //  BouncingBalls2014 is a program that lets you animate an LED strip
 //  to look like a group of bouncing balls
 //
-//  Copyright(c) Daniel Wilson, 2014
-//  Copyright(c) Joachim Dick, 2020
-//               Ported to EyeCandy animation.
+//  Copyright (c) Daniel Wilson, 2014
+//  Copyright (c) Joachim Dick, 2020 - Ported to EyeCandy Animation
 //
 //  With BIG thanks to the FastLED community!
 //
@@ -42,16 +41,12 @@ namespace EC
     float COR[NUM_BALLS];     // Coefficient of Restitution (bounce damping)
 
   public:
-    /** Show the Animation in reverse direction.
-     * This setting can be adjusted at runtime.
-     */
-    bool mirrored = false;
-
     /** Fill LED strip with this color.
      * This setting can be adjusted at runtime.
      * It is ignored in Overlay mode.
      */
-    CRGB backgroundColor = CRGB::Black;
+    CRGB backgroundColor = backgroundColor_default();
+    static CRGB backgroundColor_default() { return CRGB::Black; }
 
     /** Constructor
      * @param ledStrip  The LED strip.
@@ -107,7 +102,7 @@ namespace EC
 
       // Choose color of LEDs, then the "pos" LED on
       for (int i = 0; i < NUM_BALLS; i++)
-        pixel(pos[i], mirrored) = CHSV(uint8_t(i * 40), 255, 255);
+        pixel(pos[i]) = CHSV(uint8_t(i * 40), 255, 255);
     }
   };
 

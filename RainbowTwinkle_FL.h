@@ -44,7 +44,8 @@ namespace EC
      * Lower value = longer glowing.
      * This setting can be adjusted at runtime.
      */
-    uint8_t fadeRate = 5;
+    uint8_t fadeRate = fadeRate_default();
+    static uint8_t fadeRate_default() { return 5; }
 
     /** Delay between updating the Animation (in ms).
      * 0 means freeze (don't update the animation).
@@ -52,7 +53,8 @@ namespace EC
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
      */
-    uint8_t animationDelay = 100;
+    uint8_t animationDelay = animationDelay_default();
+    static uint8_t animationDelay_default() { return 100; }
 
     /** Constructor.
      * @param ledStrip  The LED strip.

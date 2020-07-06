@@ -25,10 +25,15 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "BouncingBalls_FL.h"
+#include "AnimationRunner.h"
+
 #include "FadeOut_FL.h"
+#include "Fire2012_FL.h"
+#include "Firework_FL.h"
 #include "Glitter_FL.h"
+#include "Kaleidoscope_FL.h"
 #include "MovingDot_FL.h"
+#include "Pride2015_FL.h"
 #include "Rainbow_FL.h"
 #include "RainbowBuiltin_FL.h"
 #include "RainbowTwinkle_FL.h"

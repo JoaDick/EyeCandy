@@ -29,75 +29,91 @@ SOFTWARE.
 *******************************************************************************/
 
 #include <EyeCandy.h>
-
-// Enable one of these according to your LED strip - see also setup().
-//#define LED_COLOR_ORDER     RGB
-//#define LED_COLOR_ORDER     RBG
-#define LED_COLOR_ORDER GRB
-//#define LED_COLOR_ORDER     GBR
-//#define LED_COLOR_ORDER     BRG
-//#define LED_COLOR_ORDER     BGR
-
-// Connect the LED Strip to that pin.
-#define LED_PIN 6
-
-// Connect a pushbutton for selecting the next pattern to that pin (and GND).
-#define PIN_BUTTON_NEXT_PATTERN 2
-
-// Connect a pushbutton for selecting the first pattern to that pin (and GND).
-#define PIN_BUTTON_FIRST_PATTERN 3
-
-#define PIN_COLOR A0
-#define PIN_SPEED A1
+#include <Animation_IO_config.h>
 
 //------------------------------------------------------------------------------
 
-#define LED_TYPE WS2812B
-#define NUM_LEDS 90
-
+// the LED strip
 CRGB leds[NUM_LEDS];
 
-bool lastButtonState = false;
-
-//------------------------------------------------------------------------------
-
 // Patterns
-EC::BouncingBalls_FL<3> bouncingBalls_FL(leds, NUM_LEDS, false);
 EC::FadeOut_FL fadeOut_FL(leds, NUM_LEDS);
+EC::Fire2012_FL<NUM_LEDS> fire2012_FL(leds, NUM_LEDS);
 EC::Glitter_FL glitter_FL(leds, NUM_LEDS, false);
 EC::MovingDot_FL movingDot_FL(leds, NUM_LEDS, false);
-EC::StaticBackground_FL staticBackground_FL(leds, NUM_LEDS, CRGB(0, 10, 0));
+EC::Pride2015_FL pride2015_FL(leds, NUM_LEDS);
 EC::Rainbow_FL rainbow_FL(leds, NUM_LEDS);
 EC::RainbowBuiltin_FL rainbowBuiltin_FL(leds, NUM_LEDS);
-EC::RgbBlocks_FL rgbBlocks_FL(leds, NUM_LEDS);
-EC::Twinkles_FL twinkles_FL(leds, NUM_LEDS, false);
 EC::RainbowTwinkle_FL rainbowTwinkle_FL(leds, NUM_LEDS);
+EC::RgbBlocks_FL rgbBlocks_FL(leds, NUM_LEDS);
+EC::StaticBackground_FL staticBackground_FL(leds, NUM_LEDS, CRGB(0, 10, 0));
+EC::Twinkles_FL twinkles_FL(leds, NUM_LEDS, false);
 
 // Overlays
-EC::BouncingBalls_FL<3> bouncingBallsOverlay_FL(leds, NUM_LEDS, true);
 EC::Glitter_FL glitterOverlay_FL(leds, NUM_LEDS, true);
 EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
 EC::Twinkles_FL twinklesOverlay_FL(leds, NUM_LEDS, true);
+
+// run max. 10 Animations simultaneously
+EC::AnimationRunner<10> animations;
 
 //------------------------------------------------------------------------------
 
 void setup()
 {
-    pinMode(PIN_BUTTON_NEXT_PATTERN, INPUT_PULLUP);
-    pinMode(PIN_BUTTON_FIRST_PATTERN, INPUT_PULLUP);
-    pinMode(PIN_COLOR, INPUT_PULLUP);
-    pinMode(PIN_SPEED, INPUT_PULLUP);
+    pinMode(PIN_FLIP_BTN, INPUT_PULLUP);
+    pinMode(PIN_COLOR_POT, INPUT_PULLUP);
+    pinMode(PIN_SPEED_POT, INPUT_PULLUP);
 
     FastLED.addLeds<LED_TYPE, LED_PIN, LED_COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
 
     Serial.begin(115200);
-    Serial.println(F("Hello"));
+    Serial.println(F("Welcome to EyeCandy"));
+    printMemoryUsage();
+
+    // Base Animation (select one)
+    // animations.add(fire2012_FL);
+    // animations.add(glitter_FL);
+    // animations.add(movingDot_FL);
+    // animations.add(fadeOut_FL);
+    animations.add(pride2015_FL);
+    // animations.add(rainbow_FL);
+    // animations.add(rainbowBuiltin_FL);
+    // animations.add(rainbowTwinkle_FL);
+    // animations.add(rgbBlocks_FL);
+    // animations.add(staticBackground_FL);
+    // animations.add(twinkles_FL);
+
+    // Overlays
+    animations.add(glitterOverlay_FL);
+    animations.add(movingDotOverlay_FL);
+    // animations.add(twinklesOverlay_FL);
+}
+
+//------------------------------------------------------------------------------
+
+void loop()
+{
+    updateColor();
+    updateSpeed();
+    updateFlip();
+
+    if (animations.process())
+    {
+#if (0)
+        static bool toggleFlag = false;
+        toggleFlag ^= true;
+        leds[0] = toggleFlag ? CRGB(0, 10, 0) : CRGB::Black;
+#endif
+        FastLED.show();
+    }
 }
 
 //------------------------------------------------------------------------------
 
 template <typename IN_TYPE, typename OUT_TYPE>
-OUT_TYPE constrainAndMap(int x,
+OUT_TYPE constrainAndMap(const IN_TYPE &x,
                          const IN_TYPE &minThreshold, const IN_TYPE &maxThreshold,
                          const OUT_TYPE &outMin, const OUT_TYPE &outMax)
 {
@@ -106,33 +122,23 @@ OUT_TYPE constrainAndMap(int x,
 
 //------------------------------------------------------------------------------
 
-void updateFlip()
-{
-    const bool mirrored = !digitalRead(PIN_BUTTON_NEXT_PATTERN);
-
-    bouncingBalls_FL.mirrored = mirrored;
-    rainbow_FL.mirrored = mirrored;
-    rgbBlocks_FL.mirrored = mirrored;
-
-    bouncingBallsOverlay_FL.mirrored = mirrored;
-}
-
-uint8_t lastHue = 0;
 void updateColor()
 {
-    const uint16_t analogValue = constrainAndMap(analogRead(PIN_COLOR), 50, 900, 0, 256);
+    const uint16_t analogValue = constrainAndMap(analogRead(PIN_COLOR_POT), 50, 900, 0, 256);
 
     if (analogValue < 256)
     {
         const uint8_t hue = analogValue;
 
+        static uint16_t lastHue = 0;
         if (hue != lastHue)
         {
             Serial.print("hue: ");
             Serial.println(hue);
-            lastHue = hue;
+            lastHue = analogValue;
         }
 
+        fire2012_FL.COOLING = 255 - hue;
         glitter_FL.effectRate = hue;
         movingDot_FL.foregroundColor = CHSV(hue, 255, 255);
         movingDot_FL.backgroundColor = CHSV(hue + 128, 255, 64);
@@ -144,32 +150,32 @@ void updateColor()
 
         glitterOverlay_FL.effectRate = hue;
         movingDotOverlay_FL.foregroundColor = CHSV(hue + 64, 255, 255);
-        movingDotOverlay_FL.backgroundColor = CHSV(hue + 192, 255, 64);
         twinklesOverlay_FL.effectRate = hue;
     }
 }
 
 //------------------------------------------------------------------------------
 
-uint8_t lastSpeed = 0;
 void updateSpeed()
 {
-    const uint16_t analogValue = constrainAndMap(analogRead(PIN_SPEED), 50, 900, 0, 256);
+    const uint16_t analogValue = constrainAndMap(analogRead(PIN_SPEED_POT), 50, 900, 0, 256);
 
     if (analogValue < 256)
     {
         const uint8_t animationSpeed = analogValue;
         const uint8_t animationDelay = animationSpeed ? 256 - animationSpeed : 0;
 
+        static uint16_t lastSpeed = 0;
         if (animationSpeed != lastSpeed)
         {
+            lastSpeed = analogValue;
             Serial.print("speed: ");
             Serial.print(animationSpeed);
             Serial.print(" delay: ");
             Serial.println(animationDelay);
-            lastSpeed = animationSpeed;
         }
 
+        fire2012_FL.SPARKING = animationSpeed;
         movingDot_FL.animationDelay = animationDelay;
         rainbow_FL.animationDelay = animationDelay;
         rainbowBuiltin_FL.animationDelay = animationDelay;
@@ -183,46 +189,68 @@ void updateSpeed()
 
 //------------------------------------------------------------------------------
 
-void loop()
+void updateFlip()
 {
-    updateColor();
-    updateSpeed();
-    updateFlip();
+    const bool flipped = !digitalRead(PIN_FLIP_BTN);
 
-    bool mustShow = false;
-    //mustShow = true;
+    rainbow_FL.mirrored = flipped;
+    rgbBlocks_FL.mirrored = flipped;
 
-    rainbow_FL.volume = 32;
-    rainbow_FL.deltahue = 1;
-    rainbow_FL.animationDelay = 500;
-
-    // Base Animation (enable one)
-    //mustShow = bouncingBalls_FL.process(mustShow);
-    //mustShow = fadeOut_FL.process(mustShow);
-    //mustShow = glitter_FL.process(mustShow);
-    //mustShow = movingDot_FL.process(mustShow);
-    mustShow = rainbow_FL.process(mustShow);
-    //mustShow = rainbowBuiltin_FL.process(mustShow);
-    //mustShow = rainbowTwinkle_FL.process(mustShow);
-    //mustShow = rgbBlocks_FL.process(mustShow);
-    //mustShow = staticBackground_FL.process(mustShow);
-    //mustShow = twinkles_FL.process(mustShow);
-
-    // Overlays
-    mustShow = bouncingBallsOverlay_FL.process(mustShow);
-    //mustShow = glitterOverlay_FL.process(mustShow);
-    //mustShow = movingDotOverlay_FL.process(mustShow);
-    //mustShow = twinklesOverlay_FL.process(mustShow);
-
-    if (mustShow)
+    if (flipped)
     {
-#if (1)
-        static bool toggleFlag = false;
-        toggleFlag ^= true;
-        leds[0] = toggleFlag ? CRGB(0, 10, 0) : CRGB::Black;
-#endif
-        FastLED.show();
+        fire2012_FL.animationDelay = 15;
     }
+    else
+    {
+        fire2012_FL.animationDelay = 0;
+        fire2012_FL.gPal = EC::Fire2012_gPal_default();
+    }
+}
+
+//------------------------------------------------------------------------------
+
+void printMemoryUsage()
+{
+    Serial.print(F("Memory usage for "));
+    Serial.print(NUM_LEDS);
+    Serial.println(F(" LEDs:"));
+    Serial.println(F("(*) is dependant on NUM_LEDS"));
+
+    Serial.print(F("FadeOut_FL = "));
+    Serial.println(sizeof(EC::FadeOut_FL));
+
+    Serial.print(F("Fire2012_FL (*) = "));
+    Serial.println(sizeof(EC::Fire2012_FL<NUM_LEDS>));
+
+    Serial.print(F("Glitter_FL = "));
+    Serial.println(sizeof(EC::Glitter_FL));
+
+    Serial.print(F("Kaleidoscope_FL = "));
+    Serial.println(sizeof(EC::Kaleidoscope_FL));
+
+    Serial.print(F("MovingDot_FL = "));
+    Serial.println(sizeof(EC::MovingDot_FL));
+
+    Serial.print(F("Pride2015_FL = "));
+    Serial.println(sizeof(EC::Pride2015_FL));
+
+    Serial.print(F("Rainbow_FL = "));
+    Serial.println(sizeof(EC::Rainbow_FL));
+
+    Serial.print(F("RainbowBuiltin_FL = "));
+    Serial.println(sizeof(EC::RainbowBuiltin_FL));
+
+    Serial.print(F("RainbowTwinkle_FL = "));
+    Serial.println(sizeof(EC::RainbowTwinkle_FL));
+
+    Serial.print(F("RgbBlocks_FL = "));
+    Serial.println(sizeof(EC::RgbBlocks_FL));
+
+    Serial.print(F("StaticBackground_FL = "));
+    Serial.println(sizeof(EC::StaticBackground_FL));
+
+    Serial.print(F("Twinkles_FL = "));
+    Serial.println(sizeof(EC::Twinkles_FL));
 }
 
 //------------------------------------------------------------------------------

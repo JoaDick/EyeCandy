@@ -43,7 +43,8 @@ namespace EC
      * Lower value = longer glowing.
      * This setting can be adjusted at runtime.
      */
-    uint8_t fadeRate;
+    uint8_t fadeRate = fadeRate_default();
+    static uint8_t fadeRate_default() { return 50; }
 
     /** Constructor
      * @param ledStrip  The LED strip.
@@ -51,7 +52,7 @@ namespace EC
      */
     FadeOut_FL(CRGB *ledStrip,
                uint16_t ledCount,
-               uint8_t fadeRate = 50)
+               uint8_t fadeRate = fadeRate_default())
         : AnimationBase_FL(TYPE_FADING_PATTERN, ledStrip, ledCount), fadeRate(fadeRate)
     {
     }

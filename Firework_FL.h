@@ -25,42 +25,38 @@ SOFTWARE.
 
 *******************************************************************************/
 
+// #define FIREWORK_DEBUG
+
 #include "AnimationBase_FL.h"
+#include "intern/FireworkParticle.h"
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /** Some randomly twinkling pixels.
-   * Can be used as Pattern or as Overlay.
+  /** A Firework Animation.
    */
-  class Twinkles_FL
+  class Firework_FL
       : public AnimationBase_FL
   {
   public:
-    /** Effect occurrence rate.
-     * Higher value = more twinkles.
-     * 0 means freeze (don't update the animation).
-     * This setting can be adjusted at runtime.
-     */
-    uint8_t effectRate = effectRate_default();
-    static uint8_t effectRate_default() { return 50; }
-
     /** Fading speed.
      * Lower value = longer glowing.
      * This setting can be adjusted at runtime.
-     * It is ignored in Overlay mode.
      */
     uint8_t fadeRate = fadeRate_default();
-    static uint8_t fadeRate_default() { return 5; }
+    static uint8_t fadeRate_default() { return 50; }
 
-    /** Constructor.
+    /// Delay (in ms) before relaunching the Particles.
+    uint16_t launchDelay = 900;
+
+    /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
-    Twinkles_FL(CRGB *ledStrip,
+    Firework_FL(CRGB *ledStrip,
                 uint16_t ledCount,
                 bool overlayMode)
         : AnimationBase_FL(overlayMode ? TYPE_OVERLAY_FADING : TYPE_FADING_PATTERN, ledStrip, ledCount)
@@ -73,21 +69,63 @@ namespace EC
     {
       fadeToBlackBy(ledStrip, ledCount, fadeRate);
       showOverlay(currentMillis);
+#ifdef FIREWORK_DEBUG
+      return _particles[0].dump();
+#endif
       return 0;
+    }
+
+    /// @see AnimationBase::showOverlay()
+    void showOverlay(uint32_t currentMillis) override
+    {
+      for (uint8_t i = 0; i < _particleCount; ++i)
+      {
+        _particles[i].show(*this);
+      }
     }
 
     /// @see AnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
     {
-      if (random8() < effectRate)
+      const uint16_t animationDelay = getAnimationDelay();
+
+      bool mustLaunch = true;
+      for (uint8_t i = 0; i < _particleCount; ++i)
       {
-        uint16_t i = random(ledCount);
-        if (ledStrip[i].getLuma() < 3)
+        _particles[i].update(animationDelay);
+        if (_particles[i].getState() != FireworkParticle::STATE_IDLE)
         {
-          pixel(i) = CHSV(redShift(random(256)), 255, random(64) + 192);
+          mustLaunch = false;
+        }
+      }
+
+      if (mustLaunch)
+      {
+        if (_launchTime == 0)
+        {
+          _launchTime = currentMillis + launchDelay;
+        }
+        if (_launchTime <= currentMillis)
+        {
+          _particleConfig = FireworkParticle::Config();
+          for (uint8_t i = 0; i < _particleCount; ++i)
+          {
+            _particles[i].launch(_particleConfig);
+            _launchTime = 0;
+          }
         }
       }
     }
+
+  private:
+#ifdef FIREWORK_DEBUG
+    static const uint8_t _particleCount = 1;
+#else
+    static const uint8_t _particleCount = 5;
+#endif
+    FireworkParticle::Config _particleConfig;
+    FireworkParticle _particles[_particleCount];
+    uint32_t _launchTime = 0;
   };
 
 } // namespace EC

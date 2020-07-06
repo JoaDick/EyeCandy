@@ -51,7 +51,8 @@ namespace EC
      * Values up to ~25 look fine.
      * This setting can be adjusted at runtime.
      */
-    uint8_t deltahue = 4;
+    uint8_t deltahue = deltahue_default();
+    static uint8_t deltahue_default() { return 4; }
 
     /** Delay between updating the Animation (in ms).
      * 0 means freeze (don't update the animation).
@@ -59,7 +60,8 @@ namespace EC
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
      */
-    uint16_t animationDelay = 35;
+    uint16_t animationDelay = animationDelay_default();
+    static uint16_t animationDelay_default() { return 35; }
 
     /** Constructor.
      * @param ledStrip  The LED strip.
