@@ -25,20 +25,43 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "Arduino.h"
-
-//------------------------------------------------------------------------------
-
 #ifndef _MSC_VER
 #error "This file should not have been included!"
 #endif
 
 //------------------------------------------------------------------------------
 
-int16_t cos16(uint16_t x);
-uint8_t random8();
-uint8_t random8(uint8_t lim);
-uint16_t random16();
-uint16_t random16(uint16_t lim);
+#include "Arduino.h"
+
+//------------------------------------------------------------------------------
+
+// hide content of original headerfile
+#define __INC_LIB8TION_TRIG_H
+
+int16_t sin16(uint16_t x);
+inline int16_t cos16(uint16_t x)
+{
+	return sin16(x + 16384);
+}
+
+int8_t sin8(uint8_t x);
+inline int8_t cos8(uint8_t x)
+{
+	return sin8(x + 64);
+}
+
+//------------------------------------------------------------------------------
+
+// hide content of original headerfiles
+#define __INC_FASTSPI_LED2_H
+#define __INC_LED_SYSDEFS_H
+
+// some other stuff to disable
+#define FASTLED_NAMESPACE_BEGIN
+#define FASTLED_NAMESPACE_END
+#define FASTLED_USING_NAMESPACE
+#define __attribute__(x)
+
+#include "../../../FastLED/pixeltypes.h"
 
 //------------------------------------------------------------------------------

@@ -42,7 +42,6 @@ FloatingBlobs<5> blobs;
 
 void setup()
 {
-	std::srand(999);
 }
 
 //------------------------------------------------------------------------------
@@ -67,11 +66,56 @@ void loop()
 
 //------------------------------------------------------------------------------
 
+// https://stackoverflow.com/questions/9509278/rgb-specific-console-text-color-c
+WORD color2fg(const CRGB &color)
+{
+    WORD retval = 0;
+    if (color.red > 64)
+    {
+        retval |= FOREGROUND_RED;
+    }
+    if (color.green > 64)
+    {
+        retval |= FOREGROUND_GREEN;
+    }
+    if (color.blue > 64)
+    {
+        retval |= FOREGROUND_BLUE;
+    }
+    if (color.red + color.green + color.blue > 3 * 64)
+    {
+        retval |= FOREGROUND_INTENSITY;
+    }
+    return retval;
+}
+
+WORD color2bg(const CRGB &color)
+{
+    WORD retval = 0;
+    if (color.red > 64)
+    {
+        retval |= BACKGROUND_RED;
+    }
+    if (color.green > 64)
+    {
+        retval |= BACKGROUND_GREEN;
+    }
+    if (color.blue > 64)
+    {
+        retval |= BACKGROUND_BLUE;
+    }
+    if (color.red + color.green + color.blue > 3 * 64)
+    {
+        retval |= BACKGROUND_INTENSITY;
+    }
+    return retval;
+}
+
+//------------------------------------------------------------------------------
+
 int main()
 {
-	randomSeed(uint32_t(std::time(nullptr)));
-
-	std::srand(999);
+    //random16_set_seed(uint16_t(std::time(nullptr) & 0xFFFF));
 
     HANDLE m_hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -89,21 +133,9 @@ int main()
 
         for (uint16_t i = 0; i < LED_COUNT; ++i)
         {
-#if (0)
-            if (leds[i].color == 0)
-            {
-                SetConsoleTextAttribute(m_hOut, FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
-            }
-            else
-            {
-                SetConsoleTextAttribute(m_hOut, leds[i].color << 4);
-            }
-            std::cout << char('0' + leds[i].blobNr);
-#else
             // ToDo: RGB color - https://github.com/Microsoft/WSL/issues/1118
-            SetConsoleTextAttribute(m_hOut, leds[i].color << 4);
+            SetConsoleTextAttribute(m_hOut, color2bg(leds[i]));
             std::cout << ' ';
-#endif
         }
 
         // foreground light grey.

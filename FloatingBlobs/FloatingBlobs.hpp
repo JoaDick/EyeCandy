@@ -29,16 +29,6 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-#if (FLOATING_BLOBS_SIMU)
-struct CRGB
-{
-    uint8_t blobNr = 0;
-    uint8_t color = 0;
-};
-#endif
-
-//------------------------------------------------------------------------------
-
 template <uint8_t BLOB_COUNT>
 class FloatingBlobs
 {
@@ -135,17 +125,6 @@ private:
 #endif
                 }
 
-#if (FLOATING_BLOBS_SIMU)
-                ledStrip[i].blobNr = currentBlob->nr;
-                if (currentBlob->isBlack)
-                {
-                    ledStrip[i].color = 0;
-                }
-                else
-                {
-                    ledStrip[i].color = 1 + currentBlob->hue % 14;
-                }
-#else
                 if (currentBlob->isBlack)
                 {
                     ledStrip[i] = CRGB::Black;
@@ -154,7 +133,6 @@ private:
                 {
                     ledStrip[i] = CHSV(redShift(currentBlob->hue), 255, 255);
                 }
-#endif
             }
         }
     }
@@ -389,5 +367,4 @@ private:
         return cos8(128 + hue / 2);
 #endif
     }
-
 };

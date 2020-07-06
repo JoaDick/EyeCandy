@@ -35,51 +35,32 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-int16_t cos16(uint16_t x)
+int16_t sin16(uint16_t x)
 {
 	double x_d = (x * 2.0 * M_PI) / std::numeric_limits<uint16_t>::max();
-	double tmp = std::cos(x_d);
+	double tmp = std::sin(x_d);
 	return int16_t(tmp * std::numeric_limits<int16_t>::max());
-	// double tmp = (1.0 + std::cos(x_d)) / 2.0;
-	// return uint16_t(0.5 + tmp * std::numeric_limits<uint16_t>::max());
 }
 
 //------------------------------------------------------------------------------
 
-uint8_t random8()
+int8_t sin8(uint8_t x)
 {
-	return uint8_t(random(0x100));
+	double x_d = (x * 2.0 * M_PI) / std::numeric_limits<uint8_t>::max();
+	double tmp = std::sin(x_d);
+	return int8_t(tmp * std::numeric_limits<int8_t>::max());
 }
 
 //------------------------------------------------------------------------------
 
-uint8_t random8(uint8_t lim)
-{
-	uint8_t rnd = random8();
-	if (lim < 0xFF)
-	{
-		rnd %= (lim + 1);
-	}
-	return rnd;
-}
+#define RAND16_SEED 1337
+uint16_t rand16seed = RAND16_SEED;
 
 //------------------------------------------------------------------------------
 
-uint16_t random16()
-{
-	return uint16_t(random(0x10000));
-}
+#define asm
+#define volatile(x)
 
-//------------------------------------------------------------------------------
-
-uint16_t random16(uint16_t lim)
-{
-	auto rnd = random16();
-	if (lim < 0xFFFF)
-	{
-		rnd %= (lim + 1);
-	}
-	return rnd;
-}
+#include "../../../../FastLED/hsv2rgb.cpp"
 
 //------------------------------------------------------------------------------
