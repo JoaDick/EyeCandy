@@ -25,20 +25,31 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationRunner.h"
+#include "Animation.h"
 
-#include "BouncingBalls_FL.h"
-#include "FadeOut_FL.h"
-#include "Fire2012_FL.h"
-#include "Firework_FL.h"
-#include "FloatingBlobs_FL.h"
-#include "Glitter_FL.h"
-#include "Kaleidoscope_FL.h"
-#include "MovingDot_FL.h"
-#include "Pride2015_FL.h"
-#include "Rainbow_FL.h"
-#include "RainbowBuiltin_FL.h"
-#include "RainbowTwinkle_FL.h"
-#include "RgbBlocks_FL.h"
-#include "StaticBackground_FL.h"
-#include "Twinkles_FL.h"
+//------------------------------------------------------------------------------
+
+namespace EC
+{
+
+  /// Interface of a repository that can store multiple Animations
+  class AnimationRepo
+  {
+  public:
+    /** Add an \a animation that shall be processed.
+     * If too many Animations are added, the surplus ones are ignored, and
+     * false is returned.
+     */
+    virtual bool add(Animation &animation) = 0;
+
+    /// Remove all previously added Animations.
+    virtual void reset() = 0;
+
+  protected:
+    AnimationRepo() = default;
+  };
+
+  /// Pointer to a function that configures an #AnimationRepo.
+  using AnimationBuilderFct = void (*)(AnimationRepo &repo);
+
+} // namespace EC

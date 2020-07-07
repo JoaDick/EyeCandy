@@ -37,19 +37,23 @@ SOFTWARE.
 CRGB leds[NUM_LEDS];
 
 // Patterns
-EC::FadeOut_FL fadeOut_FL(leds, NUM_LEDS);
+EC::BouncingBalls_FL<3> bouncingBalls_FL(leds, NUM_LEDS, false);
+// EC::FadeOut_FL fadeOut_FL(leds, NUM_LEDS);
 EC::Fire2012_FL<NUM_LEDS> fire2012_FL(leds, NUM_LEDS);
+EC::FloatingBlobs_FL floatingBlobs_FL(leds, NUM_LEDS);
 EC::Glitter_FL glitter_FL(leds, NUM_LEDS, false);
+EC::Kaleidoscope_FL kaleidoscopeOverlay_FL(leds, NUM_LEDS);
 EC::MovingDot_FL movingDot_FL(leds, NUM_LEDS, false);
 EC::Pride2015_FL pride2015_FL(leds, NUM_LEDS);
 EC::Rainbow_FL rainbow_FL(leds, NUM_LEDS);
-EC::RainbowBuiltin_FL rainbowBuiltin_FL(leds, NUM_LEDS);
+// EC::RainbowBuiltin_FL rainbowBuiltin_FL(leds, NUM_LEDS);
 EC::RainbowTwinkle_FL rainbowTwinkle_FL(leds, NUM_LEDS);
-EC::RgbBlocks_FL rgbBlocks_FL(leds, NUM_LEDS);
-EC::StaticBackground_FL staticBackground_FL(leds, NUM_LEDS, CRGB(0, 10, 0));
+// EC::RgbBlocks_FL rgbBlocks_FL(leds, NUM_LEDS);
+// EC::StaticBackground_FL staticBackground_FL(leds, NUM_LEDS, CRGB(0, 10, 0));
 EC::Twinkles_FL twinkles_FL(leds, NUM_LEDS, false);
 
 // Overlays
+EC::BouncingBalls_FL<3> bouncingBallsOverlay_FL(leds, NUM_LEDS, true);
 EC::Glitter_FL glitterOverlay_FL(leds, NUM_LEDS, true);
 EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
 EC::Twinkles_FL twinklesOverlay_FL(leds, NUM_LEDS, true);
@@ -73,11 +77,13 @@ void setup()
     printMemoryUsage();
 
     // Base Animation (select one)
+    // animations.add(bouncingBalls_FL);
+    // animations.add(fadeOut_FL);
     // animations.add(fire2012_FL);
+    // animations.add(floatingBlobs_FL);
     // animations.add(glitter_FL);
     // animations.add(movingDot_FL);
-    // animations.add(fadeOut_FL);
-    animations.add(pride2015_FL);
+    // animations.add(pride2015_FL);
     // animations.add(rainbow_FL);
     // animations.add(rainbowBuiltin_FL);
     // animations.add(rainbowTwinkle_FL);
@@ -86,15 +92,90 @@ void setup()
     // animations.add(twinkles_FL);
 
     // Overlays
-    animations.add(glitterOverlay_FL);
-    animations.add(movingDotOverlay_FL);
+    // animations.add(bouncingBallsOverlay_FL);
+    // animations.add(glitterOverlay_FL);
+    // animations.add(movingDotOverlay_FL);
     // animations.add(twinklesOverlay_FL);
+
+    // animations.add(kaleidoscopeOverlay_FL);
 }
 
 //------------------------------------------------------------------------------
 
+void makeAnimation0(EC::AnimationRepo &repo)
+{
+    repo.add(pride2015_FL);
+    pride2015_FL.resizeStrip(kaleidoscopeOverlay_FL.remainLedCount());
+    pride2015_FL.mirrored = true;
+    repo.add(kaleidoscopeOverlay_FL);
+    repo.add(glitterOverlay_FL);
+}
+
+void makeAnimation1(EC::AnimationRepo &repo)
+{
+    repo.add(floatingBlobs_FL);
+    repo.add(movingDotOverlay_FL);
+}
+
+void makeAnimation2(EC::AnimationRepo &repo)
+{
+    repo.add(fire2012_FL);
+    fire2012_FL.COOLING = 155;
+    fire2012_FL.SPARKING = 75;
+    fire2012_FL.animationDelay = 10;
+    repo.add(bouncingBallsOverlay_FL);
+    bouncingBallsOverlay_FL.mirrored = true;
+}
+
+void makeAnimation3(EC::AnimationRepo &repo)
+{
+    repo.add(rainbowTwinkle_FL);
+}
+
+//------------------------------------------------------------------------------
+
+EC::AnimationBuilderFct nextAnimation = nullptr;
+
 void loop()
 {
+    uint32_t now = millis();
+    static uint32_t nextChange = 0;
+    static int8_t animationIndex = -1;
+
+    if (now > nextChange)
+    {
+        nextChange = now + 15000;
+        switch (++animationIndex)
+        {
+        case 0:
+            nextAnimation = &makeAnimation0;
+            break;
+
+        case 1:
+            nextAnimation = &makeAnimation1;
+            break;
+
+        case 2:
+            nextAnimation = &makeAnimation2;
+            break;
+
+        case 3:
+            nextAnimation = &makeAnimation3;
+            break;
+
+        default:
+            nextChange = 0;
+            animationIndex = 0;
+            break;
+        }
+    }
+    if (nextAnimation)
+    {
+        animations.reset();
+        nextAnimation(animations);
+        nextAnimation = nullptr;
+    }
+
     updateColor();
     updateSpeed();
     updateFlip();
@@ -143,9 +224,9 @@ void updateColor()
         movingDot_FL.foregroundColor = CHSV(hue, 255, 255);
         movingDot_FL.backgroundColor = CHSV(hue + 128, 255, 64);
         rainbow_FL.volume = hue;
-        rainbowBuiltin_FL.deltahue = hue / 10;
-        rgbBlocks_FL.blockSize = hue / 10;
-        staticBackground_FL.backgroundColor = CHSV(hue + 128, 255, 128);
+        // rainbowBuiltin_FL.deltahue = hue / 10;
+        // rgbBlocks_FL.blockSize = hue / 10;
+        // staticBackground_FL.backgroundColor = CHSV(hue + 128, 255, 128);
         twinkles_FL.effectRate = hue;
 
         glitterOverlay_FL.effectRate = hue;
@@ -178,9 +259,9 @@ void updateSpeed()
         fire2012_FL.SPARKING = animationSpeed;
         movingDot_FL.animationDelay = animationDelay;
         rainbow_FL.animationDelay = animationDelay;
-        rainbowBuiltin_FL.animationDelay = animationDelay;
+        // rainbowBuiltin_FL.animationDelay = animationDelay;
         rainbowTwinkle_FL.animationDelay = animationDelay;
-        rgbBlocks_FL.animationDelay = 8 * animationDelay;
+        // rgbBlocks_FL.animationDelay = 8 * animationDelay;
         twinkles_FL.fadeRate = animationSpeed;
 
         movingDotOverlay_FL.animationDelay = 2 * animationDelay;
@@ -194,7 +275,7 @@ void updateFlip()
     const bool flipped = !digitalRead(PIN_FLIP_BTN);
 
     rainbow_FL.mirrored = flipped;
-    rgbBlocks_FL.mirrored = flipped;
+    // rgbBlocks_FL.mirrored = flipped;
 
     if (flipped)
     {
@@ -216,11 +297,17 @@ void printMemoryUsage()
     Serial.println(F(" LEDs:"));
     Serial.println(F("(*) is dependant on NUM_LEDS"));
 
+    Serial.print(F("BouncingBalls_FL<3> = "));
+    Serial.println(sizeof(EC::BouncingBalls_FL<3>));
+
     Serial.print(F("FadeOut_FL = "));
     Serial.println(sizeof(EC::FadeOut_FL));
 
     Serial.print(F("Fire2012_FL (*) = "));
     Serial.println(sizeof(EC::Fire2012_FL<NUM_LEDS>));
+
+    Serial.print(F("FloatingBlobs_FL = "));
+    Serial.println(sizeof(EC::FloatingBlobs_FL));
 
     Serial.print(F("Glitter_FL = "));
     Serial.println(sizeof(EC::Glitter_FL));

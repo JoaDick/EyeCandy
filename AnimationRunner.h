@@ -26,6 +26,7 @@ SOFTWARE.
 *******************************************************************************/
 
 #include "Animation.h"
+#include "AnimationRepo.h"
 
 //------------------------------------------------------------------------------
 
@@ -41,6 +42,7 @@ namespace EC
   template <uint8_t MAX_ANIMATIONS>
   class AnimationRunner
       : public Animation
+      , public AnimationRepo
   {
     Animation *_animations[MAX_ANIMATIONS] = {nullptr};
 
@@ -51,23 +53,22 @@ namespace EC
     {
     }
 
-    /** Add an \a animation that shall be processed.
-     * If more than \a MAX_ANIMATIONS are added, the surplus ones are ignored.
-     */
-    void add(Animation &animation)
+    /// @see AnimationRepo::reset()
+    bool add(Animation &animation) override
     {
       for (uint8_t i = 0; i < MAX_ANIMATIONS; ++i)
       {
         if (_animations[i] == nullptr)
         {
           _animations[i] = &animation;
-          break;
+          return true;
         }
       }
+      return false;
     }
 
-    /// Remove all previously added Animations.
-    void reset()
+    /// @see AnimationRepo::reset()
+    void reset() override
     {
       for (uint8_t i = 0; i < MAX_ANIMATIONS; ++i)
       {
