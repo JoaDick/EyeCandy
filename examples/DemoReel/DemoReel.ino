@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-A sketch for testing during EyeCandy development.
+Many many Animations!
 
 ********************************************************************************
 
@@ -74,7 +74,6 @@ void setup()
 
     Serial.begin(115200);
     Serial.println(F("Welcome to EyeCandy"));
-    printMemoryUsage();
 
     // Base Animation (select one)
     // animations.add(bouncingBalls_FL);
@@ -136,8 +135,6 @@ void makeAnimation3(EC::AnimationRepo &repo)
 
 //------------------------------------------------------------------------------
 
-EC::AnimationBuilderFct nextAnimation = nullptr;
-
 EC::AnimationBuilderFct allAnimations[] = {
     &makeAnimation0,
     &makeAnimation1,
@@ -167,25 +164,16 @@ void handleAnimationChange()
 
 void loop()
 {
-    updateColor();
-    updateSpeed();
-    updateFlip();
-
     handleAnimationChange();
 
     if (animations.process())
     {
-#if (0)
-        static bool toggleFlag = false;
-        toggleFlag ^= true;
-        leds[0] = toggleFlag ? CRGB(0, 10, 0) : CRGB::Black;
-#endif
         FastLED.show();
     }
 }
 
 //------------------------------------------------------------------------------
-
+/*
 template <typename IN_TYPE, typename OUT_TYPE>
 OUT_TYPE constrainAndMap(const IN_TYPE &x,
                          const IN_TYPE &minThreshold, const IN_TYPE &maxThreshold,
@@ -193,9 +181,9 @@ OUT_TYPE constrainAndMap(const IN_TYPE &x,
 {
     return map(constrain(x, minThreshold, maxThreshold), minThreshold, maxThreshold, outMin, outMax);
 }
-
+*/
 //------------------------------------------------------------------------------
-
+/*
 void updateColor()
 {
     const uint16_t analogValue = constrainAndMap(analogRead(PIN_COLOR_POT), 50, 900, 0, 256);
@@ -227,9 +215,9 @@ void updateColor()
         twinklesOverlay_FL.effectRate = hue;
     }
 }
-
+*/
 //------------------------------------------------------------------------------
-
+/*
 void updateSpeed()
 {
     const uint16_t analogValue = constrainAndMap(analogRead(PIN_SPEED_POT), 50, 900, 0, 256);
@@ -260,9 +248,9 @@ void updateSpeed()
         movingDotOverlay_FL.animationDelay = 2 * animationDelay;
     }
 }
-
+*/
 //------------------------------------------------------------------------------
-
+/*
 void updateFlip()
 {
     const bool flipped = !digitalRead(PIN_FLIP_BTN);
@@ -280,57 +268,5 @@ void updateFlip()
         fire2012_FL.gPal = EC::Fire2012_gPal_default();
     }
 }
-
-//------------------------------------------------------------------------------
-
-void printMemoryUsage()
-{
-    Serial.print(F("Memory usage for "));
-    Serial.print(NUM_LEDS);
-    Serial.println(F(" LEDs:"));
-    Serial.println(F("(*) is dependant on NUM_LEDS"));
-
-    Serial.print(F("BouncingBalls_FL<3> = "));
-    Serial.println(sizeof(EC::BouncingBalls_FL<3>));
-
-    Serial.print(F("FadeOut_FL = "));
-    Serial.println(sizeof(EC::FadeOut_FL));
-
-    Serial.print(F("Fire2012_FL (*) = "));
-    Serial.println(sizeof(EC::Fire2012_FL<NUM_LEDS>));
-
-    Serial.print(F("FloatingBlobs_FL = "));
-    Serial.println(sizeof(EC::FloatingBlobs_FL));
-
-    Serial.print(F("Glitter_FL = "));
-    Serial.println(sizeof(EC::Glitter_FL));
-
-    Serial.print(F("Kaleidoscope_FL = "));
-    Serial.println(sizeof(EC::Kaleidoscope_FL));
-
-    Serial.print(F("MovingDot_FL = "));
-    Serial.println(sizeof(EC::MovingDot_FL));
-
-    Serial.print(F("Pride2015_FL = "));
-    Serial.println(sizeof(EC::Pride2015_FL));
-
-    Serial.print(F("Rainbow_FL = "));
-    Serial.println(sizeof(EC::Rainbow_FL));
-
-    Serial.print(F("RainbowBuiltin_FL = "));
-    Serial.println(sizeof(EC::RainbowBuiltin_FL));
-
-    Serial.print(F("RainbowTwinkle_FL = "));
-    Serial.println(sizeof(EC::RainbowTwinkle_FL));
-
-    Serial.print(F("RgbBlocks_FL = "));
-    Serial.println(sizeof(EC::RgbBlocks_FL));
-
-    Serial.print(F("StaticBackground_FL = "));
-    Serial.println(sizeof(EC::StaticBackground_FL));
-
-    Serial.print(F("Twinkles_FL = "));
-    Serial.println(sizeof(EC::Twinkles_FL));
-}
-
+*/
 //------------------------------------------------------------------------------

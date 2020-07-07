@@ -25,34 +25,50 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "Animation.h"
+#include "AnimationRepo.h"
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /** Interface of a repository that can store multiple Animations.
-   * A set of multiple Animations that are processed sequentially is called
-   * "Animation Scene".
+  /** Helper class for cycling through different Animation Scenes.
    */
-  class AnimationRepo
+  class AnimationChanger
   {
+    AnimationRepo &_repo;
+    AnimationBuilderFct *_allAnimationBuilders;
+    uint8_t _index = -1;
+
   public:
-    /** Add \a animation to the Animation Scene.
-     * If too many Animations are added, the surplus ones are ignored -- and
-     * false is returned.
+    /** Constructor.
+     * @param repo Store the Animation Scene there.
+     * @param allAnimations Array with all functions that set up an Animation Scene.
+     *                      Last entry must be NULL.
      */
-    virtual bool add(Animation &animation) = 0;
+    AnimationChanger(AnimationRepo &repo,
+                     AnimationBuilderFct allAnimations[])
+        : _repo(repo), _allAnimationBuilders(allAnimations)
+    {
+      selectNext();
+    }
 
-    /// Remove all previously added Animations.
-    virtual void reset() = 0;
-
-  protected:
-    AnimationRepo() = default;
+    /** Select the next Animation Scene.
+     * @retval true The first Animation Scene was selected.
+     */
+    bool selectNext()
+    {
+      bool retval = 0;
+      AnimationBuilderFct animationBuilder = _allAnimationBuilders[++_index];
+      if (animationBuilder == nullptr)
+      {
+        _index = 0;
+        animationBuilder = _allAnimationBuilders[0];
+        retval = true;
+      }
+      _repo.reset();
+      animationBuilder(_repo);
+    }
   };
-
-  /// Pointer to a function that configures an Animation Scene.
-  using AnimationBuilderFct = void (*)(AnimationRepo &repo);
 
 } // namespace EC

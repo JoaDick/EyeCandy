@@ -25,6 +25,8 @@ SOFTWARE.
 
 *******************************************************************************/
 
+#include "Animation.h"
+#include "AnimationChanger.h"
 #include "AnimationRunner.h"
 
 #include "BouncingBalls_FL.h"
