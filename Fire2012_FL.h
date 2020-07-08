@@ -32,23 +32,29 @@ SOFTWARE.
 
 namespace EC
 {
+
   /// This first palette is the basic 'black body radiation' colors,
   /// which run from black to red to bright yellow to white.
-  CRGBPalette16 Fire2012_gPal_default() { return HeatColors_p; }
+  inline CRGBPalette16 Fire2012_gPal_default() { return HeatColors_p; }
 
   /// These are other ways to set up the color palette for the 'fire'.
   /// First, a gradient from black to red to yellow to white -- similar to HeatColors_p
-  CRGBPalette16 Fire2012_gPal_BlackRedYellowWhite() { return CRGBPalette16(CRGB::Black, CRGB::Red, CRGB::Yellow, CRGB::White); }
+  inline CRGBPalette16 Fire2012_gPal_BlackRedYellowWhite() { return CRGBPalette16(CRGB::Black, CRGB::Red, CRGB::Yellow, CRGB::White); }
 
   /// Second, this palette is like the heat colors, but blue/aqua instead of red/yellow
-  CRGBPalette16 Fire2012_gPal_BlackBlueAquaWhite() { return CRGBPalette16(CRGB::Black, CRGB::Blue, CRGB::Aqua, CRGB::White); }
+  inline CRGBPalette16 Fire2012_gPal_BlackBlueAquaWhite() { return CRGBPalette16(CRGB::Black, CRGB::Blue, CRGB::Aqua, CRGB::White); }
 
   /// Third, here's a simpler, three-step gradient, from black to red to white
-  CRGBPalette16 Fire2012_gPal_BlackRedWhite() { return CRGBPalette16(CRGB::Black, CRGB::Red, CRGB::White); }
+  inline CRGBPalette16 Fire2012_gPal_BlackRedWhite() { return CRGBPalette16(CRGB::Black, CRGB::Red, CRGB::White); }
 
-  uint8_t Fire2012_COOLING_default() { return 75 /* 55 */; }
-  fract8 Fire2012_SPARKING_default() { return 120; }
-  uint16_t Fire2012_animationDelay_default() { return 0; }
+  /// Default value for #Fire2012_FL::COOLING
+  inline uint8_t Fire2012_COOLING_default() { return 75 /* 55 */; }
+
+  /// Default value for #Fire2012_FL::SPARKING
+  inline fract8 Fire2012_SPARKING_default() { return 120; }
+
+  /// Default value for #Fire2012_FL::animationDelay
+  inline uint16_t Fire2012_animationDelay_default() { return 0; }
 
   /** Fire2012 with programmable Color Palette
   This code is the same fire simulation as the original "Fire2012",

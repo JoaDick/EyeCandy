@@ -139,17 +139,17 @@ namespace EC
     void show(AnimationBase_FL &animation)
     {
 #ifdef FIREWORK_DEBUG
-      if (_apexPos > 0.0)
-      {
-        animation.safePixel(_apexPos * animation.ledCount) = CRGB(128, 0, 0);
-      }
       if (_debugPos_blow > 0.0)
       {
-        // animation.safePixel(_debugPos_blow * animation.ledCount) = CRGB(64, 64, 64);
+        animation.safePixel(_debugPos_blow * animation.ledCount) = CRGB(128, 64, 0);
+      }
+      if (_apexPos > 0.0)
+      {
+        animation.safePixel(_apexPos * animation.ledCount) = CRGB(255, 0, 0);
       }
       if (_debugPos_gliding > 0.0)
       {
-        // animation.safePixel(_debugPos_gliding * animation.ledCount) = CRGB(0, 0, 128);
+        animation.safePixel(_debugPos_gliding * animation.ledCount) = CRGB(64, 0, 32);
       }
 #endif
 
@@ -220,9 +220,10 @@ namespace EC
 
       case STATE_RISING:
         // reached the apex?
-        if (_vel <= 0.0)
+        if (_vel < 0.0)
         {
           _apexPos = _pos;
+          _acc /= 50.0;
           _state = STATE_FALLING;
         }
         break;
@@ -239,6 +240,7 @@ namespace EC
 
 #ifdef FIREWORK_DEBUG
             _debugPos_gliding = _pos;
+            _debugPos_blow = 0.0;
 #endif
           }
         }
@@ -272,7 +274,7 @@ namespace EC
     {
       animation.safePixel(pixelPos + 1) = CRGB::White;
       animation.safePixel(pixelPos) = CRGB::Yellow;
-      _acc = randomF(-3.75 * _vel, -1.75 * _vel);
+      _acc = randomF(-4.5, -2.8);
       _state = STATE_RISING;
 
 #ifdef FIREWORK_DEBUG

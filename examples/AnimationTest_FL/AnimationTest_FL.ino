@@ -37,24 +37,24 @@ SOFTWARE.
 CRGB leds[NUM_LEDS];
 
 // Patterns
-EC::BouncingBalls_FL<3> bouncingBalls_FL(leds, NUM_LEDS, false);
+EC::BouncingBalls_FL<> bouncingBalls_FL(leds, NUM_LEDS);
 // EC::FadeOut_FL fadeOut_FL(leds, NUM_LEDS);
 EC::Fire2012_FL<NUM_LEDS> fire2012_FL(leds, NUM_LEDS);
 EC::FloatingBlobs_FL floatingBlobs_FL(leds, NUM_LEDS);
 EC::Glitter_FL glitter_FL(leds, NUM_LEDS, false);
-EC::Kaleidoscope_FL kaleidoscopeOverlay_FL(leds, NUM_LEDS);
-EC::MovingDot_FL movingDot_FL(leds, NUM_LEDS, false);
+EC::MovingDot_FL movingDot_FL(leds, NUM_LEDS);
 EC::Pride2015_FL pride2015_FL(leds, NUM_LEDS);
 EC::Rainbow_FL rainbow_FL(leds, NUM_LEDS);
 // EC::RainbowBuiltin_FL rainbowBuiltin_FL(leds, NUM_LEDS);
 EC::RainbowTwinkle_FL rainbowTwinkle_FL(leds, NUM_LEDS);
 // EC::RgbBlocks_FL rgbBlocks_FL(leds, NUM_LEDS);
 // EC::StaticBackground_FL staticBackground_FL(leds, NUM_LEDS, CRGB(0, 10, 0));
-EC::Twinkles_FL twinkles_FL(leds, NUM_LEDS, false);
+EC::Twinkles_FL twinkles_FL(leds, NUM_LEDS);
 
 // Overlays
-EC::BouncingBalls_FL<3> bouncingBallsOverlay_FL(leds, NUM_LEDS, true);
+EC::BouncingBalls_FL<> bouncingBallsOverlay_FL(leds, NUM_LEDS, true);
 EC::Glitter_FL glitterOverlay_FL(leds, NUM_LEDS, true);
+EC::Kaleidoscope_FL kaleidoscopeOverlay_FL(leds, NUM_LEDS);
 EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
 EC::Twinkles_FL twinklesOverlay_FL(leds, NUM_LEDS, true);
 
@@ -158,6 +158,7 @@ void handleAnimationChange()
 
     if (now > changeTrigger)
     {
+        fill_solid(leds, NUM_LEDS, CRGB::Black);
         animationChanger.selectNext();
         changeTrigger = now + animationDuration * 1000;
     }
@@ -288,16 +289,19 @@ void printMemoryUsage()
     Serial.print(F("Memory usage for "));
     Serial.print(NUM_LEDS);
     Serial.println(F(" LEDs:"));
-    Serial.println(F("(*) is dependant on NUM_LEDS"));
+    Serial.println(F("<*> is dependant on NUM_LEDS"));
 
-    Serial.print(F("BouncingBalls_FL<3> = "));
-    Serial.println(sizeof(EC::BouncingBalls_FL<3>));
+    Serial.print(F("BouncingBalls_FL<> = "));
+    Serial.println(sizeof(EC::BouncingBalls_FL<>));
 
     Serial.print(F("FadeOut_FL = "));
     Serial.println(sizeof(EC::FadeOut_FL));
 
-    Serial.print(F("Fire2012_FL (*) = "));
+    Serial.print(F("Fire2012_FL<*> = "));
     Serial.println(sizeof(EC::Fire2012_FL<NUM_LEDS>));
+
+    Serial.print(F("Firework_FL<> = "));
+    Serial.println(sizeof(EC::Firework_FL<>));
 
     Serial.print(F("FloatingBlobs_FL = "));
     Serial.println(sizeof(EC::FloatingBlobs_FL));

@@ -40,10 +40,18 @@ namespace EC
   {
   public:
     /** Add \a animation to the Animation Scene.
-     * If too many Animations are added, the surplus ones are ignored -- and
-     * false is returned.
+     * If too many Animations are added, the surplus ones are ignored (and false
+     * is returned).
      */
     virtual bool add(Animation &animation) = 0;
+
+    /** Add \a animation to the Animation Scene.
+     * If too many Animations are added, the surplus ones are deleted immediately
+     * (and false is returned).
+     * @note \a animation must be allocated on the heap. The repository takes
+     * care of deleting it when necessary.
+     */
+    virtual bool add(Animation *animation) = 0;
 
     /// Remove all previously added Animations.
     virtual void reset() = 0;

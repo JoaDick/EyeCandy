@@ -73,7 +73,7 @@ namespace EC
      */
     MovingDot_FL(CRGB *ledStrip,
                  uint16_t ledCount,
-                 bool overlayMode,
+                 bool overlayMode = false,
                  const CRGB &foregroundColor = foregroundColor_default(),
                  const CRGB &backgroundColor = backgroundColor_default())
         : AnimationBase_FL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount), foregroundColor(foregroundColor), backgroundColor(backgroundColor)

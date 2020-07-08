@@ -70,7 +70,7 @@ namespace EC
      */
     Glitter_FL(CRGB *ledStrip,
                uint16_t ledCount,
-               bool overlayMode)
+               bool overlayMode = false)
         : AnimationBase_FL(overlayMode ? TYPE_OVERLAY_FADING : TYPE_FADING_PATTERN, ledStrip, ledCount)
     {
     }

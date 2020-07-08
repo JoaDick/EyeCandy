@@ -24,7 +24,7 @@ namespace EC
    * https://github.com/daterdots/LEDs/blob/master/BouncingBalls2014/BouncingBalls2014.ino.
    * @tparam NUM_BALLS Number of bouncing balls you want (recommend < 7, but 20 is fun in its own way)
    */
-  template <uint16_t NUM_BALLS>
+  template <uint16_t NUM_BALLS = 3>
   class BouncingBalls_FL
       : public AnimationBase_FL
   {
@@ -55,7 +55,7 @@ namespace EC
      */
     BouncingBalls_FL(CRGB *ledStrip,
                      uint16_t ledCount,
-                     bool overlayMode)
+                     bool overlayMode = false)
         : AnimationBase_FL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount)
     {
       for (int i = 0; i < NUM_BALLS; i++)

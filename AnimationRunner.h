@@ -41,10 +41,12 @@ namespace EC
    */
   template <uint8_t MAX_ANIMATIONS>
   class AnimationRunner
-      : public Animation
-      , public AnimationRepo
+      : public Animation,
+        public AnimationRepo
   {
+    static_assert(MAX_ANIMATIONS <= 16, "Max. 16 Animations possible");
     Animation *_animations[MAX_ANIMATIONS] = {nullptr};
+    uint16_t _toDeleteFlags = 0;
 
   public:
     /// Constructor.
@@ -53,7 +55,7 @@ namespace EC
     {
     }
 
-    /// @see AnimationRepo::reset()
+    /// @see AnimationRepo::add()
     bool add(Animation &animation) override
     {
       for (uint8_t i = 0; i < MAX_ANIMATIONS; ++i)
@@ -67,13 +69,37 @@ namespace EC
       return false;
     }
 
+    /// @see AnimationRepo::add()
+    bool add(Animation *animation) override
+    {
+      uint16_t mask = 1;
+      for (uint8_t i = 0; i < MAX_ANIMATIONS; ++i)
+      {
+        if (_animations[i] == nullptr)
+        {
+          _animations[i] = animation;
+          _toDeleteFlags |= mask;
+          return true;
+        }
+        mask <<= 1;
+      }
+      return false;
+    }
+
     /// @see AnimationRepo::reset()
     void reset() override
     {
+      uint16_t mask = 1;
       for (uint8_t i = 0; i < MAX_ANIMATIONS; ++i)
       {
+        if (_toDeleteFlags & mask)
+        {
+          delete _animations[i];
+        }
         _animations[i] = nullptr;
+        mask <<= 1;
       }
+      _toDeleteFlags = 0;
     }
 
   private:
