@@ -37,14 +37,31 @@ namespace EC
   class FireworkParticle
   {
   public:
+    /// Possible Glitter variations.
+    enum GlitterType
+    {
+      GLITTER_TWINKLE = 0, //< Twinkling instead of a fading trail.
+      GLITTER_SAME,        //< Glitter with particle's color.
+      GLITTER_COMP,        //< Glitter with complementary color.
+      GLITTER_WHITE,
+      GLITTER_RED,
+      GLITTER_GREEN,
+      GLITTER_BLUE,
+      GLITTER_YELLOW,
+      GLITTER_CYAN,
+      GLITTER_PURPLE,
+      GLITTER_RANDOM,
+      GLITTER_MAX
+    };
+
     /// Particle configuration.
     struct Config
     {
       /// Effect color.
-      uint8_t colorHue = random8();
+      uint8_t colorHue = AnimationBase_FL::redShift(random8());
 
       /// Effect brightness.
-      uint8_t colorVolume = 64 + random(192);
+      uint8_t colorVolume = 127 + random8(128);
 
       /** Height where the particle shall explode.
        * Range 0.0 ... 1.0
@@ -65,7 +82,10 @@ namespace EC
        * Range 0.0 ... 1.0
        * 0.0 means no glitter.
        */
-      float glitterDuration = (random(100) < 25) ? randomF(0.4, 0.9) : 0.0;
+      float glitterDuration = (random8(100) < 25) ? randomF(0.4, 0.9) : 0.0;
+
+      /// Type of Glitter.
+      GlitterType glitterType = GlitterType(random8(GLITTER_MAX - 1));
     };
 
     enum State
@@ -102,7 +122,7 @@ namespace EC
       _config = &cfg;
 
       _acc = randomF(3.5, 5.0);
-      _vel = randomF(0.1, 0.25);
+      _vel = 0.1; //randomF(0.1, 0.25);
       _pos = 0.0;
 
       _apexPos = 0.0;
@@ -142,93 +162,21 @@ namespace EC
         break;
 
       case STATE_LAUNCHING:
-        if (pixelPos != _lastPixelPos)
-        {
-          animation.safePixel(_lastPixelPos) = CRGB::Black;
-        }
-        animation.safePixel(pixelPos) = CRGB(32, 16, 0);
+        process_LAUNCHING(animation, pixelPos);
         break;
 
       case STATE_BLOW:
-        animation.safePixel(pixelPos - 1) = CRGB::White;
-        animation.safePixel(pixelPos) = CRGB::White;
-        _acc = randomF(-3.75 * _vel, -1.75 * _vel);
-        _state = STATE_RISING;
-
-#ifdef FIREWORK_DEBUG
-        _debugPos_blow = _pos;
-#endif
+        process_BLOW(animation, pixelPos);
         break;
 
       case STATE_RISING:
-        animation.safePixel(pixelPos) = CHSV(animation.redShift(_config->colorHue), 255, _config->colorVolume);
+        process_RISING(animation, pixelPos);
+
         break;
 
       case STATE_FALLING:
-      {
-        const float fadingEndPos = _apexPos * _config->fadingEndPos;
-        const float fadingBeginPos = fadingEndPos + (_apexPos - fadingEndPos) * _config->fadingDuration;
-
-#ifdef FIREWORK_DEBUG
-        if (fadingBeginPos > 0.0)
-        {
-          animation.safePixel(fadingBeginPos * animation.ledCount) = CRGB(0, 0, 16);
-        }
-        if (fadingEndPos > 0.0)
-        {
-          animation.safePixel(fadingEndPos * animation.ledCount) = CRGB(0, 0, 16);
-        }
-#endif
-
-        CRGB pixelColor = CRGB::Black;
-        // no faiding necessary?
-        if (_pos > fadingBeginPos)
-        {
-          pixelColor = CHSV(animation.redShift(_config->colorHue), 255, _config->colorVolume);
-        }
-        // need faiding?
-        else if (_pos >= fadingEndPos)
-        {
-          const float fadingRange = fadingBeginPos - fadingEndPos;
-          const float pixelVolume = _config->colorVolume * (_pos - fadingEndPos) / fadingRange;
-          pixelColor = CHSV(animation.redShift(_config->colorHue), 255, pixelVolume);
-        }
-        // else: particle off
-
-        // need glitter?
-        if (_config->glitterDuration > 0.0)
-        {
-          const float glitterBeginPos = fadingBeginPos + _config->glitterDuration / 10;
-          const float glitterEndPos = glitterBeginPos - (glitterBeginPos * _config->glitterDuration);
-
-#ifdef FIREWORK_DEBUG
-          if (glitterBeginPos > 0.0)
-          {
-            animation.safePixel(glitterBeginPos * animation.ledCount) = CRGB(0, 16, 0);
-          }
-          if (glitterEndPos > 0.0)
-          {
-            animation.safePixel(glitterEndPos * animation.ledCount) = CRGB(0, 16, 0);
-          }
-#endif
-
-          if (_pos <= glitterBeginPos &&
-              _pos >= glitterEndPos)
-          {
-            if (random(100) < 20)
-            {
-              pixelColor = CRGB::White;
-            }
-          }
-        }
-
-        if (pixelPos != _lastPixelPos)
-        {
-          animation.safePixel(_lastPixelPos) = pixelColor;
-        }
-        animation.safePixel(pixelPos) = pixelColor;
+        process_FALLING(animation, pixelPos);
         break;
-      }
 
       default:
         _state = STATE_IDLE;
@@ -308,6 +256,176 @@ namespace EC
         _state = STATE_IDLE;
         break;
       }
+    }
+
+  private:
+    void process_LAUNCHING(AnimationBase_FL &animation, int16_t pixelPos)
+    {
+      if (pixelPos != _lastPixelPos)
+      {
+        animation.safePixel(_lastPixelPos) = CRGB::Black;
+      }
+      animation.safePixel(pixelPos) = CRGB(32, 16, 0);
+    }
+
+    void process_BLOW(AnimationBase_FL &animation, int16_t pixelPos)
+    {
+      animation.safePixel(pixelPos + 1) = CRGB::White;
+      animation.safePixel(pixelPos) = CRGB::Yellow;
+      _acc = randomF(-3.75 * _vel, -1.75 * _vel);
+      _state = STATE_RISING;
+
+#ifdef FIREWORK_DEBUG
+      _debugPos_blow = _pos;
+#endif
+    }
+
+    void process_RISING(AnimationBase_FL &animation, int16_t pixelPos)
+    {
+      animation.safePixel(pixelPos) = addGlitter(animation, CHSV(_config->colorHue, 255, _config->colorVolume));
+    }
+
+    void process_FALLING(AnimationBase_FL &animation, int16_t pixelPos)
+    {
+      const float fadingEndPos = _apexPos * _config->fadingEndPos;
+      const float fadingBeginPos = fadingEndPos + (_apexPos - fadingEndPos) * _config->fadingDuration;
+
+#ifdef FIREWORK_DEBUG
+      if (fadingBeginPos > 0.0)
+      {
+        animation.safePixel(fadingBeginPos * animation.ledCount) = CRGB(0, 0, 16);
+      }
+      if (fadingEndPos > 0.0)
+      {
+        animation.safePixel(fadingEndPos * animation.ledCount) = CRGB(0, 0, 16);
+      }
+#endif
+
+      CRGB pixelColor = CRGB::Black;
+      // no fading necessary?
+      if (_pos > fadingBeginPos)
+      {
+        pixelColor = CHSV(_config->colorHue, 255, _config->colorVolume);
+      }
+      // need fading?
+      else if (_pos >= fadingEndPos)
+      {
+        const float fadingRange = fadingBeginPos - fadingEndPos;
+        const float pixelVolume = _config->colorVolume * (_pos - fadingEndPos) / fadingRange;
+        pixelColor = CHSV(_config->colorHue, 255, pixelVolume);
+      }
+      // else: particle off
+
+      pixelColor = addGlitter(animation, pixelColor, fadingBeginPos);
+      if (pixelPos != _lastPixelPos)
+      {
+        animation.safePixel(_lastPixelPos) = pixelColor;
+      }
+      animation.safePixel(pixelPos) = pixelColor;
+    }
+
+    CRGB addGlitter(AnimationBase_FL &animation, CRGB pixelColor, float fadingBeginPos = 0.0)
+    {
+      // Twinkling instead of a fading trail?
+      if (_config->glitterType == GLITTER_TWINKLE)
+      {
+        return (random8(100) < 80) ? CRGB::Black : pixelColor;
+      }
+
+      // no other glitter needed?
+      if (_config->glitterDuration <= 0.0)
+      {
+        return pixelColor;
+      }
+
+      // Glitter with complementary color?
+      if (_config->glitterType == GLITTER_COMP)
+      {
+        const float glitterEndPos = _apexPos * (1.0 - _config->glitterDuration);
+
+#ifdef FIREWORK_DEBUG
+        if (glitterEndPos > 0.0)
+        {
+          animation.safePixel(glitterEndPos * animation.ledCount) = CRGB(0, 16, 0);
+        }
+#endif
+
+        if (_pos >= glitterEndPos)
+        {
+          if (random8(100) < 12)
+          {
+            return CHSV(_config->colorHue + 128, 255, 255);
+          }
+        }
+        return pixelColor;
+      }
+
+      // the following glitter types are not applied before fading has begun
+      if (fadingBeginPos <= 0.0)
+      {
+        return pixelColor;
+      }
+
+      const float glitterBeginPos = fadingBeginPos + _config->glitterDuration / 10;
+      const float glitterEndPos = glitterBeginPos - (glitterBeginPos * _config->glitterDuration);
+
+#ifdef FIREWORK_DEBUG
+      if (glitterBeginPos > 0.0)
+      {
+        animation.safePixel(glitterBeginPos * animation.ledCount) = CRGB(0, 16, 0);
+      }
+      if (glitterEndPos > 0.0)
+      {
+        animation.safePixel(glitterEndPos * animation.ledCount) = CRGB(0, 16, 0);
+      }
+#endif
+
+      if (_pos <= glitterBeginPos &&
+          _pos >= glitterEndPos)
+      {
+        if (random(100) < 20)
+        {
+          switch (_config->glitterType)
+          {
+          case GLITTER_SAME:
+            pixelColor = CHSV(_config->colorHue, 255, 255);
+            break;
+
+          case GLITTER_WHITE:
+            pixelColor = CRGB(255, 255, 255);
+            break;
+
+          case GLITTER_RED:
+            pixelColor = CRGB(255, 0, 0);
+            break;
+
+          case GLITTER_GREEN:
+            pixelColor = CRGB(0, 255, 0);
+            break;
+
+          case GLITTER_BLUE:
+            pixelColor = CRGB(0, 0, 255);
+            break;
+
+          case GLITTER_YELLOW:
+            pixelColor = CRGB(255, 255, 0);
+            break;
+
+          case GLITTER_CYAN:
+            pixelColor = CRGB(0, 255, 255);
+            break;
+
+          case GLITTER_PURPLE:
+            pixelColor = CRGB(255, 0, 255);
+            break;
+
+          default:
+            break;
+          }
+        }
+      }
+
+      return pixelColor;
     }
 
   private:

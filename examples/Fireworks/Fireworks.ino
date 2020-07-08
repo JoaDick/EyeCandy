@@ -28,6 +28,8 @@ SOFTWARE.
 
 *******************************************************************************/
 
+// #define FIREWORK_DEBUG
+
 #include <EyeCandy.h>
 #include <Animation_IO_config.h>
 
@@ -36,12 +38,18 @@ SOFTWARE.
 // the LED strip
 CRGB leds[NUM_LEDS];
 
-EC::FadeOut_FL fadeOut_FL(leds, NUM_LEDS);
-EC::Firework_FL firework1_FL(leds, NUM_LEDS, true);
-EC::Firework_FL firework2_FL(leds, NUM_LEDS, true);
-EC::Firework_FL firework3_FL(leds, NUM_LEDS, true);
-EC::Firework_FL firework4_FL(leds, NUM_LEDS, true);
-EC::Firework_FL firework5_FL(leds, NUM_LEDS, true);
+#ifdef FIREWORK_DEBUG
+const uint8_t PARTICLE_COUNT = 1;
+#else
+const uint8_t PARTICLE_COUNT = 5;
+#endif
+
+EC::FadeOut_FL fadeOut_FL(leds, NUM_LEDS, EC::Firework_fadeRate_default());
+EC::Firework_FL<PARTICLE_COUNT> firework1_FL(leds, NUM_LEDS, true, 1500);
+EC::Firework_FL<PARTICLE_COUNT> firework2_FL(leds, NUM_LEDS, true, 3000);
+EC::Firework_FL<PARTICLE_COUNT> firework3_FL(leds, NUM_LEDS, true, 4500);
+EC::Firework_FL<PARTICLE_COUNT> firework4_FL(leds, NUM_LEDS, true, 6000);
+EC::Firework_FL<PARTICLE_COUNT> firework5_FL(leds, NUM_LEDS, true, 7500);
 
 EC::AnimationRunner<6> animations;
 
@@ -55,19 +63,16 @@ void setup()
     Serial.begin(115200);
     Serial.println(F("Welcome to EyeCandy"));
 
+    random16_set_seed(analogRead(A3));
+
     animations.add(fadeOut_FL);
     animations.add(firework1_FL);
+#ifndef FIREWORK_DEBUG
     animations.add(firework2_FL);
     animations.add(firework3_FL);
     animations.add(firework4_FL);
     animations.add(firework5_FL);
-
-    fadeOut_FL.fadeRate = EC::Firework_FL::fadeRate_default();
-    firework1_FL.launchDelay = 1500;
-    firework2_FL.launchDelay = 3000;
-    firework3_FL.launchDelay = 4500;
-    firework4_FL.launchDelay = 6000;
-    firework5_FL.launchDelay = 7500;
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -78,6 +83,7 @@ void loop()
     {
         FastLED.show();
     }
+    random16_add_entropy(random());
 }
 
 //------------------------------------------------------------------------------
