@@ -30,6 +30,7 @@ SOFTWARE.
 
 #include <EyeCandy.h>
 #include <Animation_IO_config.h>
+#include <ButtonHandler.h>
 
 //------------------------------------------------------------------------------
 
@@ -61,6 +62,10 @@ EC::Twinkles_FL twinklesOverlay_FL(leds, NUM_LEDS, true);
 // run max. 10 Animations simultaneously
 EC::AnimationRunner<10> animations;
 
+ButtonHandler nextButton(PIN_NEXT_BTN);
+
+bool autoMode = true;
+
 //------------------------------------------------------------------------------
 
 void setup()
@@ -68,6 +73,7 @@ void setup()
     pinMode(PIN_FLIP_BTN, INPUT_PULLUP);
     pinMode(PIN_COLOR_POT, INPUT_PULLUP);
     pinMode(PIN_SPEED_POT, INPUT_PULLUP);
+    pinMode(LED_BUILTIN, OUTPUT);
 
     FastLED.addLeds<LED_TYPE, LED_PIN, LED_COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
     fill_solid(leds, NUM_LEDS, CRGB::Black);
@@ -149,18 +155,47 @@ EC::AnimationChanger animationChanger(animations, allAnimations);
 
 //------------------------------------------------------------------------------
 
+const uint16_t animationDuration = 10;
 void handleAnimationChange()
 {
-    static const uint16_t animationDuration = 15;
-    static uint32_t changeTrigger = animationDuration * 1000;
+    static uint32_t nextChange = animationDuration * 1000;
 
     const uint32_t now = millis();
 
-    if (now > changeTrigger)
+    bool mustChange = false;
+    if (autoMode)
+    {
+        if (now > nextChange)
+        {
+            mustChange = true;
+        }
+    }
+
+    switch (nextButton.process())
+    {
+    case 1:
+        if (!autoMode)
+        {
+            mustChange = true;
+        }
+        autoMode = false;
+        break;
+    case 2:
+        mustChange = true;
+        autoMode = true;
+        break;
+    case 3:
+        autoMode = false;
+        mustChange = true;
+        break;
+    }
+
+    digitalWrite(LED_BUILTIN, autoMode);
+    if (mustChange)
     {
         fill_solid(leds, NUM_LEDS, CRGB::Black);
         animationChanger.selectNext();
-        changeTrigger = now + animationDuration * 1000;
+        nextChange = now + animationDuration * 1000;
     }
 }
 

@@ -30,6 +30,7 @@ SOFTWARE.
 
 #include <EyeCandy.h>
 #include <Animation_IO_config.h>
+#include <ButtonHandler.h>
 
 //------------------------------------------------------------------------------
 
@@ -39,6 +40,11 @@ CRGB leds[NUM_LEDS];
 // run max. 10 Animations simultaneously
 EC::AnimationRunner<10> animations;
 
+// skip to next animation with this button
+ButtonHandler nextButton(PIN_NEXT_BTN);
+
+bool autoMode = true;
+
 //------------------------------------------------------------------------------
 
 void setup()
@@ -46,6 +52,7 @@ void setup()
     pinMode(PIN_FLIP_BTN, INPUT_PULLUP);
     pinMode(PIN_COLOR_POT, INPUT_PULLUP);
     pinMode(PIN_SPEED_POT, INPUT_PULLUP);
+    pinMode(LED_BUILTIN, OUTPUT);
 
     FastLED.addLeds<LED_TYPE, LED_PIN, LED_COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
     fill_solid(leds, NUM_LEDS, CRGB::Black);
@@ -67,21 +74,6 @@ void makeBalls(EC::AnimationRepo &repo)
 void makeBlobs(EC::AnimationRepo &repo)
 {
     repo.add(new EC::FloatingBlobs_FL(leds, NUM_LEDS));
-}
-
-void makeDoubleFire(EC::AnimationRepo &repo)
-{
-    auto kaleidoscope = new EC::Kaleidoscope_FL(leds, NUM_LEDS);
-
-    auto fire = new EC::Fire2012_FL<NUM_LEDS>(leds, NUM_LEDS);
-    fire->resizeStrip(kaleidoscope->remainLedCount() + 2);
-    // fire->COOLING = 155;
-    fire->SPARKING = 75;
-    fire->animationDelay = 10;
-    fire->mirrored = true;
-
-    repo.add(fire);
-    repo.add(kaleidoscope);
 }
 
 void makeFire(EC::AnimationRepo &repo)
@@ -112,6 +104,18 @@ void makeFireworks(EC::AnimationRepo &repo)
     repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 6000));
     repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 7500));
     animationDuration = 3 * defaultAnimationDuration;
+}
+
+void makeFlare(EC::AnimationRepo &repo)
+{
+    const uint16_t fireLedCount = NUM_LEDS / 2 + NUM_LEDS / 10;
+    auto fire = new EC::Fire2012_FL<NUM_LEDS>(leds, fireLedCount);
+    fire->SPARKING = 75;
+    fire->animationDelay = 10;
+    fire->mirrored = true;
+
+    repo.add(fire);
+    repo.add(new EC::Kaleidoscope_FL(leds, NUM_LEDS));
 }
 
 void makePride(EC::AnimationRepo &repo)
@@ -160,7 +164,7 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeBalls,
     &makeFire,
     &makeFireAndBalls,
-    &makeDoubleFire,
+    &makeFlare,
     &makeFireworks,
     nullptr};
 
@@ -170,16 +174,40 @@ EC::AnimationChanger animationChanger(animations, allAnimations);
 
 void handleAnimationChange()
 {
-    static uint32_t changeTrigger = animationDuration * 1000;
+    static uint32_t nextChange = animationDuration * 1000;
 
     const uint32_t now = millis();
 
-    if (now > changeTrigger)
+    bool mustChange = false;
+    if (autoMode)
+    {
+        if (now > nextChange)
+        {
+            mustChange = true;
+        }
+    }
+
+    switch (nextButton.process())
+    {
+    case 1:
+        if (!autoMode)
+        {
+            mustChange = true;
+        }
+        autoMode = false;
+        break;
+    case 2:
+        mustChange = true;
+        autoMode = true;
+        break;
+    }
+
+    digitalWrite(LED_BUILTIN, autoMode);
+    if (mustChange)
     {
         fill_solid(leds, NUM_LEDS, CRGB::Black);
-        animationDuration = defaultAnimationDuration;
         animationChanger.selectNext();
-        changeTrigger = now + animationDuration * 1000;
+        nextChange = now + animationDuration * 1000;
     }
 }
 

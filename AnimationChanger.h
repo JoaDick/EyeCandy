@@ -38,7 +38,7 @@ namespace EC
   {
     AnimationRepo &_repo;
     AnimationBuilderFct *_allAnimationBuilders;
-    uint8_t _index = -1;
+    uint8_t _next;
 
   public:
     /** Constructor.
@@ -50,6 +50,13 @@ namespace EC
                      AnimationBuilderFct allAnimations[])
         : _repo(repo), _allAnimationBuilders(allAnimations)
     {
+      selectFirst();
+    }
+
+    /// Select the first Animation Scene.
+    void selectFirst()
+    {
+      _next = 0;
       selectNext();
     }
 
@@ -58,16 +65,18 @@ namespace EC
      */
     bool selectNext()
     {
-      bool retval = 0;
-      AnimationBuilderFct animationBuilder = _allAnimationBuilders[++_index];
-      if (animationBuilder == nullptr)
+      AnimationBuilderFct animationBuilder = _allAnimationBuilders[_next];
+      if (animationBuilder)
       {
-        _index = 0;
-        animationBuilder = _allAnimationBuilders[0];
-        retval = true;
+        _repo.reset();
+        animationBuilder(_repo);
+        if (_allAnimationBuilders[++_next] == nullptr)
+        {
+          _next = 0;
+          return true;
+        }
       }
-      _repo.reset();
-      animationBuilder(_repo);
+      return false;
     }
   };
 

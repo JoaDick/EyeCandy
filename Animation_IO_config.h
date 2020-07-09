@@ -16,8 +16,11 @@
 // Connect potentiometer's center pin to the specified Arduino pin.
 // The other potentiometer pins must be wire to +5V and GND.
 
+// "Next" Button.
+#define PIN_NEXT_BTN 2
+
 // Button for mirror effect.
-#define PIN_FLIP_BTN 2
+#define PIN_FLIP_BTN 3
 
 // Potentiometer to control Animation's color.
 #define PIN_COLOR_POT A0
