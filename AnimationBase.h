@@ -116,7 +116,7 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    bool processAnimation(uint32_t currentMillis, bool wasModified) override
+    void processAnimation(uint32_t currentMillis, bool& wasModified) override
     {
       processAnimationBackground(currentMillis);
 
@@ -150,8 +150,6 @@ namespace EC
           wasModified = true;
         }
       }
-
-      return wasModified;
     }
   };
 

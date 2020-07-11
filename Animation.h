@@ -33,6 +33,8 @@ namespace EC
 {
 
   /** Interface for all EyeCandy Animations.
+   * Call one of the process() methods frequently from your sketch's loop()
+   * function.
    * All child classes must implement the processAnimation() method.
    */
   class Animation
@@ -72,15 +74,26 @@ namespace EC
 
     /** Process the Animation.
      * Must be called frequently by the main loop.
-     * @param wasModified  True when the LED strip was already modified, e.g.
-     *                     by a previous Animation. Internally used as trigger
-     *                     to render the Overlay content (if supported).
      * @retval false  No changes to the LED strip.
-     * @retval true   LED strip must be updated (or \a wasModified).
+     * @retval true   LED strip was updated.
      */
-    bool process(bool wasModified = false)
+    bool process()
     {
-      return processAnimation(millis(), wasModified);
+      bool wasModified = false;
+      processAnimation(millis(), wasModified);
+      return wasModified;
+    }
+
+    /** Process the Animation.
+     * Must be called frequently by the main loop.
+     * @param wasModified  Shall be true when the LED strip was already modified,
+     * e.g. by a previous Animation. Internally used as trigger to render the
+     * Overlay content (if supported).
+     * Its value is set to true when the Animation changed the strip's content.
+     */
+    void process(bool &wasModified)
+    {
+      processAnimation(millis(), wasModified);
     }
 
     /** Process the Animation (with external timing source).
@@ -88,15 +101,14 @@ namespace EC
      * Use this method this when you're having multiple Animations, where all of
      * them shall be processed based on the same external timer source.
      * @param currentMillis  Returnvalue of millis() for synchronized timing.
-     * @param wasModified  True when the LED strip was already modified, e.g.
-     *                     by a previous Animation. Internally used as trigger
-     *                     to render the Overlay content (if supported).
-     * @retval false  No changes to the LED strip.
-     * @retval true   LED strip must be updated (or \a wasModified).
+     * @param wasModified  Shall be true when the LED strip was already modified,
+     * e.g. by a previous Animation. Internally used as trigger to render the
+     * Overlay content (if supported).
+     * Its value is set to true when the Animation changed the strip's content.
      */
-    bool process(uint32_t currentMillis, bool wasModified = false)
+    void process(uint32_t currentMillis, bool &wasModified)
     {
-      return processAnimation(currentMillis, wasModified);
+      processAnimation(currentMillis, wasModified);
     }
 
   protected:
@@ -112,13 +124,12 @@ namespace EC
     /** Process the Animation.
      * This method must be implemented by all child classes.
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
-     * @param wasModified  True when the LED strip was already modified, e.g.
-     *                     by a previous Animation. Internally used as trigger
-     *                     to render the Overlay content (if supported).
-     * @retval false  No changes to the LED strip.
-     * @retval true   LED strip must be updated (or \a wasModified).
+     * \a wasModified is true when the LED strip was already modified,
+     * e.g. by a previous Animation. Internally used as trigger to render the
+     * Overlay content (if supported).
+     * Its value shall be set to true when the Animation changed the strip's content.
      */
-    virtual bool processAnimation(uint32_t currentMillis, bool wasModified) = 0;
+    virtual void processAnimation(uint32_t currentMillis, bool &wasModified) = 0;
   };
 
 } // namespace EC

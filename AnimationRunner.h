@@ -118,21 +118,20 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    bool processAnimation(uint32_t currentMillis, bool wasModified) override
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
       for (uint8_t i = 0; i < MAX_ANIMATIONS; ++i)
       {
         Animation *animation = _animations[i];
         if (animation)
         {
-          wasModified = animation->process(currentMillis, wasModified);
+          animation->process(currentMillis, wasModified);
         }
         else
         {
           break;
         }
       }
-      return wasModified;
     }
   };
 
