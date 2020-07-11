@@ -16,8 +16,8 @@
 // Connect potentiometer's center pin to the specified Arduino pin.
 // The other potentiometer pins must be wire to +5V and GND.
 
-// "Next" Button.
-#define PIN_NEXT_BTN 2
+// "Select" Button.
+#define PIN_SELECT_BTN 2
 
 // Button for mirror effect.
 #define PIN_FLIP_BTN 3

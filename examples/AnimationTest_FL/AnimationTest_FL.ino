@@ -62,7 +62,7 @@ EC::Twinkles_FL twinklesOverlay_FL(leds, NUM_LEDS, true);
 // run max. 16 Animations simultaneously
 EC::AnimationRunnerM animations;
 
-ButtonHandler nextButton(PIN_NEXT_BTN);
+ButtonHandler selectButton;
 
 bool autoMode = true;
 
@@ -70,6 +70,7 @@ bool autoMode = true;
 
 void setup()
 {
+    pinMode(PIN_SELECT_BTN, INPUT_PULLUP);
     pinMode(PIN_FLIP_BTN, INPUT_PULLUP);
     pinMode(PIN_COLOR_POT, INPUT_PULLUP);
     pinMode(PIN_SPEED_POT, INPUT_PULLUP);
@@ -171,7 +172,9 @@ void handleAnimationChange()
         }
     }
 
-    switch (nextButton.process())
+    // skip to next animation with this button
+    // long press = enable auto mode
+    switch (selectButton.process(!digitalRead(PIN_SELECT_BTN)))
     {
     case 1:
         if (!autoMode)

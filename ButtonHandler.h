@@ -35,36 +35,27 @@ SOFTWARE.
 class ButtonHandler
 {
     uint32_t _triggerTime = 0;
-    const uint8_t _pin;
-    const bool _lowActive;
     bool _longPressed = false;
 
 public:
     /// Debouncing time (in ms).
     uint8_t debounceTime = 50;
 
-    /// Constructor. Default is for low-active buttons.
-    explicit ButtonHandler(uint8_t pin,
-                           bool highActive = false)
-        : _pin(pin), _lowActive(!highActive)
-    {
-        pinMode(pin, highActive ? INPUT : INPUT_PULLUP);
-    }
-
     /** Call this method periodically.
-     *  @retval 0 = Button not pressed
-     *  @retval 1 = Short button press
-     *  @retval 2 = Long button press
-     *  @retval 3 = Still pressed (after long button press)
+     *  @param state  Current state of the input pin (true = button pressed).
+     *  @param longPress  Threshold (in ms) for detecting a long button press.
+     *  @param longPressRepeat  Period (in ms) for reporting repeated long button press.
+     *  @retval 0 = Button not pressed.
+     *  @retval 1 = Short button press.
+     *  @retval 2 = Long button press.
+     *  @retval 3 = Still pressed (after long button press).
      */
-    uint8_t process(uint16_t longPressThreshold = 1000,
+    uint8_t process(bool state,
+                    uint16_t longPress = 1000,
                     uint16_t longPressRepeat = 500)
     {
         const uint32_t now = millis();
         const uint16_t duration = now - _triggerTime;
-
-        bool state = digitalRead(_pin & 0x7F);
-        state ^= _lowActive;
 
         // button pressed
         if (state)
@@ -77,7 +68,7 @@ public:
             {
                 if (_longPressed == false)
                 {
-                    if (duration >= longPressThreshold)
+                    if (duration >= longPress)
                     {
                         _longPressed = true;
                         _triggerTime = now;
