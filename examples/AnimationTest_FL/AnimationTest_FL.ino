@@ -77,7 +77,7 @@ void setup()
     pinMode(LED_BUILTIN, OUTPUT);
 
     FastLED.addLeds<LED_TYPE, LED_PIN, LED_COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
-    fill_solid(leds, NUM_LEDS, CRGB::Black);
+    FastLED.clear();
 
     Serial.begin(115200);
     Serial.println(F("Welcome to EyeCandy"));
@@ -152,21 +152,21 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeAnimation3,
     nullptr};
 
-EC::AnimationChanger animationChanger(animationRunner, allAnimations);
+EC::AnimationChangerSoft animationChanger(animationRunner, allAnimations);
 
 //------------------------------------------------------------------------------
 
 const uint16_t animationDuration = 10;
 void handleAnimationChange()
 {
-    static uint32_t nextChange = animationDuration * 1000;
+    static uint32_t nextChangeTime = animationDuration * 1000;
 
     const uint32_t now = millis();
 
     bool mustChange = false;
     if (autoMode)
     {
-        if (now > nextChange)
+        if (now > nextChangeTime)
         {
             mustChange = true;
         }
@@ -196,9 +196,8 @@ void handleAnimationChange()
     digitalWrite(LED_BUILTIN, autoMode);
     if (mustChange)
     {
-        fill_solid(leds, NUM_LEDS, CRGB::Black);
         animationChanger.selectNext();
-        nextChange = now + animationDuration * 1000;
+        nextChangeTime = now + animationDuration * 1000;
     }
 }
 
@@ -219,8 +218,8 @@ void loop()
         toggleFlag ^= true;
         leds[0] = toggleFlag ? CRGB(0, 10, 0) : CRGB::Black;
 #endif
-        FastLED.show();
     }
+    FastLED.show();
 }
 
 //------------------------------------------------------------------------------
@@ -250,6 +249,8 @@ void updateColor()
             Serial.println(hue);
             lastHue = analogValue;
         }
+
+        animationChanger.maxBrightness = analogValue;
 
         fire2012_FL.COOLING = 255 - hue;
         glitter_FL.effectRate = hue;
