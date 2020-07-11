@@ -59,8 +59,8 @@ EC::Fire2012_FL<ledCount1> fire2012_FL(ledStrip1, ledCount1);
 // Animation on virtual LED strip 2
 EC::Pride2015_FL pride2015_FL(ledStrip2, ledCount2);
 
-// run 2 Animations simultaneously
-EC::AnimationRunner<2> animations;
+// run max. 8 Animations simultaneously
+EC::AnimationRunnerS animationRunner;
 
 //------------------------------------------------------------------------------
 
@@ -76,8 +76,8 @@ void setup()
     Serial.println(F("Welcome to EyeCandy"));
 
     // set up Animations to run
-    animations.add(fire2012_FL);
-    animations.add(pride2015_FL);
+    animationRunner.add(fire2012_FL);
+    animationRunner.add(pride2015_FL);
 
     // special Animation settings
     fire2012_FL.COOLING = 90;
@@ -92,7 +92,7 @@ void loop()
     updateSpeed();
     updateFlip();
 
-    if (animations.process())
+    if (animationRunner.process())
     {
         FastLED.show();
     }

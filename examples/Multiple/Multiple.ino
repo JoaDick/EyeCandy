@@ -45,7 +45,7 @@ EC::RgbBlocks_FL rgbBlocks_FL(leds, NUM_LEDS);
 EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
 
 // run max. 8 Animations simultaneously
-EC::AnimationRunnerS animations;
+EC::AnimationRunnerS animationRunner;
 
 //------------------------------------------------------------------------------
 
@@ -61,9 +61,9 @@ void setup()
     Serial.println(F("Welcome to EyeCandy"));
 
     // set up Animations to run
-    animations.add(rainbow_FL);
-    animations.add(rgbBlocks_FL);
-    animations.add(movingDotOverlay_FL);
+    animationRunner.add(rainbow_FL);
+    animationRunner.add(rgbBlocks_FL);
+    animationRunner.add(movingDotOverlay_FL);
 
     // Rainbow in the lower half
     rainbow_FL.resizeStrip(NUM_LEDS / 2);
@@ -84,7 +84,7 @@ void loop()
     updateSpeed();
     updateFlip();
 
-    if (animations.process())
+    if (animationRunner.process())
     {
         FastLED.show();
     }

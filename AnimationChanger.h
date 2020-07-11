@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationRepo.h"
+#include "AnimationRunner.h"
 
 //------------------------------------------------------------------------------
 
@@ -35,20 +35,22 @@ namespace EC
   /** Helper class for cycling through different Animation Scenes.
    */
   class AnimationChanger
+      : public Animation
   {
-    AnimationRepo &_repo;
+    AnimationRunner &_runner;
     AnimationBuilderFct *_allAnimationBuilders;
     uint8_t _next;
 
   public:
     /** Constructor.
-     * @param repo Store the Animation Scene there.
+     * @param runner Use this #AnimationRunner as underlying engine.
+     *               Don't call its process() method from your sketch!
      * @param allAnimations Array with all functions that set up an Animation Scene.
      *                      Last entry must be NULL.
      */
-    AnimationChanger(AnimationRepo &repo,
+    AnimationChanger(AnimationRunner &runner,
                      AnimationBuilderFct allAnimations[])
-        : _repo(repo), _allAnimationBuilders(allAnimations)
+        : Animation(TYPE_SOLID_PATTERN), _runner(runner), _allAnimationBuilders(allAnimations)
     {
       selectFirst();
     }
@@ -61,22 +63,30 @@ namespace EC
     }
 
     /** Select the next Animation Scene.
-     * @retval true The first Animation Scene was selected.
+     * @return Index of currently selected Animation Scene.
      */
-    bool selectNext()
+    uint8_t selectNext()
     {
+      const uint8_t retval = _next;
       AnimationBuilderFct animationBuilder = _allAnimationBuilders[_next];
       if (animationBuilder)
       {
-        _repo.reset();
-        animationBuilder(_repo);
+        _runner.reset();
+        animationBuilder(_runner);
         if (_allAnimationBuilders[++_next] == nullptr)
         {
           _next = 0;
           return true;
         }
       }
-      return false;
+      return retval;
+    }
+
+  private:
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      _runner.process(currentMillis, wasModified);
     }
   };
 

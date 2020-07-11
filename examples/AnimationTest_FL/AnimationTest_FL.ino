@@ -60,7 +60,7 @@ EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
 EC::Twinkles_FL twinklesOverlay_FL(leds, NUM_LEDS, true);
 
 // run max. 16 Animations simultaneously
-EC::AnimationRunnerM animations;
+EC::AnimationRunnerM animationRunner;
 
 ButtonHandler selectButton;
 
@@ -84,27 +84,27 @@ void setup()
     printMemoryUsage();
 
     // Base Animation (select one)
-    // animations.add(bouncingBalls_FL);
-    // animations.add(fadeOut_FL);
-    // animations.add(fire2012_FL);
-    // animations.add(floatingBlobs_FL);
-    // animations.add(glitter_FL);
-    // animations.add(movingDot_FL);
-    // animations.add(pride2015_FL);
-    // animations.add(rainbow_FL);
-    // animations.add(rainbowBuiltin_FL);
-    // animations.add(rainbowTwinkle_FL);
-    // animations.add(rgbBlocks_FL);
-    // animations.add(staticBackground_FL);
-    // animations.add(twinkles_FL);
+    // animationRunner.add(bouncingBalls_FL);
+    // animationRunner.add(fadeOut_FL);
+    // animationRunner.add(fire2012_FL);
+    // animationRunner.add(floatingBlobs_FL);
+    // animationRunner.add(glitter_FL);
+    // animationRunner.add(movingDot_FL);
+    // animationRunner.add(pride2015_FL);
+    // animationRunner.add(rainbow_FL);
+    // animationRunner.add(rainbowBuiltin_FL);
+    // animationRunner.add(rainbowTwinkle_FL);
+    // animationRunner.add(rgbBlocks_FL);
+    // animationRunner.add(staticBackground_FL);
+    // animationRunner.add(twinkles_FL);
 
     // Overlays
-    // animations.add(bouncingBallsOverlay_FL);
-    // animations.add(glitterOverlay_FL);
-    // animations.add(movingDotOverlay_FL);
-    // animations.add(twinklesOverlay_FL);
+    // animationRunner.add(bouncingBallsOverlay_FL);
+    // animationRunner.add(glitterOverlay_FL);
+    // animationRunner.add(movingDotOverlay_FL);
+    // animationRunner.add(twinklesOverlay_FL);
 
-    // animations.add(kaleidoscopeOverlay_FL);
+    // animationRunner.add(kaleidoscopeOverlay_FL);
 }
 
 //------------------------------------------------------------------------------
@@ -152,7 +152,7 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeAnimation3,
     nullptr};
 
-EC::AnimationChanger animationChanger(animations, allAnimations);
+EC::AnimationChanger animationChanger(animationRunner, allAnimations);
 
 //------------------------------------------------------------------------------
 
@@ -212,7 +212,7 @@ void loop()
 
     handleAnimationChange();
 
-    if (animations.process())
+    if (animationChanger.process())
     {
 #if (0)
         static bool toggleFlag = false;

@@ -42,7 +42,7 @@ EC::Pride2015_FL pride2015_FL(leds, NUM_LEDS);
 EC::Kaleidoscope_FL kaleidoscopeOverlay_FL(leds, NUM_LEDS);
 
 // run max. 8 Animations simultaneously
-EC::AnimationRunnerS animations;
+EC::AnimationRunnerS animationRunner;
 
 //------------------------------------------------------------------------------
 
@@ -58,10 +58,10 @@ void setup()
     Serial.println(F("Welcome to EyeCandy"));
 
     // set up Animations to run
-    animations.add(fire2012_FL);
-    animations.add(pride2015_FL);
+    animationRunner.add(fire2012_FL);
+    animationRunner.add(pride2015_FL);
     // Kaleidoscope should be the last one
-    animations.add(kaleidoscopeOverlay_FL);
+    animationRunner.add(kaleidoscopeOverlay_FL);
 
     // calculate new Animation sizes
     const uint16_t ledCount = kaleidoscopeOverlay_FL.remainLedCount();
@@ -83,7 +83,7 @@ void loop()
     updateSpeed();
     updateFlip();
 
-    if (animations.process())
+    if (animationRunner.process())
     {
         FastLED.show();
     }

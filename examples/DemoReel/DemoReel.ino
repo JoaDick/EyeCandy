@@ -38,7 +38,7 @@ SOFTWARE.
 CRGB leds[NUM_LEDS];
 
 // run max. 8 Animations simultaneously
-EC::AnimationRunnerS animations;
+EC::AnimationRunnerS animationRunner;
 
 ButtonHandler selectButton;
 
@@ -168,7 +168,7 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeFireworks,
     nullptr};
 
-EC::AnimationChanger animationChanger(animations, allAnimations);
+EC::AnimationChanger animationChanger(animationRunner, allAnimations);
 
 //------------------------------------------------------------------------------
 
@@ -219,7 +219,7 @@ void loop()
 {
     handleAnimationChange();
 
-    if (animations.process())
+    if (animationChanger.process())
     {
         FastLED.show();
     }

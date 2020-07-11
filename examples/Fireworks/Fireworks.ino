@@ -52,7 +52,7 @@ EC::Firework_FL<PARTICLE_COUNT> firework4_FL(leds, NUM_LEDS, true, 6000);
 EC::Firework_FL<PARTICLE_COUNT> firework5_FL(leds, NUM_LEDS, true, 7500);
 
 // run max. 8 Animations simultaneously
-EC::AnimationRunnerS animations;
+EC::AnimationRunnerS animationRunner;
 
 //------------------------------------------------------------------------------
 
@@ -66,13 +66,13 @@ void setup()
 
     random16_set_seed(analogRead(A3));
 
-    animations.add(fadeOut_FL);
-    animations.add(firework1_FL);
+    animationRunner.add(fadeOut_FL);
+    animationRunner.add(firework1_FL);
 #ifndef FIREWORK_DEBUG
-    animations.add(firework2_FL);
-    animations.add(firework3_FL);
-    animations.add(firework4_FL);
-    animations.add(firework5_FL);
+    animationRunner.add(firework2_FL);
+    animationRunner.add(firework3_FL);
+    animationRunner.add(firework4_FL);
+    animationRunner.add(firework5_FL);
 #endif
 }
 
@@ -80,7 +80,7 @@ void setup()
 
 void loop()
 {
-    if (animations.process())
+    if (animationRunner.process())
     {
         FastLED.show();
     }
