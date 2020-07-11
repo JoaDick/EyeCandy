@@ -44,8 +44,8 @@ EC::RgbBlocks_FL rgbBlocks_FL(leds, NUM_LEDS);
 // Overlays
 EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
 
-// run 3 Animations simultaneously
-EC::AnimationRunner<3> animations;
+// run max. 8 Animations simultaneously
+EC::AnimationRunnerS animations;
 
 //------------------------------------------------------------------------------
 

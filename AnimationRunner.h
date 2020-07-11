@@ -33,20 +33,21 @@ SOFTWARE.
 namespace EC
 {
 
-  /** Helper class for processing multiple Animations simultaneously.
+  //------------------------------------------------------------------------------
+
+  /** Interface for processing multiple Animations simultaneously.
    * In the setup() function, use add() to add the animations to be processed.
    * In the loop() function, call this Runner's process() method. When it
    * returns true, eventually call FastLED.show() - done!
-   * @tparam MAX_ANIMATIONS Maximum number of Animations that can be added.
+   * The following methods need to be implemented:
+   * - AnimationRepo::add()
+   * - AnimationRepo::reset()
+   * - Animation::processAnimation()
    */
-  template <uint8_t MAX_ANIMATIONS>
   class AnimationRunner
       : public Animation,
         public AnimationRepo
   {
-    static_assert(MAX_ANIMATIONS <= 16, "Max. 16 Animations possible");
-    Animation *_animations[MAX_ANIMATIONS] = {nullptr};
-    uint16_t _toDeleteFlags = 0;
 
   public:
     /// Constructor.
@@ -54,7 +55,20 @@ namespace EC
         : Animation(TYPE_SOLID_PATTERN)
     {
     }
+  };
 
+  //------------------------------------------------------------------------------
+
+  /// Base class for AnimationRunnerS / AnimationRunnerM / AnimationRunnerL.
+  template <typename UINT_T>
+  class BasicAnimationRunner
+      : public AnimationRunner
+  {
+    static constexpr uint8_t MAX_ANIMATIONS = 8 * sizeof(UINT_T);
+    Animation *_animations[MAX_ANIMATIONS] = {nullptr};
+    UINT_T _toDeleteFlags = 0;
+
+  public:
     /// @see AnimationRepo::add()
     bool add(Animation &animation) override
     {
@@ -72,7 +86,7 @@ namespace EC
     /// @see AnimationRepo::add()
     bool add(Animation *animation) override
     {
-      uint16_t mask = 1;
+      UINT_T mask = 1;
       for (uint8_t i = 0; i < MAX_ANIMATIONS; ++i)
       {
         if (_animations[i] == nullptr)
@@ -89,7 +103,7 @@ namespace EC
     /// @see AnimationRepo::reset()
     void reset() override
     {
-      uint16_t mask = 1;
+      UINT_T mask = 1;
       for (uint8_t i = 0; i < MAX_ANIMATIONS; ++i)
       {
         if (_toDeleteFlags & mask)
@@ -121,5 +135,18 @@ namespace EC
       return wasModified;
     }
   };
+
+  //------------------------------------------------------------------------------
+
+  /// "Small" AnimationRunner for max 8 Animations.
+  using AnimationRunnerS = BasicAnimationRunner<uint8_t>;
+
+  /// "Medium" AnimationRunner for max 16 Animations.
+  using AnimationRunnerM = BasicAnimationRunner<uint16_t>;
+
+  /// "Large" AnimationRunner for max 32 Animations.
+  using AnimationRunnerL = BasicAnimationRunner<uint32_t>;
+
+  //------------------------------------------------------------------------------
 
 } // namespace EC

@@ -51,7 +51,8 @@ EC::Firework_FL<PARTICLE_COUNT> firework3_FL(leds, NUM_LEDS, true, 4500);
 EC::Firework_FL<PARTICLE_COUNT> firework4_FL(leds, NUM_LEDS, true, 6000);
 EC::Firework_FL<PARTICLE_COUNT> firework5_FL(leds, NUM_LEDS, true, 7500);
 
-EC::AnimationRunner<6> animations;
+// run max. 8 Animations simultaneously
+EC::AnimationRunnerS animations;
 
 //------------------------------------------------------------------------------
 

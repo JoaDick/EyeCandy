@@ -37,8 +37,8 @@ SOFTWARE.
 // the LED strip
 CRGB leds[NUM_LEDS];
 
-// run max. 10 Animations simultaneously
-EC::AnimationRunner<10> animations;
+// run max. 8 Animations simultaneously
+EC::AnimationRunnerS animations;
 
 // skip to next animation with this button
 ButtonHandler nextButton(PIN_NEXT_BTN);

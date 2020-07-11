@@ -41,8 +41,8 @@ EC::Fire2012_FL<NUM_LEDS> fire2012_FL(leds, NUM_LEDS);
 EC::Pride2015_FL pride2015_FL(leds, NUM_LEDS);
 EC::Kaleidoscope_FL kaleidoscopeOverlay_FL(leds, NUM_LEDS);
 
-// run 3 Animations simultaneously
-EC::AnimationRunner<3> animations;
+// run max. 8 Animations simultaneously
+EC::AnimationRunnerS animations;
 
 //------------------------------------------------------------------------------
 

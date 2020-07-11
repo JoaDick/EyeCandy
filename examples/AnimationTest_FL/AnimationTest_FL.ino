@@ -59,8 +59,8 @@ EC::Kaleidoscope_FL kaleidoscopeOverlay_FL(leds, NUM_LEDS);
 EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
 EC::Twinkles_FL twinklesOverlay_FL(leds, NUM_LEDS, true);
 
-// run max. 10 Animations simultaneously
-EC::AnimationRunner<10> animations;
+// run max. 16 Animations simultaneously
+EC::AnimationRunnerM animations;
 
 ButtonHandler nextButton(PIN_NEXT_BTN);
 

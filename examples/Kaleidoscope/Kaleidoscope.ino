@@ -44,8 +44,8 @@ EC::Rainbow_FL rainbow_FL(leds, NUM_LEDS);
 EC::Kaleidoscope_FL kaleidoscopeOverlay_FL(leds, NUM_LEDS);
 EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
 
-// run 4 Animations simultaneously
-EC::AnimationRunner<4> animations;
+// run max. 8 Animations simultaneously
+EC::AnimationRunnerS animations;
 
 //------------------------------------------------------------------------------
 
