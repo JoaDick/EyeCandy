@@ -37,6 +37,9 @@ SOFTWARE.
 // the LED strip
 CRGB leds[NUM_LEDS];
 
+#define EnableStaticPatterns 0
+
+#if (EnableStaticPatterns)
 // Patterns
 EC::BouncingBalls_FL<> bouncingBalls_FL(leds, NUM_LEDS);
 // EC::FadeOut_FL fadeOut_FL(leds, NUM_LEDS);
@@ -58,13 +61,14 @@ EC::Glitter_FL glitterOverlay_FL(leds, NUM_LEDS, true);
 EC::Kaleidoscope_FL kaleidoscopeOverlay_FL(leds, NUM_LEDS);
 EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
 EC::Twinkles_FL twinklesOverlay_FL(leds, NUM_LEDS, true);
+#endif
 
 // run max. 16 Animations simultaneously
 EC::AnimationRunnerM animationRunner;
 
 ButtonHandler selectButton;
 
-bool autoMode = true;
+bool autoMode = false;
 
 //------------------------------------------------------------------------------
 
@@ -83,6 +87,7 @@ void setup()
     Serial.println(F("Welcome to EyeCandy"));
     printMemoryUsage();
 
+#if (EnableStaticPatterns)
     // Base Animation (select one)
     // animationRunner.add(bouncingBalls_FL);
     // animationRunner.add(fadeOut_FL);
@@ -105,10 +110,12 @@ void setup()
     // animationRunner.add(twinklesOverlay_FL);
 
     // animationRunner.add(kaleidoscopeOverlay_FL);
+#endif
 }
 
 //------------------------------------------------------------------------------
 
+#if (EnableStaticPatterns)
 void makeAnimation0(EC::AnimationRepo &repo)
 {
     repo.add(pride2015_FL);
@@ -140,16 +147,42 @@ void makeAnimation3(EC::AnimationRepo &repo)
     repo.add(bouncingBallsOverlay_FL);
     bouncingBallsOverlay_FL.mirrored = true;
 }
+#endif
+
+void makeFire(EC::AnimationRepo &repo)
+{
+    auto fire = new EC::Fire2012_FL<NUM_LEDS>(leds, NUM_LEDS);
+    auto fireChanger = new EC::Fire2012Changer<NUM_LEDS>(*fire);
+
+    repo.add(fireChanger);
+    repo.add(fire);
+}
+
+void makeFlare(EC::AnimationRepo &repo)
+{
+    const uint16_t fireLedCount = NUM_LEDS / 2 + NUM_LEDS / 10;
+    auto fire = new EC::Fire2012_FL<NUM_LEDS>(leds, fireLedCount);
+    fire->SPARKING = 75;
+    fire->animationDelay = 10;
+    fire->mirrored = true;
+
+    repo.add(fire);
+    repo.add(new EC::Kaleidoscope_FL(leds, NUM_LEDS));
+}
 
 //------------------------------------------------------------------------------
 
 EC::AnimationBuilderFct nextAnimation = nullptr;
 
 EC::AnimationBuilderFct allAnimations[] = {
+    &makeFire,
+    &makeFlare,
+#if (EnableStaticPatterns)
     &makeAnimation0,
     &makeAnimation1,
     &makeAnimation2,
     &makeAnimation3,
+#endif
     nullptr};
 
 EC::AnimationChangerSoft animationChanger(animationRunner, allAnimations);
@@ -252,6 +285,7 @@ void updateColor()
 
         animationChanger.maxBrightness = analogValue;
 
+#if (EnableStaticPatterns)
         fire2012_FL.COOLING = 255 - hue;
         glitter_FL.effectRate = hue;
         movingDot_FL.foregroundColor = CHSV(hue, 255, 255);
@@ -265,6 +299,7 @@ void updateColor()
         glitterOverlay_FL.effectRate = hue;
         movingDotOverlay_FL.foregroundColor = CHSV(hue + 64, 255, 255);
         twinklesOverlay_FL.effectRate = hue;
+#endif
     }
 }
 
@@ -289,6 +324,7 @@ void updateSpeed()
             Serial.println(animationDelay);
         }
 
+#if (EnableStaticPatterns)
         fire2012_FL.SPARKING = animationSpeed;
         movingDot_FL.animationDelay = animationDelay;
         rainbow_FL.animationDelay = animationDelay;
@@ -298,6 +334,7 @@ void updateSpeed()
         twinkles_FL.fadeRate = animationSpeed;
 
         movingDotOverlay_FL.animationDelay = 2 * animationDelay;
+#endif
     }
 }
 
@@ -307,6 +344,7 @@ void updateFlip()
 {
     const bool flipped = !digitalRead(PIN_FLIP_BTN);
 
+#if (EnableStaticPatterns)
     rainbow_FL.mirrored = flipped;
     // rgbBlocks_FL.mirrored = flipped;
 
@@ -319,6 +357,7 @@ void updateFlip()
         fire2012_FL.animationDelay = 0;
         fire2012_FL.gPal = EC::Fire2012_gPal_default();
     }
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -338,9 +377,13 @@ void printMemoryUsage()
 
     Serial.print(F("Fire2012_FL<*> = "));
     Serial.println(sizeof(EC::Fire2012_FL<NUM_LEDS>));
+    Serial.print(F("Fire2012Changer = "));
+    Serial.println(sizeof(EC::Fire2012Changer<NUM_LEDS>));
 
     Serial.print(F("Firework_FL<> = "));
     Serial.println(sizeof(EC::Firework_FL<>));
+    Serial.print(F("FireworkParticle = "));
+    Serial.println(sizeof(EC::FireworkParticle));
 
     Serial.print(F("FloatingBlobs_FL = "));
     Serial.println(sizeof(EC::FloatingBlobs_FL));

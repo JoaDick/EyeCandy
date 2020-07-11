@@ -25,24 +25,49 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "Animation.h"
-#include "AnimationChanger.h"
-#include "AnimationChangerSoft.h"
-#include "AnimationRunner.h"
-
-#include "BouncingBalls_FL.h"
-#include "FadeOut_FL.h"
+#include "PseudoAnimationBase.h"
 #include "Fire2012_FL.h"
-#include "Fire2012Changer.h"
-#include "Firework_FL.h"
-#include "FloatingBlobs_FL.h"
-#include "Glitter_FL.h"
-#include "Kaleidoscope_FL.h"
-#include "MovingDot_FL.h"
-#include "Pride2015_FL.h"
-#include "Rainbow_FL.h"
-#include "RainbowBuiltin_FL.h"
-#include "RainbowTwinkle_FL.h"
-#include "RgbBlocks_FL.h"
-#include "StaticBackground_FL.h"
-#include "Twinkles_FL.h"
+
+//------------------------------------------------------------------------------
+
+namespace EC
+{
+
+  /// Adjust Fire2012's settings automatically at runtime'.
+  template <uint16_t NUM_LEDS>
+  class Fire2012Changer
+      : public PseudoAnimationBase
+  {
+    Fire2012_FL<NUM_LEDS> &_fire;
+
+  public:
+    accum88 bpm_COOLING = 5;
+    accum88 bpm_SPARKING = 9;
+
+    /** Constructor.
+     * @param fire  Original #Fire2012_FL animation to manipulate.
+     */
+    explicit Fire2012Changer(Fire2012_FL<NUM_LEDS> &fire)
+        : PseudoAnimationBase(), _fire(fire)
+    {
+    }
+
+  private:
+    /// @see PseudoAnimationBase::updateAnimation()
+    uint16_t updateAnimation(uint32_t currentMillis) override
+    {
+      /// COOLING: How much does the air cool as it rises?
+      /// Less cooling = taller flames.  More cooling = shorter flames.
+      /// suggested range 20-100
+      _fire.COOLING = beatsin8(bpm_COOLING, 55, 90);
+
+      /// SPARKING: What chance (out of 255) is there that a new spark will be lit?
+      /// Higher chance = more roaring fire.  Lower chance = more flickery fire.
+      /// suggested range 50-200.
+      _fire.SPARKING = beatsin8(bpm_SPARKING, 50, 150);
+
+      return 10;
+    }
+  };
+
+} // namespace EC

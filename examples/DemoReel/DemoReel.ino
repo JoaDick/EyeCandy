@@ -78,7 +78,11 @@ void makeBlobs(EC::AnimationRepo &repo)
 
 void makeFire(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::Fire2012_FL<NUM_LEDS>(leds, NUM_LEDS));
+    auto fire = new EC::Fire2012_FL<NUM_LEDS>(leds, NUM_LEDS);
+    auto fireChanger = new EC::Fire2012Changer<NUM_LEDS>(*fire);
+
+    repo.add(fireChanger);
+    repo.add(fire);
 }
 
 void makeFireAndBalls(EC::AnimationRepo &repo)
