@@ -46,3 +46,4 @@ SOFTWARE.
 #include "RgbBlocks_FL.h"
 #include "StaticBackground_FL.h"
 #include "Twinkles_FL.h"
+#include "Waterfall_FL.h"

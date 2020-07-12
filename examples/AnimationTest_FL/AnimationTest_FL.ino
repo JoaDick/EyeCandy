@@ -158,6 +158,16 @@ void makeFire(EC::AnimationRepo &repo)
     repo.add(fire);
 }
 
+void makeFireworks(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::FadeOut_FL(leds, NUM_LEDS, EC::Firework_fadeRate_default()));
+    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 1500));
+    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 3000));
+    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 4500));
+    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 6000));
+    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 7500));
+}
+
 void makeFlare(EC::AnimationRepo &repo)
 {
     const uint16_t fireLedCount = NUM_LEDS / 2 + NUM_LEDS / 10;
@@ -170,11 +180,17 @@ void makeFlare(EC::AnimationRepo &repo)
     repo.add(new EC::Kaleidoscope_FL(leds, NUM_LEDS));
 }
 
+void makeWaterfall(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::Waterfall_FL(leds, NUM_LEDS));
+}
+
 //------------------------------------------------------------------------------
 
 EC::AnimationBuilderFct nextAnimation = nullptr;
 
 EC::AnimationBuilderFct allAnimations[] = {
+    &makeWaterfall,
     &makeFire,
     &makeFlare,
 #if (EnableStaticPatterns)
@@ -183,6 +199,7 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeAnimation2,
     &makeAnimation3,
 #endif
+    &makeFireworks,
     nullptr};
 
 EC::AnimationChangerSoft animationChanger(animationRunner, allAnimations);
@@ -417,6 +434,11 @@ void printMemoryUsage()
 
     Serial.print(F("Twinkles_FL = "));
     Serial.println(sizeof(EC::Twinkles_FL));
+
+    Serial.print(F("Waterfall_FL = "));
+    Serial.println(sizeof(EC::Waterfall_FL));
+    Serial.print(F("WaterfallDroplet = "));
+    Serial.println(sizeof(EC::WaterfallDroplet));
 }
 
 //------------------------------------------------------------------------------

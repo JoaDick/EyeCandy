@@ -156,6 +156,11 @@ void makeTwinkles(EC::AnimationRepo &repo)
     repo.add(new EC::Twinkles_FL(leds, NUM_LEDS));
 }
 
+void makeWaterfall(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::Waterfall_FL(leds, NUM_LEDS));
+}
+
 //------------------------------------------------------------------------------
 
 EC::AnimationBuilderFct allAnimations[] = {
@@ -165,6 +170,7 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeBlobs,
     &makeRainbowTwinkle,
     &makePride,
+    &makeWaterfall,
     &makeBalls,
     &makeFire,
     &makeFireAndBalls,
