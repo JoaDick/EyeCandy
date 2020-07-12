@@ -37,9 +37,9 @@ SOFTWARE.
 CRGB leds[NUM_LEDS];
 
 // Animations
-EC::Fire2012_FL<NUM_LEDS> fire2012_FL(leds, NUM_LEDS);
-EC::Pride2015_FL pride2015_FL(leds, NUM_LEDS);
-EC::Kaleidoscope_FL kaleidoscopeOverlay_FL(leds, NUM_LEDS);
+EC::Fire2012<NUM_LEDS> fire2012(leds, NUM_LEDS);
+EC::Pride2015 pride2015(leds, NUM_LEDS);
+EC::Kaleidoscope kaleidoscopeOverlay(leds, NUM_LEDS);
 
 // run max. 8 Animations simultaneously
 EC::AnimationRunnerS animationRunner;
@@ -58,21 +58,21 @@ void setup()
     Serial.println(F("Welcome to EyeCandy"));
 
     // set up Animations to run
-    animationRunner.add(fire2012_FL);
-    animationRunner.add(pride2015_FL);
+    animationRunner.add(fire2012);
+    animationRunner.add(pride2015);
     // Kaleidoscope should be the last one
-    animationRunner.add(kaleidoscopeOverlay_FL);
+    animationRunner.add(kaleidoscopeOverlay);
 
     // calculate new Animation sizes
-    const uint16_t ledCount = kaleidoscopeOverlay_FL.remainLedCount();
+    const uint16_t ledCount = kaleidoscopeOverlay.remainLedCount();
     const uint16_t ledCount1 = ledCount / 2;
     const uint16_t ledCount2 = ledCount - ledCount1;
     // store new Animation sizes
-    fire2012_FL.resizeStrip(ledCount1);
-    pride2015_FL.resizeStrip(ledCount2, ledCount1);
+    fire2012.resizeStrip(ledCount1);
+    pride2015.resizeStrip(ledCount2, ledCount1);
 
     // special Animation settings
-    pride2015_FL.mirrored = true;
+    pride2015.mirrored = true;
 }
 
 //------------------------------------------------------------------------------
@@ -107,7 +107,7 @@ void updateColor()
 
     if (analogValue < 256)
     {
-        fire2012_FL.COOLING = 255 - analogValue;
+        fire2012.COOLING = 255 - analogValue;
     }
 }
 
@@ -119,7 +119,7 @@ void updateSpeed()
 
     if (analogValue < 256)
     {
-        fire2012_FL.SPARKING = analogValue;
+        fire2012.SPARKING = analogValue;
     }
 }
 
@@ -131,11 +131,11 @@ void updateFlip()
 
     if (flipped)
     {
-        fire2012_FL.animationDelay = 15;
+        fire2012.animationDelay = 15;
     }
     else
     {
-        fire2012_FL.animationDelay = 0;
+        fire2012.animationDelay = 0;
     }
 }
 

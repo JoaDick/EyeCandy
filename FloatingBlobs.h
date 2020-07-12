@@ -25,8 +25,8 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBase_FL.h"
-#include "FloatingBlobs/FloatingBlobs.hpp"
+#include "AnimationBaseFL.h"
+#include "FloatingBlobs/FloatingBlobController.hpp"
 
 //------------------------------------------------------------------------------
 
@@ -35,19 +35,19 @@ namespace EC
 
   /** Coloured Blobs floating around.
    */
-  class FloatingBlobs_FL
-      : public AnimationBase_FL
+  class FloatingBlobs
+      : public AnimationBaseFL
   {
-    FloatingBlobs<5> blobs;
+    FloatingBlobController<5> blobs;
 
   public:
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
      */
-    FloatingBlobs_FL(CRGB *ledStrip,
-                     uint16_t ledCount)
-        : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
+    FloatingBlobs(CRGB *ledStrip,
+                  uint16_t ledCount)
+        : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
     {
     }
 

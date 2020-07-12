@@ -44,12 +44,12 @@ const uint8_t PARTICLE_COUNT = 1;
 const uint8_t PARTICLE_COUNT = 5;
 #endif
 
-EC::FadeOut_FL fadeOut_FL(leds, NUM_LEDS, EC::Firework_fadeRate_default());
-EC::Firework_FL<PARTICLE_COUNT> firework1_FL(leds, NUM_LEDS, true, 1500);
-EC::Firework_FL<PARTICLE_COUNT> firework2_FL(leds, NUM_LEDS, true, 3000);
-EC::Firework_FL<PARTICLE_COUNT> firework3_FL(leds, NUM_LEDS, true, 4500);
-EC::Firework_FL<PARTICLE_COUNT> firework4_FL(leds, NUM_LEDS, true, 6000);
-EC::Firework_FL<PARTICLE_COUNT> firework5_FL(leds, NUM_LEDS, true, 7500);
+EC::FadeOut fadeOut(leds, NUM_LEDS, EC::Firework_fadeRate_default());
+EC::Firework<PARTICLE_COUNT> firework1(leds, NUM_LEDS, true, 1500);
+EC::Firework<PARTICLE_COUNT> firework2(leds, NUM_LEDS, true, 3000);
+EC::Firework<PARTICLE_COUNT> firework3(leds, NUM_LEDS, true, 4500);
+EC::Firework<PARTICLE_COUNT> firework4(leds, NUM_LEDS, true, 6000);
+EC::Firework<PARTICLE_COUNT> firework5(leds, NUM_LEDS, true, 7500);
 
 // run max. 8 Animations simultaneously
 EC::AnimationRunnerS animationRunner;
@@ -66,13 +66,13 @@ void setup()
 
     random16_set_seed(analogRead(A3));
 
-    animationRunner.add(fadeOut_FL);
-    animationRunner.add(firework1_FL);
+    animationRunner.add(fadeOut);
+    animationRunner.add(firework1);
 #ifndef FIREWORK_DEBUG
-    animationRunner.add(firework2_FL);
-    animationRunner.add(firework3_FL);
-    animationRunner.add(firework4_FL);
-    animationRunner.add(firework5_FL);
+    animationRunner.add(firework2);
+    animationRunner.add(firework3);
+    animationRunner.add(firework4);
+    animationRunner.add(firework5);
 #endif
 }
 

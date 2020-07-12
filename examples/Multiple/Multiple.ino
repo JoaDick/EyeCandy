@@ -38,11 +38,11 @@ SOFTWARE.
 CRGB leds[NUM_LEDS];
 
 // Patterns
-EC::Rainbow_FL rainbow_FL(leds, NUM_LEDS);
-EC::RgbBlocks_FL rgbBlocks_FL(leds, NUM_LEDS);
+EC::Rainbow rainbow(leds, NUM_LEDS);
+EC::RgbBlocks rgbBlocks(leds, NUM_LEDS);
 
 // Overlays
-EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
+EC::MovingDot movingDotOverlay(leds, NUM_LEDS, true);
 
 // run max. 8 Animations simultaneously
 EC::AnimationRunnerS animationRunner;
@@ -61,19 +61,19 @@ void setup()
     Serial.println(F("Welcome to EyeCandy"));
 
     // set up Animations to run
-    animationRunner.add(rainbow_FL);
-    animationRunner.add(rgbBlocks_FL);
-    animationRunner.add(movingDotOverlay_FL);
+    animationRunner.add(rainbow);
+    animationRunner.add(rgbBlocks);
+    animationRunner.add(movingDotOverlay);
 
     // Rainbow in the lower half
-    rainbow_FL.resizeStrip(NUM_LEDS / 2);
-    rainbow_FL.volume = 128;
+    rainbow.resizeStrip(NUM_LEDS / 2);
+    rainbow.volume = 128;
 
     // RGB blocks in the upper half
-    rgbBlocks_FL.resizeStrip(NUM_LEDS / 2, NUM_LEDS / 2);
+    rgbBlocks.resizeStrip(NUM_LEDS / 2, NUM_LEDS / 2);
 
     // Moving dot overlay in the middle, using 2/3 of the entire strip
-    movingDotOverlay_FL.resizeStrip(2 * NUM_LEDS / 3, NUM_LEDS / 6);
+    movingDotOverlay.resizeStrip(2 * NUM_LEDS / 3, NUM_LEDS / 6);
 }
 
 //------------------------------------------------------------------------------
@@ -110,10 +110,10 @@ void updateColor()
     {
         const uint8_t hue = analogValue;
 
-        rainbow_FL.volume = hue;
-        rgbBlocks_FL.blockSize = hue / 10;
+        rainbow.volume = hue;
+        rgbBlocks.blockSize = hue / 10;
 
-        movingDotOverlay_FL.foregroundColor = CHSV(hue + 64, 255, 255);
+        movingDotOverlay.foregroundColor = CHSV(hue + 64, 255, 255);
     }
 }
 
@@ -128,10 +128,10 @@ void updateSpeed()
         const uint8_t animationSpeed = analogValue;
         const uint8_t animationDelay = animationSpeed ? 256 - animationSpeed : 0;
 
-        rainbow_FL.animationDelay = animationDelay;
-        rgbBlocks_FL.animationDelay = 8 * animationDelay;
+        rainbow.animationDelay = animationDelay;
+        rgbBlocks.animationDelay = 8 * animationDelay;
 
-        movingDotOverlay_FL.animationDelay = 2 * animationDelay;
+        movingDotOverlay.animationDelay = 2 * animationDelay;
     }
 }
 
@@ -141,8 +141,8 @@ void updateFlip()
 {
     const bool flipped = !digitalRead(PIN_FLIP_BTN);
 
-    rainbow_FL.mirrored = flipped;
-    rgbBlocks_FL.mirrored = flipped;
+    rainbow.mirrored = flipped;
+    rgbBlocks.mirrored = flipped;
 }
 
 //------------------------------------------------------------------------------

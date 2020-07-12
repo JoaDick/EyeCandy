@@ -161,7 +161,7 @@
   <ItemGroup>
     <ClInclude Include="Blob.hpp" />
     <ClInclude Include="BlobList.hpp" />
-    <ClInclude Include="FloatingBlobs.hpp" />
+    <ClInclude Include="FloatingBlobController.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\intern\ArduinoEmu\ArduinoEmu.vcxproj">

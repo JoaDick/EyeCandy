@@ -25,75 +25,69 @@ SOFTWARE.
 
 *******************************************************************************/
 
-// #define WATERFALL_DEBUG
-
-#include "AnimationBase_FL.h"
-#include "intern/WaterfallDroplet.h"
+#include "AnimationBaseFL.h"
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /// A Waterfall Animation.
-  class Waterfall_FL
-      : public AnimationBase_FL
+  /** An Overlay that multiplies a part of the LED strip like a Kaleidoscope.
+   */
+  class Kaleidoscope
+      : public AnimationBaseFL
   {
-#ifdef WATERFALL_DEBUG
-    static const uint8_t DROPLET_COUNT = 1;
-#else
-    static const uint8_t DROPLET_COUNT = 15;
-#endif
+    uint16_t _remainLedCount;
 
   public:
-    /** Fading speed.
-     * Lower value = longer glowing.
-     * This setting can be adjusted at runtime.
-     */
-    uint8_t fadeRate = fadeRate_default();
-    static uint8_t fadeRate_default() { return 100; }
-
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
      */
-    Waterfall_FL(CRGB *ledStrip,
+    Kaleidoscope(CRGB *ledStrip,
                  uint16_t ledCount)
-        : AnimationBase_FL(TYPE_FADING_PATTERN, ledStrip, ledCount)
+        : AnimationBaseFL(TYPE_OVERLAY, ledStrip, ledCount), _remainLedCount((ledCount + 1) / 2)
     {
+      // we want the mirror effect by default
+      AnimationBaseFL::mirrored = true;
+    }
+
+    /** Get the number of LEDs that may be used by the underlying Animation.
+     * Use other's #setLedCount() method to store this value.
+     */
+    uint16_t remainLedCount()
+    {
+      return _remainLedCount;
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    uint8_t showPattern(uint32_t currentMillis) override
-    {
-      blur1d(ledStrip, ledCount, 1);
-      // fadeToBlackBy(ledStrip, ledCount, fadeRate);
-      showOverlay(currentMillis);
-      return 0;
-    }
-
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      for (uint8_t i = 0; i < DROPLET_COUNT; ++i)
-      {
-        _droplets[i].show(*this);
-      }
+      copyPixel(ledStrip, ledStrip + ledCount / 2, _remainLedCount, mirrored);
     }
 
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    void copyPixel(CRGB *from, CRGB *to, uint16_t count, bool flip)
     {
-      const uint16_t animationDelay = getAnimationDelay();
-      for (uint8_t i = 0; i < DROPLET_COUNT; ++i)
+      if (flip)
       {
-        _droplets[i].update(animationDelay);
+        CRGB *src = from;
+        CRGB *dst = to + count - 1;
+        while (count--)
+        {
+          *(dst--) = *(src++);
+        }
+      }
+      else
+      {
+        CRGB *src = from;
+        CRGB *dst = to;
+        while (count--)
+        {
+          *(dst++) = *(src++);
+        }
       }
     }
-
-  private:
-    WaterfallDroplet _droplets[DROPLET_COUNT];
   };
 
 } // namespace EC

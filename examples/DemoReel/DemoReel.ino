@@ -68,17 +68,17 @@ uint16_t animationDuration = defaultAnimationDuration;
 
 void makeBalls(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::BouncingBalls_FL<>(leds, NUM_LEDS));
+    repo.add(new EC::BouncingBalls<>(leds, NUM_LEDS));
 }
 
 void makeBlobs(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::FloatingBlobs_FL(leds, NUM_LEDS));
+    repo.add(new EC::FloatingBlobs(leds, NUM_LEDS));
 }
 
 void makeFire(EC::AnimationRepo &repo)
 {
-    auto fire = new EC::Fire2012_FL<NUM_LEDS>(leds, NUM_LEDS);
+    auto fire = new EC::Fire2012<NUM_LEDS>(leds, NUM_LEDS);
     auto fireChanger = new EC::Fire2012Changer<NUM_LEDS>(*fire);
 
     repo.add(fireChanger);
@@ -87,12 +87,12 @@ void makeFire(EC::AnimationRepo &repo)
 
 void makeFireAndBalls(EC::AnimationRepo &repo)
 {
-    auto fire = new EC::Fire2012_FL<NUM_LEDS>(leds, NUM_LEDS);
+    auto fire = new EC::Fire2012<NUM_LEDS>(leds, NUM_LEDS);
     fire->COOLING = 155;
     fire->SPARKING = 75;
     fire->animationDelay = 10;
 
-    auto balls = new EC::BouncingBalls_FL<>(leds, NUM_LEDS, true);
+    auto balls = new EC::BouncingBalls<>(leds, NUM_LEDS, true);
     balls->mirrored = true;
 
     repo.add(fire);
@@ -101,32 +101,32 @@ void makeFireAndBalls(EC::AnimationRepo &repo)
 
 void makeFireworks(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::FadeOut_FL(leds, NUM_LEDS, EC::Firework_fadeRate_default()));
-    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 1500));
-    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 3000));
-    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 4500));
-    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 6000));
-    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 7500));
+    repo.add(new EC::FadeOut(leds, NUM_LEDS, EC::Firework_fadeRate_default()));
+    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 1500));
+    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 3000));
+    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 4500));
+    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 6000));
+    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 7500));
     animationDuration = 3 * defaultAnimationDuration;
 }
 
 void makeFlare(EC::AnimationRepo &repo)
 {
     const uint16_t fireLedCount = NUM_LEDS / 2 + NUM_LEDS / 10;
-    auto fire = new EC::Fire2012_FL<NUM_LEDS>(leds, fireLedCount);
+    auto fire = new EC::Fire2012<NUM_LEDS>(leds, fireLedCount);
     fire->SPARKING = 75;
     fire->animationDelay = 10;
     fire->mirrored = true;
 
     repo.add(fire);
-    repo.add(new EC::Kaleidoscope_FL(leds, NUM_LEDS));
+    repo.add(new EC::Kaleidoscope(leds, NUM_LEDS));
 }
 
 void makePride(EC::AnimationRepo &repo)
 {
-    auto kaleidoscope = new EC::Kaleidoscope_FL(leds, NUM_LEDS);
+    auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
 
-    auto pride = new EC::Pride2015_FL(leds, NUM_LEDS);
+    auto pride = new EC::Pride2015(leds, NUM_LEDS);
     pride->resizeStrip(kaleidoscope->remainLedCount());
     pride->mirrored = true;
 
@@ -136,29 +136,29 @@ void makePride(EC::AnimationRepo &repo)
 
 void makeRainbow(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::Rainbow_FL(leds, NUM_LEDS));
+    repo.add(new EC::Rainbow(leds, NUM_LEDS));
 }
 
 void makeRainbowBuiltin(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::RainbowBuiltin_FL(leds, NUM_LEDS));
+    repo.add(new EC::RainbowBuiltin(leds, NUM_LEDS));
 }
 
 void makeRainbowTwinkle(EC::AnimationRepo &repo)
 {
-    auto rainbow = new EC::RainbowTwinkle_FL(leds, NUM_LEDS);
+    auto rainbow = new EC::RainbowTwinkle(leds, NUM_LEDS);
     rainbow->animationDelay = 25;
     repo.add(rainbow);
 }
 
 void makeTwinkles(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::Twinkles_FL(leds, NUM_LEDS));
+    repo.add(new EC::Twinkles(leds, NUM_LEDS));
 }
 
 void makeWaterfall(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::Waterfall_FL(leds, NUM_LEDS));
+    repo.add(new EC::Waterfall(leds, NUM_LEDS));
 }
 
 //------------------------------------------------------------------------------

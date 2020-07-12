@@ -25,35 +25,35 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBase_FL.h"
+#include "AnimationBaseFL.h"
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /** Just fade out the current content of the LED strip.
-   * Useful as trigger Pattern in combination with other Overlays.
+  /** A Pattern that renders all LEDs with the same color.
+   * Mainly intended as example, but can also be used in combination with Overlays.
    */
-  class FadeOut_FL
-      : public AnimationBase_FL
+  class StaticBackground
+      : public AnimationBaseFL
   {
   public:
-    /** Fading speed.
-     * Lower value = longer glowing.
+    /** Fill LED strip with this color.
      * This setting can be adjusted at runtime.
      */
-    uint8_t fadeRate = fadeRate_default();
-    static uint8_t fadeRate_default() { return 50; }
+    CRGB backgroundColor = backgroundColor_default();
+    static CRGB backgroundColor_default() { return CRGB::Black; }
 
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
+     * @param backgroundColor  Fill LED strip with this color.
      */
-    FadeOut_FL(CRGB *ledStrip,
-               uint16_t ledCount,
-               uint8_t fadeRate = fadeRate_default())
-        : AnimationBase_FL(TYPE_FADING_PATTERN, ledStrip, ledCount), fadeRate(fadeRate)
+    StaticBackground(CRGB *ledStrip,
+                     uint16_t ledCount,
+                     const CRGB &backgroundColor = backgroundColor_default())
+        : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount), backgroundColor(backgroundColor)
     {
     }
 
@@ -61,7 +61,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     uint8_t showPattern(uint32_t currentMillis) override
     {
-      fadeToBlackBy(ledStrip, ledCount, fadeRate);
+      fill_solid(ledStrip, ledCount, backgroundColor);
       return 0;
     }
   };

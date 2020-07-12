@@ -41,26 +41,26 @@ CRGB leds[NUM_LEDS];
 
 #if (EnableStaticPatterns)
 // Patterns
-EC::BouncingBalls_FL<> bouncingBalls_FL(leds, NUM_LEDS);
-// EC::FadeOut_FL fadeOut_FL(leds, NUM_LEDS);
-EC::Fire2012_FL<NUM_LEDS> fire2012_FL(leds, NUM_LEDS);
-EC::FloatingBlobs_FL floatingBlobs_FL(leds, NUM_LEDS);
-EC::Glitter_FL glitter_FL(leds, NUM_LEDS, false);
-EC::MovingDot_FL movingDot_FL(leds, NUM_LEDS);
-EC::Pride2015_FL pride2015_FL(leds, NUM_LEDS);
-EC::Rainbow_FL rainbow_FL(leds, NUM_LEDS);
-// EC::RainbowBuiltin_FL rainbowBuiltin_FL(leds, NUM_LEDS);
-EC::RainbowTwinkle_FL rainbowTwinkle_FL(leds, NUM_LEDS);
-// EC::RgbBlocks_FL rgbBlocks_FL(leds, NUM_LEDS);
-// EC::StaticBackground_FL staticBackground_FL(leds, NUM_LEDS, CRGB(0, 10, 0));
-EC::Twinkles_FL twinkles_FL(leds, NUM_LEDS);
+EC::BouncingBalls<> bouncingBalls(leds, NUM_LEDS);
+// EC::FadeOut fadeOut(leds, NUM_LEDS);
+EC::Fire2012<NUM_LEDS> fire2012(leds, NUM_LEDS);
+EC::FloatingBlobs floatingBlobs(leds, NUM_LEDS);
+EC::Glitter glitter(leds, NUM_LEDS, false);
+EC::MovingDot movingDot(leds, NUM_LEDS);
+EC::Pride2015 pride2015(leds, NUM_LEDS);
+EC::Rainbow rainbow(leds, NUM_LEDS);
+// EC::RainbowBuiltin rainbowBuiltin(leds, NUM_LEDS);
+EC::RainbowTwinkle rainbowTwinkle(leds, NUM_LEDS);
+// EC::RgbBlocks rgbBlocks(leds, NUM_LEDS);
+// EC::StaticBackground staticBackground(leds, NUM_LEDS, CRGB(0, 10, 0));
+EC::Twinkles twinkles(leds, NUM_LEDS);
 
 // Overlays
-EC::BouncingBalls_FL<> bouncingBallsOverlay_FL(leds, NUM_LEDS, true);
-EC::Glitter_FL glitterOverlay_FL(leds, NUM_LEDS, true);
-EC::Kaleidoscope_FL kaleidoscopeOverlay_FL(leds, NUM_LEDS);
-EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
-EC::Twinkles_FL twinklesOverlay_FL(leds, NUM_LEDS, true);
+EC::BouncingBalls<> bouncingBallsOverlay(leds, NUM_LEDS, true);
+EC::Glitter glitterOverlay(leds, NUM_LEDS, true);
+EC::Kaleidoscope kaleidoscopeOverlay(leds, NUM_LEDS);
+EC::MovingDot movingDotOverlay(leds, NUM_LEDS, true);
+EC::Twinkles twinklesOverlay(leds, NUM_LEDS, true);
 #endif
 
 // run max. 16 Animations simultaneously
@@ -89,27 +89,27 @@ void setup()
 
 #if (EnableStaticPatterns)
     // Base Animation (select one)
-    // animationRunner.add(bouncingBalls_FL);
-    // animationRunner.add(fadeOut_FL);
-    // animationRunner.add(fire2012_FL);
-    // animationRunner.add(floatingBlobs_FL);
-    // animationRunner.add(glitter_FL);
-    // animationRunner.add(movingDot_FL);
-    // animationRunner.add(pride2015_FL);
-    // animationRunner.add(rainbow_FL);
-    // animationRunner.add(rainbowBuiltin_FL);
-    // animationRunner.add(rainbowTwinkle_FL);
-    // animationRunner.add(rgbBlocks_FL);
-    // animationRunner.add(staticBackground_FL);
-    // animationRunner.add(twinkles_FL);
+    // animationRunner.add(bouncingBalls);
+    // animationRunner.add(fadeOut);
+    // animationRunner.add(fire2012);
+    // animationRunner.add(floatingBlobs);
+    // animationRunner.add(glitter);
+    // animationRunner.add(movingDot);
+    // animationRunner.add(pride2015);
+    // animationRunner.add(rainbow);
+    // animationRunner.add(rainbowBuiltin);
+    // animationRunner.add(rainbowTwinkle);
+    // animationRunner.add(rgbBlocks);
+    // animationRunner.add(staticBackground);
+    // animationRunner.add(twinkles);
 
     // Overlays
-    // animationRunner.add(bouncingBallsOverlay_FL);
-    // animationRunner.add(glitterOverlay_FL);
-    // animationRunner.add(movingDotOverlay_FL);
-    // animationRunner.add(twinklesOverlay_FL);
+    // animationRunner.add(bouncingBallsOverlay);
+    // animationRunner.add(glitterOverlay);
+    // animationRunner.add(movingDotOverlay);
+    // animationRunner.add(twinklesOverlay);
 
-    // animationRunner.add(kaleidoscopeOverlay_FL);
+    // animationRunner.add(kaleidoscopeOverlay);
 #endif
 }
 
@@ -118,40 +118,40 @@ void setup()
 #if (EnableStaticPatterns)
 void makeAnimation0(EC::AnimationRepo &repo)
 {
-    repo.add(pride2015_FL);
-    pride2015_FL.resizeStrip(kaleidoscopeOverlay_FL.remainLedCount());
-    pride2015_FL.mirrored = true;
-    repo.add(kaleidoscopeOverlay_FL);
-    // repo.add(movingDotOverlay_FL);
-    // repo.add(glitterOverlay_FL);
+    repo.add(pride2015);
+    pride2015.resizeStrip(kaleidoscopeOverlay.remainLedCount());
+    pride2015.mirrored = true;
+    repo.add(kaleidoscopeOverlay);
+    // repo.add(movingDotOverlay);
+    // repo.add(glitterOverlay);
 }
 
 void makeAnimation1(EC::AnimationRepo &repo)
 {
-    repo.add(floatingBlobs_FL);
-    repo.add(glitterOverlay_FL);
+    repo.add(floatingBlobs);
+    repo.add(glitterOverlay);
 }
 
 void makeAnimation2(EC::AnimationRepo &repo)
 {
-    repo.add(rainbowTwinkle_FL);
-    rainbowTwinkle_FL.animationDelay = 25;
+    repo.add(rainbowTwinkle);
+    rainbowTwinkle.animationDelay = 25;
 }
 
 void makeAnimation3(EC::AnimationRepo &repo)
 {
-    repo.add(fire2012_FL);
-    fire2012_FL.COOLING = 155;
-    fire2012_FL.SPARKING = 75;
-    fire2012_FL.animationDelay = 10;
-    repo.add(bouncingBallsOverlay_FL);
-    bouncingBallsOverlay_FL.mirrored = true;
+    repo.add(fire2012);
+    fire2012.COOLING = 155;
+    fire2012.SPARKING = 75;
+    fire2012.animationDelay = 10;
+    repo.add(bouncingBallsOverlay);
+    bouncingBallsOverlay.mirrored = true;
 }
 #endif
 
 void makeFire(EC::AnimationRepo &repo)
 {
-    auto fire = new EC::Fire2012_FL<NUM_LEDS>(leds, NUM_LEDS);
+    auto fire = new EC::Fire2012<NUM_LEDS>(leds, NUM_LEDS);
     auto fireChanger = new EC::Fire2012Changer<NUM_LEDS>(*fire);
 
     repo.add(fireChanger);
@@ -160,29 +160,29 @@ void makeFire(EC::AnimationRepo &repo)
 
 void makeFireworks(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::FadeOut_FL(leds, NUM_LEDS, EC::Firework_fadeRate_default()));
-    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 1500));
-    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 3000));
-    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 4500));
-    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 6000));
-    repo.add(new EC::Firework_FL<>(leds, NUM_LEDS, true, 7500));
+    repo.add(new EC::FadeOut(leds, NUM_LEDS, EC::Firework_fadeRate_default()));
+    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 1500));
+    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 3000));
+    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 4500));
+    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 6000));
+    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 7500));
 }
 
 void makeFlare(EC::AnimationRepo &repo)
 {
     const uint16_t fireLedCount = NUM_LEDS / 2 + NUM_LEDS / 10;
-    auto fire = new EC::Fire2012_FL<NUM_LEDS>(leds, fireLedCount);
+    auto fire = new EC::Fire2012<NUM_LEDS>(leds, fireLedCount);
     fire->SPARKING = 75;
     fire->animationDelay = 10;
     fire->mirrored = true;
 
     repo.add(fire);
-    repo.add(new EC::Kaleidoscope_FL(leds, NUM_LEDS));
+    repo.add(new EC::Kaleidoscope(leds, NUM_LEDS));
 }
 
 void makeWaterfall(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::Waterfall_FL(leds, NUM_LEDS));
+    repo.add(new EC::Waterfall(leds, NUM_LEDS));
 }
 
 //------------------------------------------------------------------------------
@@ -303,19 +303,19 @@ void updateColor()
         animationChanger.maxBrightness = analogValue;
 
 #if (EnableStaticPatterns)
-        fire2012_FL.COOLING = 255 - hue;
-        glitter_FL.effectRate = hue;
-        movingDot_FL.foregroundColor = CHSV(hue, 255, 255);
-        movingDot_FL.backgroundColor = CHSV(hue + 128, 255, 64);
-        rainbow_FL.volume = hue;
-        // rainbowBuiltin_FL.deltahue = hue / 10;
-        // rgbBlocks_FL.blockSize = hue / 10;
-        // staticBackground_FL.backgroundColor = CHSV(hue + 128, 255, 128);
-        twinkles_FL.effectRate = hue;
+        fire2012.COOLING = 255 - hue;
+        glitter.effectRate = hue;
+        movingDot.foregroundColor = CHSV(hue, 255, 255);
+        movingDot.backgroundColor = CHSV(hue + 128, 255, 64);
+        rainbow.volume = hue;
+        // rainbowBuiltin.deltahue = hue / 10;
+        // rgbBlocks.blockSize = hue / 10;
+        // staticBackground.backgroundColor = CHSV(hue + 128, 255, 128);
+        twinkles.effectRate = hue;
 
-        glitterOverlay_FL.effectRate = hue;
-        movingDotOverlay_FL.foregroundColor = CHSV(hue + 64, 255, 255);
-        twinklesOverlay_FL.effectRate = hue;
+        glitterOverlay.effectRate = hue;
+        movingDotOverlay.foregroundColor = CHSV(hue + 64, 255, 255);
+        twinklesOverlay.effectRate = hue;
 #endif
     }
 }
@@ -342,15 +342,15 @@ void updateSpeed()
         }
 
 #if (EnableStaticPatterns)
-        fire2012_FL.SPARKING = animationSpeed;
-        movingDot_FL.animationDelay = animationDelay;
-        rainbow_FL.animationDelay = animationDelay;
-        // rainbowBuiltin_FL.animationDelay = animationDelay;
-        rainbowTwinkle_FL.animationDelay = animationDelay;
-        // rgbBlocks_FL.animationDelay = 8 * animationDelay;
-        twinkles_FL.fadeRate = animationSpeed;
+        fire2012.SPARKING = animationSpeed;
+        movingDot.animationDelay = animationDelay;
+        rainbow.animationDelay = animationDelay;
+        // rainbowBuiltin.animationDelay = animationDelay;
+        rainbowTwinkle.animationDelay = animationDelay;
+        // rgbBlocks.animationDelay = 8 * animationDelay;
+        twinkles.fadeRate = animationSpeed;
 
-        movingDotOverlay_FL.animationDelay = 2 * animationDelay;
+        movingDotOverlay.animationDelay = 2 * animationDelay;
 #endif
     }
 }
@@ -362,17 +362,17 @@ void updateFlip()
     const bool flipped = !digitalRead(PIN_FLIP_BTN);
 
 #if (EnableStaticPatterns)
-    rainbow_FL.mirrored = flipped;
-    // rgbBlocks_FL.mirrored = flipped;
+    rainbow.mirrored = flipped;
+    // rgbBlocks.mirrored = flipped;
 
     if (flipped)
     {
-        fire2012_FL.animationDelay = 15;
+        fire2012.animationDelay = 15;
     }
     else
     {
-        fire2012_FL.animationDelay = 0;
-        fire2012_FL.gPal = EC::Fire2012_gPal_default();
+        fire2012.animationDelay = 0;
+        fire2012.gPal = EC::Fire2012_gPal_default();
     }
 #endif
 }
@@ -386,57 +386,57 @@ void printMemoryUsage()
     Serial.println(F(" LEDs:"));
     Serial.println(F("<*> is dependant on NUM_LEDS"));
 
-    Serial.print(F("BouncingBalls_FL<> = "));
-    Serial.println(sizeof(EC::BouncingBalls_FL<>));
+    Serial.print(F("BouncingBalls<> = "));
+    Serial.println(sizeof(EC::BouncingBalls<>));
 
-    Serial.print(F("FadeOut_FL = "));
-    Serial.println(sizeof(EC::FadeOut_FL));
+    Serial.print(F("FadeOut = "));
+    Serial.println(sizeof(EC::FadeOut));
 
-    Serial.print(F("Fire2012_FL<*> = "));
-    Serial.println(sizeof(EC::Fire2012_FL<NUM_LEDS>));
+    Serial.print(F("Fire2012<*> = "));
+    Serial.println(sizeof(EC::Fire2012<NUM_LEDS>));
     Serial.print(F("Fire2012Changer = "));
     Serial.println(sizeof(EC::Fire2012Changer<NUM_LEDS>));
 
-    Serial.print(F("Firework_FL<> = "));
-    Serial.println(sizeof(EC::Firework_FL<>));
+    Serial.print(F("Firework<> = "));
+    Serial.println(sizeof(EC::Firework<>));
     Serial.print(F("FireworkParticle = "));
     Serial.println(sizeof(EC::FireworkParticle));
 
-    Serial.print(F("FloatingBlobs_FL = "));
-    Serial.println(sizeof(EC::FloatingBlobs_FL));
+    Serial.print(F("FloatingBlobs = "));
+    Serial.println(sizeof(EC::FloatingBlobs));
 
-    Serial.print(F("Glitter_FL = "));
-    Serial.println(sizeof(EC::Glitter_FL));
+    Serial.print(F("Glitter = "));
+    Serial.println(sizeof(EC::Glitter));
 
-    Serial.print(F("Kaleidoscope_FL = "));
-    Serial.println(sizeof(EC::Kaleidoscope_FL));
+    Serial.print(F("Kaleidoscope = "));
+    Serial.println(sizeof(EC::Kaleidoscope));
 
-    Serial.print(F("MovingDot_FL = "));
-    Serial.println(sizeof(EC::MovingDot_FL));
+    Serial.print(F("MovingDot = "));
+    Serial.println(sizeof(EC::MovingDot));
 
-    Serial.print(F("Pride2015_FL = "));
-    Serial.println(sizeof(EC::Pride2015_FL));
+    Serial.print(F("Pride2015 = "));
+    Serial.println(sizeof(EC::Pride2015));
 
-    Serial.print(F("Rainbow_FL = "));
-    Serial.println(sizeof(EC::Rainbow_FL));
+    Serial.print(F("Rainbow = "));
+    Serial.println(sizeof(EC::Rainbow));
 
-    Serial.print(F("RainbowBuiltin_FL = "));
-    Serial.println(sizeof(EC::RainbowBuiltin_FL));
+    Serial.print(F("RainbowBuiltin = "));
+    Serial.println(sizeof(EC::RainbowBuiltin));
 
-    Serial.print(F("RainbowTwinkle_FL = "));
-    Serial.println(sizeof(EC::RainbowTwinkle_FL));
+    Serial.print(F("RainbowTwinkle = "));
+    Serial.println(sizeof(EC::RainbowTwinkle));
 
-    Serial.print(F("RgbBlocks_FL = "));
-    Serial.println(sizeof(EC::RgbBlocks_FL));
+    Serial.print(F("RgbBlocks = "));
+    Serial.println(sizeof(EC::RgbBlocks));
 
-    Serial.print(F("StaticBackground_FL = "));
-    Serial.println(sizeof(EC::StaticBackground_FL));
+    Serial.print(F("StaticBackground = "));
+    Serial.println(sizeof(EC::StaticBackground));
 
-    Serial.print(F("Twinkles_FL = "));
-    Serial.println(sizeof(EC::Twinkles_FL));
+    Serial.print(F("Twinkles = "));
+    Serial.println(sizeof(EC::Twinkles));
 
-    Serial.print(F("Waterfall_FL = "));
-    Serial.println(sizeof(EC::Waterfall_FL));
+    Serial.print(F("Waterfall = "));
+    Serial.println(sizeof(EC::Waterfall));
     Serial.print(F("WaterfallDroplet = "));
     Serial.println(sizeof(EC::WaterfallDroplet));
 }

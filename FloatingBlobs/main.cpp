@@ -28,7 +28,7 @@ SOFTWARE.
 #define FLOATING_BLOBS_SIMU 1
 
 #include "Arduino.h"
-#include "FloatingBlobs.hpp"
+#include "FloatingBlobController.hpp"
 
 //------------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ const uint16_t LED_COUNT = 90;
 
 CRGB leds[LED_COUNT];
 
-FloatingBlobs<5> blobs;
+FloatingBlobController<5> blobs;
 
 //------------------------------------------------------------------------------
 

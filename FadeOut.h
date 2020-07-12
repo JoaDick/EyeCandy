@@ -25,52 +25,35 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBase_FL.h"
+#include "AnimationBaseFL.h"
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /** An Animation that uses FastLED's builtin fill_rainbow() function.
-   * In case you observe a random red pixel in the pattern, that is a known bug:
-   * // https://github.com/FastLED/FastLED/issues/668
-   * @note This was a very early EyeCandy example.
-   * Consider using #Rainbow_FL, which offers many more configuration
-   * possibilities.
+  /** Just fade out the current content of the LED strip.
+   * Useful as trigger Pattern in combination with other Overlays.
    */
-  class RainbowBuiltin_FL
-      : public AnimationBase_FL
+  class FadeOut
+      : public AnimationBaseFL
   {
-    uint8_t _hue = 0;
-
   public:
-    /** "Stretch" of the rainbow pattern.
-     * 0 means all LEDs have the same color.
-     * The higher the value, the more of the rainbow(s) are shown.
-     * Values up to ~25 look fine.
+    /** Fading speed.
+     * Lower value = longer glowing.
      * This setting can be adjusted at runtime.
      */
-    uint8_t deltahue = deltahue_default();
-    static uint8_t deltahue_default() { return 4; }
+    uint8_t fadeRate = fadeRate_default();
+    static uint8_t fadeRate_default() { return 50; }
 
-    /** Delay between updating the Animation (in ms).
-     * 0 means freeze (don't update the animation).
-     * This setting can be adjusted at runtime.
-     * @note This delay influences the "Animation speed", but not the LED
-     * refresh rate.
-     */
-    uint16_t animationDelay = animationDelay_default();
-    static uint16_t animationDelay_default() { return 35; }
-
-    /** Constructor.
+    /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
-     * @param deltahue  "Stretch" of the rainbow pattern.
      */
-    RainbowBuiltin_FL(CRGB *ledStrip,
-                      uint16_t ledCount)
-        : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
+    FadeOut(CRGB *ledStrip,
+            uint16_t ledCount,
+            uint8_t fadeRate = fadeRate_default())
+        : AnimationBaseFL(TYPE_FADING_PATTERN, ledStrip, ledCount), fadeRate(fadeRate)
     {
     }
 
@@ -78,20 +61,8 @@ namespace EC
     /// @see AnimationBase::showPattern()
     uint8_t showPattern(uint32_t currentMillis) override
     {
-      fill_rainbow(ledStrip, ledCount, _hue, deltahue);
+      fadeToBlackBy(ledStrip, ledCount, fadeRate);
       return 0;
-    }
-
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
-    {
-      ++_hue;
-    }
-
-    /// @see AnimationBase::getAnimationDelay()
-    uint16_t getAnimationDelay() override
-    {
-      return animationDelay;
     }
   };
 

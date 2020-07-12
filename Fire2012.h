@@ -26,7 +26,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBase_FL.h"
+#include "AnimationBaseFL.h"
 
 //------------------------------------------------------------------------------
 
@@ -47,13 +47,13 @@ namespace EC
   /// Third, here's a simpler, three-step gradient, from black to red to white
   inline CRGBPalette16 Fire2012_gPal_BlackRedWhite() { return CRGBPalette16(CRGB::Black, CRGB::Red, CRGB::White); }
 
-  /// Default value for #Fire2012_FL::COOLING
+  /// Default value for #Fire2012::COOLING
   inline uint8_t Fire2012_COOLING_default() { return 75 /* 55 */; }
 
-  /// Default value for #Fire2012_FL::SPARKING
+  /// Default value for #Fire2012::SPARKING
   inline fract8 Fire2012_SPARKING_default() { return 120; }
 
-  /// Default value for #Fire2012_FL::animationDelay
+  /// Default value for #Fire2012::animationDelay
   inline uint16_t Fire2012_animationDelay_default() { return 0; }
 
   /** Fire2012 with programmable Color Palette
@@ -89,7 +89,7 @@ namespace EC
   in step 3 above).
   */
   template <uint16_t NUM_LEDS>
-  class Fire2012_FL : public AnimationBase_FL
+  class Fire2012 : public AnimationBaseFL
   {
     static const uint16_t FRAMES_PER_SECOND = 60;
 
@@ -127,9 +127,9 @@ namespace EC
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
      */
-    Fire2012_FL(CRGB *ledStrip,
-                uint16_t ledCount)
-        : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
+    Fire2012(CRGB *ledStrip,
+             uint16_t ledCount)
+        : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
     {
     }
 
@@ -195,7 +195,7 @@ namespace EC
         byte colorindex = scale8(heat[j], 240);
         CRGB color = ColorFromPalette(gPal, colorindex);
 
-#if (0) // mirroring can be done via base class: AnimationBase_FL::mirrored
+#if (0) // mirroring can be done via base class: AnimationBaseFL::mirrored
         int pixelnumber;
         if (gReverseDirection)
         {

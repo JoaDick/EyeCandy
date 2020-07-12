@@ -25,82 +25,93 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBase_FL.h"
+#include "AnimationBaseFL.h"
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /** Randomly glittering pixels.
-   * Can be used as Pattern or as Overlay.
+  /** Some moving red / green / blue blocks.
+   * Mainly intended for testing LED strips.
    */
-  class Glitter_FL
-      : public AnimationBase_FL
+  class RgbBlocks
+      : public AnimationBaseFL
   {
-    bool _mustAddGlitter = false;
+    static const uint8_t _blockCount = 6;
+    uint16_t _animationCounter = 0;
 
   public:
-    /** Draw the Glitter with this color.
+    /** Number of LEDs per block.
      * This setting can be adjusted at runtime.
      */
-    CRGB foregroundColor = foregroundColor_default();
-    static CRGB foregroundColor_default() { return CRGB::White; }
+    uint8_t blockSize = blockSize_default();
+    static uint8_t blockSize_default() { return 5; }
 
-    /** Effect occurrence rate.
-     * Higher value = more glitter.
+    /** Delay between updating the Animation (in ms).
      * 0 means freeze (don't update the animation).
      * This setting can be adjusted at runtime.
+     * @note This delay influences the "Animation speed", but not the LED
+     * refresh rate.
      */
-    uint8_t effectRate = effectRate_default();
-    static uint8_t effectRate_default() { return 20; }
-
-    /** Fading speed.
-     * Lower value = longer glowing.
-     * This setting can be adjusted at runtime.
-     * It is ignored in Overlay mode.
-     */
-    uint8_t fadeRate = fadeRate_default();
-    static uint8_t fadeRate_default() { return 100; }
+    uint16_t animationDelay = animationDelay_default();
+    static uint16_t animationDelay_default() { return 100; }
 
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
-    Glitter_FL(CRGB *ledStrip,
-               uint16_t ledCount,
-               bool overlayMode = false)
-        : AnimationBase_FL(overlayMode ? TYPE_OVERLAY_FADING : TYPE_FADING_PATTERN, ledStrip, ledCount)
+    RgbBlocks(CRGB *ledStrip,
+              uint16_t ledCount)
+        : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount, mirrored_default())
     {
     }
+
+    static bool mirrored_default() { return true; }
 
   private:
     /// @see AnimationBase::showPattern()
     uint8_t showPattern(uint32_t currentMillis) override
     {
-      fadeToBlackBy(ledStrip, ledCount, fadeRate);
-      showOverlay(currentMillis);
+      static const CRGB colorTable[_blockCount] =
+          {
+              CRGB{0x10, 0x00, 0x00}, // red
+              CRGB{0x00, 0x00, 0x00}, // black
+              CRGB{0x00, 0x10, 0x00}, // green
+              CRGB{0x00, 0x00, 0x00}, // black
+              CRGB{0x00, 0x00, 0x10}, // blue
+              CRGB{0x00, 0x00, 0x00}  // black
+          };
+
+      if (blockSize > 0)
+      {
+        for (uint16_t i = 0; i < ledCount; ++i)
+        {
+          const uint16_t colorIndex = ((i + _animationCounter) / blockSize) % _blockCount;
+          pixel(i) = colorTable[colorIndex];
+        }
+      }
+      else
+      {
+        fill_solid(ledStrip, ledCount, CRGB::Black);
+      }
+
       return 0;
     }
 
     /// @see AnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
     {
-      if (random8() < effectRate)
+      if (++_animationCounter >= _blockCount * blockSize)
       {
-        _mustAddGlitter = true;
+        _animationCounter = 0;
       }
     }
 
-    /// @see AnimationBase::showOverlay()
-    void showOverlay(uint32_t currentMillis) override
+    /// @see AnimationBase::getAnimationDelay()
+    uint16_t getAnimationDelay() override
     {
-      if (_mustAddGlitter)
-      {
-        pixel(random16(ledCount)) = foregroundColor;
-        _mustAddGlitter = false;
-      }
+      return animationDelay;
     }
   };
 

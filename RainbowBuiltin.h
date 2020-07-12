@@ -25,58 +25,52 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBase_FL.h"
+#include "AnimationBaseFL.h"
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /** A dot moving forth and back again.
-   * Example for an Animation that can be used as Pattern and as Overlay.
+  /** An Animation that uses FastLED's builtin fill_rainbow() function.
+   * In case you observe a random red pixel in the pattern, that is a known bug:
+   * // https://github.com/FastLED/FastLED/issues/668
+   * @note This was a very early EyeCandy example.
+   * Consider using #Rainbow, which offers many more configuration
+   * possibilities.
    */
-  class MovingDot_FL
-      : public AnimationBase_FL
+  class RainbowBuiltin
+      : public AnimationBaseFL
   {
-    int16_t _position = 0;
-    bool _rising = false;
+    uint8_t _hue = 0;
 
   public:
-    /** Draw the dot with this color.
+    /** "Stretch" of the rainbow pattern.
+     * 0 means all LEDs have the same color.
+     * The higher the value, the more of the rainbow(s) are shown.
+     * Values up to ~25 look fine.
      * This setting can be adjusted at runtime.
      */
-    CRGB foregroundColor = foregroundColor_default();
-    static CRGB foregroundColor_default() { return CRGB(255, 0, 0); }
+    uint8_t deltahue = deltahue_default();
+    static uint8_t deltahue_default() { return 4; }
 
-    /** Fill LED strip with this color.
-     * This setting can be adjusted at runtime.
-     * It is ignored in Overlay mode.
-     */
-    CRGB backgroundColor = backgroundColor_default();
-    static CRGB backgroundColor_default() { return CRGB(0, 10, 0); }
-
-    /** Delay between moving the dot by 1 pixel (in ms).
-     * 0 makes the dot disappear.
+    /** Delay between updating the Animation (in ms).
+     * 0 means freeze (don't update the animation).
      * This setting can be adjusted at runtime.
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
      */
     uint16_t animationDelay = animationDelay_default();
-    static uint16_t animationDelay_default() { return 20; }
+    static uint16_t animationDelay_default() { return 35; }
 
-    /** Constructor
+    /** Constructor.
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     * @param foregroundColor  Draw the dot with this color.
-     * @param backgroundColor  Fill LED strip with this color.
+     * @param deltahue  "Stretch" of the rainbow pattern.
      */
-    MovingDot_FL(CRGB *ledStrip,
-                 uint16_t ledCount,
-                 bool overlayMode = false,
-                 const CRGB &foregroundColor = foregroundColor_default(),
-                 const CRGB &backgroundColor = backgroundColor_default())
-        : AnimationBase_FL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount), foregroundColor(foregroundColor), backgroundColor(backgroundColor)
+    RainbowBuiltin(CRGB *ledStrip,
+                   uint16_t ledCount)
+        : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
     {
     }
 
@@ -84,37 +78,14 @@ namespace EC
     /// @see AnimationBase::showPattern()
     uint8_t showPattern(uint32_t currentMillis) override
     {
-      fill_solid(ledStrip, ledCount, backgroundColor);
-      showOverlay(currentMillis);
+      fill_rainbow(ledStrip, ledCount, _hue, deltahue);
       return 0;
-    }
-
-    /// @see AnimationBase::showOverlay()
-    void showOverlay(uint32_t currentMillis) override
-    {
-      if (animationDelay)
-      {
-        pixel(_position) = foregroundColor;
-      }
     }
 
     /// @see AnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
     {
-      if (_rising)
-      {
-        if (_position < ledCount - 1)
-          ++_position;
-        else
-          _rising = false;
-      }
-      else
-      {
-        if (_position > 0)
-          --_position;
-        else
-          _rising = true;
-      }
+      ++_hue;
     }
 
     /// @see AnimationBase::getAnimationDelay()

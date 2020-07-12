@@ -37,12 +37,12 @@ SOFTWARE.
 CRGB leds[NUM_LEDS];
 
 // Patterns
-EC::Glitter_FL glitter_FL(leds, NUM_LEDS, false);
-EC::Rainbow_FL rainbow_FL(leds, NUM_LEDS);
+EC::Glitter glitter(leds, NUM_LEDS, false);
+EC::Rainbow rainbow(leds, NUM_LEDS);
 
 // Overlays
-EC::Kaleidoscope_FL kaleidoscopeOverlay_FL(leds, NUM_LEDS);
-EC::MovingDot_FL movingDotOverlay_FL(leds, NUM_LEDS, true);
+EC::Kaleidoscope kaleidoscopeOverlay(leds, NUM_LEDS);
+EC::MovingDot movingDotOverlay(leds, NUM_LEDS, true);
 
 // run max. 8 Animations simultaneously
 EC::AnimationRunnerS animationRunner;
@@ -61,33 +61,33 @@ void setup()
     Serial.println(F("Welcome to EyeCandy"));
 
     // set up Animations to run
-    animationRunner.add(glitter_FL);
-    animationRunner.add(rainbow_FL);
-    animationRunner.add(movingDotOverlay_FL);
+    animationRunner.add(glitter);
+    animationRunner.add(rainbow);
+    animationRunner.add(movingDotOverlay);
     // Kaleidoscope should be the last one
-    animationRunner.add(kaleidoscopeOverlay_FL);
+    animationRunner.add(kaleidoscopeOverlay);
 
     // get remaining size for the core Animations
-    const uint16_t remainLedCount = kaleidoscopeOverlay_FL.remainLedCount();
+    const uint16_t remainLedCount = kaleidoscopeOverlay.remainLedCount();
 
     // Glitter in the lower 1/5
-    glitter_FL.resizeStrip(remainLedCount / 5);
-    glitter_FL.foregroundColor = CRGB(64, 64, 64);
-    glitter_FL.effectRate = 50;
-    glitter_FL.fadeRate = 200;
+    glitter.resizeStrip(remainLedCount / 5);
+    glitter.foregroundColor = CRGB(64, 64, 64);
+    glitter.effectRate = 50;
+    glitter.fadeRate = 200;
 
     // Rainbow in the upper 4/5
-    rainbow_FL.resizeStrip(4 * remainLedCount / 5, remainLedCount / 5);
-    rainbow_FL.mirrored = true;
-    rainbow_FL.animationDelay = 20;
-    rainbow_FL.deltahue = 4;
-    rainbow_FL.volume = 128;
-    rainbow_FL.moreRed = false;
+    rainbow.resizeStrip(4 * remainLedCount / 5, remainLedCount / 5);
+    rainbow.mirrored = true;
+    rainbow.animationDelay = 20;
+    rainbow.deltahue = 4;
+    rainbow.volume = 128;
+    rainbow.moreRed = false;
 
     // moving dot overlay shall cover lower 90% of the remaining strip
-    movingDotOverlay_FL.resizeStrip(9 * remainLedCount / 10);
-    movingDotOverlay_FL.foregroundColor = CRGB::Red;
-    movingDotOverlay_FL.animationDelay = 0;
+    movingDotOverlay.resizeStrip(9 * remainLedCount / 10);
+    movingDotOverlay.foregroundColor = CRGB::Red;
+    movingDotOverlay.animationDelay = 0;
 }
 
 //------------------------------------------------------------------------------
@@ -124,9 +124,9 @@ void updateColor()
     {
         const uint8_t hue = analogValue;
 
-        glitter_FL.effectRate = hue;
+        glitter.effectRate = hue;
 
-        movingDotOverlay_FL.foregroundColor = CHSV(hue, 255, 255);
+        movingDotOverlay.foregroundColor = CHSV(hue, 255, 255);
     }
 }
 
@@ -141,7 +141,7 @@ void updateSpeed()
         const uint8_t animationSpeed = analogValue;
         const uint8_t animationDelay = animationSpeed ? 256 - animationSpeed : 0;
 
-        movingDotOverlay_FL.animationDelay = 2 * animationDelay;
+        movingDotOverlay.animationDelay = 2 * animationDelay;
     }
 }
 
@@ -151,7 +151,7 @@ void updateFlip()
 {
     const bool flipped = !digitalRead(PIN_FLIP_BTN);
 
-    kaleidoscopeOverlay_FL.mirrored = !flipped;
+    kaleidoscopeOverlay.mirrored = !flipped;
 }
 
 //------------------------------------------------------------------------------

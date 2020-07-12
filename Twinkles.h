@@ -25,35 +25,45 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBase_FL.h"
+#include "AnimationBaseFL.h"
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /** A Pattern that renders all LEDs with the same color.
-   * Mainly intended as example, but can also be used in combination with Overlays.
+  /** Some randomly twinkling pixels.
+   * Can be used as Pattern or as Overlay.
    */
-  class StaticBackground_FL
-      : public AnimationBase_FL
+  class Twinkles
+      : public AnimationBaseFL
   {
   public:
-    /** Fill LED strip with this color.
+    /** Effect occurrence rate.
+     * Higher value = more twinkles.
+     * 0 means freeze (don't update the animation).
      * This setting can be adjusted at runtime.
      */
-    CRGB backgroundColor = backgroundColor_default();
-    static CRGB backgroundColor_default() { return CRGB::Black; }
+    uint8_t effectRate = effectRate_default();
+    static uint8_t effectRate_default() { return 50; }
 
-    /** Constructor
+    /** Fading speed.
+     * Lower value = longer glowing.
+     * This setting can be adjusted at runtime.
+     * It is ignored in Overlay mode.
+     */
+    uint8_t fadeRate = fadeRate_default();
+    static uint8_t fadeRate_default() { return 5; }
+
+    /** Constructor.
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
-     * @param backgroundColor  Fill LED strip with this color.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
-    StaticBackground_FL(CRGB *ledStrip,
-                        uint16_t ledCount,
-                        const CRGB &backgroundColor = backgroundColor_default())
-        : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount), backgroundColor(backgroundColor)
+    Twinkles(CRGB *ledStrip,
+             uint16_t ledCount,
+             bool overlayMode = false)
+        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY_FADING : TYPE_FADING_PATTERN, ledStrip, ledCount)
     {
     }
 
@@ -61,8 +71,22 @@ namespace EC
     /// @see AnimationBase::showPattern()
     uint8_t showPattern(uint32_t currentMillis) override
     {
-      fill_solid(ledStrip, ledCount, backgroundColor);
+      fadeToBlackBy(ledStrip, ledCount, fadeRate);
+      showOverlay(currentMillis);
       return 0;
+    }
+
+    /// @see AnimationBase::updateAnimation()
+    void updateAnimation(uint32_t currentMillis) override
+    {
+      if (random8() < effectRate)
+      {
+        uint16_t i = random(ledCount);
+        if (ledStrip[i].getLuma() < 3)
+        {
+          pixel(i) = CHSV(redShift(random(256)), 255, random(64) + 192);
+        }
+      }
     }
   };
 

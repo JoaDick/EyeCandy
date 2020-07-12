@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#if(FLOATING_BLOBS_SIMU)
+#if (FLOATING_BLOBS_SIMU)
 #include <iostream>
 #endif
 
@@ -116,7 +116,7 @@ public:
                 }
             }
             ++_activeBlobs;
-#if(FLOATING_BLOBS_SIMU)
+#if (FLOATING_BLOBS_SIMU)
             // std::cout << "active: " << int(_activeBlobs) << " - inserted " << int(blob2insert->nr) << std::endl;
 #endif
         }
@@ -156,7 +156,7 @@ public:
             blob2remove->nextBlob = _idleBlobs;
             _idleBlobs = blob2remove;
             --_activeBlobs;
-#if(FLOATING_BLOBS_SIMU)
+#if (FLOATING_BLOBS_SIMU)
             // std::cout << "active: " << int(_activeBlobs) << " - removed " << int(blob2remove->nr) << std::endl;
 #endif
         }

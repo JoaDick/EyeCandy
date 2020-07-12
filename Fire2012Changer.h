@@ -26,7 +26,7 @@ SOFTWARE.
 *******************************************************************************/
 
 #include "PseudoAnimationBase.h"
-#include "Fire2012_FL.h"
+#include "Fire2012.h"
 
 //------------------------------------------------------------------------------
 
@@ -38,16 +38,16 @@ namespace EC
   class Fire2012Changer
       : public PseudoAnimationBase
   {
-    Fire2012_FL<NUM_LEDS> &_fire;
+    Fire2012<NUM_LEDS> &_fire;
 
   public:
     accum88 bpm_COOLING = 5;
     accum88 bpm_SPARKING = 9;
 
     /** Constructor.
-     * @param fire  Original #Fire2012_FL animation to manipulate.
+     * @param fire  Original #Fire2012 animation to manipulate.
      */
-    explicit Fire2012Changer(Fire2012_FL<NUM_LEDS> &fire)
+    explicit Fire2012Changer(Fire2012<NUM_LEDS> &fire)
         : PseudoAnimationBase(), _fire(fire)
     {
     }

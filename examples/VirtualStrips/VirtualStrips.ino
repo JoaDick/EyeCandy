@@ -54,10 +54,10 @@ CRGB *ledStrip2 = leds + ledCount1;
 //------------------------------------------------------------------------------
 
 // Animation on virtual LED strip 1
-EC::Fire2012_FL<ledCount1> fire2012_FL(ledStrip1, ledCount1);
+EC::Fire2012<ledCount1> fire2012(ledStrip1, ledCount1);
 
 // Animation on virtual LED strip 2
-EC::Pride2015_FL pride2015_FL(ledStrip2, ledCount2);
+EC::Pride2015 pride2015(ledStrip2, ledCount2);
 
 // run max. 8 Animations simultaneously
 EC::AnimationRunnerS animationRunner;
@@ -76,12 +76,12 @@ void setup()
     Serial.println(F("Welcome to EyeCandy"));
 
     // set up Animations to run
-    animationRunner.add(fire2012_FL);
-    animationRunner.add(pride2015_FL);
+    animationRunner.add(fire2012);
+    animationRunner.add(pride2015);
 
     // special Animation settings
-    fire2012_FL.COOLING = 90;
-    fire2012_FL.animationDelay = 50;
+    fire2012.COOLING = 90;
+    fire2012.animationDelay = 50;
 }
 
 //------------------------------------------------------------------------------
@@ -118,7 +118,7 @@ void updateColor()
     {
         const uint8_t hue = analogValue;
 
-        fire2012_FL.COOLING = 255 - hue;
+        fire2012.COOLING = 255 - hue;
     }
 }
 
@@ -133,7 +133,7 @@ void updateSpeed()
         const uint8_t animationSpeed = analogValue;
         const uint8_t animationDelay = animationSpeed ? 256 - animationSpeed : 0;
 
-        fire2012_FL.SPARKING = animationSpeed;
+        fire2012.SPARKING = animationSpeed;
     }
 }
 
@@ -143,7 +143,7 @@ void updateFlip()
 {
     const bool flipped = !digitalRead(PIN_FLIP_BTN);
 
-    fire2012_FL.mirrored = flipped;
+    fire2012.mirrored = flipped;
 }
 
 //------------------------------------------------------------------------------

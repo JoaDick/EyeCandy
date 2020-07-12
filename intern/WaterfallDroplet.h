@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "../AnimationBase_FL.h"
+#include "../AnimationBaseFL.h"
 #include "../randomF.h"
 
 //------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ namespace EC
   class WaterfallDroplet
   {
   public:
-    void show(AnimationBase_FL &animation)
+    void show(AnimationBaseFL &animation)
     {
 #ifdef WATERFALL_DEBUG
       if (_debugPos_vMax > 0.0)

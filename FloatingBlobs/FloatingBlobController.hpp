@@ -30,7 +30,7 @@ SOFTWARE.
 //------------------------------------------------------------------------------
 
 template <uint8_t BLOB_COUNT>
-class FloatingBlobs
+class FloatingBlobController
 {
     BlobList<2 * BLOB_COUNT> _blobList;
 
@@ -43,7 +43,7 @@ class FloatingBlobs
 public:
     int8_t floatingMode = 0;
 
-    FloatingBlobs()
+    FloatingBlobController()
     {
         reset();
     }

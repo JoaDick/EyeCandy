@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBase_FL.h"
+#include "AnimationBaseFL.h"
 
 //------------------------------------------------------------------------------
 
@@ -34,8 +34,8 @@ namespace EC
 
   /** A twinkling rainbow animation.
    */
-  class RainbowTwinkle_FL
-      : public AnimationBase_FL
+  class RainbowTwinkle
+      : public AnimationBaseFL
   {
     uint8_t _hue = random(0xFF);
 
@@ -60,9 +60,9 @@ namespace EC
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
      */
-    RainbowTwinkle_FL(CRGB *ledStrip,
-                      uint16_t ledCount)
-        : AnimationBase_FL(TYPE_FADING_PATTERN, ledStrip, ledCount)
+    RainbowTwinkle(CRGB *ledStrip,
+                   uint16_t ledCount)
+        : AnimationBaseFL(TYPE_FADING_PATTERN, ledStrip, ledCount)
     {
       for (uint16_t i = 0; i < ledCount; i++)
       {

@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBase_FL.h"
+#include "AnimationBaseFL.h"
 #include "intern/FireworkParticle.h"
 
 //------------------------------------------------------------------------------
@@ -33,18 +33,18 @@ SOFTWARE.
 namespace EC
 {
 
-  /// Default value for #Firework_FL::fadeRate
+  /// Default value for #Firework::fadeRate
   inline uint8_t Firework_fadeRate_default() { return 50; }
 
-  /// Default value for #Firework_FL::launchDelay
+  /// Default value for #Firework::launchDelay
   inline uint16_t Firework_launchDelay_default() { return 900; }
 
   /** A Firework Animation.
    * @tparam PARTICLE_COUNT Number of effect particles.
    */
   template <uint8_t PARTICLE_COUNT = 5>
-  class Firework_FL
-      : public AnimationBase_FL
+  class Firework
+      : public AnimationBaseFL
   {
   public:
     /** Fading speed.
@@ -62,11 +62,11 @@ namespace EC
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      * @param launchDelay  Multiples of 1500 give a nice effect.
      */
-    Firework_FL(CRGB *ledStrip,
-                uint16_t ledCount,
-                bool overlayMode,
-                uint16_t launchDelay = Firework_launchDelay_default())
-        : AnimationBase_FL(overlayMode ? TYPE_OVERLAY_FADING : TYPE_FADING_PATTERN, ledStrip, ledCount), launchDelay(launchDelay)
+    Firework(CRGB *ledStrip,
+             uint16_t ledCount,
+             bool overlayMode,
+             uint16_t launchDelay = Firework_launchDelay_default())
+        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY_FADING : TYPE_FADING_PATTERN, ledStrip, ledCount), launchDelay(launchDelay)
     {
     }
 

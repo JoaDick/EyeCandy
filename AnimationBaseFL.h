@@ -36,7 +36,7 @@ namespace EC
   /** Simple base class suitable for most Animations which are using FastLED.
    * Child classes must fulfill the same requirements as for #AnimationBase.
    */
-  class AnimationBase_FL
+  class AnimationBaseFL
       : public AnimationBase
   {
   public:
@@ -129,10 +129,10 @@ namespace EC
      * @param ledCount  Number of LEDs.
      * @param mirrored  The "regular" Animation shall be shown in reverse direction.
      */
-    AnimationBase_FL(Type animationType,
-                     CRGB *ledStrip,
-                     uint16_t ledCount,
-                     bool mirrored = false)
+    AnimationBaseFL(Type animationType,
+                    CRGB *ledStrip,
+                    uint16_t ledCount,
+                    bool mirrored = false)
         : AnimationBase(animationType), ledStrip(ledStrip), ledCount(ledCount), maxLedCount(ledCount), _defaultMirrored(mirrored), _ledStrip(ledStrip)
     {
     }

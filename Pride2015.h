@@ -26,7 +26,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBase_FL.h"
+#include "AnimationBaseFL.h"
 
 //------------------------------------------------------------------------------
 
@@ -40,8 +40,8 @@ namespace EC
    * widely-varying set of parameters.
    * https://github.com/FastLED/FastLED/blob/master/examples/Pride2015/Pride2015.ino
    */
-  class Pride2015_FL
-      : public AnimationBase_FL
+  class Pride2015
+      : public AnimationBaseFL
   {
     uint16_t sPseudotime = 0;
     uint16_t sLastMillis = 0;
@@ -52,9 +52,9 @@ namespace EC
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
      */
-    Pride2015_FL(CRGB *ledStrip,
-                 uint16_t ledCount)
-        : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
+    Pride2015(CRGB *ledStrip,
+              uint16_t ledCount)
+        : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
     {
     }
 

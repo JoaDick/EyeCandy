@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "../AnimationBase_FL.h"
+#include "../AnimationBaseFL.h"
 #include "../randomF.h"
 
 //------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ namespace EC
     struct Config
     {
       /// Effect color.
-      uint8_t colorHue = AnimationBase_FL::redShift(random8());
+      uint8_t colorHue = AnimationBaseFL::redShift(random8());
 
       /// Effect brightness.
       uint8_t colorVolume = 127 + random8(128);
@@ -136,7 +136,7 @@ namespace EC
 #endif
     }
 
-    void show(AnimationBase_FL &animation)
+    void show(AnimationBaseFL &animation)
     {
 #ifdef FIREWORK_DEBUG
       if (_debugPos_blow > 0.0)
@@ -261,7 +261,7 @@ namespace EC
     }
 
   private:
-    void process_LAUNCHING(AnimationBase_FL &animation, int16_t pixelPos)
+    void process_LAUNCHING(AnimationBaseFL &animation, int16_t pixelPos)
     {
       if (pixelPos != _lastPixelPos)
       {
@@ -270,7 +270,7 @@ namespace EC
       animation.safePixel(pixelPos) = CRGB(32, 16, 0);
     }
 
-    void process_BLOW(AnimationBase_FL &animation, int16_t pixelPos)
+    void process_BLOW(AnimationBaseFL &animation, int16_t pixelPos)
     {
       animation.safePixel(pixelPos + 1) = CRGB::White;
       animation.safePixel(pixelPos) = CRGB::Yellow;
@@ -282,12 +282,12 @@ namespace EC
 #endif
     }
 
-    void process_RISING(AnimationBase_FL &animation, int16_t pixelPos)
+    void process_RISING(AnimationBaseFL &animation, int16_t pixelPos)
     {
       animation.safePixel(pixelPos) = addGlitter(animation, CHSV(_config->colorHue, 255, _config->colorVolume));
     }
 
-    void process_FALLING(AnimationBase_FL &animation, int16_t pixelPos)
+    void process_FALLING(AnimationBaseFL &animation, int16_t pixelPos)
     {
       const float fadingEndPos = _apexPos * _config->fadingEndPos;
       const float fadingBeginPos = fadingEndPos + (_apexPos - fadingEndPos) * _config->fadingDuration;
@@ -326,7 +326,7 @@ namespace EC
       animation.safePixel(pixelPos) = pixelColor;
     }
 
-    CRGB addGlitter(AnimationBase_FL &animation, CRGB pixelColor, float fadingBeginPos = 0.0)
+    CRGB addGlitter(AnimationBaseFL &animation, CRGB pixelColor, float fadingBeginPos = 0.0)
     {
       // Twinkling instead of a fading trail?
       if (_config->glitterType == GLITTER_TWINKLE)

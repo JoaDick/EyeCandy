@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBase_FL.h"
+#include "AnimationBaseFL.h"
 
 //------------------------------------------------------------------------------
 
@@ -34,8 +34,8 @@ namespace EC
 
   /** Many many Rainbow variations.
    */
-  class Rainbow_FL
-      : public AnimationBase_FL
+  class Rainbow
+      : public AnimationBaseFL
   {
     uint8_t _hue = 0;
 
@@ -75,9 +75,9 @@ namespace EC
      * @param ledCount  Number of LEDs.
      * @param deltahue  "Stretch" of the rainbow pattern.
      */
-    Rainbow_FL(CRGB *ledStrip,
-               uint16_t ledCount)
-        : AnimationBase_FL(TYPE_SOLID_PATTERN, ledStrip, ledCount, mirrored_default())
+    Rainbow(CRGB *ledStrip,
+            uint16_t ledCount)
+        : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount, mirrored_default())
     {
     }
 

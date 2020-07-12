@@ -12,7 +12,7 @@
 //  https://github.com/daterdots/LEDs/blob/master/BouncingBalls2014/BouncingBalls2014.ino
 ///////////////////////////////////////////////////////////////////////////////////////////
 
-#include "AnimationBase_FL.h"
+#include "AnimationBaseFL.h"
 
 //------------------------------------------------------------------------------
 
@@ -25,8 +25,8 @@ namespace EC
    * @tparam NUM_BALLS Number of bouncing balls you want (recommend < 7, but 20 is fun in its own way)
    */
   template <uint16_t NUM_BALLS = 3>
-  class BouncingBalls_FL
-      : public AnimationBase_FL
+  class BouncingBalls
+      : public AnimationBaseFL
   {
     static constexpr float GRAVITY = -9.81; // Downward (negative) acceleration of gravity in m/s^2
     static constexpr float h0 = 1.0;        // Starting height, in meters, of the ball (strip length)
@@ -53,10 +53,10 @@ namespace EC
      * @param ledCount  Number of LEDs.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
-    BouncingBalls_FL(CRGB *ledStrip,
-                     uint16_t ledCount,
-                     bool overlayMode = false)
-        : AnimationBase_FL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount)
+    BouncingBalls(CRGB *ledStrip,
+                  uint16_t ledCount,
+                  bool overlayMode = false)
+        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount)
     {
       for (int i = 0; i < NUM_BALLS; i++)
       { // Initialize variables
