@@ -46,13 +46,6 @@ namespace EC
 #endif
 
   public:
-    /** Fading speed.
-     * Lower value = longer glowing.
-     * This setting can be adjusted at runtime.
-     */
-    uint8_t fadeRate = fadeRate_default();
-    static uint8_t fadeRate_default() { return 100; }
-
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
@@ -67,8 +60,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     uint8_t showPattern(uint32_t currentMillis) override
     {
-      blur1d(ledStrip, ledCount, 1);
-      // fadeToBlackBy(ledStrip, ledCount, fadeRate);
+      fadeLightBy(ledStrip, ledCount, 25);
       showOverlay(currentMillis);
       return 0;
     }
