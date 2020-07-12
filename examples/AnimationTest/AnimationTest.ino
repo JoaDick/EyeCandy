@@ -180,6 +180,11 @@ void makeFlare(EC::AnimationRepo &repo)
     repo.add(new EC::Kaleidoscope(leds, NUM_LEDS));
 }
 
+void makePacifica(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::Pacifica(leds, NUM_LEDS));
+}
+
 void makeWaterfall(EC::AnimationRepo &repo)
 {
     repo.add(new EC::Waterfall(leds, NUM_LEDS));
@@ -190,6 +195,7 @@ void makeWaterfall(EC::AnimationRepo &repo)
 EC::AnimationBuilderFct nextAnimation = nullptr;
 
 EC::AnimationBuilderFct allAnimations[] = {
+    &makePacifica,
     &makeWaterfall,
     &makeFire,
     &makeFlare,
@@ -413,6 +419,9 @@ void printMemoryUsage()
 
     Serial.print(F("MovingDot = "));
     Serial.println(sizeof(EC::MovingDot));
+
+    Serial.print(F("Pacifica = "));
+    Serial.println(sizeof(EC::Pacifica));
 
     Serial.print(F("Pride2015 = "));
     Serial.println(sizeof(EC::Pride2015));

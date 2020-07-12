@@ -122,6 +122,11 @@ void makeFlare(EC::AnimationRepo &repo)
     repo.add(new EC::Kaleidoscope(leds, NUM_LEDS));
 }
 
+void makePacifica(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::Pacifica(leds, NUM_LEDS));
+}
+
 void makePride(EC::AnimationRepo &repo)
 {
     auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
@@ -170,6 +175,7 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeBlobs,
     &makeRainbowTwinkle,
     &makePride,
+    &makePacifica,
     &makeWaterfall,
     &makeBalls,
     &makeFire,
