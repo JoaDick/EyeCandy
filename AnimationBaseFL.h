@@ -122,6 +122,52 @@ namespace EC
       return ledStrip[transformedIndex];
     }
 
+    /** Draw a line in the given \a color from \a firstPixel to \a lastPixel.
+     * Strip boundaries are checked, so parts of the line may even be off the strip.
+     * Both \a firstPixel and \a lastPixel are included.
+     */
+    void lineAbs(int16_t firstPixel, int16_t lastPixel, const CRGB &color)
+    {
+      if (firstPixel > lastPixel)
+      {
+        lineAbs(lastPixel, firstPixel, color);
+        return;
+      }
+      if (firstPixel < 0)
+      {
+        // start AND end off the strip?
+        if (lastPixel < 0)
+        {
+          return;
+        }
+        firstPixel = 0;
+      }
+      if (lastPixel >= ledCount)
+      {
+        // start AND end off the strip?
+        if (firstPixel >= ledCount)
+        {
+          return;
+        }
+        lastPixel = ledCount - 1;
+      }
+      while (firstPixel <= lastPixel)
+      {
+        ledStrip[firstPixel++] = color;
+      }
+    }
+
+    /** Draw a line in the given \a color with the given \a length, starting at \a firstPixel.
+     * Strip boundaries are checked, so parts of the line may even be off the strip.
+     */
+    void lineRel(int16_t firstPixel, int16_t length, const CRGB &color)
+    {
+      if (length)
+      {
+        lineAbs(firstPixel, firstPixel + length, color);
+      }
+    }
+
   protected:
     /** Constructor.
      * @param animationType  Type of Animation.

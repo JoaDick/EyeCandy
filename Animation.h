@@ -84,6 +84,21 @@ namespace EC
       return wasModified;
     }
 
+    /** Process the Animation (with external timing source).
+     * Must be called frequently by the main loop.
+     * Use this method this when you're having multiple Animations, where all of
+     * them shall be processed based on the same external timer source.
+     * @param currentMillis  Returnvalue of millis() for synchronized timing.
+     * @retval false  No changes to the LED strip.
+     * @retval true   LED strip was updated.
+     */
+    bool process(uint32_t currentMillis)
+    {
+      bool wasModified = false;
+      processAnimation(currentMillis, wasModified);
+      return wasModified;
+    }
+
     /** Process the Animation.
      * Must be called frequently by the main loop.
      * @param wasModified  Shall be true when the LED strip was already modified,

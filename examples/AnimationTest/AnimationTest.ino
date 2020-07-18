@@ -30,6 +30,7 @@ SOFTWARE.
 
 #include <EyeCandy.h>
 #include <Animation_IO_config.h>
+#include <AudioNormalizer.h>
 #include <ButtonHandler.h>
 
 //------------------------------------------------------------------------------
@@ -70,6 +71,9 @@ ButtonHandler selectButton;
 
 bool autoMode = false;
 
+float audioSample = 0.0;
+AudioNormalizer normalizer;
+
 //------------------------------------------------------------------------------
 
 void setup()
@@ -78,14 +82,18 @@ void setup()
     pinMode(PIN_FLIP_BTN, INPUT_PULLUP);
     pinMode(PIN_COLOR_POT, INPUT_PULLUP);
     pinMode(PIN_SPEED_POT, INPUT_PULLUP);
+    pinMode(PIN_MIC, INPUT);
     pinMode(LED_BUILTIN, OUTPUT);
+
+    analogReference(EXTERNAL);
 
     FastLED.addLeds<LED_TYPE, LED_PIN, LED_COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
     FastLED.clear();
 
     Serial.begin(115200);
-    Serial.println(F("Welcome to EyeCandy"));
-    printMemoryUsage();
+    Serial.println();
+    // Serial.println(F("Welcome to EyeCandy"));
+    // printMemoryUsage();
 
 #if (EnableStaticPatterns)
     // Base Animation (select one)
@@ -149,6 +157,8 @@ void makeAnimation3(EC::AnimationRepo &repo)
 }
 #endif
 
+// ---------- Animations ----------
+
 void makeFire(EC::AnimationRepo &repo)
 {
     auto fire = new EC::Fire2012<NUM_LEDS>(leds, NUM_LEDS);
@@ -190,11 +200,19 @@ void makeWaterfall(EC::AnimationRepo &repo)
     repo.add(new EC::Waterfall(leds, NUM_LEDS));
 }
 
+// ---------- VUs ----------
+
+void makeEssentialVU(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::EssentialVU(leds, NUM_LEDS, audioSample));
+}
+
 //------------------------------------------------------------------------------
 
 EC::AnimationBuilderFct nextAnimation = nullptr;
 
 EC::AnimationBuilderFct allAnimations[] = {
+    &makeEssentialVU,
     &makePacifica,
     &makeWaterfall,
     &makeFire,
@@ -213,16 +231,14 @@ EC::AnimationChangerSoft animationChanger(animationRunner, allAnimations);
 //------------------------------------------------------------------------------
 
 const uint16_t animationDuration = 10;
-void handleAnimationChange()
+void handleAnimationChange(uint32_t currentMillis = millis())
 {
     static uint32_t nextChangeTime = animationDuration * 1000;
-
-    const uint32_t now = millis();
 
     bool mustChange = false;
     if (autoMode)
     {
-        if (now > nextChangeTime)
+        if (currentMillis > nextChangeTime)
         {
             mustChange = true;
         }
@@ -253,7 +269,7 @@ void handleAnimationChange()
     if (mustChange)
     {
         animationChanger.selectNext();
-        nextChangeTime = now + animationDuration * 1000;
+        nextChangeTime = currentMillis + animationDuration * 1000;
     }
 }
 
@@ -261,13 +277,26 @@ void handleAnimationChange()
 
 void loop()
 {
+    const uint32_t currentMillis = millis();
+    audioSample = normalizer.analogRead(PIN_MIC);
+
+#if (0)
+    Serial.print(" -:");
+    Serial.print(-10.0);
+    Serial.print(" +:");
+    Serial.print(10.0);
+    Serial.print(" raw:");
+    Serial.print(10.0 * audioSample);
+    Serial.println();
+#endif
+
     updateColor();
     updateSpeed();
     updateFlip();
 
-    handleAnimationChange();
+    handleAnimationChange(currentMillis);
 
-    if (animationChanger.process())
+    if (animationChanger.process(currentMillis))
     {
 #if (0)
         static bool toggleFlag = false;
@@ -276,6 +305,7 @@ void loop()
 #endif
     }
     FastLED.show();
+    // printSampleRate(currentMillis);
 }
 
 //------------------------------------------------------------------------------
@@ -385,6 +415,25 @@ void updateFlip()
 
 //------------------------------------------------------------------------------
 
+void printSampleRate(uint32_t currentMillis)
+{
+    static uint32_t nextSampleRateCheck = 1000;
+    static uint32_t sampleRateCounter = 0;
+
+    ++sampleRateCounter;
+    if (currentMillis >= nextSampleRateCheck)
+    {
+        uint16_t sampleRate = sampleRateCounter;
+        sampleRateCounter = 0;
+        nextSampleRateCheck = currentMillis + 1000;
+
+        Serial.print(sampleRate);
+        Serial.println(F(" Hz sample rate"));
+    }
+}
+
+//------------------------------------------------------------------------------
+
 void printMemoryUsage()
 {
     Serial.print(F("Memory usage for "));
@@ -448,6 +497,9 @@ void printMemoryUsage()
     Serial.println(sizeof(EC::Waterfall));
     Serial.print(F("WaterfallDroplet = "));
     Serial.println(sizeof(EC::WaterfallDroplet));
+
+    Serial.print(F("EssentialVU = "));
+    Serial.println(sizeof(EC::EssentialVU));
 }
 
 //------------------------------------------------------------------------------

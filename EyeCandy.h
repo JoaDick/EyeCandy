@@ -30,6 +30,7 @@ SOFTWARE.
 #include "AnimationChangerSoft.h"
 #include "AnimationRunner.h"
 
+// Pattern
 #include "BouncingBalls.h"
 #include "FadeOut.h"
 #include "Fire2012.h"
@@ -48,3 +49,6 @@ SOFTWARE.
 #include "StaticBackground.h"
 #include "Twinkles.h"
 #include "Waterfall.h"
+
+// VU
+#include "EssentialVU.h"

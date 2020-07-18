@@ -28,6 +28,9 @@
 // Potentiometer to control Animation's speed.
 #define PIN_SPEED_POT A1
 
+// Microphone.
+#define PIN_MIC A5
+
 //------------------------------------------------------------------------------
 
 // Enable one of these according to your LED strip.
