@@ -34,19 +34,10 @@ SOFTWARE.
 namespace EC
 {
 
-  /** Basic VU meter Animation & Overlay.
-   * Although being called "basic", it already offers a lot of features and
-   * configuration options:
-   * - show VU level bargraph yes/no
-   * - show peak dot yes/no
-   * - solid background or fading background, incl. fading rate
-   * - VU bargraph color
-   * - peak dot color
-   * - background color
-   * - peak hold duration
-   * - peak dot falling speed
+  /** VU meter Animation & Overlay with its color depending on the volume.
+   * Just a DRAFT idea which might still need some tweaking...
    */
-  class EssentialVU
+  class RainbowLevelVU
       : public AnimationBaseFL
   {
     // -1.0 ... +1.0
@@ -55,16 +46,26 @@ namespace EC
     float _vuLevel = 0.0;
     float _peakLevel = 0.0;
 
-  public:
-    /** Draw the VU bar with this color.
-     * This setting can be adjusted at runtime.
-     */
-    CRGB vuBarColor = CRGB(0, 64, 0);
+    float _startHue = 0.0;
 
-    /** Draw the peak dot with this color.
+  public:
+    /// How fast the initial hue changes over time.
+    float hueBaseStep = -0.1;
+
+    /** How much the hue varies depending on the VU level.
+     * 1.0 means one full color wheel cycle between 0.0 ... 1.0 VU level.
+     */
+    float hueRange = 0.35;
+
+    /** Brightness of the VU.
      * This setting can be adjusted at runtime.
      */
-    CRGB peakDotColor = CRGB(255, 0, 0);
+    uint8_t volume = 128;
+
+    /** Put more emphasis on the red'ish colors when true.
+     * This setting can be adjusted at runtime.
+     */
+    bool moreRed = true;
 
     /** Fill LED strip with this color.
      * This setting can be adjusted at runtime.
@@ -78,7 +79,7 @@ namespace EC
      * This setting can be adjusted at runtime.
      * Not relevant in Overlay mode.
      */
-    uint8_t fadeRate = 100;
+    uint8_t fadeRate = 50;
 
     /** Render the VU bar.
      * This setting can be adjusted at runtime.
@@ -109,10 +110,10 @@ namespace EC
      * @param audioSample  Read the audio data from there.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
-    EssentialVU(CRGB *ledStrip,
-                uint16_t ledCount,
-                float &audioSample,
-                bool overlayMode = false)
+    RainbowLevelVU(CRGB *ledStrip,
+                   uint16_t ledCount,
+                   float &audioSample,
+                   bool overlayMode = false)
         : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_FADING_PATTERN, ledStrip, ledCount), _audioSample(audioSample)
     {
     }
@@ -136,28 +137,24 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
+      float hue = _startHue + _vuLevel * hueRange * 255;
+      if (moreRed)
+      {
+        hue = redShift(hue);
+      }
+
       if (enableVuBar)
       {
-        lineRel(0, _vuLevel * ledCount, vuBarColor);
+        const CRGB barColor = CHSV(hue, 255, volume);
+        lineRel(0, _vuLevel * ledCount, barColor);
       }
 
       if (enablePeakDot &&
           _peakLevel > 0.0)
       {
-        safePixel(_peakLevel * ledCount) = peakDotColor;
+        const CRGB dotColor = CHSV(hue + 128, 255, volume);
+        safePixel(_peakLevel * ledCount) = dotColor;
       }
-
-#if (0)
-      Serial.print(" -:");
-      Serial.print(0.0);
-      Serial.print(" +:");
-      Serial.print(10.0);
-      Serial.print(" VU:");
-      Serial.print(10.0 * _vuLevel);
-      Serial.print(" peak:");
-      Serial.print(10.0 * _peakLevel);
-      Serial.println();
-#endif
     }
 
     /// @see AnimationBase::updateAnimation()
@@ -165,6 +162,15 @@ namespace EC
     {
       _vuLevel = vuLevelHandler.capture();
       _peakLevel = vuPeakHandler.process(_vuLevel, currentMillis);
+      _startHue += hueBaseStep;
+      while (_startHue > 255.0)
+      {
+        _startHue -= 255.0;
+      }
+      while (_startHue < 0.0)
+      {
+        _startHue += 255.0;
+      }
     }
 
     /// @see AnimationBase::processAnimationBackground()

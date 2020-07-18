@@ -207,11 +207,17 @@ void makeEssentialVU(EC::AnimationRepo &repo)
     repo.add(new EC::EssentialVU(leds, NUM_LEDS, audioSample));
 }
 
+void makeRainbowLevelVU(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample));
+}
+
 //------------------------------------------------------------------------------
 
 EC::AnimationBuilderFct nextAnimation = nullptr;
 
 EC::AnimationBuilderFct allAnimations[] = {
+    &makeRainbowLevelVU,
     &makeEssentialVU,
     &makePacifica,
     &makeWaterfall,

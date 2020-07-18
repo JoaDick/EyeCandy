@@ -52,3 +52,4 @@ SOFTWARE.
 
 // VU
 #include "EssentialVU.h"
+#include "RainbowLevelVU.h"
