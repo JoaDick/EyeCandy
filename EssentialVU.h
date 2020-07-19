@@ -56,12 +56,6 @@ namespace EC
   class EssentialVU
       : public AnimationBaseFL
   {
-    // -1.0 ... +1.0
-    float &_audioSample;
-
-    float _vuLevel = 0.0;
-    float _peakLevel = 0.0;
-
   public:
     /** Draw the VU bar with this color.
      * This setting can be adjusted at runtime.
@@ -85,7 +79,7 @@ namespace EC
      * This setting can be adjusted at runtime.
      * Not relevant in Overlay mode.
      */
-    uint8_t fadeRate = 100;
+    uint8_t fadeRate = 50;
 
     /** Render the VU bar.
      * This setting can be adjusted at runtime.
@@ -121,14 +115,14 @@ namespace EC
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
-     * @param audioSample  Read the audio data from there.
+     * @param audioSource  Read the audio samples from there.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
     EssentialVU(CRGB *ledStrip,
                 uint16_t ledCount,
-                float &audioSample,
+                float &audioSource,
                 bool overlayMode = false)
-        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_FADING_PATTERN, ledStrip, ledCount), _audioSample(audioSample)
+        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_FADING_PATTERN, ledStrip, ledCount), _audioSource(audioSource)
     {
     }
 
@@ -156,10 +150,11 @@ namespace EC
         lineRel(0, _vuLevel * (ledCount - 1), vuBarColor);
       }
 
+      const float peakLevel = vuPeakHandler.peakLevel();
       if (enablePeakDot &&
-          _peakLevel > 0.0)
+          peakLevel > 0.0)
       {
-        safePixel(_peakLevel * (ledCount - 1)) = peakDotColor;
+        safePixel(peakLevel * (ledCount - 1)) = peakDotColor;
       }
 
 #ifdef ESSENTIAL_VU_DEBUG
@@ -170,7 +165,7 @@ namespace EC
       Serial.print(" VU:");
       Serial.print(10.0 * _vuLevel);
       Serial.print(" peak:");
-      Serial.print(10.0 * _peakLevel);
+      Serial.print(10.0 * peakLevel);
       Serial.println();
 #endif
     }
@@ -183,14 +178,18 @@ namespace EC
       {
         _vuLevel = vuRangeExtender.process(_vuLevel);
       }
-      _peakLevel = vuPeakHandler.process(_vuLevel, currentMillis);
+      vuPeakHandler.process(_vuLevel, currentMillis);
     }
 
     /// @see AnimationBase::processAnimationBackground()
     void processAnimationBackground(uint32_t currentMillis) override
     {
-      vuLevelHandler.addSample(_audioSample);
+      vuLevelHandler.addSample(_audioSource);
     }
+
+  private:
+    float &_audioSource;
+    float _vuLevel = 0.0;
   };
 
 } // namespace EC

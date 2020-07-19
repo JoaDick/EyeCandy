@@ -47,9 +47,6 @@ SOFTWARE.
  */
 class VuLevelHandler
 {
-    float _rmsSum = 0.0;
-    uint16_t _rmsCount = 0;
-
 public:
     /** Incorporate how many previous VU values for smoothing the output.
      * 0 means no smoothing.
@@ -63,11 +60,15 @@ public:
      */
     float noiseFloor = -28.5;
 
-    /// VU level of last call to capture(). Only for debugging; don't modify!
-    float vuLevel = 0.0;
-
-    /// The intermediate RMS volume. Only for debugging; don't modify!
-    float volume_RMS = 0.0;
+    /** VU level of last call to capture().
+     * @return A value between 0.0 ... 1.0, representing the current volume.
+     * @note Be aware that an overloaded / clipped / too loud audio signal may
+     * return values greater than 1.0!
+     */
+    float vuLevel()
+    {
+        return _vuLevel;
+    }
 
     /** Feed in normalized audio samples.
      * Call this method frequently in the background.
@@ -89,7 +90,7 @@ public:
         // no change?
         if (_rmsCount == 0)
         {
-            return vuLevel;
+            return _vuLevel;
         }
 
         volume_RMS = sqrt(_rmsSum / _rmsCount);
@@ -107,10 +108,18 @@ public:
             }
         }
 
-        vuLevel *= smoothingFactor;
-        vuLevel += (noiseFloor - volume_dB) / noiseFloor;
-        vuLevel /= smoothingFactor + 1;
+        _vuLevel *= smoothingFactor;
+        _vuLevel += (noiseFloor - volume_dB) / noiseFloor;
+        _vuLevel /= smoothingFactor + 1;
 
-        return vuLevel;
+        return _vuLevel;
     }
+
+    /// The intermediate RMS volume. Only for debugging; don't modify!
+    float volume_RMS = 0.0;
+
+private:
+    float _rmsSum = 0.0;
+    uint16_t _rmsCount = 0;
+    float _vuLevel = 0.0;
 };

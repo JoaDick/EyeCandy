@@ -52,4 +52,5 @@ SOFTWARE.
 
 // VU
 #include "EssentialVU.h"
+#include "PeakGlitterVU.h"
 #include "RainbowLevelVU.h"

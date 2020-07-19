@@ -32,32 +32,24 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
+// #define PEAK_GLITTER_VU_DEBUG
+
+//------------------------------------------------------------------------------
+
 namespace EC
 {
 
-  /// VU meter with its color depending on the current VU level.
-  class RainbowLevelVU
+  /** VU meter that makes glitter at the peaks.
+   * Recommended to use as Overlay together with another VU meter.
+   */
+  class PeakGlitterVU
       : public AnimationBaseFL
   {
   public:
-    /// How fast the initial hue changes over time.
-    float baseHueStep = -0.05;
-
-    /** How much the hue varies depending on the VU level.
-     * 1.0 means one full color wheel cycle between 0.0 ... 1.0 VU level.
-     */
-    float vuHueRange = 0.33;
-
-    /** Brightness of the VU.
+    /** Draw the glitter with this color.
      * This setting can be adjusted at runtime.
      */
-    uint8_t volume = 128;
-
-    /** Fill LED strip with this color.
-     * This setting can be adjusted at runtime.
-     * Not relevant in Overlay mode or when #fadeRate is non-zero.
-     */
-    CRGB backgroundColor = CRGB(0, 0, 0);
+    CRGB glitterColor = CRGB(255, 255, 255);
 
     /** Fading speed.
      * Lower value = longer glowing.
@@ -67,30 +59,13 @@ namespace EC
      */
     uint8_t fadeRate = 50;
 
-    /** Render the VU bar.
-     * This setting can be adjusted at runtime.
-     */
-    bool enableVuBar = true;
-
-    /** Render the peak dot.
-     * This setting can be adjusted at runtime.
-     */
-    bool enablePeakDot = true;
-
-    /** Configure the following properties according to your needs:
-     * - VuLevelHandler::smoothingFactor
-     * - Don't call any of its methods!
-     */
+    /// Usually there's nothing to configure here; mainly for debugging.
     VuLevelHandler vuLevelHandler;
 
-    /** Configure the following properties according to your needs:
-     * - VuPeakHandler::peakHold
-     * - VuPeakHandler::peakDecay
-     * - Don't call any of its methods!
-     */
+    /// Usually there's nothing to configure here; mainly for debugging.
     VuPeakHandler vuPeakHandler;
 
-    /// Usually there's nothing to configure here; only for debugging.
+    /// Usually there's nothing to configure here; mainly for debugging.
     VuRangeExtender vuRangeExtender;
 
     /** Constructor
@@ -99,26 +74,22 @@ namespace EC
      * @param audioSource  Read the audio samples from there.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
-    RainbowLevelVU(CRGB *ledStrip,
-                   uint16_t ledCount,
-                   float &audioSource,
-                   bool overlayMode = false)
+    PeakGlitterVU(CRGB *ledStrip,
+                  uint16_t ledCount,
+                  float &audioSource,
+                  bool overlayMode = false)
         : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_FADING_PATTERN, ledStrip, ledCount), _audioSource(audioSource)
     {
+      vuPeakHandler.peakHold = 20;
+      vuPeakHandler.peakDecay = 0;
+      vuRangeExtender.smoothingFactor = 3;
     }
 
   private:
     /// @see AnimationBase::showPattern()
     uint8_t showPattern(uint32_t currentMillis) override
     {
-      if (fadeRate)
-      {
-        fadeToBlackBy(ledStrip, ledCount, fadeRate);
-      }
-      else
-      {
-        fill_solid(ledStrip, ledCount, backgroundColor);
-      }
+      fadeToBlackBy(ledStrip, ledCount, fadeRate);
       showOverlay(currentMillis);
       return 0;
     }
@@ -126,21 +97,24 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      const float vuLevel = vuRangeExtender.vuLevel();
-      const float peakLevel = vuPeakHandler.peakLevel();
-      uint8_t hue = redShift(_startHue + vuLevel * vuHueRange * 255);
+#ifdef PEAK_GLITTER_VU_DEBUG
+      Serial.print(" -:");
+      Serial.print(0.0);
+      Serial.print(" +:");
+      Serial.print(10.0);
+      Serial.print(" VU:");
+      Serial.print(10.0 * vuRangeExtender.vuLevel());
+      Serial.print(" peak:");
+      Serial.print(10.0 * _peakLevel);
+      Serial.print(" peakDet:");
+      Serial.print((_peakLevel > 0.0) ? 0.5 : 0.0);
+      Serial.println();
+#endif
 
-      if (enableVuBar)
+      if (_peakLevel > 0.0)
       {
-        const CRGB barColor = CHSV(hue, 255, volume);
-        lineRel(0, vuLevel * (ledCount - 1), barColor);
-      }
-
-      if (enablePeakDot &&
-          peakLevel > 0.0)
-      {
-        const CRGB dotColor = CHSV(hue + 128, 255, volume);
-        safePixel(peakLevel * (ledCount - 1)) = dotColor;
+        safePixel(_peakLevel * (ledCount - 1)) = glitterColor;
+        _peakLevel = 0.0;
       }
     }
 
@@ -149,16 +123,9 @@ namespace EC
     {
       float vuLevel = vuLevelHandler.capture();
       vuLevel = vuRangeExtender.process(vuLevel);
-      vuPeakHandler.process(vuLevel, currentMillis);
-
-      _startHue += baseHueStep;
-      while (_startHue > 255.0)
+      if (vuPeakHandler.process(vuLevel, currentMillis))
       {
-        _startHue -= 255.0;
-      }
-      while (_startHue < 0.0)
-      {
-        _startHue += 255.0;
+        _peakLevel = vuPeakHandler.peakLevel();
       }
     }
 
@@ -170,7 +137,7 @@ namespace EC
 
   private:
     float &_audioSource;
-    float _startHue = random8();
+    float _peakLevel = 0.0;
   };
 
 } // namespace EC

@@ -64,23 +64,15 @@ public:
      */
     float dynamicRangeMin = 0.15;
 
-    /// Adjusted VU level of last call to process(). Only for debugging; don't modify!
-    float newVuLevel = 0.0;
-
-    /// Average input VU level. Only for debugging; don't modify!
-    float vuLevelAvg = 0.5;
-
-    /// Average dynamic range. Only for debugging; don't modify!
-    float dynamicRange = 0.0;
-
-    /// Only for debugging; don't modify!
-    float deltaAvg = 0.0;
-
-    /// Only for debugging; don't modify!
-    float rangeMax = 0.0;
-
-    /// Only for debugging; don't modify!
-    float rangeMin = 0.0;
+    /** Adjusted VU level of last call to process().
+     * @return A value between 0.0 ... 1.0, representing the current volume.
+     * @note Be aware that an overloaded / clipped / too loud audio signal may
+     * return values greater than 1.0!
+     */
+    float vuLevel()
+    {
+        return _newVuLevel;
+    }
 
     /** Process VU level adjustment.
      * @param vuLevel  The returnvalue of VuLevelHandler::capture()
@@ -101,13 +93,31 @@ public:
             dynamicRange = dynamicRangeMin;
         }
 
-        newVuLevel *= smoothingFactor;
-        newVuLevel += (vuLevel - rangeMin) / dynamicRange;
-        newVuLevel /= smoothingFactor + 1;
+        _newVuLevel *= smoothingFactor;
+        _newVuLevel += (vuLevel - rangeMin) / dynamicRange;
+        _newVuLevel /= smoothingFactor + 1;
 
-        newVuLevel = constrainValue(newVuLevel);
-        return constrainValue(newVuLevel);
+        _newVuLevel = constrainValue(_newVuLevel);
+        return constrainValue(_newVuLevel);
     }
+
+    /// Average input VU level. Only for debugging; don't modify!
+    float vuLevelAvg = 0.5;
+
+    /// Average dynamic range. Only for debugging; don't modify!
+    float dynamicRange = 0.0;
+
+    /// Only for debugging; don't modify!
+    float deltaAvg = 0.0;
+
+    /// Only for debugging; don't modify!
+    float rangeMax = 0.0;
+
+    /// Only for debugging; don't modify!
+    float rangeMin = 0.0;
+
+private:
+    float _newVuLevel = 0.0;
 
 private:
     float constrainValue(float value)

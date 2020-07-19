@@ -69,7 +69,7 @@ EC::AnimationRunnerM animationRunner;
 
 ButtonHandler selectButton;
 
-bool autoMode = false;
+bool autoMode = true;
 
 float audioSample = 0.0;
 AudioNormalizer normalizer;
@@ -122,6 +122,9 @@ void setup()
 }
 
 //------------------------------------------------------------------------------
+
+const uint16_t defaultAnimationDuration = 30;
+uint16_t animationDuration = defaultAnimationDuration;
 
 #if (EnableStaticPatterns)
 void makeAnimation0(EC::AnimationRepo &repo)
@@ -207,7 +210,55 @@ void makeEssentialVU(EC::AnimationRepo &repo)
     repo.add(new EC::EssentialVU(leds, NUM_LEDS, audioSample));
 }
 
+void makePeakGlitterVU(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample));
+    animationDuration = 10;
+}
+
 void makeRainbowLevelVU(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample));
+}
+
+// ---------- VU sequence ----------
+
+void makeVuSequence1(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample));
+    animationDuration = 5;
+}
+
+void makeVuSequence2(EC::AnimationRepo &repo)
+{
+    auto baseVU = new EC::EssentialVU(leds, NUM_LEDS, audioSample);
+    baseVU->enableVuBar = false;
+    repo.add(baseVU);
+    repo.add(new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample, true));
+    animationDuration = 10;
+}
+
+void makeVuSequence3(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::EssentialVU(leds, NUM_LEDS, audioSample));
+    animationDuration = 10;
+}
+
+void makeVuSequence4(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::EssentialVU(leds, NUM_LEDS, audioSample));
+    repo.add(new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample, true));
+    animationDuration = 10;
+}
+
+void makeVuSequence5(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample));
+    repo.add(new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample, true));
+    animationDuration = 10;
+}
+
+void makeVuSequence6(EC::AnimationRepo &repo)
 {
     repo.add(new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample));
 }
@@ -217,8 +268,16 @@ void makeRainbowLevelVU(EC::AnimationRepo &repo)
 EC::AnimationBuilderFct nextAnimation = nullptr;
 
 EC::AnimationBuilderFct allAnimations[] = {
-    &makeRainbowLevelVU,
-    &makeEssentialVU,
+    &makeVuSequence1,
+    &makeVuSequence2,
+    &makeVuSequence3,
+    &makeVuSequence4,
+    &makeVuSequence5,
+    &makeVuSequence6,
+    // &makeRainbowLevelVU,
+    // &makeEssentialVU,
+    &makePeakGlitterVU,
+
     &makePacifica,
     &makeWaterfall,
     &makeFire,
@@ -236,15 +295,14 @@ EC::AnimationChangerSoft animationChanger(animationRunner, allAnimations);
 
 //------------------------------------------------------------------------------
 
-const uint16_t animationDuration = 10;
 void handleAnimationChange(uint32_t currentMillis = millis())
 {
-    static uint32_t nextChangeTime = animationDuration * 1000;
+    static uint32_t lastChangeTime = 0;
 
     bool mustChange = false;
     if (autoMode)
     {
-        if (currentMillis > nextChangeTime)
+        if (currentMillis > lastChangeTime + animationDuration * 1000)
         {
             mustChange = true;
         }
@@ -274,8 +332,9 @@ void handleAnimationChange(uint32_t currentMillis = millis())
     digitalWrite(LED_BUILTIN, autoMode);
     if (mustChange)
     {
+        animationDuration = defaultAnimationDuration;
         animationChanger.selectNext();
-        nextChangeTime = currentMillis + animationDuration * 1000;
+        lastChangeTime = currentMillis;
     }
 }
 
@@ -506,6 +565,9 @@ void printMemoryUsage()
 
     Serial.print(F("EssentialVU = "));
     Serial.println(sizeof(EC::EssentialVU));
+
+    Serial.print(F("PeakGlitterVU = "));
+    Serial.println(sizeof(EC::PeakGlitterVU));
 
     Serial.print(F("RainbowLevelVU = "));
     Serial.println(sizeof(EC::RainbowLevelVU));

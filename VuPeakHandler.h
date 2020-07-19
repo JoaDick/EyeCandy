@@ -35,9 +35,6 @@ SOFTWARE.
  */
 class VuPeakHandler
 {
-    uint32_t _lastPeakTime = 0;
-    float _maxPeakValue = 0.0;
-
 public:
     /// Delay (in ms) before the dot starts to fall down.
     uint16_t peakHold = 200;
@@ -53,32 +50,35 @@ public:
      */
     float peakThreshold = 0.005;
 
-    /// This is set to true by process() only when a new peak was detected.
-    bool peakDetected = false;
-
-    /// Dot's position of last call to process(). Only for debugging; don't modify!
-    float peakLevel = 0.0;
-
-    /** Calculate the peak dot's position.
-     * @param volume  Returnvalue of VuLevelHandler::capture()
-     * @param currentMillis  Current time, i.e. the returnvalue of millis().
+    /** Curent position of the peak dot.
      * @return A value between 0.0 ... 1.0, representing the dot's position.
-     * Whenever a new peak is detected, #peakDetected is also set to true.
-     * This is the case, when the current \a volume value is below the previous
-     * one.
      * @note Be aware that an overloaded / clipped / too loud audio signal may
      * return values greater than 1.0!
      */
-    float process(float volume,
-                  uint32_t currentMillis)
+    float peakLevel()
     {
-        peakDetected = false;
+        return _peakLevel;
+    }
+
+    /** Calculate the peak dot's position.
+     * @param vuLevel  Returnvalue of VuLevelHandler::capture()
+     * @param currentMillis  Current time, i.e. the returnvalue of millis().
+     * @retval true   A new peak has been detected.
+     * @retval false  No peak detected.
+     * Use peakLevel() to get the position of the peak dot.
+     * A new peak is reported, when the current \a vuLevel value is below the
+     * previous one.
+     */
+    bool process(float vuLevel,
+                 uint32_t currentMillis)
+    {
+        bool peakDetected = false;
         // rising?
-        if (volume >= peakLevel)
+        if (vuLevel >= _peakLevel)
         {
             _lastPeakTime = 0;
-            _maxPeakValue = volume;
-            peakLevel = volume;
+            _maxPeakValue = vuLevel;
+            _peakLevel = vuLevel;
         }
         // falling
         else
@@ -101,23 +101,28 @@ public:
                 if (decayTime < peakDecay)
                 {
                     const float decayFactor = float(peakDecay - decayTime) / peakDecay;
-                    peakLevel = _maxPeakValue * decayFactor;
+                    _peakLevel = _maxPeakValue * decayFactor;
                 }
                 else
                 {
-                    peakLevel = 0.0;
+                    _peakLevel = 0.0;
                 }
             }
         }
 
         // peak too low?
-        if (peakLevel <= peakThreshold)
+        if (_peakLevel <= peakThreshold)
         {
-            peakLevel = 0.0;
-            peakDetected = false;
+            _peakLevel = 0.0;
+            // peakDetected = false;
             _lastPeakTime = 0;
         }
 
-        return peakLevel;
+        return peakDetected;
     }
+
+private:
+    uint32_t _lastPeakTime = 0;
+    float _maxPeakValue = 0.0;
+    float _peakLevel = 0.0;
 };
