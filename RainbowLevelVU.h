@@ -28,15 +28,14 @@ SOFTWARE.
 #include "AnimationBaseFL.h"
 #include "VuLevelHandler.h"
 #include "VuPeakHandler.h"
+#include "VuRangeExtender.h"
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /** VU meter Animation & Overlay with its color depending on the volume.
-   * Just a DRAFT idea which might still need some tweaking...
-   */
+  /// VU meter with its color depending on the current VU level.
   class RainbowLevelVU
       : public AnimationBaseFL
   {
@@ -46,26 +45,21 @@ namespace EC
     float _vuLevel = 0.0;
     float _peakLevel = 0.0;
 
-    float _startHue = 0.0;
+    float _startHue = random8();
 
   public:
     /// How fast the initial hue changes over time.
-    float hueBaseStep = -0.1;
+    float baseHueStep = -0.05;
 
     /** How much the hue varies depending on the VU level.
      * 1.0 means one full color wheel cycle between 0.0 ... 1.0 VU level.
      */
-    float hueRange = 0.35;
+    float vuHueRange = 0.33;
 
     /** Brightness of the VU.
      * This setting can be adjusted at runtime.
      */
     uint8_t volume = 128;
-
-    /** Put more emphasis on the red'ish colors when true.
-     * This setting can be adjusted at runtime.
-     */
-    bool moreRed = true;
 
     /** Fill LED strip with this color.
      * This setting can be adjusted at runtime.
@@ -104,6 +98,9 @@ namespace EC
      */
     VuPeakHandler vuPeakHandler;
 
+    /// Usually there's nothing to configure here; only for debugging.
+    VuRangeExtender vuRangeExtender;
+
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
@@ -137,11 +134,7 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      float hue = _startHue + _vuLevel * hueRange * 255;
-      if (moreRed)
-      {
-        hue = redShift(hue);
-      }
+      uint8_t hue = redShift(_startHue + _vuLevel * vuHueRange * 255);
 
       if (enableVuBar)
       {
@@ -161,8 +154,10 @@ namespace EC
     void updateAnimation(uint32_t currentMillis) override
     {
       _vuLevel = vuLevelHandler.capture();
+      _vuLevel = vuRangeExtender.process(_vuLevel);
       _peakLevel = vuPeakHandler.process(_vuLevel, currentMillis);
-      _startHue += hueBaseStep;
+
+      _startHue += baseHueStep;
       while (_startHue > 255.0)
       {
         _startHue -= 255.0;

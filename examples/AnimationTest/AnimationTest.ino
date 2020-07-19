@@ -506,6 +506,9 @@ void printMemoryUsage()
 
     Serial.print(F("EssentialVU = "));
     Serial.println(sizeof(EC::EssentialVU));
+
+    Serial.print(F("RainbowLevelVU = "));
+    Serial.println(sizeof(EC::RainbowLevelVU));
 }
 
 //------------------------------------------------------------------------------

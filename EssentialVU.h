@@ -28,6 +28,11 @@ SOFTWARE.
 #include "AnimationBaseFL.h"
 #include "VuLevelHandler.h"
 #include "VuPeakHandler.h"
+#include "VuRangeExtender.h"
+
+//------------------------------------------------------------------------------
+
+// #define ESSENTIAL_VU_DEBUG
 
 //------------------------------------------------------------------------------
 
@@ -45,6 +50,8 @@ namespace EC
    * - background color
    * - peak hold duration
    * - peak dot falling speed
+   * - range extender to stretch the "interesting" part of the VU meter over
+   *   the entire LED strip
    */
   class EssentialVU
       : public AnimationBaseFL
@@ -90,6 +97,11 @@ namespace EC
      */
     bool enablePeakDot = true;
 
+    /** Stretch the "interesting" part of the VU meter over the entire LED strip.
+     * This setting can be adjusted at runtime.
+     */
+    bool enableRangeExtender = true;
+
     /** Configure the following properties according to your needs:
      * - VuLevelHandler::smoothingFactor
      * - Don't call any of its methods!
@@ -102,6 +114,9 @@ namespace EC
      * - Don't call any of its methods!
      */
     VuPeakHandler vuPeakHandler;
+
+    /// Usually there's nothing to configure here; only for debugging.
+    VuRangeExtender vuRangeExtender;
 
     /** Constructor
      * @param ledStrip  The LED strip.
@@ -138,16 +153,16 @@ namespace EC
     {
       if (enableVuBar)
       {
-        lineRel(0, _vuLevel * ledCount, vuBarColor);
+        lineRel(0, _vuLevel * (ledCount - 1), vuBarColor);
       }
 
       if (enablePeakDot &&
           _peakLevel > 0.0)
       {
-        safePixel(_peakLevel * ledCount) = peakDotColor;
+        safePixel(_peakLevel * (ledCount - 1)) = peakDotColor;
       }
 
-#if (0)
+#ifdef ESSENTIAL_VU_DEBUG
       Serial.print(" -:");
       Serial.print(0.0);
       Serial.print(" +:");
@@ -164,6 +179,10 @@ namespace EC
     void updateAnimation(uint32_t currentMillis) override
     {
       _vuLevel = vuLevelHandler.capture();
+      if (enableRangeExtender)
+      {
+        _vuLevel = vuRangeExtender.process(_vuLevel);
+      }
       _peakLevel = vuPeakHandler.process(_vuLevel, currentMillis);
     }
 
