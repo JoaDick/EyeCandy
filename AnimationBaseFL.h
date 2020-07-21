@@ -151,6 +151,12 @@ namespace EC
         }
         lastPixel = ledCount - 1;
       }
+      if(mirrored)
+      {
+        int16_t temp = lastPixel;
+        lastPixel = ledCount - 1 - firstPixel;
+        firstPixel = ledCount - 1 - temp;
+      }
       while (firstPixel <= lastPixel)
       {
         ledStrip[firstPixel++] = color;
