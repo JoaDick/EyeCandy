@@ -48,6 +48,11 @@ namespace EC
     uint16_t sHue16 = 0;
 
   public:
+    /** Put more emphasis on the red'ish colors when true.
+     * This setting can be adjusted at runtime.
+     */
+    bool moreRed = true;
+
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
@@ -81,6 +86,10 @@ namespace EC
       {
         hue16 += hueinc16;
         uint8_t hue8 = hue16 / 256;
+        if (moreRed)
+        {
+          hue8 = redShift(hue8);
+        }
 
         brightnesstheta16 += brightnessthetainc16;
         uint16_t b16 = sin16(brightnesstheta16) + 32768;
