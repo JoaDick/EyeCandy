@@ -27,7 +27,7 @@ SOFTWARE.
 
 #include "AnimationBaseFL.h"
 #include "VuLevelHandler.h"
-#include "VuPeakHandler.h"
+#include "VuPeakGravityHandler.h"
 #include "VuRangeExtender.h"
 
 //------------------------------------------------------------------------------
@@ -84,11 +84,11 @@ namespace EC
     VuLevelHandler vuLevelHandler;
 
     /** Configure the following properties according to your needs:
-     * - VuPeakHandler::peakHold
-     * - VuPeakHandler::peakDecay
+     * - VuPeakGravityHandler::a0
+     * - VuPeakGravityHandler::v0
      * - Don't call any of its methods!
      */
-    VuPeakHandler vuPeakHandler;
+    VuPeakGravityHandler vuPeakHandler;
 
     /// Usually there's nothing to configure here; only for debugging.
     VuRangeExtender vuRangeExtender;
@@ -128,18 +128,18 @@ namespace EC
     {
       const float vuLevel = vuRangeExtender.vuLevel();
       const float peakLevel = vuPeakHandler.peakLevel();
-      uint8_t hue = redShift(_startHue + vuLevel * vuHueRange * 255);
+      const uint8_t hue = _startHue + vuLevel * vuHueRange * 255;
 
       if (enableVuBar)
       {
-        const CRGB barColor = CHSV(hue, 255, volume);
+        const CRGB barColor = CHSV(redShift(hue), 255, volume);
         lineRel(0, vuLevel * (ledCount - 1), barColor);
       }
 
       if (enablePeakDot &&
           peakLevel > 0.0)
       {
-        const CRGB dotColor = CHSV(hue + 128, 255, volume);
+        const CRGB dotColor = CHSV(redShift(hue + 128), 255, volume);
         safePixel(peakLevel * (ledCount - 1)) = dotColor;
       }
     }
