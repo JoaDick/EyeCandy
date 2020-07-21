@@ -31,7 +31,7 @@ SOFTWARE.
 
 /** Peak dot of a VU meter, influenced by gravity.
  * Set #a0 < 0.0 for the behaviour of a ball, that's bumped up by the VU bar.
- * Set #a0 > 0.0 for a balloon, floating off the peak.
+ * Set #a0 > 0.0 for a bubble, floating off the peak.
  * Just provide the output of a #VuLevelHandler instance, and get the position
  * of the corresponding peak dot.
  */
@@ -47,7 +47,7 @@ public:
 #if (1)              // "Punched Ball"
     float a0 = -3.0; /// Takeoff acceleration.
     float v0 = 0.5;  /// Takeoff velocity.
-#else                // "Floating Balloon"
+#else                // "Floating Bubble"
     float a0 = 0.5; /// Takeoff acceleration.
     float v0 = 0.1; /// Takeoff velocity.
 #endif
@@ -143,7 +143,7 @@ public:
                 vel = 0.0;
                 pos = 0.0;
             }
-            else if (pos > 1.0)
+            else if (pos > 1.05) // let it float a bit off the top
             {
                 acc = -1.0;
                 vel = 0.0;

@@ -151,7 +151,7 @@ namespace EC
         }
         lastPixel = ledCount - 1;
       }
-      if(mirrored)
+      if (mirrored)
       {
         int16_t temp = lastPixel;
         lastPixel = ledCount - 1 - firstPixel;

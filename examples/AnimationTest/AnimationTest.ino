@@ -217,13 +217,36 @@ void makeWaterfall(EC::AnimationRepo &repo)
 
 // ---------- VUs ----------
 
-void makeRainbowBalloonVU(EC::AnimationRepo &repo)
+void makeRainbowBubbleVU(EC::AnimationRepo &repo)
 {
     auto vu = new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample);
     vu->vuPeakHandler.a0 = 0.5;
     vu->vuPeakHandler.v0 = 0.1;
     vu->vuHueRange = 0.67;
     repo.add(vu);
+}
+
+void makeRainbowBubbleCenteredVU(EC::AnimationRepo &repo)
+{
+    auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
+    auto vu = new EC::RainbowLevelVU(leds, kaleidoscope->remainLedCount(), audioSample);
+    vu->vuPeakHandler.a0 = 0.5;
+    vu->vuPeakHandler.v0 = 0.1;
+    vu->vuHueRange = 0.67;
+    vu->mirrored = true;
+    repo.add(vu);
+    repo.add(kaleidoscope);
+}
+
+void makeRainbowBubbleInwardVU(EC::AnimationRepo &repo)
+{
+    auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
+    auto vu = new EC::RainbowLevelVU(leds, kaleidoscope->remainLedCount(), audioSample);
+    vu->vuPeakHandler.a0 = 0.5;
+    vu->vuPeakHandler.v0 = 0.1;
+    vu->vuHueRange = 0.67;
+    repo.add(vu);
+    repo.add(kaleidoscope);
 }
 
 void makeBouncingDotVU(EC::AnimationRepo &repo)
@@ -253,6 +276,23 @@ void makePeakGlitterVU(EC::AnimationRepo &repo)
 void makeRainbowLevelVU(EC::AnimationRepo &repo)
 {
     repo.add(new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample));
+}
+
+void makeRainbowLevelCenteredVU(EC::AnimationRepo &repo)
+{
+    auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
+    auto vu = new EC::RainbowLevelVU(leds, kaleidoscope->remainLedCount(), audioSample);
+    vu->mirrored = true;
+    repo.add(vu);
+    repo.add(kaleidoscope);
+}
+
+void makeRainbowLevelInwardVU(EC::AnimationRepo &repo)
+{
+    auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
+    auto vu = new EC::RainbowLevelVU(leds, kaleidoscope->remainLedCount(), audioSample);
+    repo.add(vu);
+    repo.add(kaleidoscope);
 }
 
 // ---------- VU sequence ----------
@@ -298,7 +338,7 @@ void makeVuSequence5(EC::AnimationRepo &repo)
 void makeVuSequence6(EC::AnimationRepo &repo)
 {
     makeBouncingDotVU(repo);
-    animationDuration = 5;
+    animationDuration = 10;
 }
 
 void makeVuSequence7(EC::AnimationRepo &repo)
@@ -309,8 +349,33 @@ void makeVuSequence7(EC::AnimationRepo &repo)
 
 void makeVuSequence8(EC::AnimationRepo &repo)
 {
-    makeRainbowBalloonVU(repo);
-    // animationDuration = 10;
+    makeRainbowBubbleVU(repo);
+    animationDuration = 20;
+}
+
+void makeVuSequence9(EC::AnimationRepo &repo)
+{
+    makeRainbowLevelInwardVU(repo);
+    animationDuration = 15;
+}
+
+void makeVuSequence10(EC::AnimationRepo &repo)
+{
+    makeRainbowLevelCenteredVU(repo);
+    animationDuration = 15;
+}
+
+void makeVuSequence11(EC::AnimationRepo &repo)
+{
+    makeRainbowBubbleCenteredVU(repo);
+    animationDuration = 15;
+}
+
+void makeVuSequence12(EC::AnimationRepo &repo)
+{
+    makeRainbowBubbleInwardVU(repo);
+    animationDuration = 15;
+
     autoMode = false;
 }
 
@@ -319,7 +384,7 @@ void makeVuSequence8(EC::AnimationRepo &repo)
 EC::AnimationBuilderFct nextAnimation = nullptr;
 
 EC::AnimationBuilderFct allAnimations[] = {
-    // &makeRainbowBalloonVU,
+    // &makeVuSequence12,
 
     &makeVuSequence1,
     &makeVuSequence2,
@@ -329,10 +394,14 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeVuSequence6,
     &makeVuSequence7,
     &makeVuSequence8,
+    &makeVuSequence9,
+    &makeVuSequence10,
+    &makeVuSequence11,
+    &makeVuSequence12,
 
     // &makeBouncingDotVU,
     // &makeRainbowLevelVU,
-    // &makeRainbowBalloonVU,
+    // &makeRainbowBubbleVU,
 
     &makePride,
     &makePacifica,
