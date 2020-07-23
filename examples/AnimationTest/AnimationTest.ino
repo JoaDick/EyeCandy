@@ -262,6 +262,16 @@ void makeBouncingDotVU(EC::AnimationRepo &repo)
     repo.add(glitter);
 }
 
+void makeDancingDotVU(EC::AnimationRepo &repo)
+{
+    auto vu = new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample);
+    vu->enablePeakDot = false;
+    vu->fadeRate = 0;
+    vu->volume = 64;
+    repo.add(vu);
+    repo.add(new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true));
+}
+
 void makeEssentialVU(EC::AnimationRepo &repo)
 {
     repo.add(new EC::EssentialVU(leds, NUM_LEDS, audioSample));
@@ -375,8 +385,13 @@ void makeVuSequence12(EC::AnimationRepo &repo)
 {
     makeRainbowBubbleInwardVU(repo);
     animationDuration = 15;
+}
 
-    autoMode = false;
+void makeVuSequence13(EC::AnimationRepo &repo)
+{
+    makeDancingDotVU(repo);
+    // animationDuration = 15;
+    // autoMode = false;
 }
 
 //------------------------------------------------------------------------------
@@ -384,7 +399,7 @@ void makeVuSequence12(EC::AnimationRepo &repo)
 EC::AnimationBuilderFct nextAnimation = nullptr;
 
 EC::AnimationBuilderFct allAnimations[] = {
-    // &makeVuSequence12,
+    // &makeDancingDotVU,
 
     &makeVuSequence1,
     &makeVuSequence2,
@@ -398,10 +413,7 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeVuSequence10,
     &makeVuSequence11,
     &makeVuSequence12,
-
-    // &makeBouncingDotVU,
-    // &makeRainbowLevelVU,
-    // &makeRainbowBubbleVU,
+    &makeVuSequence13,
 
     &makePride,
     &makePacifica,

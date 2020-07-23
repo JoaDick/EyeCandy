@@ -51,6 +51,7 @@ SOFTWARE.
 #include "Waterfall.h"
 
 // VU
+#include "DancingDotVU.h"
 #include "EssentialVU.h"
 #include "PeakGlitterVU.h"
 #include "RainbowLevelVU.h"
