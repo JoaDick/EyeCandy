@@ -146,7 +146,7 @@ namespace EC
         uint16_t sindex16 = sin16(ci) + 32768;
         uint8_t sindex8 = scale16(sindex16, 240);
         CRGB c = ColorFromPalette(p, sindex8, bri, LINEARBLEND);
-        ledStrip[i] += c;
+        pixel(i) += c;
       }
     }
 
@@ -160,12 +160,12 @@ namespace EC
       {
         uint8_t threshold = scale8(sin8(wave), 20) + basethreshold;
         wave += 7;
-        uint8_t l = ledStrip[i].getAverageLight();
+        uint8_t l = pixel(i).getAverageLight();
         if (l > threshold)
         {
           uint8_t overage = l - threshold;
           uint8_t overage2 = qadd8(overage, overage);
-          ledStrip[i] += CRGB(overage, overage2, qadd8(overage2, overage2));
+          pixel(i) += CRGB(overage, overage2, qadd8(overage2, overage2));
         }
       }
     }
@@ -175,9 +175,9 @@ namespace EC
     {
       for (uint16_t i = 0; i < ledCount; i++)
       {
-        ledStrip[i].blue = scale8(ledStrip[i].blue, 145);
-        ledStrip[i].green = scale8(ledStrip[i].green, 200);
-        ledStrip[i] |= CRGB(2, 5, 7);
+        pixel(i).blue = scale8(pixel(i).blue, 145);
+        pixel(i).green = scale8(pixel(i).green, 200);
+        pixel(i) |= CRGB(2, 5, 7);
       }
     }
   };
