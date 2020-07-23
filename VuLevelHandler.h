@@ -123,3 +123,21 @@ private:
     uint16_t _rmsCount = 0;
     float _vuLevel = 0.0;
 };
+
+inline float constrainF(float value, float minValue, float maxValue)
+{
+    if (value > maxValue)
+    {
+        value = maxValue;
+    }
+    if (value < minValue)
+    {
+        value = minValue;
+    }
+    return value;
+}
+
+inline float constrainF(float value, float maxValue = 1.0)
+{
+    return constrainF(value, 0.0, maxValue);
+}

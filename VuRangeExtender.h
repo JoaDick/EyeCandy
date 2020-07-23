@@ -84,8 +84,8 @@ public:
         vuLevelAvg = (vuLevelAvg * (vuLevelAvgLen - 1) + vuLevel) / vuLevelAvgLen;
         deltaAvg = (deltaAvg * (rangeAvgLen - 1) + abs(vuLevel - vuLevelAvg)) / rangeAvgLen;
 
-        rangeMax = constrainValue(vuLevelAvg + 2.0 * deltaAvg);
-        rangeMin = constrainValue(vuLevelAvg - 2.0 * deltaAvg);
+        rangeMax = constrainF(vuLevelAvg + 2.0 * deltaAvg);
+        rangeMin = constrainF(vuLevelAvg - 2.0 * deltaAvg);
 
         dynamicRange = rangeMax - rangeMin;
         if (dynamicRange < dynamicRangeMin)
@@ -97,8 +97,8 @@ public:
         _newVuLevel += (vuLevel - rangeMin) / dynamicRange;
         _newVuLevel /= smoothingFactor + 1;
 
-        _newVuLevel = constrainValue(_newVuLevel);
-        return constrainValue(_newVuLevel);
+        _newVuLevel = constrainF(_newVuLevel);
+        return _newVuLevel;
     }
 
     /// Average input VU level. Only for debugging; don't modify!
@@ -118,18 +118,4 @@ public:
 
 private:
     float _newVuLevel = 0.0;
-
-private:
-    float constrainValue(float value)
-    {
-        if (value > 1.0)
-        {
-            value = 1.0;
-        }
-        if (value < 0.0)
-        {
-            value = 0.0;
-        }
-        return value;
-    }
 };
