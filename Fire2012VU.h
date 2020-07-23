@@ -25,9 +25,16 @@ SOFTWARE.
 
 *******************************************************************************/
 
+// #define FIRE2012VU_DEBUG
+
+#ifndef FIRE2012VU_DEBUG
+#include "PseudoAnimationBase.h"
+#else
 #include "AnimationBaseFL.h"
+#endif
+#include "Fire2012.h"
 #include "VuLevelHandler.h"
-#include "VuPeakForceHandler.h"
+#include "VuPeakHandler.h"
 #include "VuRangeExtender.h"
 
 //------------------------------------------------------------------------------
@@ -35,74 +42,84 @@ SOFTWARE.
 namespace EC
 {
 
-  /// VU dot only, dancing around the current VU level.
-  class DancingDotVU
+  /// Adjust Fire2012's "height" according to the current VU level.
+  template <uint16_t NUM_LEDS>
+  class Fire2012VU
+#ifndef FIRE2012VU_DEBUG
+      : public PseudoAnimationBase
+#else
       : public AnimationBaseFL
+#endif
   {
   public:
-    /** Draw the peak dot with this color.
-     * This setting can be adjusted at runtime.
-     */
-    CRGB peakDotColor = CRGB(255, 0, 0);
-
-    /** Fill LED strip with this color.
-     * This setting can be adjusted at runtime.
-     * Not relevant in Overlay mode.
-     */
-    CRGB backgroundColor = CRGB(0, 0, 0);
-
     /// Usually there's nothing to configure here; only for debugging.
     VuLevelHandler vuLevelHandler;
 
     /// Usually there's nothing to configure here; only for debugging.
-    VuPeakForceHandler vuPeakHandler;
-
-    /// Usually there's nothing to configure here; only for debugging.
     VuRangeExtender vuRangeExtender;
 
+    /// Usually there's nothing to configure here; mainly for debugging.
+    VuPeakHandler vuPeakHandler;
+
+#ifndef FIRE2012VU_DEBUG
     /** Constructor.
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
      * @param audioSource  Read the audio samples from there.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     * @param fire  Original #Fire2012 animation to manipulate.
      */
-    DancingDotVU(CRGB *ledStrip,
-                 uint16_t ledCount,
-                 float &audioSource,
-                 bool overlayMode = false)
-        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount), _audioSource(audioSource)
+    Fire2012VU(float &audioSource,
+               Fire2012<NUM_LEDS> &fire)
+        : PseudoAnimationBase(), _fire(fire), _audioSource(audioSource)
+#else
+    Fire2012VU(CRGB *ledStrip,
+               uint16_t ledCount,
+               float &audioSource,
+               Fire2012<NUM_LEDS> &fire)
+        : AnimationBaseFL(TYPE_OVERLAY, ledStrip, ledCount), _fire(fire), _audioSource(audioSource)
+#endif
     {
+      vuPeakHandler.peakHold = 150;
+      vuPeakHandler.peakDecay = 500;
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    uint8_t showPattern(uint32_t currentMillis) override
-    {
-      fill_solid(ledStrip, ledCount, backgroundColor);
-      showOverlay(currentMillis);
-      return 0;
-    }
-
+#ifdef FIRE2012VU_DEBUG
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      if (vuPeakHandler.peakLevel() > 0.0)
-      {
-        const uint16_t pixelPos = vuPeakHandler.peakLevel() * (ledCount - 1);
-        safePixel(pixelPos) = peakDotColor;
-        safePixel(pixelPos - 1) = peakDotColor;
-      }
+      const uint16_t pixelPos = vuPeakHandler.peakLevel() * (ledCount - 1);
+      safePixel(pixelPos) = CRGB(0, 0, 255);
     }
+#endif
 
+#ifndef FIRE2012VU_DEBUG
+    /// @see PseudoAnimationBase::updateAnimation()
+    uint16_t updateAnimation(uint32_t currentMillis) override
+#else
     /// @see AnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
+#endif
     {
       float vuLevel = vuLevelHandler.capture();
       vuLevel = vuRangeExtender.process(vuLevel);
       vuPeakHandler.process(vuLevel, currentMillis);
+      vuLevel = constrainF(vuPeakHandler.peakLevel());
+
+      /// COOLING: How much does the air cool as it rises?
+      /// Less cooling = taller flames.  More cooling = shorter flames.
+      /// suggested range 20-100
+      _fire.COOLING = 255 - vuLevel * 255;
+
+      /// SPARKING: What chance (out of 255) is there that a new spark will be lit?
+      /// Higher chance = more roaring fire.  Lower chance = more flickery fire.
+      /// suggested range 50-200.
+      _fire.SPARKING = 75 + vuLevel * 115;
+
+#ifndef FIRE2012VU_DEBUG
+      return 10;
+#endif
     }
 
-    /// @see AnimationBase::processAnimationBackground()
+    /// @see PseudoAnimationBase::processAnimationBackground()
     void processAnimationBackground(uint32_t currentMillis) override
     {
       vuLevelHandler.addSample(_audioSource);
@@ -110,6 +127,7 @@ namespace EC
 
   private:
     float &_audioSource;
+    Fire2012<NUM_LEDS> &_fire;
   };
 
 } // namespace EC

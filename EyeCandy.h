@@ -53,5 +53,6 @@ SOFTWARE.
 // VU
 #include "DancingDotVU.h"
 #include "EssentialVU.h"
+#include "Fire2012VU.h"
 #include "PeakGlitterVU.h"
 #include "RainbowLevelVU.h"

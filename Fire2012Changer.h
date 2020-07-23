@@ -33,7 +33,7 @@ SOFTWARE.
 namespace EC
 {
 
-  /// Adjust Fire2012's settings automatically at runtime'.
+  /// Adjust Fire2012's settings automatically at runtime.
   template <uint16_t NUM_LEDS>
   class Fire2012Changer
       : public PseudoAnimationBase

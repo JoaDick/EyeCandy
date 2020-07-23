@@ -277,6 +277,18 @@ void makeEssentialVU(EC::AnimationRepo &repo)
     repo.add(new EC::EssentialVU(leds, NUM_LEDS, audioSample));
 }
 
+void makeFireVU(EC::AnimationRepo &repo)
+{
+    auto fire = new EC::Fire2012<NUM_LEDS>(leds, NUM_LEDS);
+#ifndef FIRE2012VU_DEBUG
+    auto fireChanger = new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire);
+#else
+    auto fireChanger = new EC::Fire2012VU<NUM_LEDS>(leds, NUM_LEDS, audioSample, *fire);
+#endif
+    repo.add(fire);
+    repo.add(fireChanger);
+}
+
 void makePeakGlitterVU(EC::AnimationRepo &repo)
 {
     repo.add(new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample));
@@ -390,6 +402,12 @@ void makeVuSequence12(EC::AnimationRepo &repo)
 void makeVuSequence13(EC::AnimationRepo &repo)
 {
     makeDancingDotVU(repo);
+    animationDuration = 15;
+}
+
+void makeVuSequence14(EC::AnimationRepo &repo)
+{
+    makeFireVU(repo);
     // animationDuration = 15;
     // autoMode = false;
 }
@@ -399,7 +417,7 @@ void makeVuSequence13(EC::AnimationRepo &repo)
 EC::AnimationBuilderFct nextAnimation = nullptr;
 
 EC::AnimationBuilderFct allAnimations[] = {
-    // &makeDancingDotVU,
+    // &makeFireVU,
 
     &makeVuSequence1,
     &makeVuSequence2,
@@ -414,6 +432,7 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeVuSequence11,
     &makeVuSequence12,
     &makeVuSequence13,
+    &makeVuSequence14,
 
     &makePride,
     &makePacifica,
