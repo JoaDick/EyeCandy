@@ -16,20 +16,30 @@
 // Connect potentiometer's center pin to the specified Arduino pin.
 // The other potentiometer pins must be wire to +5V and GND.
 
+#ifndef PIN_SELECT_BTN
 // "Select" Button.
 #define PIN_SELECT_BTN 2
+#endif
 
+#ifndef PIN_FLIP_BTN
 // Button for mirror effect.
 #define PIN_FLIP_BTN 3
+#endif
 
+#ifndef PIN_COLOR_POT
 // Potentiometer to control Animation's color.
 #define PIN_COLOR_POT A0
+#endif
 
+#ifndef PIN_SPEED_POT
 // Potentiometer to control Animation's speed.
 #define PIN_SPEED_POT A1
+#endif
 
+#ifndef PIN_MIC
 // Microphone.
 #define PIN_MIC A5
+#endif
 
 //------------------------------------------------------------------------------
 
