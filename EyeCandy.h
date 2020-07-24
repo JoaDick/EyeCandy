@@ -32,6 +32,7 @@ SOFTWARE.
 
 // Pattern
 #include "BouncingBalls.h"
+#include "Bubbles.h"
 #include "FadeOut.h"
 #include "Fire2012.h"
 #include "Fire2012Changer.h"

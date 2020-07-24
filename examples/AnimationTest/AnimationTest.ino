@@ -162,6 +162,17 @@ void makeAnimation3(EC::AnimationRepo &repo)
 
 // ---------- Animations ----------
 
+void makeBubbles(EC::AnimationRepo &repo)
+{
+#if (0)
+    repo.add(new EC::Bubbles(leds, NUM_LEDS));
+#else
+    repo.add(new EC::Pacifica(leds, NUM_LEDS));
+    repo.add(new EC::FadeOut(leds, NUM_LEDS, true, 150));
+    repo.add(new EC::Bubbles(leds, NUM_LEDS, true));
+#endif
+}
+
 void makeFire(EC::AnimationRepo &repo)
 {
     auto fire = new EC::Fire2012<NUM_LEDS>(leds, NUM_LEDS);
@@ -417,7 +428,7 @@ void makeVuSequence14(EC::AnimationRepo &repo)
 EC::AnimationBuilderFct nextAnimation = nullptr;
 
 EC::AnimationBuilderFct allAnimations[] = {
-    // &makeFireVU,
+    // &makeBubbles,
 
     &makeVuSequence1,
     &makeVuSequence2,
@@ -436,6 +447,7 @@ EC::AnimationBuilderFct allAnimations[] = {
 
     &makePride,
     &makePacifica,
+    &makeBubbles,
     &makeWaterfall,
     &makeFire,
     &makeFlare,
@@ -445,7 +457,7 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeAnimation2,
     &makeAnimation3,
 #endif
-    &makeFireworks,
+    // &makeFireworks,
     nullptr};
 
 EC::AnimationChangerSoft animationChanger(animationRunner, allAnimations);

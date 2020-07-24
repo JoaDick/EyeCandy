@@ -64,7 +64,7 @@ void setup()
 //------------------------------------------------------------------------------
 
 const uint16_t defaultAnimationDuration = 20;
-uint16_t animationDuration = defaultAnimationDuration;
+const uint16_t animationDuration = defaultAnimationDuration;
 
 void makeBalls(EC::AnimationRepo &repo)
 {
@@ -74,6 +74,13 @@ void makeBalls(EC::AnimationRepo &repo)
 void makeBlobs(EC::AnimationRepo &repo)
 {
     repo.add(new EC::FloatingBlobs(leds, NUM_LEDS));
+}
+
+void makeBubbles(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::Pacifica(leds, NUM_LEDS));
+    repo.add(new EC::FadeOut(leds, NUM_LEDS, true, 150));
+    repo.add(new EC::Bubbles(leds, NUM_LEDS, true));
 }
 
 void makeFire(EC::AnimationRepo &repo)
@@ -107,7 +114,7 @@ void makeFireworks(EC::AnimationRepo &repo)
     repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 4500));
     repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 6000));
     repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 7500));
-    animationDuration = 3 * defaultAnimationDuration;
+    // animationDuration = 3 * defaultAnimationDuration;
 }
 
 void makeFlare(EC::AnimationRepo &repo)
@@ -156,10 +163,10 @@ void makeRainbowTwinkle(EC::AnimationRepo &repo)
     repo.add(rainbow);
 }
 
-void makeTwinkles(EC::AnimationRepo &repo)
-{
-    repo.add(new EC::Twinkles(leds, NUM_LEDS));
-}
+// void makeTwinkles(EC::AnimationRepo &repo)
+// {
+//     repo.add(new EC::Twinkles(leds, NUM_LEDS));
+// }
 
 void makeWaterfall(EC::AnimationRepo &repo)
 {
@@ -169,13 +176,14 @@ void makeWaterfall(EC::AnimationRepo &repo)
 //------------------------------------------------------------------------------
 
 EC::AnimationBuilderFct allAnimations[] = {
-    &makeTwinkles,
+    // &makeTwinkles,
     &makeRainbowBuiltin,
     &makeRainbow,
     &makeBlobs,
     &makeRainbowTwinkle,
     &makePride,
     &makePacifica,
+    &makeBubbles,
     &makeWaterfall,
     &makeBalls,
     &makeFire,
@@ -188,16 +196,14 @@ EC::AnimationChangerSoft animationChanger(animationRunner, allAnimations);
 
 //------------------------------------------------------------------------------
 
-void handleAnimationChange()
+void handleAnimationChange(uint32_t currentMillis = millis())
 {
-    static uint32_t nextChangeTime = animationDuration * 1000;
-
-    const uint32_t now = millis();
+    static uint32_t lastChangeTime = 0;
 
     bool mustChange = false;
     if (autoMode)
     {
-        if (now > nextChangeTime)
+        if (currentMillis > lastChangeTime + animationDuration * 1000)
         {
             mustChange = true;
         }
@@ -223,9 +229,9 @@ void handleAnimationChange()
     digitalWrite(LED_BUILTIN, autoMode);
     if (mustChange)
     {
-        animationDuration = defaultAnimationDuration;
+        // animationDuration = defaultAnimationDuration;
         animationChanger.selectNext();
-        nextChangeTime = now + animationDuration * 1000;
+        lastChangeTime = currentMillis;
     }
 }
 
@@ -233,9 +239,10 @@ void handleAnimationChange()
 
 void loop()
 {
-    handleAnimationChange();
+    const uint32_t currentMillis = millis();
+    handleAnimationChange(currentMillis);
 
-    animationChanger.process();
+    animationChanger.process(currentMillis);
     FastLED.show();
 }
 
