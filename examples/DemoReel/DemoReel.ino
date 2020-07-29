@@ -49,15 +49,13 @@ bool autoMode = true;
 void setup()
 {
     pinMode(PIN_SELECT_BTN, INPUT_PULLUP);
-    pinMode(PIN_FLIP_BTN, INPUT_PULLUP);
-    pinMode(PIN_COLOR_POT, INPUT_PULLUP);
-    pinMode(PIN_SPEED_POT, INPUT_PULLUP);
     pinMode(LED_BUILTIN, OUTPUT);
 
     FastLED.addLeds<LED_TYPE, LED_PIN, LED_COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
     FastLED.clear();
 
     Serial.begin(115200);
+    Serial.println();
     Serial.println(F("Welcome to EyeCandy"));
 }
 
@@ -240,8 +238,8 @@ void handleAnimationChange(uint32_t currentMillis = millis())
 void loop()
 {
     const uint32_t currentMillis = millis();
-    handleAnimationChange(currentMillis);
 
+    handleAnimationChange(currentMillis);
     animationChanger.process(currentMillis);
     FastLED.show();
 }

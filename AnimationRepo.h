@@ -60,7 +60,9 @@ namespace EC
     AnimationRepo() = default;
   };
 
-  /// Pointer to a function that configures an Animation Scene.
+  /** Pointer to a function that configures an Animation Scene.
+   * @param repo  Store Animations there.
+   */
   using AnimationBuilderFct = void (*)(AnimationRepo &repo);
 
 } // namespace EC

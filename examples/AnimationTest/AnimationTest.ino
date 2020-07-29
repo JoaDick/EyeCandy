@@ -283,6 +283,67 @@ void makeDancingDotVU(EC::AnimationRepo &repo)
     repo.add(new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true));
 }
 
+void makeDoubleBouncingDotVU(EC::AnimationRepo &repo)
+{
+    auto vu1 = new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample, true);
+    vu1->enableVuBar = false;
+    vu1->volume = 255;
+    vu1->vuHueRange = 0.4;
+    vu1->baseHueStep = -0.17;
+    vu1->vuLevelHandler.smoothingFactor = 6;
+
+    auto vu2 = new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample, true);
+    vu2->mirrored = true;
+    vu2->enableVuBar = false;
+    vu2->volume = 255;
+    vu2->vuHueRange = 0.6;
+    vu2->baseHueStep = 0.11;
+    vu2->vuLevelHandler.smoothingFactor = 9;
+
+    repo.add(new EC::FadeOut(leds, NUM_LEDS, 50));
+    repo.add(vu1);
+    repo.add(vu2);
+}
+
+void makeDoubleDancingDotVU1(EC::AnimationRepo &repo)
+{
+    auto vu1 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
+    vu1->peakDotColor = CRGB(255, 0, 0);
+
+    auto vu2 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
+    vu2->mirrored = true;
+    vu2->peakDotColor = CRGB(0, 255, 0);
+    vu2->vuPeakHandler.inertia = 0.55;
+    vu2->vuPeakHandler.friction = 0.14;
+
+    auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
+    auto pride = new EC::Pride2015(leds, kaleidoscope->remainLedCount());
+    // pride->mirrored = true;
+
+    repo.add(pride);
+    repo.add(kaleidoscope);
+    repo.add(new EC::FadeOut(leds, NUM_LEDS, true, 100));
+    repo.add(vu1);
+    repo.add(vu2);
+}
+
+void makeDoubleDancingDotVU2(EC::AnimationRepo &repo)
+{
+    auto vu1 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
+    vu1->peakDotColor = CHSV(20, 255, 255);
+
+    auto vu2 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
+    vu2->mirrored = true;
+    vu2->peakDotColor = CHSV(20 + 128, 255, 255);
+    vu2->vuPeakHandler.inertia = 0.55;
+    vu2->vuPeakHandler.friction = 0.14;
+
+    repo.add(new EC::FloatingBlobs(leds, NUM_LEDS));
+    repo.add(new EC::FadeOut(leds, NUM_LEDS, true, 230));
+    repo.add(vu1);
+    repo.add(vu2);
+}
+
 void makeEssentialVU(EC::AnimationRepo &repo)
 {
     repo.add(new EC::EssentialVU(leds, NUM_LEDS, audioSample));
@@ -418,6 +479,24 @@ void makeVuSequence13(EC::AnimationRepo &repo)
 
 void makeVuSequence14(EC::AnimationRepo &repo)
 {
+    makeDoubleBouncingDotVU(repo);
+    animationDuration = 15;
+}
+
+void makeVuSequence15(EC::AnimationRepo &repo)
+{
+    makeDoubleDancingDotVU1(repo);
+    animationDuration = 15;
+}
+
+void makeVuSequence16(EC::AnimationRepo &repo)
+{
+    makeDoubleDancingDotVU2(repo);
+    animationDuration = 15;
+}
+
+void makeVuSequence17(EC::AnimationRepo &repo)
+{
     makeFireVU(repo);
     // animationDuration = 15;
     // autoMode = false;
@@ -428,7 +507,7 @@ void makeVuSequence14(EC::AnimationRepo &repo)
 EC::AnimationBuilderFct nextAnimation = nullptr;
 
 EC::AnimationBuilderFct allAnimations[] = {
-    // &makeBubbles,
+    // &makeDoubleDancingDotVU2,
 
     &makeVuSequence1,
     &makeVuSequence2,
@@ -444,6 +523,9 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeVuSequence12,
     &makeVuSequence13,
     &makeVuSequence14,
+    &makeVuSequence15,
+    &makeVuSequence16,
+    &makeVuSequence17,
 
     &makePride,
     &makePacifica,

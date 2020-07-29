@@ -46,7 +46,7 @@ namespace EC
 #endif
 
   public:
-    /** Constructor
+    /** Constructor.
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
      */
