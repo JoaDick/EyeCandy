@@ -25,8 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
-#include "VuLevelHandler.h"
+#include "VuBaseFL.h"
 #include "VuPeakGravityHandler.h"
 #include "VuRangeExtender.h"
 
@@ -37,7 +36,7 @@ namespace EC
 
   /// VU meter with its color depending on the current VU level.
   class RainbowLevelVU
-      : public AnimationBaseFL
+      : public VuBaseFL
   {
   public:
     /// How fast the initial hue changes over time.
@@ -78,12 +77,6 @@ namespace EC
     bool enablePeakDot = true;
 
     /** Configure the following properties according to your needs:
-     * - VuLevelHandler::smoothingFactor
-     * - Don't call any of its methods!
-     */
-    VuLevelHandler vuLevelHandler;
-
-    /** Configure the following properties according to your needs:
      * - VuPeakGravityHandler::a0
      * - VuPeakGravityHandler::v0
      * - Don't call any of its methods!
@@ -103,7 +96,7 @@ namespace EC
                    uint16_t ledCount,
                    float &audioSource,
                    bool overlayMode = false)
-        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_FADING_PATTERN, ledStrip, ledCount), _audioSource(audioSource)
+        : VuBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_FADING_PATTERN, ledStrip, ledCount, audioSource)
     {
     }
 
@@ -162,14 +155,7 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::processAnimationBackground()
-    void processAnimationBackground(uint32_t currentMillis) override
-    {
-      vuLevelHandler.addSample(_audioSource);
-    }
-
   private:
-    float &_audioSource;
     float _startHue = random8();
   };
 

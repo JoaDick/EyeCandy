@@ -25,8 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
-#include "VuLevelHandler.h"
+#include "VuBaseFL.h"
 #include "VuPeakForceHandler.h"
 #include "VuRangeExtender.h"
 
@@ -37,7 +36,7 @@ namespace EC
 
   /// VU dot only, dancing around the current VU level.
   class DancingDotVU
-      : public AnimationBaseFL
+      : public VuBaseFL
   {
   public:
     /** Draw the peak dot with this color.
@@ -50,9 +49,6 @@ namespace EC
      * Not relevant in Overlay mode.
      */
     CRGB backgroundColor = CRGB(0, 0, 0);
-
-    /// Usually there's nothing to configure here; only for debugging.
-    VuLevelHandler vuLevelHandler;
 
     /// Usually there's nothing to configure here; only for debugging.
     VuPeakForceHandler vuPeakHandler;
@@ -70,7 +66,7 @@ namespace EC
                  uint16_t ledCount,
                  float &audioSource,
                  bool overlayMode = false)
-        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount), _audioSource(audioSource)
+        : VuBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount, audioSource)
     {
     }
 
@@ -101,15 +97,6 @@ namespace EC
       vuLevel = vuRangeExtender.process(vuLevel);
       vuPeakHandler.process(vuLevel, currentMillis);
     }
-
-    /// @see AnimationBase::processAnimationBackground()
-    void processAnimationBackground(uint32_t currentMillis) override
-    {
-      vuLevelHandler.addSample(_audioSource);
-    }
-
-  private:
-    float &_audioSource;
   };
 
 } // namespace EC

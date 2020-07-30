@@ -25,47 +25,52 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "Animation.h"
+#include "AnimationBaseFL.h"
+#include "VuLevelHandler.h"
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /** Helper base class for periodic custom processing.
-   * Benefit of this helper is that it can be added to an #AnimationRunner, thus
-   * the child's updateAnimation() method is getting called frequently.
-   * May e.g. be used for manipulating another Animation's configuration setting
-   * automatically during runtime.
+  /** Base class suitable for most VUs which are using FastLED.
+   * Child classes must fulfill the same requirements as for #AnimationBase.
    */
-  class PseudoAnimationBase
-      : public Animation
+  class VuBaseFL
+      : public AnimationBaseFL
   {
-    uint32_t _nextUpdateAnimation = 0;
+  public:
+    /** Usually there's nothing to configure here.
+     * Publicly accessible mainly for debugging.
+     * Child classes shall get the current VU level from here.
+     */
+    VuLevelHandler vuLevelHandler;
 
   protected:
-    /// Constructor.
-    PseudoAnimationBase()
-        : Animation(TYPE_OVERLAY)
+    /** Constructor.
+     * @param animationType  Type of Animation.
+     * @param ledStrip  The LED strip.
+     * @param ledCount  Number of LEDs.
+     * @param audioSource  Read the audio samples from there.
+     */
+    VuBaseFL(Type animationType,
+             CRGB *ledStrip,
+             uint16_t ledCount,
+             float &audioSource)
+        : AnimationBaseFL(animationType, ledStrip, ledCount), _audioSource(audioSource)
     {
     }
-
-    /** Process the Pseudo-Animation's duties.
-     * This method must be implemented by all child classes.
-     * @param currentMillis  Current time, i.e. the returnvalue of millis().
-     * @return Delay (in ms) until calling this method again.
-     */
-    virtual uint16_t updateAnimation(uint32_t currentMillis) = 0;
 
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      if (currentMillis >= _nextUpdateAnimation)
-      {
-        const uint16_t updateDelay = updateAnimation(currentMillis);
-        _nextUpdateAnimation = currentMillis + updateDelay;
-      }
+      vuLevelHandler.addSample(_audioSource);
+      AnimationBaseFL::processAnimation(currentMillis, wasModified);
     }
+
+  protected:
+    /// Most child classes won't need access to this.
+    float &_audioSource;
   };
 
 } // namespace EC

@@ -102,24 +102,10 @@ namespace EC
       return 10;
     }
 
-    /** Hook for custom background jobs.
-     * This method may be optionally implemented by child classes for doing some
-     * background work. It is called every time the Animation's process() method
-     * gets called, just before the other processing.
-     * @param currentMillis  Current time, i.e. the returnvalue of millis().
-     * @note Child's implementation shall be as short as possible and must not
-     * block or use any delays!
-     */
-    virtual void processAnimationBackground(uint32_t currentMillis)
-    {
-    }
-
-  private:
+  protected:
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      processAnimationBackground(currentMillis);
-
       const uint16_t animationDelay = getAnimationDelay();
       if (animationDelay > 0)
       {

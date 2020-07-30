@@ -25,8 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
-#include "VuLevelHandler.h"
+#include "VuBaseFL.h"
 #include "VuPeakHandler.h"
 #include "VuRangeExtender.h"
 
@@ -54,7 +53,7 @@ namespace EC
    *   the entire LED strip
    */
   class EssentialVU
-      : public AnimationBaseFL
+      : public VuBaseFL
   {
   public:
     /** Draw the VU bar with this color.
@@ -97,12 +96,6 @@ namespace EC
     bool enableRangeExtender = true;
 
     /** Configure the following properties according to your needs:
-     * - VuLevelHandler::smoothingFactor
-     * - Don't call any of its methods!
-     */
-    VuLevelHandler vuLevelHandler;
-
-    /** Configure the following properties according to your needs:
      * - VuPeakHandler::peakHold
      * - VuPeakHandler::peakDecay
      * - Don't call any of its methods!
@@ -122,7 +115,7 @@ namespace EC
                 uint16_t ledCount,
                 float &audioSource,
                 bool overlayMode = false)
-        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_FADING_PATTERN, ledStrip, ledCount), _audioSource(audioSource)
+        : VuBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_FADING_PATTERN, ledStrip, ledCount, audioSource)
     {
     }
 
@@ -181,14 +174,7 @@ namespace EC
       vuPeakHandler.process(_vuLevel, currentMillis);
     }
 
-    /// @see AnimationBase::processAnimationBackground()
-    void processAnimationBackground(uint32_t currentMillis) override
-    {
-      vuLevelHandler.addSample(_audioSource);
-    }
-
   private:
-    float &_audioSource;
     float _vuLevel = 0.0;
   };
 

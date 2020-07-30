@@ -119,10 +119,11 @@ namespace EC
 #endif
     }
 
-    /// @see PseudoAnimationBase::processAnimationBackground()
-    void processAnimationBackground(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
       vuLevelHandler.addSample(_audioSource);
+      PseudoAnimationBase::processAnimation(currentMillis, wasModified);
     }
 
   private:

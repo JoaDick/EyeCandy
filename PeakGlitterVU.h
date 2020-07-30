@@ -25,8 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
-#include "VuLevelHandler.h"
+#include "VuBaseFL.h"
 #include "VuPeakHandler.h"
 #include "VuRangeExtender.h"
 
@@ -43,7 +42,7 @@ namespace EC
    * Recommended to use as Overlay together with another VU meter.
    */
   class PeakGlitterVU
-      : public AnimationBaseFL
+      : public VuBaseFL
   {
   public:
     /** Draw the glitter with this color.
@@ -58,9 +57,6 @@ namespace EC
      * Not relevant in Overlay mode.
      */
     uint8_t fadeRate = 50;
-
-    /// Usually there's nothing to configure here; mainly for debugging.
-    VuLevelHandler vuLevelHandler;
 
     /// Usually there's nothing to configure here; mainly for debugging.
     VuPeakHandler vuPeakHandler;
@@ -78,7 +74,7 @@ namespace EC
                   uint16_t ledCount,
                   float &audioSource,
                   bool overlayMode = false)
-        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_FADING_PATTERN, ledStrip, ledCount), _audioSource(audioSource)
+        : VuBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_FADING_PATTERN, ledStrip, ledCount, audioSource)
     {
       vuPeakHandler.peakHold = 20;
       vuPeakHandler.peakDecay = 0;
@@ -129,14 +125,7 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::processAnimationBackground()
-    void processAnimationBackground(uint32_t currentMillis) override
-    {
-      vuLevelHandler.addSample(_audioSource);
-    }
-
   private:
-    float &_audioSource;
     float _peakLevel = 0.0;
   };
 
