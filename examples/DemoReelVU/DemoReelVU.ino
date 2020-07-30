@@ -167,6 +167,34 @@ void makeFireVU(EC::AnimationRepo &repo)
     repo.add(fireChanger);
 }
 
+void makeFlareVU(EC::AnimationRepo &repo)
+{
+    const uint16_t fireLedCount = NUM_LEDS / 2 + NUM_LEDS / 10;
+    auto fire = new EC::Fire2012<NUM_LEDS>(leds, fireLedCount);
+    fire->mirrored = true;
+    fire->animationDelay = 10;
+
+    repo.add(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire));
+    repo.add(fire);
+    repo.add(new EC::Kaleidoscope(leds, NUM_LEDS));
+}
+
+void makeFlareInwardVU(EC::AnimationRepo &repo)
+{
+    const uint16_t ledCount1 = (NUM_LEDS + 1) / 2;
+    auto fire1 = new EC::Fire2012<NUM_LEDS>(leds, ledCount1);
+    fire1->animationDelay = 11;
+
+    auto fire2 = new EC::Fire2012<NUM_LEDS>(leds + ledCount1, NUM_LEDS - ledCount1);
+    fire2->mirrored = true;
+    fire2->animationDelay = 13;
+
+    repo.add(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire1));
+    repo.add(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire2));
+    repo.add(fire1);
+    repo.add(fire2);
+}
+
 void makeRainbowBubbleVU(EC::AnimationRepo &repo)
 {
     auto vu = new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample);
@@ -326,6 +354,18 @@ void makeVuSequence17(EC::AnimationRepo &repo)
 {
     makeFireVU(repo);
     animationDuration = 30;
+}
+
+void makeVuSequence18(EC::AnimationRepo &repo)
+{
+    makeFlareInwardVU(repo);
+    animationDuration = 30;
+}
+
+void makeVuSequence19(EC::AnimationRepo &repo)
+{
+    makeFlareVU(repo);
+    animationDuration = 30;
     // autoMode = false;
 }
 
@@ -351,6 +391,8 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeVuSequence15,
     &makeVuSequence16,
     &makeVuSequence17,
+    &makeVuSequence18,
+    &makeVuSequence19,
     nullptr};
 
 EC::AnimationChangerSoft animationChanger(animationRunner, allAnimations);
