@@ -49,6 +49,15 @@ namespace EC
      */
     uint8_t defaultPatternDelay = 10;
 
+    /** Delay (in ms) before calling updateAnimation() the next time.
+     * 0 means don't call updateAnimation()
+     * This value is generally assigned by the Animation implementation.
+     * Change it only if the child class explicitly uses this as configuration
+     * option, i.e. when it also offers a static \c animationDelay_default()
+     * method.
+     */
+    uint16_t animationDelay = 0;
+
   protected:
     /** Constructor.
      * @param animationType  Type of Animation.
@@ -93,20 +102,10 @@ namespace EC
     {
     }
 
-    /** Get the delay (in ms) before calling updateAnimation() the next time.
-     * Defaults to 10ms. Child classes can override this method if they want a
-     * different timing. 0 means don't call updateAnimation()
-     */
-    virtual uint16_t getAnimationDelay()
-    {
-      return 10;
-    }
-
   protected:
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      const uint16_t animationDelay = getAnimationDelay();
       if (animationDelay > 0)
       {
         if (currentMillis >= _lastUpdateAnimation + animationDelay)

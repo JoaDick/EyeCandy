@@ -61,7 +61,6 @@ namespace EC
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
      */
-    uint16_t animationDelay = animationDelay_default();
     static uint16_t animationDelay_default() { return 20; }
 
     /** Constructor
@@ -78,6 +77,7 @@ namespace EC
               const CRGB &backgroundColor = backgroundColor_default())
         : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount), foregroundColor(foregroundColor), backgroundColor(backgroundColor)
     {
+      animationDelay = animationDelay_default();
     }
 
   private:
@@ -115,12 +115,6 @@ namespace EC
         else
           _rising = true;
       }
-    }
-
-    /// @see AnimationBase::getAnimationDelay()
-    uint16_t getAnimationDelay() override
-    {
-      return animationDelay;
     }
   };
 

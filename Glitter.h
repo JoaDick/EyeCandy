@@ -73,6 +73,7 @@ namespace EC
             bool overlayMode = false)
         : AnimationBaseFL(overlayMode ? TYPE_OVERLAY_FADING : TYPE_FADING_PATTERN, ledStrip, ledCount)
     {
+      animationDelay = 10;
     }
 
   private:

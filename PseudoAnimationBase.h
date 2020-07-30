@@ -41,7 +41,17 @@ namespace EC
   class PseudoAnimationBase
       : public Animation
   {
-    uint32_t _nextUpdateAnimation = 0;
+    uint32_t _lastUpdateAnimation = 0;
+
+  public:
+    /** Delay (in ms) before calling updateAnimation() the next time.
+     * 0 means don't call updateAnimation()
+     * This value is generally assigned by the Animation implementation.
+     * Change it only if the child class explicitly uses this as configuration
+     * option, i.e. when it also offers a static \c animationDelay_default()
+     * method.
+     */
+    uint16_t animationDelay = 0;
 
   protected:
     /// Constructor.
@@ -53,17 +63,19 @@ namespace EC
     /** Process the Pseudo-Animation's duties.
      * This method must be implemented by all child classes.
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
-     * @return Delay (in ms) until calling this method again.
      */
-    virtual uint16_t updateAnimation(uint32_t currentMillis) = 0;
+    virtual void updateAnimation(uint32_t currentMillis) = 0;
 
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      if (currentMillis >= _nextUpdateAnimation)
+      if (animationDelay > 0)
       {
-        const uint16_t updateDelay = updateAnimation(currentMillis);
-        _nextUpdateAnimation = currentMillis + updateDelay;
+        if (currentMillis >= _lastUpdateAnimation + animationDelay)
+        {
+          updateAnimation(currentMillis);
+          _lastUpdateAnimation = currentMillis;
+        }
       }
     }
   };

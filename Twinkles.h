@@ -76,8 +76,8 @@ namespace EC
       return 0;
     }
 
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see AnimationBase::showOverlay()
+    void showOverlay(uint32_t currentMillis) override
     {
       if (random8() < effectRate)
       {

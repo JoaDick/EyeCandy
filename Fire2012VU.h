@@ -77,6 +77,7 @@ namespace EC
         : AnimationBaseFL(TYPE_OVERLAY, ledStrip, ledCount), _fire(fire), _audioSource(audioSource)
 #endif
     {
+      animationDelay = 10;
       vuPeakHandler.peakHold = 150;
       vuPeakHandler.peakDecay = 500;
     }
@@ -91,13 +92,8 @@ namespace EC
     }
 #endif
 
-#ifndef FIRE2012VU_DEBUG
     /// @see PseudoAnimationBase::updateAnimation()
-    uint16_t updateAnimation(uint32_t currentMillis) override
-#else
-    /// @see AnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
-#endif
     {
       float vuLevel = vuLevelHandler.capture();
       vuLevel = vuRangeExtender.process(vuLevel);
@@ -113,17 +109,17 @@ namespace EC
       /// Higher chance = more roaring fire.  Lower chance = more flickery fire.
       /// suggested range 50-200.
       _fire.SPARKING = 75 + vuLevel * 115;
-
-#ifndef FIRE2012VU_DEBUG
-      return 10;
-#endif
     }
 
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
       vuLevelHandler.addSample(_audioSource);
+#ifdef FIRE2012VU_DEBUG
+      AnimationBaseFL::processAnimation(currentMillis, wasModified);
+#else
       PseudoAnimationBase::processAnimation(currentMillis, wasModified);
+#endif
     }
 
   private:

@@ -50,11 +50,12 @@ namespace EC
     explicit Fire2012Changer(Fire2012<NUM_LEDS> &fire)
         : PseudoAnimationBase(), _fire(fire)
     {
+      animationDelay = 10;
     }
 
   private:
     /// @see PseudoAnimationBase::updateAnimation()
-    uint16_t updateAnimation(uint32_t currentMillis) override
+    void updateAnimation(uint32_t currentMillis) override
     {
       /// COOLING: How much does the air cool as it rises?
       /// Less cooling = taller flames.  More cooling = shorter flames.
@@ -65,8 +66,6 @@ namespace EC
       /// Higher chance = more roaring fire.  Lower chance = more flickery fire.
       /// suggested range 50-200.
       _fire.SPARKING = beatsin8(bpm_SPARKING, 50, 150);
-
-      return 10;
     }
   };
 

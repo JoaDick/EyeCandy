@@ -53,7 +53,15 @@ namespace EC
   /// Default value for #Fire2012::SPARKING
   inline fract8 Fire2012_SPARKING_default() { return 120; }
 
-  /// Default value for #Fire2012::animationDelay
+  /// Fourth, the most sophisticated: this one sets up a new palette every
+  /// time through the loop, based on a hue that changes every time.
+  /// The palette is a gradient from black, to a dark color based on the hue,
+  /// to a light color based on the hue, to white.
+  ///
+  /// 0 means no rainbow effect; always using #gPal
+  /// Other means delay (in ms) between updating the hue (i.e. "rainbow speed").
+  /// @note This delay influences the "Animation speed", but not the LED
+  /// refresh rate.
   inline uint16_t Fire2012_animationDelay_default() { return 0; }
 
   /** Fire2012 with programmable Color Palette
@@ -112,17 +120,6 @@ namespace EC
     /// suggested range 50-200.
     fract8 SPARKING = Fire2012_SPARKING_default();
 
-    /// Fourth, the most sophisticated: this one sets up a new palette every
-    /// time through the loop, based on a hue that changes every time.
-    /// The palette is a gradient from black, to a dark color based on the hue,
-    /// to a light color based on the hue, to white.
-    ///
-    /// 0 means no rainbow effect; always using #gPal
-    /// Other means delay (in ms) between updating the hue (i.e. "rainbow speed").
-    /// @note This delay influences the "Animation speed", but not the LED
-    /// refresh rate.
-    uint16_t animationDelay = Fire2012_animationDelay_default();
-
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
@@ -131,6 +128,7 @@ namespace EC
              uint16_t ledCount)
         : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
     {
+      animationDelay = Fire2012_animationDelay_default();
     }
 
   private:
@@ -226,12 +224,6 @@ namespace EC
         CRGB lightcolor = CHSV(hue, 128, 255); // half 'whitened', full brightness
         gPal = CRGBPalette16(CRGB::Black, darkcolor, lightcolor, CRGB::White);
       }
-    }
-
-    /// @see AnimationBase::getAnimationDelay()
-    uint16_t getAnimationDelay() override
-    {
-      return animationDelay;
     }
   };
 

@@ -53,8 +53,7 @@ namespace EC
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
      */
-    uint8_t animationDelay = animationDelay_default();
-    static uint8_t animationDelay_default() { return 100; }
+    static uint16_t animationDelay_default() { return 100; }
 
     /** Constructor.
      * @param ledStrip  The LED strip.
@@ -64,6 +63,7 @@ namespace EC
                    uint16_t ledCount)
         : AnimationBaseFL(TYPE_FADING_PATTERN, ledStrip, ledCount)
     {
+      animationDelay = animationDelay_default();
       for (uint16_t i = 0; i < ledCount; i++)
       {
         pixel(i) = CHSV(redShift(_hue), random(0x2F) + 0xD0, random(0xEF) + 0x10);
@@ -91,12 +91,6 @@ namespace EC
     void updateAnimation(uint32_t currentMillis) override
     {
       ++_hue;
-    }
-
-    /// @see AnimationBase::getAnimationDelay()
-    uint16_t getAnimationDelay() override
-    {
-      return animationDelay;
     }
   };
 

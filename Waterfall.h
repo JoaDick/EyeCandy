@@ -54,6 +54,7 @@ namespace EC
               uint16_t ledCount)
         : AnimationBaseFL(TYPE_FADING_PATTERN, ledStrip, ledCount)
     {
+      animationDelay = 10;
     }
 
   private:
@@ -77,7 +78,6 @@ namespace EC
     /// @see AnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
     {
-      const uint16_t animationDelay = getAnimationDelay();
       for (uint8_t i = 0; i < DROPLET_COUNT; ++i)
       {
         _droplets[i].update(animationDelay);

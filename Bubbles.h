@@ -56,6 +56,7 @@ namespace EC
             bool overlayMode = false)
         : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount)
     {
+      animationDelay = 10;
     }
 
   private:
@@ -79,7 +80,6 @@ namespace EC
     /// @see AnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
     {
-      const uint16_t animationDelay = getAnimationDelay();
       for (uint8_t i = 0; i < BUBBLES_COUNT; ++i)
       {
         _bubbles[i].update(animationDelay);

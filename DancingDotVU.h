@@ -68,6 +68,7 @@ namespace EC
                  bool overlayMode = false)
         : VuBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount, audioSource)
     {
+      animationDelay = 10;
     }
 
   private:

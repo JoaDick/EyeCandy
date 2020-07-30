@@ -68,6 +68,7 @@ namespace EC
              uint16_t launchDelay = Firework_launchDelay_default())
         : AnimationBaseFL(overlayMode ? TYPE_OVERLAY_FADING : TYPE_FADING_PATTERN, ledStrip, ledCount), launchDelay(launchDelay)
     {
+      animationDelay = 10;
     }
 
   private:
@@ -94,8 +95,6 @@ namespace EC
     /// @see AnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
     {
-      const uint16_t animationDelay = getAnimationDelay();
-
       bool mustLaunch = true;
       for (uint8_t i = 0; i < PARTICLE_COUNT; ++i)
       {
