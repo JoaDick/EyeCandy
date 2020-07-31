@@ -84,11 +84,10 @@ namespace EC
 
   private:
     /// @see AnimationBase::showPattern()
-    uint8_t showPattern(uint32_t currentMillis) override
+    void showPattern(uint32_t currentMillis) override
     {
       fadeToBlackBy(ledStrip, ledCount, fadeRate);
       showOverlay(currentMillis);
-      return 0;
     }
 
     /// @see AnimationBase::showOverlay()

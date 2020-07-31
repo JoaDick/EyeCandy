@@ -71,7 +71,7 @@ namespace EC
 
   private:
     /// @see AnimationBase::showPattern()
-    uint8_t showPattern(uint32_t currentMillis) override
+    void showPattern(uint32_t currentMillis) override
     {
       static const CRGB colorTable[_blockCount] =
           {
@@ -95,8 +95,6 @@ namespace EC
       {
         fill_solid(ledStrip, ledCount, CRGB::Black);
       }
-
-      return 0;
     }
 
     /// @see AnimationBase::updateAnimation()

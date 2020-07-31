@@ -68,19 +68,21 @@ namespace EC
              uint16_t launchDelay = Firework_launchDelay_default())
         : AnimationBaseFL(overlayMode ? TYPE_OVERLAY_FADING : TYPE_FADING_PATTERN, ledStrip, ledCount), launchDelay(launchDelay)
     {
+#ifdef FIREWORK_DEBUG
+      // patternDelay = 20;
+#endif
       animationDelay = 10;
     }
 
   private:
     /// @see AnimationBase::showPattern()
-    uint8_t showPattern(uint32_t currentMillis) override
+    void showPattern(uint32_t currentMillis) override
     {
       fadeToBlackBy(ledStrip, ledCount, fadeRate);
       showOverlay(currentMillis);
 #ifdef FIREWORK_DEBUG
-      return _particles[0].dump();
+      _particles[0].dump();
 #endif
-      return 0;
     }
 
     /// @see AnimationBase::showOverlay()

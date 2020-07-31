@@ -51,14 +51,14 @@ namespace EC
              uint16_t ledCount)
         : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
     {
+      patternDelay = 20;
     }
 
   private:
     /// @see AnimationBase::showPattern()
-    uint8_t showPattern(uint32_t currentMillis) override
+    void showPattern(uint32_t currentMillis) override
     {
       pacifica_loop(currentMillis);
-      return 20;
     }
 
     //////////////////////////////////////////////////////////////////////////

@@ -43,12 +43,6 @@ namespace EC
     uint32_t _nextShowPattern = 0;
 
   public:
-    /** Default delay (in ms) between updating the LED strip.
-     * This value is used when showPattern() returns 0.
-     * Default of 10ms will result in a refresh rate of 100Hz.
-     */
-    uint8_t defaultPatternDelay = 10;
-
     /** Delay (in ms) before calling updateAnimation() the next time.
      * 0 means don't call updateAnimation()
      * This value is generally assigned by the Animation implementation.
@@ -57,6 +51,15 @@ namespace EC
      * method.
      */
     uint16_t animationDelay = 0;
+
+    /** Delay (in ms) between updating the LED strip.
+     * It determines how frequent showPattern() is getting called (not relevant
+     * in overlay mode).
+     * Default of 10ms will result in a refresh rate of 100Hz.
+     * This value is generally assigned by the Animation implementation, and
+     * there's usually no need to change it.
+     */
+    uint8_t patternDelay = 10;
 
   protected:
     /** Constructor.
@@ -71,13 +74,10 @@ namespace EC
      * This method must be implemented by all child classes that provide a
      * Pattern type Animation (#TYPE_SOLID_PATTERN or #TYPE_FADING_PATTERN).
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
-     * @return Delay (in ms) until calling this method again.
-     *         Returning 0 means use default delay (recommended).
      * @note This method is \e not called in Overlay mode.
      */
-    virtual uint8_t showPattern(uint32_t currentMillis)
+    virtual void showPattern(uint32_t currentMillis)
     {
-      return 0;
     }
 
     /** Render the Animation's Overlay content.
@@ -126,11 +126,7 @@ namespace EC
       {
         if (currentMillis >= _nextShowPattern)
         {
-          uint8_t patternDelay = showPattern(currentMillis);
-          if (patternDelay == 0)
-          {
-            patternDelay = defaultPatternDelay;
-          }
+          showPattern(currentMillis);
           _nextShowPattern = currentMillis + patternDelay;
           wasModified = true;
         }

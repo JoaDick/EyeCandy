@@ -98,7 +98,7 @@ namespace EC
     };
 
 #ifdef FIREWORK_DEBUG
-    uint8_t dump()
+    void dump()
     {
       Serial.print(F("pos:"));
       Serial.print(_pos);
@@ -107,8 +107,6 @@ namespace EC
       Serial.print(F(" acc:"));
       Serial.print(_acc);
       Serial.println();
-
-      return 0;
     }
 #endif
 

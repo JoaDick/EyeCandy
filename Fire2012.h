@@ -128,18 +128,17 @@ namespace EC
              uint16_t ledCount)
         : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
     {
+      patternDelay = 1000 / FRAMES_PER_SECOND;
       animationDelay = Fire2012_animationDelay_default();
     }
 
   private:
     /// @see AnimationBase::showPattern()
-    uint8_t showPattern(uint32_t currentMillis) override
+    void showPattern(uint32_t currentMillis) override
     {
       // Add entropy to random number generator; we use a lot of it.
       random16_add_entropy(random());
       Fire2012WithPalette(); // run simulation frame, using palette colors
-
-      return 1000 / FRAMES_PER_SECOND;
     }
 
     // Fire2012 by Mark Kriegsman, July 2012

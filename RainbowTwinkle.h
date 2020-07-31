@@ -72,7 +72,7 @@ namespace EC
 
   private:
     /// @see AnimationBase::showPattern()
-    uint8_t showPattern(uint32_t currentMillis) override
+    void showPattern(uint32_t currentMillis) override
     {
       fadeToBlackBy(ledStrip, ledCount, fadeRate);
 
@@ -83,8 +83,6 @@ namespace EC
           pixel(i) = CHSV(redShift(_hue), 0xFF, random(0x30) + 0xCF);
         }
       }
-
-      return 0;
     }
 
     /// @see AnimationBase::updateAnimation()
