@@ -75,7 +75,7 @@ namespace EC
               bool overlayMode = false,
               const CRGB &foregroundColor = foregroundColor_default(),
               const CRGB &backgroundColor = backgroundColor_default())
-        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount), foregroundColor(foregroundColor), backgroundColor(backgroundColor)
+        : AnimationBaseFL(overlayMode, ledStrip, ledCount), foregroundColor(foregroundColor), backgroundColor(backgroundColor)
     {
       animationDelay = animationDelay_default();
     }

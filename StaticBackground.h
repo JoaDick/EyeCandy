@@ -53,7 +53,7 @@ namespace EC
     StaticBackground(CRGB *ledStrip,
                      uint16_t ledCount,
                      const CRGB &backgroundColor = backgroundColor_default())
-        : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount), backgroundColor(backgroundColor)
+        : AnimationBaseFL(false, ledStrip, ledCount), backgroundColor(backgroundColor)
     {
     }
 

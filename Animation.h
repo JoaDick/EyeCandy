@@ -40,35 +40,6 @@ namespace EC
   class Animation
   {
   public:
-    /// Type of Animation.
-    enum Type
-    {
-      /// Invalid.
-      TYPE_NONE = 0,
-
-      /** This Pattern renders the content of \e all LEDs.
-       * Previous LED content is completely overwritten.
-       */
-      TYPE_SOLID_PATTERN = 0x31,
-
-      /** This Pattern fades out the existing LED content.
-       * Previous LED content is only partially overwritten.
-       */
-      TYPE_FADING_PATTERN = 0x32,
-
-      /// This Overlay can be used on top of any Pattern type.
-      TYPE_OVERLAY = 0x10,
-
-      /// This Overlay is preferably used on top of a #TYPE_SOLID_PATTERN.
-      TYPE_OVERLAY_SOLID = 0x11,
-
-      /// This Overlay is preferably used on top of a #TYPE_FADING_PATTERN.
-      TYPE_OVERLAY_FADING = 0x12
-    };
-
-    /// Type of Animation.
-    const Type animationType;
-
     /// Destructor.
     virtual ~Animation() = default;
 
@@ -124,15 +95,6 @@ namespace EC
     void process(uint32_t currentMillis, bool &wasModified)
     {
       processAnimation(currentMillis, wasModified);
-    }
-
-  protected:
-    /** Constructor.
-     * @param animationType  Type of Animation.
-     */
-    explicit Animation(Type animationType)
-        : animationType(animationType)
-    {
     }
 
   private:

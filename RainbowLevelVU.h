@@ -96,7 +96,7 @@ namespace EC
                    uint16_t ledCount,
                    float &audioSource,
                    bool overlayMode = false)
-        : VuBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_FADING_PATTERN, ledStrip, ledCount, audioSource)
+        : VuBaseFL(overlayMode, ledStrip, ledCount, audioSource)
     {
       animationDelay = 10;
     }

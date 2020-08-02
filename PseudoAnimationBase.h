@@ -54,12 +54,6 @@ namespace EC
     uint16_t animationDelay = 0;
 
   protected:
-    /// Constructor.
-    PseudoAnimationBase()
-        : Animation(TYPE_OVERLAY)
-    {
-    }
-
     /** Process the Pseudo-Animation's duties.
      * This method must be implemented by all child classes.
      * @param currentMillis  Current time, i.e. the returnvalue of millis().

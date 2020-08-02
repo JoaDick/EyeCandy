@@ -50,7 +50,7 @@ namespace EC
      */
     AnimationChanger(AnimationRunner &runner,
                      AnimationBuilderFct allAnimations[])
-        : Animation(TYPE_SOLID_PATTERN), _runner(runner), _allAnimationBuilders(allAnimations)
+        : _runner(runner), _allAnimationBuilders(allAnimations)
     {
       selectFirst();
     }

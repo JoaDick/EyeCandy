@@ -38,6 +38,10 @@ namespace EC
   class AnimationBase
       : public Animation
   {
+    // When this is commented out, code size of DemoReelVU.ino increases by
+    // almost 400 byte !?!?!
+    const bool dummy = 0;
+
     const bool _overlayMode;
     uint32_t _lastUpdateAnimation = 0;
     uint32_t _nextShowPattern = 0;
@@ -63,10 +67,10 @@ namespace EC
 
   protected:
     /** Constructor.
-     * @param animationType  Type of Animation.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
-    explicit AnimationBase(Type animationType)
-        : Animation(animationType), _overlayMode((animationType & 0x30) == 0x10)
+    explicit AnimationBase(bool overlayMode)
+        : _overlayMode(overlayMode)
     {
     }
 

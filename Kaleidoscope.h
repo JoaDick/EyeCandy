@@ -46,7 +46,7 @@ namespace EC
      */
     Kaleidoscope(CRGB *ledStrip,
                  uint16_t ledCount)
-        : AnimationBaseFL(TYPE_OVERLAY, ledStrip, ledCount), _remainLedCount((ledCount + 1) / 2)
+        : AnimationBaseFL(true, ledStrip, ledCount), _remainLedCount((ledCount + 1) / 2)
     {
       // we want the mirror effect by default
       AnimationBaseFL::mirrored = true;

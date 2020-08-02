@@ -48,13 +48,6 @@ namespace EC
       : public Animation,
         public AnimationRepo
   {
-
-  public:
-    /// Constructor.
-    AnimationRunner()
-        : Animation(TYPE_SOLID_PATTERN)
-    {
-    }
   };
 
   //------------------------------------------------------------------------------

@@ -66,7 +66,7 @@ namespace EC
              uint16_t ledCount,
              bool overlayMode,
              uint16_t launchDelay = Firework_launchDelay_default())
-        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY_FADING : TYPE_FADING_PATTERN, ledStrip, ledCount), launchDelay(launchDelay)
+        : AnimationBaseFL(overlayMode, ledStrip, ledCount), launchDelay(launchDelay)
     {
 #ifdef FIREWORK_DEBUG
       // patternDelay = 20;

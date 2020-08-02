@@ -49,7 +49,7 @@ namespace EC
      */
     Pacifica(CRGB *ledStrip,
              uint16_t ledCount)
-        : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
+        : AnimationBaseFL(false, ledStrip, ledCount)
     {
       patternDelay = 20;
     }

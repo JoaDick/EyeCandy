@@ -126,7 +126,7 @@ namespace EC
      */
     Fire2012(CRGB *ledStrip,
              uint16_t ledCount)
-        : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
+        : AnimationBaseFL(false, ledStrip, ledCount)
     {
       patternDelay = 1000 / FRAMES_PER_SECOND;
       animationDelay = Fire2012_animationDelay_default();

@@ -67,7 +67,7 @@ namespace EC
             uint16_t ledCount,
             bool overlayMode,
             uint8_t fadeRate)
-        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_FADING_PATTERN, ledStrip, ledCount), fadeRate(fadeRate)
+        : AnimationBaseFL(overlayMode, ledStrip, ledCount), fadeRate(fadeRate)
     {
     }
 

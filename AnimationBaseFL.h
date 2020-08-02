@@ -176,16 +176,16 @@ namespace EC
 
   protected:
     /** Constructor.
-     * @param animationType  Type of Animation.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
      * @param mirrored  The "regular" Animation shall be shown in reverse direction.
      */
-    AnimationBaseFL(Type animationType,
+    AnimationBaseFL(bool overlayMode,
                     CRGB *ledStrip,
                     uint16_t ledCount,
                     bool mirrored = false)
-        : AnimationBase(animationType), ledStrip(ledStrip), ledCount(ledCount), maxLedCount(ledCount), _defaultMirrored(mirrored), _ledStrip(ledStrip)
+        : AnimationBase(overlayMode), ledStrip(ledStrip), ledCount(ledCount), maxLedCount(ledCount), _defaultMirrored(mirrored), _ledStrip(ledStrip)
     {
     }
 

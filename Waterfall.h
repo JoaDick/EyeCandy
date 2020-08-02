@@ -52,7 +52,7 @@ namespace EC
      */
     Waterfall(CRGB *ledStrip,
               uint16_t ledCount)
-        : AnimationBaseFL(TYPE_FADING_PATTERN, ledStrip, ledCount)
+        : AnimationBaseFL(false, ledStrip, ledCount)
     {
       animationDelay = 10;
     }

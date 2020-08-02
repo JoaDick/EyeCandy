@@ -61,7 +61,7 @@ namespace EC
      */
     RainbowTwinkle(CRGB *ledStrip,
                    uint16_t ledCount)
-        : AnimationBaseFL(TYPE_FADING_PATTERN, ledStrip, ledCount)
+        : AnimationBaseFL(false, ledStrip, ledCount)
     {
       animationDelay = animationDelay_default();
       for (uint16_t i = 0; i < ledCount; i++)

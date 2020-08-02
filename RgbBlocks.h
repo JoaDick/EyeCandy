@@ -62,7 +62,7 @@ namespace EC
      */
     RgbBlocks(CRGB *ledStrip,
               uint16_t ledCount)
-        : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount, mirrored_default())
+        : AnimationBaseFL(false, ledStrip, ledCount, mirrored_default())
     {
       animationDelay = animationDelay_default();
     }

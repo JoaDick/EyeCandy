@@ -69,7 +69,7 @@ namespace EC
      */
     RainbowBuiltin(CRGB *ledStrip,
                    uint16_t ledCount)
-        : AnimationBaseFL(TYPE_SOLID_PATTERN, ledStrip, ledCount)
+        : AnimationBaseFL(false, ledStrip, ledCount)
     {
       animationDelay = animationDelay_default();
     }

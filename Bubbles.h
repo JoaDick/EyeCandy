@@ -54,7 +54,7 @@ namespace EC
     Bubbles(CRGB *ledStrip,
             uint16_t ledCount,
             bool overlayMode = false)
-        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY : TYPE_SOLID_PATTERN, ledStrip, ledCount)
+        : AnimationBaseFL(overlayMode, ledStrip, ledCount)
     {
       animationDelay = 10;
     }

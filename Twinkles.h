@@ -63,7 +63,7 @@ namespace EC
     Twinkles(CRGB *ledStrip,
              uint16_t ledCount,
              bool overlayMode = false)
-        : AnimationBaseFL(overlayMode ? TYPE_OVERLAY_FADING : TYPE_FADING_PATTERN, ledStrip, ledCount)
+        : AnimationBaseFL(overlayMode, ledStrip, ledCount)
     {
     }
 

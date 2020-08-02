@@ -48,16 +48,16 @@ namespace EC
 
   protected:
     /** Constructor.
-     * @param animationType  Type of Animation.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
      * @param audioSource  Read the audio samples from there.
      */
-    VuBaseFL(Type animationType,
+    VuBaseFL(bool overlayMode,
              CRGB *ledStrip,
              uint16_t ledCount,
              float &audioSource)
-        : AnimationBaseFL(animationType, ledStrip, ledCount), _audioSource(audioSource)
+        : AnimationBaseFL(overlayMode, ledStrip, ledCount), _audioSource(audioSource)
     {
     }
 

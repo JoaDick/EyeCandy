@@ -68,13 +68,13 @@ namespace EC
      */
     Fire2012VU(float &audioSource,
                Fire2012<NUM_LEDS> &fire)
-        : PseudoAnimationBase(), _fire(fire), _audioSource(audioSource)
+        : _fire(fire), _audioSource(audioSource)
 #else
     Fire2012VU(CRGB *ledStrip,
                uint16_t ledCount,
                float &audioSource,
                Fire2012<NUM_LEDS> &fire)
-        : AnimationBaseFL(TYPE_OVERLAY, ledStrip, ledCount), _fire(fire), _audioSource(audioSource)
+        : AnimationBaseFL(true, ledStrip, ledCount), _fire(fire), _audioSource(audioSource)
 #endif
     {
       animationDelay = 10;
