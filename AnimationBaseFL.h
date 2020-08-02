@@ -48,9 +48,18 @@ namespace EC
 
     /** Show the Animation in reverse direction.
      * This setting can be adjusted at runtime.
+     * Not implemented by all Animations.
      */
-    bool mirrored = mirrored_default();
-    static bool mirrored_default() { return false; }
+    bool mirrored = false;
+
+    /** Fading speed.
+     * Lower value = longer glowing; 0 = solid black background.
+     * This setting can be adjusted at runtime.
+     * Only relevant if the child class explicitly uses this as configuration
+     * option, i.e. when it also offers a static \c fadeRate_default() method.
+     * Ignored in Overlay mode.
+     */
+    uint8_t fadeRate;
 
     /** Resize the Animation and move it on the LED strip (optional).
      * \a newLedCount + \a offset must not be higher than #maxLedCount.
@@ -179,14 +188,42 @@ namespace EC
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
-     * @param mirrored  The "regular" Animation shall be shown in reverse direction.
+     * @param fadeRate  Fading speed:
+     *                  Lower value = longer glowing; 0 = black background.
+     *                  Only relevant when default implementation of
+     *                  showPattern() is used.
      */
     AnimationBaseFL(bool overlayMode,
                     CRGB *ledStrip,
                     uint16_t ledCount,
-                    bool mirrored = false)
-        : AnimationBase(overlayMode), ledStrip(ledStrip), ledCount(ledCount), maxLedCount(ledCount), _defaultMirrored(mirrored), _ledStrip(ledStrip)
+                    uint8_t fadeRate = 0)
+        : AnimationBase(overlayMode), ledStrip(ledStrip), fadeRate(fadeRate), ledCount(ledCount), maxLedCount(ledCount), _ledStrip(ledStrip)
     {
+    }
+
+    /** Animation shall be mirrored by default.
+     * Call this method from child class' constructor when the Animation shall
+     * be rendered from top to bottom.
+     */
+    void mirroredByDefault()
+    {
+      _defaultMirrored = true;
+    }
+
+    /** Default implementation of AnimationBase::showPattern()
+     * Provides the oftentimes used fading background or black background.
+     */
+    void showPattern(uint32_t currentMillis) override
+    {
+      if (fadeRate)
+      {
+        fadeToBlackBy(ledStrip, ledCount, fadeRate);
+      }
+      else
+      {
+        fill_solid(ledStrip, ledCount, CRGB::Black);
+      }
+      showOverlay(currentMillis);
     }
 
   private:
@@ -205,7 +242,7 @@ namespace EC
     }
 
   private:
-    const bool _defaultMirrored;
+    bool _defaultMirrored = false;
     CRGB *_ledStrip;
   };
 

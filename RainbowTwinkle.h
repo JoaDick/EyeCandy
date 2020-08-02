@@ -40,11 +40,10 @@ namespace EC
     uint8_t _hue = random(0xFF);
 
   public:
-    /** Fading speed.
-     * Lower value = longer glowing.
-     * This setting can be adjusted at runtime.
+    /** Default fading speed.
+     * Lower value = longer glowing; 0 = solid black background (not
+     * recommended).
      */
-    uint8_t fadeRate = fadeRate_default();
     static uint8_t fadeRate_default() { return 5; }
 
     /** Delay between updating the Animation (in ms).
@@ -61,7 +60,7 @@ namespace EC
      */
     RainbowTwinkle(CRGB *ledStrip,
                    uint16_t ledCount)
-        : AnimationBaseFL(false, ledStrip, ledCount)
+        : AnimationBaseFL(false, ledStrip, ledCount, fadeRate_default())
     {
       animationDelay = animationDelay_default();
       for (uint16_t i = 0; i < ledCount; i++)

@@ -39,6 +39,12 @@ namespace EC
       : public AnimationBaseFL
   {
   public:
+    /** Default fading speed.
+     * Lower value = longer glowing; 0 = solid black background (not
+     * recommended).
+     */
+    static uint8_t fadeRate_default() { return 5; }
+
     /** Effect occurrence rate.
      * Higher value = more twinkles.
      * 0 means freeze (don't update the animation).
@@ -46,14 +52,6 @@ namespace EC
      */
     uint8_t effectRate = effectRate_default();
     static uint8_t effectRate_default() { return 50; }
-
-    /** Fading speed.
-     * Lower value = longer glowing.
-     * This setting can be adjusted at runtime.
-     * It is ignored in Overlay mode.
-     */
-    uint8_t fadeRate = fadeRate_default();
-    static uint8_t fadeRate_default() { return 5; }
 
     /** Constructor.
      * @param ledStrip  The LED strip.
@@ -63,18 +61,11 @@ namespace EC
     Twinkles(CRGB *ledStrip,
              uint16_t ledCount,
              bool overlayMode = false)
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount)
+        : AnimationBaseFL(overlayMode, ledStrip, ledCount, fadeRate_default())
     {
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
-    {
-      fadeToBlackBy(ledStrip, ledCount, fadeRate);
-      showOverlay(currentMillis);
-    }
-
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {

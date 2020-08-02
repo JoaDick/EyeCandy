@@ -42,18 +42,16 @@ namespace EC
     bool _rising = false;
 
   public:
+    /** Default fading speed.
+     * Lower value = longer glowing; 0 = solid black background.
+     */
+    static uint8_t fadeRate_default() { return 0; }
+
     /** Draw the dot with this color.
      * This setting can be adjusted at runtime.
      */
     CRGB foregroundColor = foregroundColor_default();
     static CRGB foregroundColor_default() { return CRGB(255, 0, 0); }
-
-    /** Fill LED strip with this color.
-     * This setting can be adjusted at runtime.
-     * It is ignored in Overlay mode.
-     */
-    CRGB backgroundColor = backgroundColor_default();
-    static CRGB backgroundColor_default() { return CRGB(0, 10, 0); }
 
     /** Delay between moving the dot by 1 pixel (in ms).
      * 0 makes the dot disappear.
@@ -68,26 +66,17 @@ namespace EC
      * @param ledCount  Number of LEDs.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      * @param foregroundColor  Draw the dot with this color.
-     * @param backgroundColor  Fill LED strip with this color.
      */
     MovingDot(CRGB *ledStrip,
               uint16_t ledCount,
               bool overlayMode = false,
-              const CRGB &foregroundColor = foregroundColor_default(),
-              const CRGB &backgroundColor = backgroundColor_default())
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount), foregroundColor(foregroundColor), backgroundColor(backgroundColor)
+              const CRGB &foregroundColor = foregroundColor_default())
+        : AnimationBaseFL(overlayMode, ledStrip, ledCount, fadeRate_default()), foregroundColor(foregroundColor)
     {
       animationDelay = animationDelay_default();
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
-    {
-      fill_solid(ledStrip, ledCount, backgroundColor);
-      showOverlay(currentMillis);
-    }
-
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {

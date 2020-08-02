@@ -62,12 +62,11 @@ namespace EC
      */
     RgbBlocks(CRGB *ledStrip,
               uint16_t ledCount)
-        : AnimationBaseFL(false, ledStrip, ledCount, mirrored_default())
+        : AnimationBaseFL(false, ledStrip, ledCount)
     {
+      mirroredByDefault();
       animationDelay = animationDelay_default();
     }
-
-    static bool mirrored_default() { return true; }
 
   private:
     /// @see AnimationBase::showPattern()

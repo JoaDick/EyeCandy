@@ -41,6 +41,11 @@ namespace EC
     bool _mustAddGlitter = false;
 
   public:
+    /** Default fading speed.
+     * Lower value = longer glowing; 0 = solid black background.
+     */
+    static uint8_t fadeRate_default() { return 100; }
+
     /** Draw the Glitter with this color.
      * This setting can be adjusted at runtime.
      */
@@ -55,14 +60,6 @@ namespace EC
     uint8_t effectRate = effectRate_default();
     static uint8_t effectRate_default() { return 20; }
 
-    /** Fading speed.
-     * Lower value = longer glowing.
-     * This setting can be adjusted at runtime.
-     * It is ignored in Overlay mode.
-     */
-    uint8_t fadeRate = fadeRate_default();
-    static uint8_t fadeRate_default() { return 100; }
-
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
@@ -71,19 +68,12 @@ namespace EC
     Glitter(CRGB *ledStrip,
             uint16_t ledCount,
             bool overlayMode = false)
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount)
+        : AnimationBaseFL(overlayMode, ledStrip, ledCount, fadeRate_default())
     {
       animationDelay = 10;
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
-    {
-      fadeToBlackBy(ledStrip, ledCount, fadeRate);
-      showOverlay(currentMillis);
-    }
-
     /// @see AnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
     {

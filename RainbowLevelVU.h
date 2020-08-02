@@ -39,6 +39,11 @@ namespace EC
       : public VuBaseFL
   {
   public:
+    /** Default fading speed.
+     * Lower value = longer glowing; 0 = solid black background.
+     */
+    static uint8_t fadeRate_default() { return 50; }
+
     /// How fast the initial hue changes over time.
     float baseHueStep = -0.05;
 
@@ -51,20 +56,6 @@ namespace EC
      * This setting can be adjusted at runtime.
      */
     uint8_t volume = 128;
-
-    /** Fill LED strip with this color.
-     * This setting can be adjusted at runtime.
-     * Not relevant in Overlay mode or when #fadeRate is non-zero.
-     */
-    CRGB backgroundColor = CRGB(0, 0, 0);
-
-    /** Fading speed.
-     * Lower value = longer glowing.
-     * 0 means no fading, but solid background using #backgroundColor.
-     * This setting can be adjusted at runtime.
-     * Not relevant in Overlay mode.
-     */
-    uint8_t fadeRate = 50;
 
     /** Render the VU bar.
      * This setting can be adjusted at runtime.
@@ -96,26 +87,12 @@ namespace EC
                    uint16_t ledCount,
                    float &audioSource,
                    bool overlayMode = false)
-        : VuBaseFL(overlayMode, ledStrip, ledCount, audioSource)
+        : VuBaseFL(overlayMode, ledStrip, ledCount, audioSource, fadeRate_default())
     {
       animationDelay = 10;
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
-    {
-      if (fadeRate)
-      {
-        fadeToBlackBy(ledStrip, ledCount, fadeRate);
-      }
-      else
-      {
-        fill_solid(ledStrip, ledCount, backgroundColor);
-      }
-      showOverlay(currentMillis);
-    }
-
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {

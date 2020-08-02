@@ -46,6 +46,11 @@ namespace EC
 #endif
 
   public:
+    /** Default fading speed.
+     * Lower value = longer glowing; 0 = solid black background.
+     */
+    static uint8_t fadeRate_default() { return 0; }
+
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
@@ -54,19 +59,12 @@ namespace EC
     Bubbles(CRGB *ledStrip,
             uint16_t ledCount,
             bool overlayMode = false)
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount)
+        : AnimationBaseFL(overlayMode, ledStrip, ledCount, fadeRate_default())
     {
       animationDelay = 10;
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
-    {
-      fill_solid(ledStrip, ledCount, CRGB::Black);
-      showOverlay(currentMillis);
-    }
-
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {

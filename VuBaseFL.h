@@ -52,12 +52,17 @@ namespace EC
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
      * @param audioSource  Read the audio samples from there.
+     * @param fadeRate  Fading speed:
+     *                  Lower value = longer glowing; 0 = black background.
+     *                  Only relevant when default implementation of
+     *                  showPattern() is used.
      */
     VuBaseFL(bool overlayMode,
              CRGB *ledStrip,
              uint16_t ledCount,
-             float &audioSource)
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount), _audioSource(audioSource)
+             float &audioSource,
+             uint8_t fadeRate = 0)
+        : AnimationBaseFL(overlayMode, ledStrip, ledCount, fadeRate), _audioSource(audioSource)
     {
     }
 

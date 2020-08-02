@@ -47,12 +47,6 @@ namespace EC
       : public AnimationBaseFL
   {
   public:
-    /** Fading speed.
-     * Lower value = longer glowing.
-     * This setting can be adjusted at runtime.
-     */
-    uint8_t fadeRate = Firework_fadeRate_default();
-
     /// Delay (in ms) before relaunching the Particles.
     uint16_t launchDelay = Firework_launchDelay_default();
 
@@ -66,7 +60,7 @@ namespace EC
              uint16_t ledCount,
              bool overlayMode,
              uint16_t launchDelay = Firework_launchDelay_default())
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount), launchDelay(launchDelay)
+        : AnimationBaseFL(overlayMode, ledStrip, ledCount, Firework_fadeRate_default()), launchDelay(launchDelay)
     {
 #ifdef FIREWORK_DEBUG
       // patternDelay = 20;
@@ -75,15 +69,14 @@ namespace EC
     }
 
   private:
+#ifdef FIREWORK_DEBUG
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      fadeToBlackBy(ledStrip, ledCount, fadeRate);
-      showOverlay(currentMillis);
-#ifdef FIREWORK_DEBUG
+      AnimationBaseFL::showPattern(currentMillis);
       _particles[0].dump();
-#endif
     }
+#endif
 
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override

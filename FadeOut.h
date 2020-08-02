@@ -39,12 +39,6 @@ namespace EC
       : public AnimationBaseFL
   {
   public:
-    /** Fading speed.
-     * Lower value = longer glowing.
-     * This setting can be adjusted at runtime.
-     */
-    uint8_t fadeRate;
-
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
@@ -67,7 +61,7 @@ namespace EC
             uint16_t ledCount,
             bool overlayMode,
             uint8_t fadeRate)
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount), fadeRate(fadeRate)
+        : AnimationBaseFL(overlayMode, ledStrip, ledCount, fadeRate)
     {
     }
 

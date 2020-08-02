@@ -38,9 +38,9 @@ namespace EC
   class AnimationBase
       : public Animation
   {
-    // When this is commented out, code size of DemoReelVU.ino increases by
-    // almost 400 byte !?!?!
-    const bool dummy = 0;
+    // When this is commented out, code size increases significantly, while
+    // static RAM usage decreases !?!?!
+    // const uint8_t dummy = 0;
 
     const bool _overlayMode;
     uint32_t _lastUpdateAnimation = 0;

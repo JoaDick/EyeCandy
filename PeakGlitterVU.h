@@ -45,18 +45,15 @@ namespace EC
       : public VuBaseFL
   {
   public:
+    /** Default fading speed.
+     * Lower value = longer glowing; 0 = solid black background.
+     */
+    static uint8_t fadeRate_default() { return 50; }
+
     /** Draw the glitter with this color.
      * This setting can be adjusted at runtime.
      */
     CRGB glitterColor = CRGB(255, 255, 255);
-
-    /** Fading speed.
-     * Lower value = longer glowing.
-     * 0 means no fading, but solid background using #backgroundColor.
-     * This setting can be adjusted at runtime.
-     * Not relevant in Overlay mode.
-     */
-    uint8_t fadeRate = 50;
 
     /// Usually there's nothing to configure here; mainly for debugging.
     VuPeakHandler vuPeakHandler;
@@ -74,7 +71,7 @@ namespace EC
                   uint16_t ledCount,
                   float &audioSource,
                   bool overlayMode = false)
-        : VuBaseFL(overlayMode, ledStrip, ledCount, audioSource)
+        : VuBaseFL(overlayMode, ledStrip, ledCount, audioSource, fadeRate_default())
     {
       animationDelay = 10;
       vuPeakHandler.peakHold = 20;
@@ -83,13 +80,6 @@ namespace EC
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
-    {
-      fadeToBlackBy(ledStrip, ledCount, fadeRate);
-      showOverlay(currentMillis);
-    }
-
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {

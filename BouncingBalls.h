@@ -41,13 +41,6 @@ namespace EC
     float COR[NUM_BALLS];     // Coefficient of Restitution (bounce damping)
 
   public:
-    /** Fill LED strip with this color.
-     * This setting can be adjusted at runtime.
-     * It is ignored in Overlay mode.
-     */
-    CRGB backgroundColor = backgroundColor_default();
-    static CRGB backgroundColor_default() { return CRGB::Black; }
-
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
@@ -56,7 +49,7 @@ namespace EC
     BouncingBalls(CRGB *ledStrip,
                   uint16_t ledCount,
                   bool overlayMode = false)
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount)
+        : AnimationBaseFL(overlayMode, ledStrip, ledCount, 0)
     {
       for (int i = 0; i < NUM_BALLS; i++)
       { // Initialize variables
@@ -70,13 +63,6 @@ namespace EC
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
-    {
-      fill_solid(ledStrip, ledCount, backgroundColor);
-      showOverlay(currentMillis);
-    }
-
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
