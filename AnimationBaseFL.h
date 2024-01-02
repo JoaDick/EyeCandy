@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include <FastLED.h>
 #include "AnimationBase.h"
+#include "ColorGenerator.h"
 
 //------------------------------------------------------------------------------
 

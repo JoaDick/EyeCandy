@@ -267,7 +267,7 @@ void makeBouncingDotVU(EC::AnimationRepo &repo)
     vuPeak->vuHueRange = 0.5;
 
     auto glitter = new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample, true);
-    glitter->glitterColor = CRGB(128, 64, 0);
+    glitter->color = CRGB(128, 64, 0);
 
     repo.add(vuPeak);
     repo.add(glitter);
@@ -308,11 +308,11 @@ void makeDoubleBouncingDotVU(EC::AnimationRepo &repo)
 void makeDoubleDancingDotVU1(EC::AnimationRepo &repo)
 {
     auto vu1 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
-    vu1->peakDotColor = CRGB(255, 0, 0);
+    vu1->color = CRGB(255, 0, 0);
 
     auto vu2 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
     vu2->mirrored = true;
-    vu2->peakDotColor = CRGB(0, 255, 0);
+    vu2->color = CRGB(0, 255, 0);
     vu2->vuPeakHandler.inertia = 0.55;
     vu2->vuPeakHandler.friction = 0.14;
 
@@ -330,11 +330,11 @@ void makeDoubleDancingDotVU1(EC::AnimationRepo &repo)
 void makeDoubleDancingDotVU2(EC::AnimationRepo &repo)
 {
     auto vu1 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
-    vu1->peakDotColor = CHSV(20, 255, 255);
+    vu1->color = CHSV(20, 255, 255);
 
     auto vu2 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
     vu2->mirrored = true;
-    vu2->peakDotColor = CHSV(20 + 128, 255, 255);
+    vu2->color = CHSV(20 + 128, 255, 255);
     vu2->vuPeakHandler.inertia = 0.55;
     vu2->vuPeakHandler.friction = 0.14;
 

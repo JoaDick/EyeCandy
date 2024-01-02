@@ -41,18 +41,34 @@ namespace EC
   public:
     /** Fill LED strip with this color.
      * This setting can be adjusted at runtime.
+     * @note It is overwritten when a #colorGenerator is provided.
      */
-    CRGB backgroundColor;
+    CRGB color;
+
+    /// Get LED strip color from there (optional).
+    ColorGenerator *colorGenerator = nullptr;
 
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param ledCount  Number of LEDs.
-     * @param backgroundColor  Fill LED strip with this color.
+     * @param color  Fill LED strip with this color.
      */
     StaticBackground(CRGB *ledStrip,
                      uint16_t ledCount,
-                     const CRGB &backgroundColor)
-        : AnimationBaseFL(false, ledStrip, ledCount), backgroundColor(backgroundColor)
+                     const CRGB &color)
+        : AnimationBaseFL(false, ledStrip, ledCount), color(color)
+    {
+    }
+
+    /** Constructor
+     * @param ledStrip  The LED strip.
+     * @param ledCount  Number of LEDs.
+     * @param colorGenerator  Get color for the LED strip from there.
+     */
+    StaticBackground(CRGB *ledStrip,
+                     uint16_t ledCount,
+                     ColorGenerator &colorGenerator)
+        : AnimationBaseFL(false, ledStrip, ledCount), colorGenerator(&colorGenerator)
     {
     }
 
@@ -60,7 +76,11 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      fill_solid(ledStrip, ledCount, backgroundColor);
+      if (colorGenerator)
+      {
+        color = colorGenerator->generateColor();
+      }
+      fill_solid(ledStrip, ledCount, color);
     }
   };
 

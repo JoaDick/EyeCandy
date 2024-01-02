@@ -46,8 +46,12 @@ namespace EC
 
     /** Draw the peak dot with this color.
      * This setting can be adjusted at runtime.
+     * @note It is overwritten when a #colorGenerator is provided.
      */
-    CRGB peakDotColor = CRGB(255, 0, 0);
+    CRGB color = CRGB(255, 0, 0);
+
+    /// Get peak dot color from there (optional).
+    ColorGenerator *colorGenerator = nullptr;
 
     /// Usually there's nothing to configure here; only for debugging.
     VuPeakForceHandler vuPeakHandler;
@@ -77,8 +81,12 @@ namespace EC
       if (vuPeakHandler.peakLevel() > 0.0)
       {
         const uint16_t pixelPos = vuPeakHandler.peakLevel() * (ledCount - 1);
-        safePixel(pixelPos) = peakDotColor;
-        safePixel(pixelPos - 1) = peakDotColor;
+        if (colorGenerator)
+        {
+          color = colorGenerator->generateColor(vuPeakHandler.peakLevel() * 255);
+        }
+        safePixel(pixelPos) = color;
+        safePixel(pixelPos - 1) = color;
       }
     }
 

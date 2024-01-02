@@ -77,11 +77,12 @@ void makeBouncingDotVU(EC::AnimationRepo &repo)
     vuPeak->enableVuBar = false;
     vuPeak->vuHueRange = 0.5;
 
-    auto glitter = new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample, true);
-    glitter->glitterColor = CRGB(128, 64, 0);
+    auto glitterVU = new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample, true);
+    glitterVU->color = CRGB(128, 64, 0);
+    // glitterVU->colorGenerator = &EC::DefaultRainbowCG();
 
     repo.add(vuPeak);
-    repo.add(glitter);
+    repo.add(glitterVU);
 }
 
 void makeDancingDotVU(EC::AnimationRepo &repo)
@@ -119,13 +120,11 @@ void makeDoubleBouncingDotVU(EC::AnimationRepo &repo)
 void makeDoubleDancingDotVU1(EC::AnimationRepo &repo)
 {
     auto vu1 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
-    vu1->peakDotColor = CRGB(255, 0, 0);
+    vu1->color = CRGB(255, 0, 0);
 
     auto vu2 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
     vu2->mirrored = true;
-    vu2->peakDotColor = CRGB(0, 255, 0);
-    vu2->vuPeakHandler.inertia = 0.55;
-    vu2->vuPeakHandler.friction = 0.14;
+    vu2->color = CRGB(0, 255, 0);
 
     auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
     auto pride = new EC::Pride2015(leds, kaleidoscope->remainLedCount());
@@ -141,18 +140,38 @@ void makeDoubleDancingDotVU1(EC::AnimationRepo &repo)
 void makeDoubleDancingDotVU2(EC::AnimationRepo &repo)
 {
     auto vu1 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
-    vu1->peakDotColor = CHSV(20, 255, 255);
+    vu1->colorGenerator = &EC::DefaultRainbowCG();
 
     auto vu2 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
     vu2->mirrored = true;
-    vu2->peakDotColor = CHSV(20 + 128, 255, 255);
-    vu2->vuPeakHandler.inertia = 0.55;
-    vu2->vuPeakHandler.friction = 0.14;
+    vu2->colorGenerator = &EC::DefaultRainbowCG();
+    vu2->vuPeakHandler.inertia = 1.0;
+    vu2->vuPeakHandler.friction = 0.25;
 
     repo.add(new EC::FloatingBlobs(leds, NUM_LEDS));
     repo.add(new EC::FadeOut(leds, NUM_LEDS, true, 230));
     repo.add(vu1);
     repo.add(vu2);
+}
+
+void makeManyDancingDotVU(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::StaticBackground(leds, NUM_LEDS, CRGB::Black));
+
+    float intertia = 0.5;
+    for (uint8_t i = 1; i <= 6; ++i)
+    {
+        auto vu = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
+        vu->colorGenerator = &EC::DefaultRainbowCG();
+        vu->vuPeakHandler.inertia = intertia;
+        vu->vuPeakHandler.friction = intertia / 4;
+        if (i & 0x01)
+        {
+            vu->mirrored = true;
+        }
+        repo.add(vu);
+        intertia += i * 0.25;
+    }
 }
 
 void makeFireVU(EC::AnimationRepo &repo)
@@ -271,6 +290,17 @@ void makeVuSequence1(EC::AnimationRepo &repo)
     animationDuration = 8;
 }
 
+/*
+void makeVuSequence1a(EC::AnimationRepo &repo)
+{
+    auto glitterVU = new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample);
+    glitterVU->colorGenerator = &EC::DefaultRainbowCG();
+    glitterVU->fadeRate = 25;
+    repo.add(glitterVU);
+    animationDuration = 8;
+}
+*/
+
 void makeVuSequence2(EC::AnimationRepo &repo)
 {
     auto baseVU = new EC::EssentialVU(leds, NUM_LEDS, audioSample);
@@ -280,6 +310,22 @@ void makeVuSequence2(EC::AnimationRepo &repo)
     repo.add(new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample, true));
     animationDuration = 12;
 }
+
+/*
+void makeVuSequence2a(EC::AnimationRepo &repo)
+{
+    auto baseVU = new EC::EssentialVU(leds, NUM_LEDS, audioSample);
+    baseVU->enableVuBar = false;
+    baseVU->fadeRate = 0;
+
+    auto glitterVU = new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample, true);
+    glitterVU->colorGenerator = &EC::DefaultRainbowCG();
+
+    repo.add(baseVU);
+    repo.add(glitterVU);
+    animationDuration = 12;
+}
+*/
 
 void makeVuSequence3(EC::AnimationRepo &repo)
 {
@@ -369,6 +415,12 @@ void makeVuSequence16(EC::AnimationRepo &repo)
     // animationDuration = 15;
 }
 
+void makeVuSequence16a(EC::AnimationRepo &repo)
+{
+    makeManyDancingDotVU(repo);
+    // animationDuration = 15;
+}
+
 void makeVuSequence17(EC::AnimationRepo &repo)
 {
     makeFireVU(repo);
@@ -388,14 +440,34 @@ void makeVuSequence19(EC::AnimationRepo &repo)
 void makeVuSequence20(EC::AnimationRepo &repo)
 {
     makeFlareDoubleVU(repo);
+}
+
+void makeVuSequence21(EC::AnimationRepo &repo)
+{
+    auto glitterVU = new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample);
+    glitterVU->colorGenerator = &EC::DefaultRainbowCG();
+    glitterVU->fadeRate = 10;
+    repo.add(glitterVU);
     // autoMode = false;
 }
 
 //------------------------------------------------------------------------------
 
+void makeTempVU(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::StaticBackground(leds, NUM_LEDS, EC::DefaultRainbowCG()));
+    // animationDuration = 20;
+    // autoMode = false;
+}
+
 EC::AnimationBuilderFct nextAnimation = nullptr;
 
 EC::AnimationBuilderFct allAnimations[] = {
+    &makeManyDancingDotVU,
+    &makeDoubleDancingDotVU2,
+    &makeDoubleDancingDotVU1,
+    // &makeTempVU,
+
     &makeVuSequence1,
     &makeVuSequence2,
     &makeVuSequence3,
@@ -412,10 +484,12 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeVuSequence14,
     &makeVuSequence15,
     &makeVuSequence16,
+    &makeVuSequence16a,
     &makeVuSequence17,
     &makeVuSequence18,
     &makeVuSequence19,
     &makeVuSequence20,
+    &makeVuSequence21,
     nullptr};
 
 EC::AnimationChangerSoft animationChanger(animationRunner, allAnimations);

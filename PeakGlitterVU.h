@@ -52,8 +52,12 @@ namespace EC
 
     /** Draw the glitter with this color.
      * This setting can be adjusted at runtime.
+     * @note It is overwritten when a #colorGenerator is provided.
      */
-    CRGB glitterColor = CRGB(255, 255, 255);
+    CRGB color = CRGB(255, 255, 255);
+
+    /// Get glitter color from there (optional).
+    ColorGenerator *colorGenerator = nullptr;
 
     /// Usually there's nothing to configure here; mainly for debugging.
     VuPeakHandler vuPeakHandler;
@@ -99,7 +103,11 @@ namespace EC
 
       if (_peakLevel > 0.0)
       {
-        safePixel(_peakLevel * (ledCount - 1)) = glitterColor;
+        if (colorGenerator)
+        {
+          color = colorGenerator->generateColor(_peakLevel * 255);
+        }
+        safePixel(_peakLevel * (ledCount - 1)) = color;
         _peakLevel = 0.0;
       }
     }
