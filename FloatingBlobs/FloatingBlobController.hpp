@@ -341,13 +341,13 @@ private:
             hue -= 128;
         }
 
-#if (!FLOATING_BLOBS_SIMU)
-        Serial.print(hue1);
-        Serial.print(" | ");
-        Serial.print(hue2);
-        Serial.print(" -> ");
-        Serial.println(uint8_t(hue));
-#endif
+// #if (!FLOATING_BLOBS_SIMU)
+//         Serial.print(hue1);
+//         Serial.print(" | ");
+//         Serial.print(hue2);
+//         Serial.print(" -> ");
+//         Serial.println(uint8_t(hue));
+// #endif
 
         return uint8_t(hue);
     }
