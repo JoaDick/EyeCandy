@@ -44,7 +44,7 @@ ButtonHandler selectButton;
 
 bool autoMode = true;
 
-#define PRINT_MEMORY_USAGE 0
+#define PRINT_MEMORY_USAGE 1
 
 //------------------------------------------------------------------------------
 
@@ -111,7 +111,7 @@ void makeFireAndBalls(EC::AnimationRepo &repo)
     fire->animationDelay = 10;
 
     auto balls = new EC::BouncingBalls<>(leds, NUM_LEDS, true);
-    balls->mirrored = true;
+    // balls->mirrored = true;
 
     repo.add(fire);
     repo.add(balls);

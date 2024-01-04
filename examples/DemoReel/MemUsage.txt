@@ -1,0 +1,50 @@
+
+
+
+
+
+240103 initial FastLedStrip
+
+Sketch uses 26794 bytes (83%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1038 bytes (50%) of dynamic memory, leaving 1010 bytes for local variables. Maximum is 2048 bytes.
+
+BouncingBalls<> = 89
+
+
+240103 Baseline
+---------------
+* HEAD: feature/FastLedStrip @ f1ba353
+* Arduino Uno
+* DemoReel.ino
+* #define PRINT_MEMORY_USAGE 1
+
+Using library EyeCandy in folder: D:\Arduino\libraries\EyeCandy (legacy)
+Using library FastLED at version 3.4.0 in folder: D:\Arduino\libraries\FastLED
+"C:\\Users\\Achim\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\avr-gcc\\7.3.0-atmel3.6.1-arduino7/bin/avr-size" -A "C:\\Users\\Achim\\AppData\\Local\\Temp\\arduino\\sketches\\FABBD552306C43470705F0058BB03393/DemoReel.ino.elf"
+
+Sketch uses 26560 bytes (82%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1035 bytes (50%) of dynamic memory, leaving 1013 bytes for local variables. Maximum is 2048 bytes.
+
+Memory usage for 90 LEDs:
+<*> is dependant on NUM_LEDS
+BouncingBalls<> = 95
+Bubbles = 195
+FadeOut = 25
+Fire2012<*> = 166
+Fire2012Changer = 14
+Firework<> = 161
+FireworkParticle = 22
+FloatingBlobs = 230
+Glitter = 30
+Kaleidoscope = 27
+MovingDot = 31
+Pacifica = 169
+Pride2015 = 32
+Rainbow = 29
+RainbowBuiltin = 27
+RainbowTwinkle = 26
+RgbBlocks = 28
+StaticBackground = 28
+Twinkles = 26
+Waterfall = 400
+WaterfallDroplet = 25

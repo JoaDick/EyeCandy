@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include <FastLED.h>
 #include "AnimationBase.h"
+#include "FastLedStrip.h"
 
 //------------------------------------------------------------------------------
 
@@ -244,6 +245,62 @@ namespace EC
   private:
     bool _defaultMirrored = false;
     CRGB *_ledStrip;
+  };
+
+  //------------------------------------------------------------------------------
+
+  /** DRAFT FastLedStrip - Simple base class suitable for most Animations which are using FastLED.
+   * Child classes must fulfill the same requirements as for #AnimationBase.
+   */
+  class AnimationBaseFL2
+      : public AnimationBase
+  {
+  public:
+    /** Fading speed.
+     * Lower value = longer glowing; 0 = solid black background.
+     * This setting can be adjusted at runtime.
+     * Only relevant if the child class explicitly uses this as configuration
+     * option, i.e. when it also offers a static \c fadeRate_default() method.
+     * Ignored in Overlay mode.
+     */
+    uint8_t fadeRate;
+
+  protected:
+    /** Constructor.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     * @param ledStrip  The LED strip.
+     * @param ledCount  Number of LEDs.
+     * @param fadeRate  Fading speed:
+     *                  Lower value = longer glowing; 0 = black background.
+     *                  Only relevant when default implementation of
+     *                  showPattern() is used.
+     */
+    AnimationBaseFL2(bool overlayMode,
+                     CRGB *ledStrip,
+                     uint16_t ledCount,
+                     uint8_t fadeRate = 0)
+        : AnimationBase(overlayMode), fadeRate(fadeRate), strip(ledStrip, ledCount)
+    {
+    }
+
+    /** Default implementation of AnimationBase::showPattern()
+     * Provides the oftentimes used fading background or black background.
+     */
+    void showPattern(uint32_t currentMillis) override
+    {
+      if (fadeRate)
+      {
+        strip.fadeToBlackBy(fadeRate);
+      }
+      else
+      {
+        strip.fillSolid(CRGB::Black);
+      }
+      showOverlay(currentMillis);
+    }
+
+    /// LED strip representation to be used by child classes for drawing the LED pixels.
+    FastLedStrip strip;
   };
 
 } // namespace EC
