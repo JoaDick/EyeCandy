@@ -35,7 +35,7 @@ namespace EC
   /** A twinkling rainbow animation.
    */
   class RainbowTwinkle
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
     uint8_t _hue = random(0xFF);
 
@@ -54,18 +54,23 @@ namespace EC
      */
     static uint16_t animationDelay_default() { return 100; }
 
-    /** Constructor.
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     */
+    /// Deprecated; only for legacy compatibility.
     RainbowTwinkle(CRGB *ledStrip,
                    uint16_t ledCount)
-        : AnimationBaseFL(false, ledStrip, ledCount, fadeRate_default())
+        : RainbowTwinkle(FastLedStrip(ledStrip, ledCount))
+    {
+    }
+
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     */
+    explicit RainbowTwinkle(FastLedStrip ledStrip)
+        : AnimationBaseFL2(ledStrip, false, fadeRate_default())
     {
       animationDelay = animationDelay_default();
-      for (uint16_t i = 0; i < ledCount; i++)
+      for (uint16_t i = 0; i < strip.ledCount(); i++)
       {
-        pixel(i) = CHSV(redShift(_hue), random(0x2F) + 0xD0, random(0xEF) + 0x10);
+        strip[i] = CHSV(redShift(_hue), random(0x2F) + 0xD0, random(0xEF) + 0x10);
       }
     }
 
@@ -73,13 +78,14 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      fadeToBlackBy(ledStrip, ledCount, fadeRate);
+      strip.fadeToBlackBy(fadeRate);
 
-      for (uint16_t i = 0; i < ledCount; i++)
+      for (uint16_t i = 0; i < strip.ledCount(); i++)
       {
-        if (pixel(i).getLuma() <= 6)
+        auto &pixel = strip[i];
+        if (pixel.getLuma() <= 6)
         {
-          pixel(i) = CHSV(redShift(_hue), 0xFF, random(0x30) + 0xCF);
+          pixel = CHSV(redShift(_hue), 0xFF, random(0x30) + 0xCF);
         }
       }
     }

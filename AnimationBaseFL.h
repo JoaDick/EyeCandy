@@ -266,6 +266,12 @@ namespace EC
     uint8_t fadeRate;
 
   protected:
+    /// Put more emphasis on the red'ish colors.
+    static uint8_t redShift(uint8_t hue)
+    {
+      return cos8(128 + hue / 2);
+    }
+
     /** Constructor.
      * @param strip        The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.

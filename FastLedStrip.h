@@ -67,7 +67,12 @@ namespace EC
      */
     CRGB &operator[](int16_t index)
     {
-      return getPixel(toStripIndex(index), true);
+      convertToStripIndex(index);
+      if (index < 0 || index >= m_size)
+      {
+        return s_trashPixel;
+      }
+      return m_stripData[index];
     }
 
     /** Access the pixel at position \a index ("off-strip-pixels" are allowed).
@@ -78,7 +83,13 @@ namespace EC
      */
     CRGB &pixel(int16_t index)
     {
-      return getPixel(toStripIndex(index), false);
+      convertToStripIndex(index);
+      if (index < 0 || index >= m_size)
+      {
+        drawLine(CRGB(64, 0, 0), 0, m_size - 1);
+        return s_trashPixel;
+      }
+      return m_stripData[index];
     }
 
     /** Draw a line in the given \a color from \a firstIndex to \a lastIndex.
@@ -215,25 +226,10 @@ namespace EC
       return m_reversed ? m_size - 1 - index : index;
     }
 
-#if (0)
     bool convertToStripIndex(int16_t &index)
     {
       index = toStripIndex(index);
       return m_reversed;
-    }
-#endif
-
-    CRGB &getPixel(int16_t stripIndex, bool withErrorFeedback)
-    {
-      if (stripIndex < 0 || stripIndex >= m_size)
-      {
-        if (withErrorFeedback)
-        {
-          drawLine(CRGB(64, 0, 0), 0, m_size - 1);
-        }
-        return s_trashPixel;
-      }
-      return m_stripData[stripIndex];
     }
 
     void drawLine(const CRGB &color, int16_t firstStripIndex, int16_t lastStripIndex)

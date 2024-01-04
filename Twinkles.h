@@ -36,7 +36,7 @@ namespace EC
    * Can be used as Pattern or as Overlay.
    */
   class Twinkles
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
   public:
     /** Default fading speed.
@@ -53,15 +53,21 @@ namespace EC
     uint8_t effectRate = effectRate_default();
     static uint8_t effectRate_default() { return 50; }
 
-    /** Constructor.
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     */
+    /// Deprecated; only for legacy compatibility.
     Twinkles(CRGB *ledStrip,
              uint16_t ledCount,
              bool overlayMode = false)
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount, fadeRate_default())
+        : Twinkles(FastLedStrip(ledStrip, ledCount), overlayMode)
+    {
+    }
+
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     */
+    explicit Twinkles(FastLedStrip ledStrip,
+                      bool overlayMode = false)
+        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default())
     {
     }
 
@@ -71,10 +77,11 @@ namespace EC
     {
       if (random8() < effectRate)
       {
-        uint16_t i = random(ledCount);
-        if (ledStrip[i].getLuma() < 3)
+        uint16_t i = random(strip.ledCount());
+        auto& pixel = strip[i];
+        if (pixel.getLuma() < 3)
         {
-          pixel(i) = CHSV(redShift(random(256)), 255, random(64) + 192);
+          pixel = CHSV(redShift(random(256)), 255, random(64) + 192);
         }
       }
     }

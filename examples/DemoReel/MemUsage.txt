@@ -2,6 +2,39 @@
 
 
 
+240104 Converted more Patterns to use FastLedStrip
+
+Sketch uses 28060 bytes (86%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1038 bytes (50%) of dynamic memory, leaving 1010 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 28372 bytes (87%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1022 bytes (49%) of dynamic memory, leaving 1026 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 28372 bytes (87%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1022 bytes (49%) of dynamic memory, leaving 1026 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 28354 bytes (87%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1022 bytes (49%) of dynamic memory, leaving 1026 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 27936 bytes (86%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1022 bytes (49%) of dynamic memory, leaving 1026 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 27944 bytes (86%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1022 bytes (49%) of dynamic memory, leaving 1026 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 27952 bytes (86%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1022 bytes (49%) of dynamic memory, leaving 1026 bytes for local variables. Maximum is 2048 bytes.
+
+Fire2012<*> = 161
+Glitter = 25
+MovingDot = 26
+Pacifica = 164
+RainbowTwinkle = 21
+StaticBackground = 23
+Twinkles = 21
+
+
+
 240104 FastLedStrip support for drawing in reverse direction
 
 Sketch uses 27020 bytes (83%) of program storage space. Maximum is 32256 bytes.
@@ -10,12 +43,14 @@ Global variables use 1038 bytes (50%) of dynamic memory, leaving 1010 bytes for 
 BouncingBalls<> = 90
 
 
+
 240103 initial FastLedStrip
 
 Sketch uses 26794 bytes (83%) of program storage space. Maximum is 32256 bytes.
 Global variables use 1038 bytes (50%) of dynamic memory, leaving 1010 bytes for local variables. Maximum is 2048 bytes.
 
 BouncingBalls<> = 89
+
 
 
 240103 Baseline

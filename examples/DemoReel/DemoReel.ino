@@ -52,7 +52,7 @@ bool autoMode = true;
 void setup()
 {
     pinMode(PIN_SELECT_BTN, INPUT_PULLUP);
-#ifdef ARDUINO_ARCH_AVR  // only with Arduino boards
+#ifdef ARDUINO_ARCH_AVR // only with Arduino boards
     pinMode(LED_BUILTIN, OUTPUT);
 #endif
 
@@ -62,7 +62,7 @@ void setup()
     Serial.begin(115200);
     Serial.println();
     Serial.println(F("Welcome to EyeCandy"));
-#if(PRINT_MEMORY_USAGE)
+#if (PRINT_MEMORY_USAGE)
     printMemoryUsage();
 #endif
 }
@@ -74,7 +74,9 @@ const uint16_t animationDuration = defaultAnimationDuration;
 
 void makeBalls(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::BouncingBalls<>(leds, NUM_LEDS));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::BouncingBalls<>(strip));
 }
 
 void makeBlobs(EC::AnimationRepo &repo)
@@ -84,14 +86,18 @@ void makeBlobs(EC::AnimationRepo &repo)
 
 void makeBubbles(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::Pacifica(leds, NUM_LEDS));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::Pacifica(strip));
     repo.add(new EC::FadeOut(leds, NUM_LEDS, true, 150));
     repo.add(new EC::Bubbles(leds, NUM_LEDS, true));
 }
 
 void makeFire(EC::AnimationRepo &repo)
 {
-    auto fire = new EC::Fire2012<NUM_LEDS>(leds, NUM_LEDS);
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto fire = new EC::Fire2012<NUM_LEDS>(strip);
     auto fireChanger = new EC::Fire2012Changer<NUM_LEDS>(*fire);
 
     repo.add(fireChanger);
@@ -100,15 +106,17 @@ void makeFire(EC::AnimationRepo &repo)
 
 void makeGlitterDot(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::Glitter(leds, NUM_LEDS));
-    repo.add(new EC::MovingDot(leds, NUM_LEDS, true));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::Glitter(strip));
+    repo.add(new EC::MovingDot(strip, true));
 }
 
 void makeFireAndBalls(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto fire = new EC::Fire2012<NUM_LEDS>(leds, NUM_LEDS);
+    auto fire = new EC::Fire2012<NUM_LEDS>(strip);
     fire->COOLING = 155;
     fire->SPARKING = 75;
     fire->animationDelay = 10;
@@ -133,10 +141,11 @@ void makeFireworks(EC::AnimationRepo &repo)
 void makeFlare(EC::AnimationRepo &repo)
 {
     const uint16_t fireLedCount = NUM_LEDS / 2 + NUM_LEDS / 10;
-    auto fire = new EC::Fire2012<NUM_LEDS>(leds, fireLedCount);
+    EC::FastLedStrip fireStrip(leds, fireLedCount, true);
+
+    auto fire = new EC::Fire2012<NUM_LEDS>(fireStrip);
     fire->SPARKING = 75;
     fire->animationDelay = 10;
-    fire->mirrored = true;
 
     repo.add(fire);
     repo.add(new EC::Kaleidoscope(leds, NUM_LEDS));
@@ -144,7 +153,9 @@ void makeFlare(EC::AnimationRepo &repo)
 
 void makePacifica(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::Pacifica(leds, NUM_LEDS));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::Pacifica(strip));
 }
 
 void makePride(EC::AnimationRepo &repo)
@@ -181,14 +192,18 @@ void makeRgbBlocks(EC::AnimationRepo &repo)
 
 void makeRainbowTwinkle(EC::AnimationRepo &repo)
 {
-    auto rainbow = new EC::RainbowTwinkle(leds, NUM_LEDS);
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto rainbow = new EC::RainbowTwinkle(strip);
     rainbow->animationDelay = 25;
     repo.add(rainbow);
 }
 
 void makeTwinkles(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::Twinkles(leds, NUM_LEDS));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::Twinkles(strip));
 }
 
 void makeWaterfall(EC::AnimationRepo &repo)
@@ -253,7 +268,7 @@ void handleAnimationChange(uint32_t currentMillis = millis())
         break;
     }
 
-#ifdef ARDUINO_ARCH_AVR  // only with Arduino boards
+#ifdef ARDUINO_ARCH_AVR // only with Arduino boards
     digitalWrite(LED_BUILTIN, autoMode);
 #endif
     if (mustChange)
@@ -282,7 +297,7 @@ void loop()
 
 //------------------------------------------------------------------------------
 
-#if(PRINT_MEMORY_USAGE)
+#if (PRINT_MEMORY_USAGE)
 void printMemoryUsage()
 {
     Serial.print(F("Memory usage for "));
