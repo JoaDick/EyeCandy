@@ -37,7 +37,7 @@ namespace EC
 
   /// A Waterfall Animation.
   class Waterfall
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
 #ifdef WATERFALL_DEBUG
     static const uint8_t DROPLET_COUNT = 1;
@@ -46,13 +46,18 @@ namespace EC
 #endif
 
   public:
-    /** Constructor.
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     */
+    /// Deprecated; only for legacy compatibility.
     Waterfall(CRGB *ledStrip,
               uint16_t ledCount)
-        : AnimationBaseFL(false, ledStrip, ledCount)
+        : Waterfall(FastLedStrip(ledStrip, ledCount))
+    {
+    }
+
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     */
+    explicit Waterfall(FastLedStrip ledStrip)
+        : AnimationBaseFL2(ledStrip, false)
     {
       animationDelay = 10;
     }
@@ -61,7 +66,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      fadeLightBy(ledStrip, ledCount, 25);
+      strip.fadeLightBy(25);
       showOverlay(currentMillis);
     }
 
@@ -70,7 +75,7 @@ namespace EC
     {
       for (uint8_t i = 0; i < DROPLET_COUNT; ++i)
       {
-        _droplets[i].show(*this);
+        _droplets[i].show(strip);
       }
     }
 

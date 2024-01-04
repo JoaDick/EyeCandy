@@ -37,7 +37,7 @@ namespace EC
 
   /// Rising Bubbles.
   class Bubbles
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
 #ifdef BUBBLES_DEBUG
     static const uint8_t BUBBLES_COUNT = 1;
@@ -51,15 +51,21 @@ namespace EC
      */
     static uint8_t fadeRate_default() { return 0; }
 
-    /** Constructor.
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     */
+    /// Deprecated; only for legacy compatibility.
     Bubbles(CRGB *ledStrip,
             uint16_t ledCount,
             bool overlayMode = false)
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount, fadeRate_default())
+        : Bubbles(FastLedStrip(ledStrip, ledCount), overlayMode)
+    {
+    }
+
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     */
+    explicit Bubbles(FastLedStrip ledStrip,
+            bool overlayMode = false)
+        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default())
     {
       animationDelay = 10;
     }
@@ -70,7 +76,7 @@ namespace EC
     {
       for (uint8_t i = 0; i < BUBBLES_COUNT; ++i)
       {
-        _bubbles[i].show(*this);
+        _bubbles[i].show(strip);
       }
     }
 

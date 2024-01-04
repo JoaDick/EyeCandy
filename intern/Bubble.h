@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "../AnimationBaseFL.h"
+#include "../FastLedStrip.h"
 #include "../randomF.h"
 
 //------------------------------------------------------------------------------
@@ -36,21 +36,21 @@ namespace EC
   class Bubble
   {
   public:
-    void show(AnimationBaseFL &animation)
+    void show(FastLedStrip &strip)
     {
 #ifdef BUBBLES_DEBUG
       // if (_debugPos_vMax > 0.0)
       // {
-      //   animation.safePixel(_debugPos_vMax * animation.ledCount) = CRGB(64, 0, 0);
+      //   strip.normPixel(_debugPos_vMax * animation.ledCount) = CRGB(64, 0, 0);
       // }
 #endif
 
       uint8_t paletteIndex = uint8_t(3 * 255 * _pos); // DRAFT
-      uint8_t pixelVolume = _volumeMax; // DRAFT
+      uint8_t pixelVolume = _volumeMax;               // DRAFT
 
       if (pixelVolume)
       {
-        animation.pixel(_pos * (animation.ledCount - 1)) = ColorFromPalette(OceanColors_p, paletteIndex, pixelVolume);
+        strip.normPixel(_pos) = ColorFromPalette(OceanColors_p, paletteIndex, pixelVolume);
       }
 
 #ifdef BUBBLES_DEBUG

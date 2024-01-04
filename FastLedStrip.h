@@ -70,6 +70,7 @@ namespace EC
       convertToStripIndex(index);
       if (index < 0 || index >= m_size)
       {
+        drawLine(CRGB(64, 0, 0), 0, m_size - 1);
         return s_trashPixel;
       }
       return m_stripData[index];
@@ -86,10 +87,33 @@ namespace EC
       convertToStripIndex(index);
       if (index < 0 || index >= m_size)
       {
-        drawLine(CRGB(64, 0, 0), 0, m_size - 1);
         return s_trashPixel;
       }
       return m_stripData[index];
+    }
+
+    /** Access the pixel at the normalized position \a pos ("off-strip-pixels" are allowed).
+     * If \a index is not within the LED strip, a dummy-pixel is returned
+     * (i.e. the pixel's setting will be ignored). \n
+     * This may be useful for Animations where something "drops off" the strip.
+     * @param pos  Normalized pixel position.
+     *             The valid range for drawing is 0.0 <= \a pos < 1.0
+     */
+    CRGB &normPixel(float pos)
+    {
+      // TODO: Should pos == 1.0 also be a valid pixel (i.e. the last one)?
+      return pixel(pos * (m_size - 1));
+    }
+
+    /** Access the optional pixel at the normalized position \a pos.
+     * Same as normPixel(), but only positive values of \a pos are valid.
+     * This means that the (optional) pixel at exactly \a pos == 0.0 will \e not be drawn. \n
+     * This may be useful when the Animation wants to implement something like a simple
+     * "invalid" or "muted" state of a pixel algorithm.
+     */
+    CRGB &optPixel(float pos)
+    {
+      return pos <= 0.0 ? s_trashPixel : normPixel(pos);
     }
 
     /** Draw a line in the given \a color from \a firstIndex to \a lastIndex.
@@ -156,6 +180,13 @@ namespace EC
       nscale8(m_stripData, m_size, 255 - fadeBy);
     }
 
+    /// Same as FastLed's fadeLightBy()
+    void fadeLightBy(uint8_t fadeBy)
+    {
+      // copied implementation of FastLed's fadeLightBy()
+      nscale8_video(m_stripData, m_size, 255 - fadeBy);
+    }
+
     /// Get a new strip with the same underlying LED pixel array, but reversed drawing direction.
     FastLedStrip getReversedStrip()
     {
@@ -164,13 +195,13 @@ namespace EC
 
 #if (0)
     /** Get a new strip that contains only a part of stis strip's underlying LED pixel array.
-     * @param offset    New strip starts at this LED.
-     * @param size      Number of LEDs in the new strip.
-     * @param reversed  Draw the new strip's content in reverse direction.
      * The resulting strip's boundaries are checked, and if necessary restricted to the dimensions of this strip.
      * Even when restricted, the returned sub-strip contains at least one visible pixel.
      * @note When \a size is negative, \a offset is interpreted as the end of the strip,
      * and its start will be \a size pixels before. Also the new strip's direction is reversed.
+     * @param offset    New strip starts at this LED.
+     * @param size      Number of LEDs in the new strip.
+     * @param reversed  Draw the new strip's content in reverse direction.
      */
     FastLedStrip getSubStrip(int16_t offset, int16_t size, bool reversed = false)
     {

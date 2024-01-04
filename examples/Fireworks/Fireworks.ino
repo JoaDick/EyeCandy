@@ -46,10 +46,10 @@ const uint8_t PARTICLE_COUNT = 5;
 
 EC::FadeOut fadeOut(leds, NUM_LEDS, EC::Firework_fadeRate_default());
 EC::Firework<PARTICLE_COUNT> firework1(leds, NUM_LEDS, true, 1500);
-EC::Firework<PARTICLE_COUNT> firework2(leds, NUM_LEDS, true, 3000);
-EC::Firework<PARTICLE_COUNT> firework3(leds, NUM_LEDS, true, 4500);
-EC::Firework<PARTICLE_COUNT> firework4(leds, NUM_LEDS, true, 6000);
-EC::Firework<PARTICLE_COUNT> firework5(leds, NUM_LEDS, true, 7500);
+EC::Firework<PARTICLE_COUNT> firework2(leds, NUM_LEDS, true, 3100);
+EC::Firework<PARTICLE_COUNT> firework3(leds, NUM_LEDS, true, 4700);
+EC::Firework<PARTICLE_COUNT> firework4(leds, NUM_LEDS, true, 6300);
+EC::Firework<PARTICLE_COUNT> firework5(leds, NUM_LEDS, true, 7900);
 
 // run max. 8 Animations simultaneously
 EC::AnimationRunnerS animationRunner;

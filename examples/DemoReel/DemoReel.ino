@@ -89,8 +89,8 @@ void makeBubbles(EC::AnimationRepo &repo)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     repo.add(new EC::Pacifica(strip));
-    repo.add(new EC::FadeOut(leds, NUM_LEDS, true, 150));
-    repo.add(new EC::Bubbles(leds, NUM_LEDS, true));
+    repo.add(new EC::FadeOut(strip, true, 150));
+    repo.add(new EC::Bubbles(strip, true));
 }
 
 void makeFire(EC::AnimationRepo &repo)
@@ -129,12 +129,14 @@ void makeFireAndBalls(EC::AnimationRepo &repo)
 
 void makeFireworks(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::FadeOut(leds, NUM_LEDS, EC::Firework_fadeRate_default()));
-    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 1500));
-    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 3100));
-    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 4700));
-    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 6300));
-    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 7900));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::FadeOut(strip, EC::Firework_fadeRate_default()));
+    repo.add(new EC::Firework<>(strip, true, 1500));
+    repo.add(new EC::Firework<>(strip, true, 3100));
+    repo.add(new EC::Firework<>(strip, true, 4700));
+    repo.add(new EC::Firework<>(strip, true, 6300));
+    repo.add(new EC::Firework<>(strip, true, 7900));
     // animationDuration = 3 * defaultAnimationDuration;
 }
 
@@ -187,7 +189,9 @@ void makeRainbowBuiltin(EC::AnimationRepo &repo)
 
 void makeRgbBlocks(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::RgbBlocks(leds, NUM_LEDS));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::RgbBlocks(strip));
 }
 
 void makeRainbowTwinkle(EC::AnimationRepo &repo)
@@ -208,12 +212,15 @@ void makeTwinkles(EC::AnimationRepo &repo)
 
 void makeWaterfall(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::Waterfall(leds, NUM_LEDS));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::Waterfall(strip));
 }
 
 //------------------------------------------------------------------------------
 
 EC::AnimationBuilderFct allAnimations[] = {
+    // &makeRgbBlocks,
     &makeFireworks,
 
     &makeTwinkles,
