@@ -43,10 +43,21 @@ namespace EC
     /** Constructor.
      * @param ledStrip  The strip's underlying LED pixel array.
      * @param ledCount  Number of LEDs.
+     * @param reversed  Draw the strip's content in reverse direction.
+     * @note A negative value for \a ledCount has the same effect as if \a reversed was true.
      */
-    FastLedStrip(CRGB *ledStrip, int16_t ledCount)
-        : m_stripData(ledStrip), m_size(ledCount > 0 ? ledCount : 1)
+    FastLedStrip(CRGB *ledStrip, int16_t ledCount, bool reversed = false)
+        : m_stripData(ledStrip), m_size(ledCount), m_reversed(reversed)
     {
+      if (m_size < 0)
+      {
+        m_size = -m_size;
+        m_reversed ^= true;
+      }
+      else if (m_size == 0)
+      {
+        m_size = 1;
+      }
     }
 
     /** Access the pixel at position \a index.
@@ -56,12 +67,7 @@ namespace EC
      */
     CRGB &operator[](int16_t index)
     {
-      if (index < 0 || index >= m_size)
-      {
-        drawLine(CRGB(64, 0, 0), 0, m_size - 1);
-        return s_trashPixel;
-      }
-      return m_stripData[index];
+      return getPixel(toStripIndex(index), true);
     }
 
     /** Access the pixel at position \a index ("off-strip-pixels" are allowed).
@@ -72,11 +78,7 @@ namespace EC
      */
     CRGB &pixel(int16_t index)
     {
-      if (index < 0 || index >= m_size)
-      {
-        return s_trashPixel;
-      }
-      return m_stripData[index];
+      return getPixel(toStripIndex(index), false);
     }
 
     /** Draw a line in the given \a color from \a firstIndex to \a lastIndex.
@@ -85,34 +87,41 @@ namespace EC
      */
     void lineAbs(int16_t firstIndex, int16_t lastIndex, const CRGB &color)
     {
-      if (firstIndex > lastIndex)
+      int16_t firstStripIndex = toStripIndex(firstIndex);
+      int16_t lastStripIndex = toStripIndex(lastIndex);
+
+      if (firstStripIndex > lastStripIndex)
       {
-        lineAbs(lastIndex, firstIndex, color);
-        return;
+        // std::swap(firstStripIndex, lastStripIndex);
+        auto temp = firstStripIndex;
+        firstStripIndex = lastStripIndex;
+        lastStripIndex = temp;
       }
-      if (firstIndex < 0)
+      if (firstStripIndex < 0)
       {
         // start AND end off the strip?
-        if (lastIndex < 0)
+        if (lastStripIndex < 0)
         {
           return;
         }
-        firstIndex = 0;
+        firstStripIndex = 0;
       }
-      if (lastIndex >= m_size)
+      if (lastStripIndex >= m_size)
       {
         // start AND end off the strip?
-        if (firstIndex >= m_size)
+        if (firstStripIndex >= m_size)
         {
           return;
         }
-        lastIndex = m_size - 1;
+        lastStripIndex = m_size - 1;
       }
-      drawLine(color, firstIndex, lastIndex);
+      drawLine(color, firstStripIndex, lastStripIndex);
     }
 
+#if (0)
     /** Draw a line in the given \a color with the given \a length, starting at \a startIndex.
      * Strip boundaries are checked, so parts of the line may even be off the strip.
+     * @note A negative value for \a length will draw in the opposite direction.
      */
     void lineRel(int16_t startIndex, int16_t length, const CRGB &color)
     {
@@ -121,6 +130,7 @@ namespace EC
         lineAbs(startIndex, startIndex + length, color);
       }
     }
+#endif
 
     /// Fill the entire strip with the given \a color.
     void fillSolid(const CRGB &color)
@@ -135,22 +145,42 @@ namespace EC
       nscale8(m_stripData, m_size, 255 - fadeBy);
     }
 
+    /// Get a new strip with the same underlying LED pixel array, but reversed drawing direction.
+    FastLedStrip getReversedStrip()
+    {
+      return FastLedStrip(m_stripData, m_size, m_reversed ^ true);
+    }
+
+#if (0)
     /** Get a new strip that contains only a part of stis strip's underlying LED pixel array.
-     * @param offset  New strip starts at this LED.
-     * @param size    Number of LEDs in the new strip.
+     * @param offset    New strip starts at this LED.
+     * @param size      Number of LEDs in the new strip.
+     * @param reversed  Draw the new strip's content in reverse direction.
      * The resulting strip's boundaries are checked, and if necessary restricted to the dimensions of this strip.
      * Even when restricted, the returned sub-strip contains at least one visible pixel.
+     * @note When \a size is negative, \a offset is interpreted as the end of the strip,
+     * and its start will be \a size pixels before. Also the new strip's direction is reversed.
      */
-    FastLedStrip getSubStrip(int16_t offset, int16_t size)
+    FastLedStrip getSubStrip(int16_t offset, int16_t size, bool reversed = false)
     {
+      if (size == 0)
+      {
+        return FastLedStrip(m_stripData, 1);
+      }
+      if (convertToStripIndex(offset))
+      {
+        size = -size;
+      }
+      if (size < 0)
+      {
+        reversed ^= true;
+        size = -size;
+        offset -= size;
+      }
       if (offset < 0)
       {
         size -= -offset;
         offset = 0;
-      }
-      if (size <= 0)
-      {
-        return FastLedStrip(m_stripData, 1);
       }
       if (offset >= m_size)
       {
@@ -160,8 +190,9 @@ namespace EC
       {
         size = m_size - offset - 1;
       }
-      return FastLedStrip(&m_stripData[offset], size);
+      return FastLedStrip(&m_stripData[offset], size, m_reversed ^ reversed);
     }
+#endif
 
     /// This strip's number of LEDs.
     int16_t ledCount()
@@ -171,6 +202,7 @@ namespace EC
 
     /** Get the strip's underlying LED pixel array.
      * Use this method only when calling FastLed functions directly; mostly together with ledCount().
+     * @note The strip's "reversed" property has no effect when this method is used!
      */
     CRGB *rawStripData()
     {
@@ -178,20 +210,47 @@ namespace EC
     }
 
   private:
-    void drawLine(const CRGB &color, int16_t firstPixelIndex, int16_t lastPixelIndex)
+    int16_t toStripIndex(int16_t index)
     {
-      CRGB *first = &m_stripData[firstPixelIndex];
-      CRGB *last = &m_stripData[lastPixelIndex];
-      while (first <= last)
+      return m_reversed ? m_size - 1 - index : index;
+    }
+
+#if (0)
+    bool convertToStripIndex(int16_t &index)
+    {
+      index = toStripIndex(index);
+      return m_reversed;
+    }
+#endif
+
+    CRGB &getPixel(int16_t stripIndex, bool withErrorFeedback)
+    {
+      if (stripIndex < 0 || stripIndex >= m_size)
       {
-        *(first++) = color;
+        if (withErrorFeedback)
+        {
+          drawLine(CRGB(64, 0, 0), 0, m_size - 1);
+        }
+        return s_trashPixel;
+      }
+      return m_stripData[stripIndex];
+    }
+
+    void drawLine(const CRGB &color, int16_t firstStripIndex, int16_t lastStripIndex)
+    {
+      CRGB *firstPixel = &m_stripData[firstStripIndex];
+      CRGB *lastPixel = &m_stripData[lastStripIndex];
+      while (firstPixel <= lastPixel)
+      {
+        *(firstPixel++) = color;
       }
     }
 
   private:
     static CRGB s_trashPixel;
     CRGB *m_stripData;
-    const int16_t m_size;
+    int16_t m_size;
+    bool m_reversed;
   };
 
 } // namespace EC

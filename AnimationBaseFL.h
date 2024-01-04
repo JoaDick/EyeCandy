@@ -267,19 +267,17 @@ namespace EC
 
   protected:
     /** Constructor.
+     * @param strip        The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param fadeRate  Fading speed:
-     *                  Lower value = longer glowing; 0 = black background.
-     *                  Only relevant when default implementation of
-     *                  showPattern() is used.
+     * @param fadeRate     Fading speed:
+     *                     Lower value = longer glowing; 0 = black background.
+     *                     Only relevant when default implementation of
+     *                     showPattern() is used.
      */
-    AnimationBaseFL2(bool overlayMode,
-                     CRGB *ledStrip,
-                     uint16_t ledCount,
+    AnimationBaseFL2(FastLedStrip strip,
+                     bool overlayMode,
                      uint8_t fadeRate = 0)
-        : AnimationBase(overlayMode), fadeRate(fadeRate), strip(ledStrip, ledCount)
+        : AnimationBase(overlayMode), fadeRate(fadeRate), strip(strip)
     {
     }
 

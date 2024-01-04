@@ -29,6 +29,7 @@ SOFTWARE.
 *******************************************************************************/
 
 #include <EyeCandy.h>
+// #define NUM_LEDS 50
 #include <Animation_IO_config.h>
 #include <ButtonHandler.h>
 
@@ -105,13 +106,14 @@ void makeGlitterDot(EC::AnimationRepo &repo)
 
 void makeFireAndBalls(EC::AnimationRepo &repo)
 {
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
     auto fire = new EC::Fire2012<NUM_LEDS>(leds, NUM_LEDS);
     fire->COOLING = 155;
     fire->SPARKING = 75;
     fire->animationDelay = 10;
 
-    auto balls = new EC::BouncingBalls<>(leds, NUM_LEDS, true);
-    // balls->mirrored = true;
+    auto balls = new EC::BouncingBalls<>(strip.getReversedStrip(), true);
 
     repo.add(fire);
     repo.add(balls);
@@ -198,6 +200,7 @@ void makeWaterfall(EC::AnimationRepo &repo)
 
 EC::AnimationBuilderFct allAnimations[] = {
     &makeFireworks,
+
     &makeTwinkles,
     &makeRainbowBuiltin,
     &makeRainbow,
