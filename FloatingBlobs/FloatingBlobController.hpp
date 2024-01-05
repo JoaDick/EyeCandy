@@ -25,6 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
+#include "FastLedStrip.h"
 #include "BlobList.hpp"
 
 //------------------------------------------------------------------------------
@@ -59,16 +60,15 @@ public:
         }
     }
 
-    void process(CRGB *ledStrip,
-                 uint16_t ledCount)
+    void process(EC::FastLedStrip &strip)
     {
         prepareNext();
-        show(ledStrip, ledCount);
+        show(strip);
     }
 
     void makeBeat()
     {
-        uint8_t hue = _colorWheelPos; //random8();
+        uint8_t hue = _colorWheelPos; // random8();
 
         _blobList._firstBlob->age = 0x8000;
         _blobList._firstBlob->maxWeight = 2 * _totalWeight;
@@ -84,11 +84,12 @@ public:
     }
 
 private:
-    void show(CRGB *ledStrip,
-              uint16_t ledCount)
+    void show(EC::FastLedStrip &strip)
     {
         // Serial.print("totalWeight: ");
         // Serial.println(_totalWeight);
+
+        const auto ledCount = strip.ledCount();
 
         if (_totalWeight > 0.0)
         {
@@ -96,7 +97,7 @@ private:
             float currentWeight = currentBlob->weight;
             uint16_t nextBlobThreshold = uint16_t((currentWeight * ledCount) / _totalWeight);
 
-            for (uint16_t i = 0; i < ledCount; ++i)
+            for (auto i = 0; i < ledCount; ++i)
             {
                 if (i > nextBlobThreshold)
                 {
@@ -112,7 +113,7 @@ private:
 #endif
                     }
                     currentWeight += currentBlob->weight;
-                    //uint16_t lastBlobThreshold = nextBlobThreshold;
+                    // uint16_t lastBlobThreshold = nextBlobThreshold;
                     nextBlobThreshold = uint16_t((currentWeight * ledCount) / _totalWeight);
 #if (0)
                     // to avoid some unpleasant flickering,
@@ -127,11 +128,11 @@ private:
 
                 if (currentBlob->isBlack)
                 {
-                    ledStrip[i] = CRGB::Black;
+                    strip[i] = CRGB::Black;
                 }
                 else
                 {
-                    ledStrip[i] = CHSV(redShift(currentBlob->hue), 255, 255);
+                    strip[i] = CHSV(redShift(currentBlob->hue), 255, 255);
                 }
             }
         }
@@ -341,13 +342,13 @@ private:
             hue -= 128;
         }
 
-// #if (!FLOATING_BLOBS_SIMU)
-//         Serial.print(hue1);
-//         Serial.print(" | ");
-//         Serial.print(hue2);
-//         Serial.print(" -> ");
-//         Serial.println(uint8_t(hue));
-// #endif
+        // #if (!FLOATING_BLOBS_SIMU)
+        //         Serial.print(hue1);
+        //         Serial.print(" | ");
+        //         Serial.print(hue2);
+        //         Serial.print(" -> ");
+        //         Serial.println(uint8_t(hue));
+        // #endif
 
         return uint8_t(hue);
     }

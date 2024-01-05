@@ -79,9 +79,11 @@ void makeBalls(EC::AnimationRepo &repo)
     repo.add(new EC::BouncingBalls<>(strip));
 }
 
-void makeBlobs(EC::AnimationRepo &repo)
+void makeFloatingBlobs(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::FloatingBlobs(leds, NUM_LEDS));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::FloatingBlobs(strip));
 }
 
 void makeBubbles(EC::AnimationRepo &repo)
@@ -179,12 +181,16 @@ void makePrideMirror(EC::AnimationRepo &repo)
 
 void makeRainbow(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::Rainbow(leds, NUM_LEDS));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::Rainbow(strip));
 }
 
 void makeRainbowBuiltin(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::RainbowBuiltin(leds, NUM_LEDS));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::RainbowBuiltin(strip));
 }
 
 void makeRgbBlocks(EC::AnimationRepo &repo)
@@ -226,7 +232,7 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeTwinkles,
     &makeRainbowBuiltin,
     &makeRainbow,
-    &makeBlobs,
+    &makeFloatingBlobs,
     &makeGlitterDot,
     &makeRainbowTwinkle,
     &makePride,

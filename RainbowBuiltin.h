@@ -40,7 +40,7 @@ namespace EC
    * possibilities.
    */
   class RainbowBuiltin
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
     uint8_t _hue = 0;
 
@@ -62,14 +62,18 @@ namespace EC
      */
     static uint16_t animationDelay_default() { return 35; }
 
-    /** Constructor.
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param deltahue  "Stretch" of the rainbow pattern.
-     */
+    /// Deprecated; only for legacy compatibility.
     RainbowBuiltin(CRGB *ledStrip,
                    uint16_t ledCount)
-        : AnimationBaseFL(false, ledStrip, ledCount)
+        : RainbowBuiltin(FastLedStrip(ledStrip, ledCount))
+    {
+    }
+
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     */
+    explicit RainbowBuiltin(FastLedStrip ledStrip)
+        : AnimationBaseFL2(ledStrip, false)
     {
       animationDelay = animationDelay_default();
     }
@@ -78,7 +82,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      fill_rainbow(ledStrip, ledCount, _hue, deltahue);
+      fill_rainbow(strip.rawStripData(), strip.ledCount(), _hue, deltahue);
     }
 
     /// @see AnimationBase::updateAnimation()

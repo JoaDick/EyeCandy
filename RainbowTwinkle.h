@@ -68,7 +68,7 @@ namespace EC
         : AnimationBaseFL2(ledStrip, false, fadeRate_default())
     {
       animationDelay = animationDelay_default();
-      for (uint16_t i = 0; i < strip.ledCount(); i++)
+      for (auto i = 0; i < strip.ledCount(); i++)
       {
         strip[i] = CHSV(redShift(_hue), random(0x2F) + 0xD0, random(0xEF) + 0x10);
       }
@@ -80,7 +80,7 @@ namespace EC
     {
       strip.fadeToBlackBy(fadeRate);
 
-      for (uint16_t i = 0; i < strip.ledCount(); i++)
+      for (auto i = 0; i < strip.ledCount(); i++)
       {
         auto &pixel = strip[i];
         if (pixel.getLuma() <= 6)

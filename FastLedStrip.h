@@ -280,4 +280,10 @@ namespace EC
     bool m_reversed;
   };
 
+  /// Put more emphasis on the red'ish colors.
+  inline uint8_t redShift(uint8_t hue)
+  {
+    return cos8(128 + hue / 2);
+  }
+
 } // namespace EC

@@ -58,7 +58,7 @@ namespace EC
     struct Config
     {
       /// Effect color.
-      uint8_t colorHue = AnimationBaseFL::redShift(random8());
+      uint8_t colorHue = redShift(random8());
 
       /// Effect brightness.
       uint8_t colorVolume = 127 + random8(128);

@@ -1,11 +1,24 @@
 
 
 
+240105 Converted more Patterns to use FastLedStrip (3)
+
+Sketch uses 28466 bytes (88%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1027 bytes (50%) of dynamic memory, leaving 1021 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 28480 bytes (88%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1027 bytes (50%) of dynamic memory, leaving 1021 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 28490 bytes (88%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1027 bytes (50%) of dynamic memory, leaving 1021 bytes for local variables. Maximum is 2048 bytes.
+
+Rainbow = 24
+RainbowBuiltin = 22
+FloatingBlobs = 225
+
+
+
 240104 Converted more Patterns to use FastLedStrip (2)
-
-
-
-
 
 Sketch uses 28272 bytes (87%) of program storage space. Maximum is 32256 bytes.
 Global variables use 1027 bytes (50%) of dynamic memory, leaving 1021 bytes for local variables. Maximum is 2048 bytes.
