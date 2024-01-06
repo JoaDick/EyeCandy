@@ -64,7 +64,7 @@ namespace EC
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
     explicit Bubbles(FastLedStrip ledStrip,
-            bool overlayMode = false)
+                     bool overlayMode = false)
         : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default())
     {
       animationDelay = 10;

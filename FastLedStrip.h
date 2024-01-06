@@ -193,7 +193,39 @@ namespace EC
       return FastLedStrip(m_stripData, m_size, m_reversed ^ true);
     }
 
-#if (0)
+    /** Get a new strip consisting of the first half of the underlying LED pixel array.
+     * Useful e.g. for mirroring that half into the full strip after drawing its Animation.
+     * @param reversed  Draw the new strip's content in reverse direction.
+     * @see copyUp()
+     */
+    FastLedStrip getHalfStrip(bool reversed = false)
+    {
+      // current strip is normal
+      if (!m_reversed)
+      {
+        //      pixels: | even |      |  odd  |
+        //       index: |0--->5|      |0---->6|
+        // this size 6: [012345]   7: [0123456]
+        //  new size 3:  |||       4:  ||||
+        //   new strip: [012]         [0123]
+        //   new index: |0>2|         |0->3|     reversed = false
+        //   new index: |2<0|         |3<-0|     reversed = true
+        return FastLedStrip(&m_stripData[0], (m_size + 1) / 2, m_reversed ^ reversed);
+      }
+      // current strip is reversed
+      else
+      {
+        //      pixels: | even |      |  odd  |
+        //       index: |5<---0|      |6<----0|
+        // this size 6: [012345]   7: [0123456]
+        //  new size 3:     |||    4:     ||||
+        //   new strip:    [012]         [0123]
+        //   new index:    |2<0|         |3<-0|     reversed = false
+        //   new index:    |0>2|         |0->3|     reversed = true
+        return FastLedStrip(&m_stripData[m_size / 2], (m_size + 1) / 2, m_reversed ^ reversed);
+      }
+    }
+
     /** Get a new strip that contains only a part of stis strip's underlying LED pixel array.
      * The resulting strip's boundaries are checked, and if necessary restricted to the dimensions of this strip.
      * Even when restricted, the returned sub-strip contains at least one visible pixel.
@@ -234,7 +266,90 @@ namespace EC
       }
       return FastLedStrip(&m_stripData[offset], size, m_reversed ^ reversed);
     }
-#endif
+
+    /** Copy (and optionally mirror) the lower half of this strip into its upper half.
+     * Any existing content in the upper half is overwritten.
+     * @see getHalfStrip()
+     */
+    void copyUp(bool mirrored)
+    {
+      // copying and mirroring
+      if (mirrored)
+      {
+        // copy & mirror lower half up
+        if (!m_reversed)
+        {
+          // pixels: | even |      |  odd  |
+          //  index: |0--->5|      |0---->6|
+          // size 6: [012xxx]   7: [0123xxx]
+          //            |d->e         | d->e
+          //          <-s           <-s
+          // result: [012210]      [0123210]
+          CRGB *dst = &m_stripData[(m_size + 1) / 2];
+          CRGB *end = &m_stripData[m_size];
+          CRGB *src = &m_stripData[(m_size / 2) - 1];
+          while (dst < end)
+          {
+            *(dst++) = *(src--);
+          }
+        }
+        // copy & mirror upper half down
+        else
+        {
+          // pixels: | even |      |  odd  |
+          //  index: |5<---0|      |6<----0|
+          // size 6: [xxx345]   7: [xxx3456]
+          //          d->e |        d->e  |
+          //             <-s            <-s
+          // result: [543345]      [6543456]
+          CRGB *dst = &m_stripData[0];
+          CRGB *end = &m_stripData[m_size / 2];
+          CRGB *src = &m_stripData[m_size - 1];
+          while (dst < end)
+          {
+            *(dst++) = *(src--);
+          }
+        }
+      }
+      // only copying without mirroring
+      else
+      {
+        // copy lower half up
+        if (!m_reversed)
+        {
+          // pixels: | even |      |  odd  |
+          //  index: |0--->5|      |0---->6|
+          // size 6: [012xxx]   7: [0123xxx]
+          //          |  d->e       |   d->e
+          //          s->           s->
+          // result: [012012]      [0123012]
+          CRGB *dst = &m_stripData[(m_size + 1) / 2];
+          CRGB *end = &m_stripData[m_size];
+          CRGB *src = &m_stripData[0];
+          while (dst < end)
+          {
+            *(dst++) = *(src++);
+          }
+        }
+        // copy upper half down
+        else
+        {
+          // pixels: | even |      |  odd  |
+          //  index: |5<---0|      |6<----0|
+          // size 6: [xxx345]   7: [xxx3456]
+          //          d->e          d->e|
+          //             s->            s->
+          // result: [345345]      [4563456]
+          CRGB *dst = &m_stripData[0];
+          CRGB *end = &m_stripData[m_size / 2];
+          CRGB *src = &m_stripData[(m_size + 1) / 2];
+          while (dst < end)
+          {
+            *(dst++) = *(src++);
+          }
+        }
+      }
+    }
 
     /// This strip's number of LEDs.
     int16_t ledCount()

@@ -35,59 +35,34 @@ namespace EC
   /** An Overlay that multiplies a part of the LED strip like a Kaleidoscope.
    */
   class Kaleidoscope
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
-    uint16_t _remainLedCount;
-
   public:
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     */
+    /// Deprecated; only for legacy compatibility.
     Kaleidoscope(CRGB *ledStrip,
-                 uint16_t ledCount)
-        : AnimationBaseFL(true, ledStrip, ledCount), _remainLedCount((ledCount + 1) / 2)
+                  uint16_t ledCount,
+                  bool mirrored = true)
+        : Kaleidoscope(FastLedStrip(ledStrip, ledCount), mirrored)
     {
-      // we want the mirror effect by default
-      AnimationBaseFL::mirrored = true;
     }
 
-    /** Get the number of LEDs that may be used by the underlying Animation.
-     * Use other's #setLedCount() method to store this value.
+    /** Constructor
+     * @param ledStrip  The LED strip.
      */
-    uint16_t remainLedCount()
+    explicit Kaleidoscope(FastLedStrip ledStrip,
+                           bool mirrored = true)
+        : AnimationBaseFL2(ledStrip, true), m_mirrored(mirrored)
     {
-      return _remainLedCount;
     }
 
   private:
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      copyPixel(ledStrip, ledStrip + ledCount / 2, _remainLedCount, mirrored);
+      strip.copyUp(m_mirrored);
     }
 
-    void copyPixel(CRGB *from, CRGB *to, uint16_t count, bool flip)
-    {
-      if (flip)
-      {
-        CRGB *src = from;
-        CRGB *dst = to + count - 1;
-        while (count--)
-        {
-          *(dst--) = *(src++);
-        }
-      }
-      else
-      {
-        CRGB *src = from;
-        CRGB *dst = to;
-        while (count--)
-        {
-          *(dst++) = *(src++);
-        }
-      }
-    }
+    bool m_mirrored;
   };
 
 } // namespace EC

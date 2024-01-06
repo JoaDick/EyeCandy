@@ -144,15 +144,17 @@ void makeFireworks(EC::AnimationRepo &repo)
 
 void makeFlare(EC::AnimationRepo &repo)
 {
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
     const uint16_t fireLedCount = NUM_LEDS / 2 + NUM_LEDS / 10;
-    EC::FastLedStrip fireStrip(leds, fireLedCount, true);
+    EC::FastLedStrip fireStrip = strip.getSubStrip(0, fireLedCount, true);
 
     auto fire = new EC::Fire2012<NUM_LEDS>(fireStrip);
     fire->SPARKING = 75;
     fire->animationDelay = 10;
 
     repo.add(fire);
-    repo.add(new EC::Kaleidoscope(leds, NUM_LEDS));
+    repo.add(new EC::Kaleidoscope(strip));
 }
 
 void makePacifica(EC::AnimationRepo &repo)
@@ -164,19 +166,17 @@ void makePacifica(EC::AnimationRepo &repo)
 
 void makePride(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::Pride2015(leds, NUM_LEDS));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::Pride2015(strip));
 }
 
 void makePrideMirror(EC::AnimationRepo &repo)
 {
-    auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
+    EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto pride = new EC::Pride2015(leds, NUM_LEDS);
-    pride->resizeStrip(kaleidoscope->remainLedCount());
-    pride->mirrored = true;
-
-    repo.add(pride);
-    repo.add(kaleidoscope);
+    repo.add(new EC::Pride2015(strip.getHalfStrip(true)));
+    repo.add(new EC::Kaleidoscope(strip));
 }
 
 void makeRainbow(EC::AnimationRepo &repo)
