@@ -47,7 +47,7 @@ namespace EC
      * @note A negative value for \a ledCount has the same effect as if \a reversed was true.
      */
     FastLedStrip(CRGB *ledStrip, int16_t ledCount, bool reversed = false)
-        : m_stripData(ledStrip), m_sizeNrev(ledCount < 0 ? -ledCount : ledCount)
+        : m_pixelArray(ledStrip), m_sizeNrev(ledCount < 0 ? -ledCount : ledCount)
     {
       if (ledCount < 0)
       {
@@ -77,7 +77,7 @@ namespace EC
         drawLine(CRGB(64, 0, 0), 0, size - 1);
         return s_trashPixel;
       }
-      return m_stripData[index];
+      return m_pixelArray[index];
     }
 
     /** Access the pixel at position \a index ("off-strip-pixels" are allowed).
@@ -94,7 +94,7 @@ namespace EC
       {
         return s_trashPixel;
       }
-      return m_stripData[index];
+      return m_pixelArray[index];
     }
 
     /** Access the pixel at the normalized position \a pos ("off-strip-pixels" are allowed).
@@ -107,7 +107,7 @@ namespace EC
     CRGB &normPixel(float pos)
     {
       // TODO: Should pos == 1.0 also be a valid pixel (i.e. the last one)?
-      return pixel(pos * (getSize() - 1));
+      return pixel(pos * getSize());
     }
 
     /** Access the optional pixel at the normalized position \a pos.
@@ -183,20 +183,13 @@ namespace EC
     void fadeToBlackBy(uint8_t fadeBy)
     {
       // copied implementation of FastLed's fadeToBlackBy()
-      nscale8(m_stripData, getSize(), 255 - fadeBy);
-    }
-
-    /// Same as FastLed's fadeLightBy()
-    void fadeLightBy(uint8_t fadeBy)
-    {
-      // copied implementation of FastLed's fadeLightBy()
-      nscale8_video(m_stripData, getSize(), 255 - fadeBy);
+      nscale8(m_pixelArray, getSize(), 255 - fadeBy);
     }
 
     /// Get a new strip with the same underlying LED pixel array, but reversed drawing direction.
     FastLedStrip getReversedStrip()
     {
-      return FastLedStrip(m_stripData, getSize(), getReversed() ^ true);
+      return FastLedStrip(m_pixelArray, getSize(), getReversed() ^ true);
     }
 
     /** Get a new strip consisting of the first half of the underlying LED pixel array.
@@ -219,7 +212,7 @@ namespace EC
         //   new strip: [012]         [0123]
         //   new index: |0>2|         |0->3|     reversed = false
         //   new index: |2<0|         |3<-0|     reversed = true
-        return FastLedStrip(&m_stripData[0], (size + 1) / 2, revd ^ reversed);
+        return FastLedStrip(&m_pixelArray[0], (size + 1) / 2, revd ^ reversed);
       }
       // current strip is reversed
       else
@@ -231,7 +224,7 @@ namespace EC
         //   new strip:    [012]         [0123]
         //   new index:    |2<0|         |3<-0|     reversed = false
         //   new index:    |0>2|         |0->3|     reversed = true
-        return FastLedStrip(&m_stripData[size / 2], (size + 1) / 2, revd ^ reversed);
+        return FastLedStrip(&m_pixelArray[size / 2], (size + 1) / 2, revd ^ reversed);
       }
     }
 
@@ -251,7 +244,7 @@ namespace EC
 
       if (newSize == 0)
       {
-        return FastLedStrip(m_stripData, 1);
+        return FastLedStrip(m_pixelArray, 1);
       }
       if (convertToStripIndex(offset))
       {
@@ -270,13 +263,13 @@ namespace EC
       }
       if (offset >= size)
       {
-        return FastLedStrip(&m_stripData[size - 1], 1);
+        return FastLedStrip(&m_pixelArray[size - 1], 1);
       }
       if (offset + newSize >= size)
       {
         newSize = size - offset - 1;
       }
-      return FastLedStrip(&m_stripData[offset], newSize, revd ^ reversed);
+      return FastLedStrip(&m_pixelArray[offset], newSize, revd ^ reversed);
     }
 
     /** Copy (and optionally mirror) the lower half of this strip into its upper half.
@@ -301,9 +294,9 @@ namespace EC
           //            |d->e         | d->e
           //          <-s           <-s
           // result: [012210]      [0123210]
-          CRGB *dst = &m_stripData[(size + 1) / 2];
-          CRGB *end = &m_stripData[size];
-          CRGB *src = &m_stripData[(size / 2) - 1];
+          CRGB *dst = &m_pixelArray[(size + 1) / 2];
+          CRGB *end = &m_pixelArray[size];
+          CRGB *src = &m_pixelArray[(size / 2) - 1];
           while (dst < end)
           {
             *(dst++) = *(src--);
@@ -318,9 +311,9 @@ namespace EC
           //          d->e |        d->e  |
           //             <-s            <-s
           // result: [543345]      [6543456]
-          CRGB *dst = &m_stripData[0];
-          CRGB *end = &m_stripData[size / 2];
-          CRGB *src = &m_stripData[size - 1];
+          CRGB *dst = &m_pixelArray[0];
+          CRGB *end = &m_pixelArray[size / 2];
+          CRGB *src = &m_pixelArray[size - 1];
           while (dst < end)
           {
             *(dst++) = *(src--);
@@ -339,9 +332,9 @@ namespace EC
           //          |  d->e       |   d->e
           //          s->           s->
           // result: [012012]      [0123012]
-          CRGB *dst = &m_stripData[(size + 1) / 2];
-          CRGB *end = &m_stripData[size];
-          CRGB *src = &m_stripData[0];
+          CRGB *dst = &m_pixelArray[(size + 1) / 2];
+          CRGB *end = &m_pixelArray[size];
+          CRGB *src = &m_pixelArray[0];
           while (dst < end)
           {
             *(dst++) = *(src++);
@@ -356,9 +349,9 @@ namespace EC
           //          d->e          d->e|
           //             s->            s->
           // result: [345345]      [4563456]
-          CRGB *dst = &m_stripData[0];
-          CRGB *end = &m_stripData[size / 2];
-          CRGB *src = &m_stripData[(size + 1) / 2];
+          CRGB *dst = &m_pixelArray[0];
+          CRGB *end = &m_pixelArray[size / 2];
+          CRGB *src = &m_pixelArray[(size + 1) / 2];
           while (dst < end)
           {
             *(dst++) = *(src++);
@@ -377,9 +370,9 @@ namespace EC
      * Use this method only when calling FastLed functions directly; mostly together with ledCount().
      * @note The strip's "reversed" property has no effect when this method is used!
      */
-    CRGB *rawStripData()
+    CRGB *getPixelArray()
     {
-      return m_stripData;
+      return m_pixelArray;
     }
 
   private:
@@ -406,8 +399,8 @@ namespace EC
 
     void drawLine(const CRGB &color, int16_t firstStripIndex, int16_t lastStripIndex)
     {
-      CRGB *firstPixel = &m_stripData[firstStripIndex];
-      CRGB *lastPixel = &m_stripData[lastStripIndex];
+      CRGB *firstPixel = &m_pixelArray[firstStripIndex];
+      CRGB *lastPixel = &m_pixelArray[lastStripIndex];
       while (firstPixel <= lastPixel)
       {
         *(firstPixel++) = color;
@@ -416,7 +409,7 @@ namespace EC
 
   private:
     static CRGB s_trashPixel;
-    CRGB *m_stripData;
+    CRGB *m_pixelArray;
     uint16_t m_sizeNrev;
   };
 

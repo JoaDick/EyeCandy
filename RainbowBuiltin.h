@@ -82,7 +82,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      fill_rainbow(strip.rawStripData(), strip.ledCount(), _hue, deltahue);
+      fill_rainbow(strip.getPixelArray(), strip.ledCount(), _hue, deltahue);
     }
 
     /// @see AnimationBase::updateAnimation()
