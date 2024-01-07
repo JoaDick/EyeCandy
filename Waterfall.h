@@ -66,7 +66,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      fadeLightBy(strip.getPixelArray(), strip.ledCount(), 25);
+      fadeLightBy(strip.ledArray(), strip.ledCount(), 25);
       showOverlay(currentMillis);
     }
 
