@@ -32,7 +32,10 @@ SOFTWARE.
 namespace EC
 {
 
-  /** An Overlay that multiplies a part of the LED strip like a Kaleidoscope.
+  /** An Overlay that duplicates the lower part of the LED strip like a Kaleidoscope.
+   * Because the content is duplicated, the main Animation needs to draw only
+   * in the lower half of the LED strip.
+   * @see FastLedStrip::getHalfStrip()
    */
   class Kaleidoscope
       : public AnimationBaseFL2
@@ -48,21 +51,25 @@ namespace EC
 
     /** Constructor
      * @param ledStrip  The LED strip.
+     * @param mirrored  false = straight copying, true = mirror the content
      */
     explicit Kaleidoscope(FastLedStrip ledStrip,
                            bool mirrored = true)
-        : AnimationBaseFL2(ledStrip, true), m_mirrored(mirrored)
+        : AnimationBaseFL2(ledStrip, true), mirrored(mirrored)
     {
     }
+
+    /** Determine how the lower part of the strip is duplicated into the upper part.
+     * false = straight copying, true = mirror the content
+     */
+    bool mirrored;
 
   private:
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      strip.copyUp(m_mirrored);
+      strip.copyUp(mirrored);
     }
-
-    bool m_mirrored;
   };
 
 } // namespace EC

@@ -35,7 +35,6 @@ SOFTWARE.
 
 // the LED strip
 CRGB leds[NUM_LEDS];
-
 EC::FastLedStrip mainStrip(leds, NUM_LEDS);
 EC::FastLedStrip workingStrip = mainStrip.getHalfStrip();
 
@@ -69,7 +68,7 @@ void setup()
     pride2015.moreRed = false;
     animationRunner.add(pride2015);
 
-    // Kaleidoscope should be the last one
+    // Kaleidoscope should be added as last one
     animationRunner.add(kaleidoscopeOverlay);
 }
 
