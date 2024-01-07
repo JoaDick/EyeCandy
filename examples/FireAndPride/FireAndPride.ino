@@ -36,10 +36,16 @@ SOFTWARE.
 // the LED strip
 CRGB leds[NUM_LEDS];
 
+EC::FastLedStrip mainStrip(leds, NUM_LEDS);
+EC::FastLedStrip workingStrip = mainStrip.getHalfStrip();
+
+EC::FastLedStrip fireStrip = workingStrip.getHalfStrip(true);
+EC::FastLedStrip prideStrip = workingStrip.getSubStrip(fireStrip.ledCount(), 0, true);
+
 // Animations
-EC::Fire2012<NUM_LEDS> fire2012(leds, NUM_LEDS);
-EC::Pride2015 pride2015(leds, NUM_LEDS);
-EC::Kaleidoscope kaleidoscopeOverlay(leds, NUM_LEDS);
+EC::Fire2012<NUM_LEDS> fire2012(fireStrip);
+EC::Pride2015 pride2015(prideStrip);
+EC::Kaleidoscope kaleidoscopeOverlay(mainStrip);
 
 // run max. 8 Animations simultaneously
 EC::AnimationRunnerS animationRunner;
@@ -48,7 +54,6 @@ EC::AnimationRunnerS animationRunner;
 
 void setup()
 {
-    pinMode(PIN_FLIP_BTN, INPUT_PULLUP);
     pinMode(PIN_COLOR_POT, INPUT_PULLUP);
     pinMode(PIN_SPEED_POT, INPUT_PULLUP);
 
@@ -58,21 +63,14 @@ void setup()
     Serial.println(F("Welcome to EyeCandy"));
 
     // set up Animations to run
+    fire2012.animationDelay = 30;
     animationRunner.add(fire2012);
+
+    pride2015.moreRed = false;
     animationRunner.add(pride2015);
+
     // Kaleidoscope should be the last one
     animationRunner.add(kaleidoscopeOverlay);
-
-    // calculate new Animation sizes
-    const uint16_t ledCount = kaleidoscopeOverlay.remainLedCount();
-    const uint16_t ledCount1 = ledCount / 2;
-    const uint16_t ledCount2 = ledCount - ledCount1;
-    // store new Animation sizes
-    fire2012.resizeStrip(ledCount1);
-    pride2015.resizeStrip(ledCount2, ledCount1);
-
-    // special Animation settings
-    pride2015.mirrored = true;
 }
 
 //------------------------------------------------------------------------------
@@ -81,7 +79,6 @@ void loop()
 {
     updateColor();
     updateSpeed();
-    updateFlip();
 
     if (animationRunner.process())
     {
@@ -120,22 +117,6 @@ void updateSpeed()
     if (analogValue < 256)
     {
         fire2012.SPARKING = analogValue;
-    }
-}
-
-//------------------------------------------------------------------------------
-
-void updateFlip()
-{
-    const bool flipped = !digitalRead(PIN_FLIP_BTN);
-
-    if (flipped)
-    {
-        fire2012.animationDelay = 15;
-    }
-    else
-    {
-        fire2012.animationDelay = 0;
     }
 }
 
