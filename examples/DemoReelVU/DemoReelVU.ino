@@ -1,6 +1,6 @@
 /*******************************************************************************
 
-A sketch for testing during EyeCandy development.
+Many many VU-Animations!
 
 ********************************************************************************
 
@@ -29,6 +29,7 @@ SOFTWARE.
 *******************************************************************************/
 
 #include <EyeCandy.h>
+// #define NUM_LEDS 50
 #include <Animation_IO_config.h>
 #include <AudioNormalizer.h>
 #include <ButtonHandler.h>
@@ -48,6 +49,8 @@ bool autoMode = true;
 float audioSample = 0.0;
 AudioNormalizer normalizer;
 
+#define PRINT_MEMORY_USAGE 1
+
 //------------------------------------------------------------------------------
 
 void setup()
@@ -64,6 +67,9 @@ void setup()
     Serial.begin(115200);
     Serial.println();
     Serial.println(F("Welcome to EyeCandy"));
+#if (PRINT_MEMORY_USAGE)
+    printMemoryUsage();
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -472,5 +478,32 @@ void loop()
     animationChanger.process(currentMillis);
     FastLED.show();
 }
+
+//------------------------------------------------------------------------------
+
+#if (PRINT_MEMORY_USAGE)
+void printMemoryUsage()
+{
+    Serial.print(F("Memory usage for "));
+    Serial.print(NUM_LEDS);
+    Serial.println(F(" LEDs:"));
+    Serial.println(F("<*> is dependant on NUM_LEDS"));
+
+    Serial.print(F("DancingDotVU = "));
+    Serial.println(sizeof(EC::DancingDotVU));
+
+    Serial.print(F("EssentialVU = "));
+    Serial.println(sizeof(EC::EssentialVU));
+
+    Serial.print(F("Fire2012VU = "));
+    Serial.println(sizeof(EC::Fire2012VU<NUM_LEDS>));
+
+    Serial.print(F("PeakGlitterVU = "));
+    Serial.println(sizeof(EC::PeakGlitterVU));
+
+    Serial.print(F("RainbowLevelVU = "));
+    Serial.println(sizeof(EC::RainbowLevelVU));
+}
+#endif
 
 //------------------------------------------------------------------------------
