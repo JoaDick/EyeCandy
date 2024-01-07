@@ -36,7 +36,7 @@ namespace EC
    * Can be used as Pattern or as Overlay.
    */
   class Glitter
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
     bool _mustAddGlitter = false;
 
@@ -60,15 +60,22 @@ namespace EC
     uint8_t effectRate = effectRate_default();
     static uint8_t effectRate_default() { return 20; }
 
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     */
+    /// Deprecated; only for legacy compatibility.
     Glitter(CRGB *ledStrip,
             uint16_t ledCount,
             bool overlayMode = false)
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount, fadeRate_default())
+        : Glitter(FastLedStrip(ledStrip, ledCount), overlayMode)
+    {
+      animationDelay = 10;
+    }
+
+    /** Constructor
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     */
+    Glitter(FastLedStrip ledStrip,
+            bool overlayMode = false)
+        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default())
     {
       animationDelay = 10;
     }
@@ -88,7 +95,7 @@ namespace EC
     {
       if (_mustAddGlitter)
       {
-        pixel(random16(ledCount)) = foregroundColor;
+        strip[random16(strip.ledCount())] = foregroundColor;
         _mustAddGlitter = false;
       }
     }

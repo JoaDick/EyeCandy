@@ -44,23 +44,30 @@ namespace EC
    */
   template <uint8_t PARTICLE_COUNT = 5>
   class Firework
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
   public:
     /// Delay (in ms) before relaunching the Particles.
     uint16_t launchDelay = Firework_launchDelay_default();
 
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     * @param launchDelay  Multiples of 1500 give a nice effect.
-     */
+    /// Deprecated; only for legacy compatibility.
     Firework(CRGB *ledStrip,
              uint16_t ledCount,
              bool overlayMode,
              uint16_t launchDelay = Firework_launchDelay_default())
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount, Firework_fadeRate_default()), launchDelay(launchDelay)
+        : Firework(FastLedStrip(ledStrip, ledCount), overlayMode, launchDelay)
+    {
+    }
+
+    /** Constructor
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     * @param launchDelay  Multiples of 1500 give a nice effect.
+     */
+    Firework(FastLedStrip ledStrip,
+             bool overlayMode,
+             uint16_t launchDelay = Firework_launchDelay_default())
+        : AnimationBaseFL2(ledStrip, overlayMode, Firework_fadeRate_default()), launchDelay(launchDelay)
     {
 #ifdef FIREWORK_DEBUG
       // patternDelay = 20;
@@ -73,7 +80,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      AnimationBaseFL::showPattern(currentMillis);
+      AnimationBaseFL2::showPattern(currentMillis);
       _particles[0].dump();
     }
 #endif
@@ -83,7 +90,7 @@ namespace EC
     {
       for (uint8_t i = 0; i < PARTICLE_COUNT; ++i)
       {
-        _particles[i].show(*this);
+        _particles[i].show(strip);
       }
     }
 

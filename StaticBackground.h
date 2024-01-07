@@ -36,7 +36,7 @@ namespace EC
    * Mainly intended as example, but can also be used in combination with Overlays.
    */
   class StaticBackground
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
   public:
     /** Fill LED strip with this color.
@@ -44,15 +44,21 @@ namespace EC
      */
     CRGB backgroundColor;
 
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param backgroundColor  Fill LED strip with this color.
-     */
+    /// Deprecated; only for legacy compatibility.
     StaticBackground(CRGB *ledStrip,
                      uint16_t ledCount,
                      const CRGB &backgroundColor)
-        : AnimationBaseFL(false, ledStrip, ledCount), backgroundColor(backgroundColor)
+        : StaticBackground(FastLedStrip(ledStrip, ledCount), backgroundColor)
+    {
+    }
+
+    /** Constructor
+     * @param ledStrip  The LED strip.
+     * @param backgroundColor  Fill LED strip with this color.
+     */
+    StaticBackground(FastLedStrip ledStrip,
+                     const CRGB &backgroundColor)
+        : AnimationBaseFL2(ledStrip, false), backgroundColor(backgroundColor)
     {
     }
 
@@ -60,7 +66,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      fill_solid(ledStrip, ledCount, backgroundColor);
+      strip.fillSolid(backgroundColor);
     }
   };
 

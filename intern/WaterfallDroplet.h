@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "../AnimationBaseFL.h"
+#include "../FastLedStrip.h"
 #include "../randomF.h"
 
 //------------------------------------------------------------------------------
@@ -36,15 +36,15 @@ namespace EC
   class WaterfallDroplet
   {
   public:
-    void show(AnimationBaseFL &animation)
+    void show(FastLedStrip &strip)
     {
 #ifdef WATERFALL_DEBUG
       // if (_debugPos_vMax > 0.0)
       // {
-      //   animation.safePixel(_debugPos_vMax * animation.ledCount) = CRGB(64, 0, 0);
+      //   strip.normPixel(_debugPos_vMax) = CRGB(64, 0, 0);
       // }
-      // animation.safePixel(_fadingBeginPos * animation.ledCount) = CRGB(0, 255, 0);
-      // animation.safePixel(_fadingEndPos * animation.ledCount) = CRGB(0, 255, 0);
+      // strip.normPixel(_fadingBeginPos) = CRGB(0, 255, 0);
+      // strip.normPixel(_fadingEndPos) = CRGB(0, 255, 0);
 #endif
 
       const float fadingRange = _fadingBeginPos - _fadingEndPos;
@@ -73,8 +73,7 @@ namespace EC
       if (volume > 0)
       {
         const CRGB color = ColorFromPalette(OceanColors_p, paletteIndex, volume);
-        const int16_t pixelPos = _pos * animation.ledCount;
-        animation.safePixel(pixelPos) = color;
+        strip.normPixel(_pos) = color;
       }
 
 #ifdef WATERFALL_DEBUG

@@ -36,18 +36,23 @@ namespace EC
   /** Coloured Blobs floating around.
    */
   class FloatingBlobs
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
     FloatingBlobController<5> blobs;
 
   public:
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     */
+    /// Deprecated; only for legacy compatibility.
     FloatingBlobs(CRGB *ledStrip,
                   uint16_t ledCount)
-        : AnimationBaseFL(false, ledStrip, ledCount)
+        : FloatingBlobs(FastLedStrip(ledStrip, ledCount))
+    {
+    }
+
+    /** Constructor
+     * @param ledStrip  The LED strip.
+     */
+    explicit FloatingBlobs(FastLedStrip ledStrip)
+        : AnimationBaseFL2(ledStrip, false)
     {
       patternDelay = 10;
     }
@@ -56,7 +61,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      blobs.process(ledStrip, ledCount);
+      blobs.process(strip);
     }
   };
 

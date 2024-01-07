@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "../AnimationBaseFL.h"
+#include "../FastLedStrip.h"
 #include "../randomF.h"
 
 //------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ namespace EC
     struct Config
     {
       /// Effect color.
-      uint8_t colorHue = AnimationBaseFL::redShift(random8());
+      uint8_t colorHue = redShift(random8());
 
       /// Effect brightness.
       uint8_t colorVolume = 127 + random8(128);
@@ -120,7 +120,7 @@ namespace EC
       _config = &cfg;
 
       _acc = randomF(3.5, 5.0);
-      _vel = 0.1; //randomF(0.1, 0.25);
+      _vel = 0.1; // randomF(0.1, 0.25);
       _pos = 0.0;
 
       _apexPos = 0.0;
@@ -134,24 +134,15 @@ namespace EC
 #endif
     }
 
-    void show(AnimationBaseFL &animation)
+    void show(FastLedStrip &strip)
     {
 #ifdef FIREWORK_DEBUG
-      if (_debugPos_blow > 0.0)
-      {
-        animation.safePixel(_debugPos_blow * animation.ledCount) = CRGB(128, 64, 0);
-      }
-      if (_apexPos > 0.0)
-      {
-        animation.safePixel(_apexPos * animation.ledCount) = CRGB(255, 0, 0);
-      }
-      if (_debugPos_gliding > 0.0)
-      {
-        animation.safePixel(_debugPos_gliding * animation.ledCount) = CRGB(64, 0, 32);
-      }
+      strip.optPixel(_debugPos_blow) = CRGB(128, 64, 0);
+      strip.optPixel(_apexPos) = CRGB(255, 0, 0);
+      strip.optPixel(_debugPos_gliding) = CRGB(64, 0, 32);
 #endif
 
-      const int16_t pixelPos = _pos * animation.ledCount;
+      const int16_t pixelPos = _pos * strip.ledCount();
 
       switch (_state)
       {
@@ -160,20 +151,20 @@ namespace EC
         break;
 
       case STATE_LAUNCHING:
-        process_LAUNCHING(animation, pixelPos);
+        process_LAUNCHING(strip, pixelPos);
         break;
 
       case STATE_BLOW:
-        process_BLOW(animation, pixelPos);
+        process_BLOW(strip, pixelPos);
         break;
 
       case STATE_RISING:
-        process_RISING(animation, pixelPos);
+        process_RISING(strip, pixelPos);
 
         break;
 
       case STATE_FALLING:
-        process_FALLING(animation, pixelPos);
+        process_FALLING(strip, pixelPos);
         break;
 
       default:
@@ -259,19 +250,19 @@ namespace EC
     }
 
   private:
-    void process_LAUNCHING(AnimationBaseFL &animation, int16_t pixelPos)
+    void process_LAUNCHING(FastLedStrip &strip, int16_t pixelPos)
     {
       if (pixelPos != _lastPixelPos)
       {
-        animation.safePixel(_lastPixelPos) = CRGB::Black;
+        strip.pixel(_lastPixelPos) = CRGB::Black;
       }
-      animation.safePixel(pixelPos) = CRGB(32, 16, 0);
+      strip.pixel(pixelPos) = CRGB(32, 16, 0);
     }
 
-    void process_BLOW(AnimationBaseFL &animation, int16_t pixelPos)
+    void process_BLOW(FastLedStrip &strip, int16_t pixelPos)
     {
-      animation.safePixel(pixelPos + 1) = CRGB::White;
-      animation.safePixel(pixelPos) = CRGB::Yellow;
+      strip.pixel(pixelPos + 1) = CRGB::White;
+      strip.pixel(pixelPos) = CRGB::Yellow;
       _acc = randomF(-4.5, -2.8);
       _state = STATE_RISING;
 
@@ -280,25 +271,19 @@ namespace EC
 #endif
     }
 
-    void process_RISING(AnimationBaseFL &animation, int16_t pixelPos)
+    void process_RISING(FastLedStrip &strip, int16_t pixelPos)
     {
-      animation.safePixel(pixelPos) = addGlitter(animation, CHSV(_config->colorHue, 255, _config->colorVolume));
+      strip.pixel(pixelPos) = addGlitter(strip, CHSV(_config->colorHue, 255, _config->colorVolume));
     }
 
-    void process_FALLING(AnimationBaseFL &animation, int16_t pixelPos)
+    void process_FALLING(FastLedStrip &strip, int16_t pixelPos)
     {
       const float fadingEndPos = _apexPos * _config->fadingEndPos;
       const float fadingBeginPos = fadingEndPos + (_apexPos - fadingEndPos) * _config->fadingDuration;
 
 #ifdef FIREWORK_DEBUG
-      if (fadingBeginPos > 0.0)
-      {
-        animation.safePixel(fadingBeginPos * animation.ledCount) = CRGB(0, 0, 16);
-      }
-      if (fadingEndPos > 0.0)
-      {
-        animation.safePixel(fadingEndPos * animation.ledCount) = CRGB(0, 0, 16);
-      }
+      strip.optPixel(fadingBeginPos) = CRGB(0, 0, 16);
+      strip.optPixel(fadingEndPos) = CRGB(0, 0, 16);
 #endif
 
       CRGB pixelColor = CRGB::Black;
@@ -316,15 +301,15 @@ namespace EC
       }
       // else: particle off
 
-      pixelColor = addGlitter(animation, pixelColor, fadingBeginPos);
+      pixelColor = addGlitter(strip, pixelColor, fadingBeginPos);
       if (pixelPos != _lastPixelPos)
       {
-        animation.safePixel(_lastPixelPos) = pixelColor;
+        strip.pixel(_lastPixelPos) = pixelColor;
       }
-      animation.safePixel(pixelPos) = pixelColor;
+      strip.pixel(pixelPos) = pixelColor;
     }
 
-    CRGB addGlitter(AnimationBaseFL &animation, CRGB pixelColor, float fadingBeginPos = 0.0)
+    CRGB addGlitter(FastLedStrip &strip, CRGB pixelColor, float fadingBeginPos = 0.0)
     {
       // Twinkling instead of a fading trail?
       if (_config->glitterType == GLITTER_TWINKLE)
@@ -344,10 +329,7 @@ namespace EC
         const float glitterEndPos = _apexPos * (1.0 - _config->glitterDuration);
 
 #ifdef FIREWORK_DEBUG
-        if (glitterEndPos > 0.0)
-        {
-          animation.safePixel(glitterEndPos * animation.ledCount) = CRGB(0, 16, 0);
-        }
+        strip.optPixel(glitterEndPos) = CRGB(0, 16, 0);
 #endif
 
         if (_pos >= glitterEndPos)
@@ -370,14 +352,8 @@ namespace EC
       const float glitterEndPos = glitterBeginPos - (glitterBeginPos * _config->glitterDuration);
 
 #ifdef FIREWORK_DEBUG
-      if (glitterBeginPos > 0.0)
-      {
-        animation.safePixel(glitterBeginPos * animation.ledCount) = CRGB(0, 16, 0);
-      }
-      if (glitterEndPos > 0.0)
-      {
-        animation.safePixel(glitterEndPos * animation.ledCount) = CRGB(0, 16, 0);
-      }
+      strip.optPixel(glitterBeginPos) = CRGB(0, 16, 0);
+      strip.optPixel(glitterEndPos) = CRGB(0, 16, 0);
 #endif
 
       if (_pos <= glitterBeginPos &&

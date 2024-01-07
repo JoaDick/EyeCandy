@@ -3,6 +3,14 @@
 An example showing how multiple Animations can be rendered side by side.
 Including an Overlay, which is partially covering both other Patterns.
 
+Can also be used as inspiration for dividing one LED strip into multiple
+virtual LED strips (if you omit the MovingDot and adjust the sub-strip sizes):
+Imagine you're having an installation with 2 separate LED strips.
+Both shall show their own Animation, completely independent from each other.
+But you're having only ONE pin available on the Arduino (or ESP01)...
+The solution is to connect DOUT of the first strip to DIN of the second strip
+and upload this sketch.
+
 ********************************************************************************
 
 MIT License
@@ -36,13 +44,23 @@ SOFTWARE.
 
 // the LED strip
 CRGB leds[NUM_LEDS];
+EC::FastLedStrip mainStrip(leds, NUM_LEDS);
+
+// Rainbow in the lower third
+EC::FastLedStrip rainbowStrip = mainStrip.getSubStrip(0, NUM_LEDS / 3);
+
+// RGB Blocks in the rest (upper 2/3)
+EC::FastLedStrip rgbBlocksStrip = mainStrip.getSubStrip(rainbowStrip.ledCount(), 0);
+
+// Moving Dot overlay in the middle, using 2/3 of the entire strip
+EC::FastLedStrip movingDotStrip = mainStrip.getSubStrip(NUM_LEDS / 6, 2 * NUM_LEDS / 3);
 
 // Patterns
-EC::Rainbow rainbow(leds, NUM_LEDS);
-EC::RgbBlocks rgbBlocks(leds, NUM_LEDS);
+EC::Rainbow rainbow(rainbowStrip);
+EC::RgbBlocks rgbBlocks(rgbBlocksStrip);
 
 // Overlays
-EC::MovingDot movingDotOverlay(leds, NUM_LEDS, true);
+EC::MovingDot movingDotOverlay(movingDotStrip, true);
 
 // run max. 8 Animations simultaneously
 EC::AnimationRunnerS animationRunner;
@@ -51,7 +69,6 @@ EC::AnimationRunnerS animationRunner;
 
 void setup()
 {
-    pinMode(PIN_FLIP_BTN, INPUT_PULLUP);
     pinMode(PIN_COLOR_POT, INPUT_PULLUP);
     pinMode(PIN_SPEED_POT, INPUT_PULLUP);
 
@@ -60,20 +77,13 @@ void setup()
     Serial.begin(115200);
     Serial.println(F("Welcome to EyeCandy"));
 
-    // set up Animations to run
+    // set up Animations
+    rainbow.volume = 100;
+    movingDotOverlay.foregroundColor = CRGB::SteelBlue;
+
     animationRunner.add(rainbow);
     animationRunner.add(rgbBlocks);
     animationRunner.add(movingDotOverlay);
-
-    // Rainbow in the lower half
-    rainbow.resizeStrip(NUM_LEDS / 2);
-    rainbow.volume = 128;
-
-    // RGB blocks in the upper half
-    rgbBlocks.resizeStrip(NUM_LEDS / 2, NUM_LEDS / 2);
-
-    // Moving dot overlay in the middle, using 2/3 of the entire strip
-    movingDotOverlay.resizeStrip(2 * NUM_LEDS / 3, NUM_LEDS / 6);
 }
 
 //------------------------------------------------------------------------------
@@ -82,7 +92,6 @@ void loop()
 {
     updateColor();
     updateSpeed();
-    updateFlip();
 
     if (animationRunner.process())
     {
@@ -133,16 +142,6 @@ void updateSpeed()
 
         movingDotOverlay.animationDelay = 2 * animationDelay;
     }
-}
-
-//------------------------------------------------------------------------------
-
-void updateFlip()
-{
-    const bool flipped = !digitalRead(PIN_FLIP_BTN);
-
-    rainbow.mirrored = flipped;
-    rgbBlocks.mirrored = flipped;
 }
 
 //------------------------------------------------------------------------------

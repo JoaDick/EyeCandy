@@ -97,7 +97,7 @@ namespace EC
   in step 3 above).
   */
   template <uint16_t NUM_LEDS>
-  class Fire2012 : public AnimationBaseFL
+  class Fire2012 : public AnimationBaseFL2
   {
     static const uint16_t FRAMES_PER_SECOND = 60;
 
@@ -120,13 +120,18 @@ namespace EC
     /// suggested range 50-200.
     fract8 SPARKING = Fire2012_SPARKING_default();
 
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     */
+    /// Deprecated; only for legacy compatibility.
     Fire2012(CRGB *ledStrip,
              uint16_t ledCount)
-        : AnimationBaseFL(false, ledStrip, ledCount)
+        : Fire2012(FastLedStrip(ledStrip, ledCount))
+    {
+    }
+
+    /** Constructor
+     * @param ledStrip  The LED strip.
+     */
+    explicit Fire2012(FastLedStrip ledStrip)
+        : AnimationBaseFL2(ledStrip, false)
     {
       patternDelay = 1000 / FRAMES_PER_SECOND;
       animationDelay = Fire2012_animationDelay_default();
@@ -165,6 +170,8 @@ namespace EC
     // Looks best on a high-density LED setup (60+ pixels/meter).
     void Fire2012WithPalette()
     {
+      const auto ledCount = strip.ledCount();
+
       // Step 1.  Cool down every cell a little
       for (int i = 0; i < ledCount; i++)
       {
@@ -192,7 +199,7 @@ namespace EC
         byte colorindex = scale8(heat[j], 240);
         CRGB color = ColorFromPalette(gPal, colorindex);
 
-#if (0) // mirroring can be done via base class: AnimationBaseFL::mirrored
+#if (0) // mirroring can be done through class FastLedStrip
         int pixelnumber;
         if (gReverseDirection)
         {
@@ -204,7 +211,7 @@ namespace EC
         }
         leds[pixelnumber] = color;
 #else
-        pixel(j) = color;
+        strip[j] = color;
 #endif
       }
     }

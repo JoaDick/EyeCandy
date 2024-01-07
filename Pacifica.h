@@ -40,16 +40,21 @@ namespace EC
    * https://github.com/FastLED/FastLED/blob/master/examples/Pacifica/Pacifica.ino
    */
   class Pacifica
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
   public:
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     */
+    /// Deprecated; only for legacy compatibility.
     Pacifica(CRGB *ledStrip,
              uint16_t ledCount)
-        : AnimationBaseFL(false, ledStrip, ledCount)
+        : Pacifica(FastLedStrip(ledStrip, ledCount))
+    {
+    }
+
+    /** Constructor
+     * @param ledStrip  The LED strip.
+     */
+    explicit Pacifica(FastLedStrip ledStrip)
+        : AnimationBaseFL2(ledStrip, false)
     {
       patternDelay = 20;
     }
@@ -116,7 +121,7 @@ namespace EC
       sCIStart4 -= (deltams2 * beatsin88(257, 4, 6));
 
       // Clear out the LED array to a dim background blue-green
-      fill_solid(ledStrip, ledCount, CRGB(2, 6, 10));
+      strip.fillSolid(CRGB(2, 6, 10));
 
       // Render each of four layers, with different scales and speeds, that vary over time
       pacifica_one_layer(pacifica_palette_1, sCIStart1, beatsin16(3, 11 * 256, 14 * 256), beatsin8(10, 70, 130), 0 - beat16(301));
@@ -137,7 +142,7 @@ namespace EC
       uint16_t ci = cistart;
       uint16_t waveangle = ioff;
       uint16_t wavescale_half = (wavescale / 2) + 20;
-      for (uint16_t i = 0; i < ledCount; i++)
+      for (uint16_t i = 0; i < strip.ledCount(); i++)
       {
         waveangle += 250;
         uint16_t s16 = sin16(waveangle) + 32768;
@@ -146,7 +151,7 @@ namespace EC
         uint16_t sindex16 = sin16(ci) + 32768;
         uint8_t sindex8 = scale16(sindex16, 240);
         CRGB c = ColorFromPalette(p, sindex8, bri, LINEARBLEND);
-        pixel(i) += c;
+        strip[i] += c;
       }
     }
 
@@ -156,16 +161,17 @@ namespace EC
       uint8_t basethreshold = beatsin8(9, 55, 65);
       uint8_t wave = beat8(7);
 
-      for (uint16_t i = 0; i < ledCount; i++)
+      for (uint16_t i = 0; i < strip.ledCount(); i++)
       {
         uint8_t threshold = scale8(sin8(wave), 20) + basethreshold;
         wave += 7;
-        uint8_t l = pixel(i).getAverageLight();
+        auto& pixel = strip[i];
+        uint8_t l = pixel.getAverageLight();
         if (l > threshold)
         {
           uint8_t overage = l - threshold;
           uint8_t overage2 = qadd8(overage, overage);
-          pixel(i) += CRGB(overage, overage2, qadd8(overage2, overage2));
+          pixel += CRGB(overage, overage2, qadd8(overage2, overage2));
         }
       }
     }
@@ -173,11 +179,12 @@ namespace EC
     // Deepen the blues and greens
     void pacifica_deepen_colors()
     {
-      for (uint16_t i = 0; i < ledCount; i++)
+      for (uint16_t i = 0; i < strip.ledCount(); i++)
       {
-        pixel(i).blue = scale8(pixel(i).blue, 145);
-        pixel(i).green = scale8(pixel(i).green, 200);
-        pixel(i) |= CRGB(2, 5, 7);
+        auto& pixel = strip[i];
+        pixel.blue = scale8(pixel.blue, 145);
+        pixel.green = scale8(pixel.green, 200);
+        pixel |= CRGB(2, 5, 7);
       }
     }
   };

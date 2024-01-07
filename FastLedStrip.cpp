@@ -25,51 +25,13 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "FastLedStrip.h"
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /** An Overlay that duplicates the lower part of the LED strip like a Kaleidoscope.
-   * Because the content is duplicated, the main Animation needs to draw only
-   * in the lower half of the LED strip.
-   * @see FastLedStrip::getHalfStrip()
-   */
-  class Kaleidoscope
-      : public AnimationBaseFL2
-  {
-  public:
-    /// Deprecated; only for legacy compatibility.
-    Kaleidoscope(CRGB *ledStrip,
-                  uint16_t ledCount,
-                  bool mirrored = true)
-        : Kaleidoscope(FastLedStrip(ledStrip, ledCount), mirrored)
-    {
-    }
-
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param mirrored  false = straight copying, true = mirror the content
-     */
-    explicit Kaleidoscope(FastLedStrip ledStrip,
-                           bool mirrored = true)
-        : AnimationBaseFL2(ledStrip, true), mirrored(mirrored)
-    {
-    }
-
-    /** Determine how the lower part of the strip is duplicated into the upper part.
-     * false = straight copying, true = mirror the content
-     */
-    bool mirrored;
-
-  private:
-    /// @see AnimationBase::showOverlay()
-    void showOverlay(uint32_t currentMillis) override
-    {
-      strip.copyUp(mirrored);
-    }
-  };
+  CRGB FastLedStrip::s_trashPixel;
 
 } // namespace EC
