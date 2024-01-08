@@ -97,30 +97,6 @@ namespace EC
       return m_ledArray[ledIndex];
     }
 
-    /** Access the pixel at the normalized position \a pos ("off-strip-pixels" are allowed).
-     * If \a index is not within the LED strip, a dummy-pixel is returned
-     * (i.e. the pixel's setting will be ignored). \n
-     * This may be useful for Animations where something "drops off" the strip.
-     * @param pos  Normalized pixel position.
-     *             The valid range for drawing is 0.0 <= \a pos < 1.0
-     */
-    CRGB &normPixel(float pos)
-    {
-      // TODO: Should pos == 1.0 also be a valid pixel (i.e. the last one)?
-      return pixel(pos * getSize());
-    }
-
-    /** Access the optional pixel at the normalized position \a pos.
-     * Same as normPixel(), but only positive values of \a pos are valid.
-     * This means that the (optional) pixel at exactly \a pos == 0.0 will \e not be drawn. \n
-     * This may be useful when the Animation wants to implement something like a simple
-     * "invalid" or "muted" state of a pixel algorithm.
-     */
-    CRGB &optPixel(float pos)
-    {
-      return pos <= 0.0 ? s_trashPixel : normPixel(pos);
-    }
-
     /** Draw a line in the given \a color from \a firstIndex to \a lastIndex.
      * Strip boundaries are checked, so parts of the line may even be off the strip.
      * Both \a firstIndex and \a lastIndex are included in the line.
@@ -159,7 +135,6 @@ namespace EC
       fillLedBlock(color, firstLedIndex, lastLedIndex);
     }
 
-#if (0)
     /** Draw a line in the given \a color with the given \a length, starting at \a startIndex.
      * Strip boundaries are checked, so parts of the line may even be off the strip.
      * @note A negative value for \a length will draw in the opposite direction.
@@ -168,10 +143,77 @@ namespace EC
     {
       if (length)
       {
-        lineAbs(startIndex, startIndex + length, color);
+        const auto delta = length > 0 ? (length - 1) : (length + 1);
+        lineAbs(startIndex, startIndex + delta, color);
       }
     }
-#endif
+
+    /** Convert the given normalized position \a pos to its corresponding pixel index.
+     * \a pos = 0.0 corresponds to the first pixel of the strip; 0.999... corresponds to
+     * the last pixel of the strip.
+     * @note \a pos < 0.0 and \a pos >= 1.0 result in off-strip indices.
+     * But all methods can tolerate these :-)
+     */
+    int16_t toPixelIndex(float pos) const
+    {
+      return pos * getSize();
+    }
+
+    /** Access the optional pixel at the normalized position \a pos.
+     * Same as normPixel(), but only positive values of \a pos are valid.
+     * This means that the (optional) pixel at exactly \a pos == 0.0 will \e not be drawn. \n
+     * This may be useful when the Animation wants to implement something like a simple
+     * "invalid" or "muted" state of a pixel algorithm.
+     * @see toPixelIndex(), normPixel()
+     */
+    CRGB &optPixel(float pos)
+    {
+      return pos <= 0.0 ? s_trashPixel : normPixel(pos);
+    }
+
+    /** Access the pixel at the normalized position \a pos ("off-strip-pixels" are allowed).
+     * If \a pos is not within the LED strip, a dummy-pixel is returned
+     * (i.e. the pixel's setting will be ignored). \n
+     * This may be useful for Animations where something "drops off" the strip.
+     * @param pos  Normalized pixel position.
+     * @note \a pos = 0.0 corresponds to the begin of the strip; 1.0 corresponds to
+     * the end of the strip.
+     * @see toPixelIndex()
+     */
+    CRGB &normPixel(float pos)
+    {
+      return pixel(toPixelIndex(pos));
+    }
+
+    /** Draw a line in the given \a color from the normalized position \a firstPos to \a lastPos.
+     * Strip boundaries are checked, so parts of the line may even be off the strip.
+     * @note The valid position range for drawing is 0.0 <= \a pos < 1.0
+     * @note \a firstPos or \a lastPos = 0.0 corresponds to the begin of the strip,
+     * 1.0 corresponds to the end of the strip.
+     * @see toPixelIndex()
+     */
+    void normLineAbs(float firstPos, float lastPos, const CRGB &color)
+    {
+      lineAbs(toPixelIndex(firstPos), toPixelIndex(lastPos), color);
+    }
+
+    /** Draw a line in the given \a color with the given \a length, starting at the normalized position \a startPos.
+     * Strip boundaries are checked, so parts of the line may even be off the strip.
+     * @note \a startPos = 0.0 corresponds to the begin of the strip; 1.0 corresponds to
+     * the end of the strip. \n
+     * \a length = 1.0 corresponds to the whole strip. \n
+     * A negative value for \a length will draw in the opposite direction.
+     * @see toPixelIndex()
+     */
+    void normLineRel(float startPos, float length, const CRGB &color)
+    {
+      if (length)
+      {
+        const auto firstPixel = toPixelIndex(startPos);
+        const auto lastPixel = toPixelIndex(startPos + length);
+        lineAbs(firstPixel, lastPixel, color);
+      }
+    }
 
     /// Fill the entire strip with the given \a color.
     void fillSolid(const CRGB &color)

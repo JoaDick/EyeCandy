@@ -42,7 +42,7 @@ namespace EC
    * Recommended to use as Overlay together with another VU meter.
    */
   class PeakGlitterVU
-      : public VuBaseFL
+      : public VuBaseFL2
   {
   public:
     /** Default fading speed.
@@ -61,17 +61,24 @@ namespace EC
     /// Usually there's nothing to configure here; mainly for debugging.
     VuRangeExtender vuRangeExtender;
 
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param audioSource  Read the audio samples from there.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     */
+    /// Deprecated; only for legacy compatibility.
     PeakGlitterVU(CRGB *ledStrip,
                   uint16_t ledCount,
                   float &audioSource,
                   bool overlayMode = false)
-        : VuBaseFL(overlayMode, ledStrip, ledCount, audioSource, fadeRate_default())
+        : PeakGlitterVU(audioSource, FastLedStrip(ledStrip, ledCount), overlayMode)
+    {
+    }
+
+    /** Constructor
+     * @param audioSource  Read the audio samples from there.
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     */
+    PeakGlitterVU(float &audioSource,
+                  FastLedStrip ledStrip,
+                  bool overlayMode = false)
+        : VuBaseFL2(audioSource, ledStrip, overlayMode, fadeRate_default())
     {
       animationDelay = 10;
       vuPeakHandler.peakHold = 20;
@@ -99,7 +106,7 @@ namespace EC
 
       if (_peakLevel > 0.0)
       {
-        safePixel(_peakLevel * (ledCount - 1)) = glitterColor;
+        strip.normPixel(_peakLevel) = glitterColor;
         _peakLevel = 0.0;
       }
     }

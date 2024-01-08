@@ -48,7 +48,7 @@ namespace EC
 #ifndef FIRE2012VU_DEBUG
       : public PseudoAnimationBase
 #else
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
 #endif
   {
   public:
@@ -61,20 +61,16 @@ namespace EC
     /// Usually there's nothing to configure here; mainly for debugging.
     VuPeakHandler vuPeakHandler;
 
-#ifndef FIRE2012VU_DEBUG
     /** Constructor.
      * @param audioSource  Read the audio samples from there.
      * @param fire  Original #Fire2012 animation to manipulate.
      */
     Fire2012VU(float &audioSource,
                Fire2012<NUM_LEDS> &fire)
-        : _fire(fire), _audioSource(audioSource)
+#ifndef FIRE2012VU_DEBUG
+        : _audioSource(audioSource), _fire(fire)
 #else
-    Fire2012VU(CRGB *ledStrip,
-               uint16_t ledCount,
-               float &audioSource,
-               Fire2012<NUM_LEDS> &fire)
-        : AnimationBaseFL(true, ledStrip, ledCount), _fire(fire), _audioSource(audioSource)
+        : AnimationBaseFL2(fire.getStrip(), true), _audioSource(audioSource), _fire(fire)
 #endif
     {
       animationDelay = 10;
@@ -87,8 +83,7 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      const uint16_t pixelPos = vuPeakHandler.peakLevel() * (ledCount - 1);
-      safePixel(pixelPos) = CRGB(0, 0, 255);
+      strip.normPixel(vuPeakHandler.peakLevel()) = CRGB(0, 0, 255);
     }
 #endif
 
@@ -116,7 +111,7 @@ namespace EC
     {
       vuLevelHandler.addSample(_audioSource);
 #ifdef FIRE2012VU_DEBUG
-      AnimationBaseFL::processAnimation(currentMillis, wasModified);
+      AnimationBaseFL2::processAnimation(currentMillis, wasModified);
 #else
       PseudoAnimationBase::processAnimation(currentMillis, wasModified);
 #endif

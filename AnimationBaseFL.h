@@ -259,6 +259,12 @@ namespace EC
      */
     uint8_t fadeRate;
 
+    /// Only for debugging.
+    FastLedStrip getStrip()
+    {
+      return strip;
+    }
+
   protected:
     /** Constructor.
      * @param strip        The LED strip.

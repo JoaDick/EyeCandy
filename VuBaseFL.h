@@ -78,4 +78,49 @@ namespace EC
     float &_audioSource;
   };
 
+  //------------------------------------------------------------------------------
+
+  /** DRAFT FastLedStrip - Base class suitable for most VUs which are using FastLED.
+   * Child classes must fulfill the same requirements as for #AnimationBase.
+   */
+  class VuBaseFL2
+      : public AnimationBaseFL2
+  {
+  public:
+    /** Usually there's nothing to configure here.
+     * Publicly accessible mainly for debugging.
+     * Child classes shall get the current VU level from here.
+     */
+    VuLevelHandler vuLevelHandler;
+
+  protected:
+    /** Constructor.
+     * @param audioSource  Read the audio samples from there.
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     * @param fadeRate  Fading speed:
+     *                  Lower value = longer glowing; 0 = black background.
+     *                  Only relevant when default implementation of
+     *                  showPattern() is used.
+     */
+    VuBaseFL2(float &audioSource,
+              FastLedStrip ledStrip,
+              bool overlayMode,
+              uint8_t fadeRate = 0)
+        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate), _audioSource(audioSource)
+    {
+    }
+
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      vuLevelHandler.addSample(_audioSource);
+      AnimationBaseFL2::processAnimation(currentMillis, wasModified);
+    }
+
+  protected:
+    /// Most child classes won't need access to this.
+    float &_audioSource;
+  };
+
 } // namespace EC

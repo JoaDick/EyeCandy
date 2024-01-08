@@ -1,0 +1,76 @@
+
+
+
+240108 Fixed DemoReelVU.ino
+
+Sketch uses 25756 bytes (79%) of program storage space. Maximum is 32256 bytes.
+Global variables use 939 bytes (45%) of dynamic memory, leaving 1109 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 25804 bytes (79%) of program storage space. Maximum is 32256 bytes.
+Global variables use 939 bytes (45%) of dynamic memory, leaving 1109 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 25812 bytes (80%) of program storage space. Maximum is 32256 bytes.
+Global variables use 947 bytes (46%) of dynamic memory, leaving 1101 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 25514 bytes (79%) of program storage space. Maximum is 32256 bytes.
+Global variables use 941 bytes (45%) of dynamic memory, leaving 1107 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 25330 bytes (78%) of program storage space. Maximum is 32256 bytes.
+Global variables use 937 bytes (45%) of dynamic memory, leaving 1111 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 24890 bytes (77%) of program storage space. Maximum is 32256 bytes.
+Global variables use 937 bytes (45%) of dynamic memory, leaving 1111 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 24536 bytes (76%) of program storage space. Maximum is 32256 bytes.
+Global variables use 935 bytes (45%) of dynamic memory, leaving 1113 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 24580 bytes (76%) of program storage space. Maximum is 32256 bytes.
+Global variables use 933 bytes (45%) of dynamic memory, leaving 1115 bytes for local variables. Maximum is 2048 bytes.
+
+---
+
+Sketch uses 24250 bytes (75%) of program storage space. Maximum is 32256 bytes.
+Global variables use 927 bytes (45%) of dynamic memory, leaving 1121 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 24528 bytes (76%) of program storage space. Maximum is 32256 bytes.
+Global variables use 942 bytes (45%) of dynamic memory, leaving 1106 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 23314 bytes (72%) of program storage space. Maximum is 32256 bytes.
+Global variables use 918 bytes (44%) of dynamic memory, leaving 1130 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 23066 bytes (71%) of program storage space. Maximum is 32256 bytes.
+Global variables use 918 bytes (44%) of dynamic memory, leaving 1130 bytes for local variables. Maximum is 2048 bytes.
+
+EssentialVU = 106
+PeakGlitterVU = 100
+DancingDotVU = 96
+RainbowLevelVU = 120
+
+---
+
+Sketch uses 22560 bytes (69%) of program storage space. Maximum is 32256 bytes.
+Global variables use 920 bytes (44%) of dynamic memory, leaving 1128 bytes for local variables. Maximum is 2048 bytes.
+
+
+
+240107 Baseline
+---------------
+* HEAD: feature/FastLedStrip-VU @ 10fa154
+* Arduino Uno
+* DemoReelVU.ino
+* #define PRINT_MEMORY_USAGE 1
+
+Using library EyeCandy in folder: D:\Arduino\libraries\EyeCandy (legacy)
+Using library FastLED at version 3.4.0 in folder: D:\Arduino\libraries\FastLED
+"C:\\Users\\Achim\\AppData\\Local\\Arduino15\\packages\\arduino\\tools\\avr-gcc\\7.3.0-atmel3.6.1-arduino7/bin/avr-size" -A "C:\\Users\\Achim\\AppData\\Local\\Temp\\arduino\\sketches\\765CA6846F937C8CC3B6672327518484/DemoReelVU.ino.elf"
+
+Sketch uses 24508 bytes (75%) of program storage space. Maximum is 32256 bytes.
+Global variables use 947 bytes (46%) of dynamic memory, leaving 1101 bytes for local variables. Maximum is 2048 bytes.
+
+Memory usage for 90 LEDs:
+<*> is dependant on NUM_LEDS
+DancingDotVU = 102
+EssentialVU = 112
+Fire2012VU = 84
+PeakGlitterVU = 106
+RainbowLevelVU = 126
