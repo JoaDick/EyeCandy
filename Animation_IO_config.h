@@ -7,18 +7,34 @@
 #define NUM_LEDS 90
 #endif
 
+// Data pin for LED strip.
 #ifndef LED_PIN
-// Connect the LED Strip to that Arduino pin.
-#define LED_PIN 6
+    #if defined(ARDUINO_ARCH_AVR)  // with Arduino boards
+    #define LED_PIN 6
+    #elif defined(ARDUINO_ARCH_ESP8266)  // with ESP8266 boards
+    #define LED_PIN 2
+    #elif defined(ARDUINO_ARCH_ESP32)  // with ESP32 boards
+    #define LED_PIN 16
+    #else
+    #error "No pin for LED data defined"
+    #endif
 #endif
 
 // Connect button to the specified Arduino pin and GND.
 // Connect potentiometer's center pin to the specified Arduino pin.
 // The other potentiometer pins must be wire to +5V and GND.
 
+// Pin for "Select" button.
 #ifndef PIN_SELECT_BTN
-// "Select" Button.
-#define PIN_SELECT_BTN 2
+    #if defined(ARDUINO_ARCH_AVR)  // with Arduino boards
+    #define PIN_SELECT_BTN 2
+    #elif defined(ARDUINO_ARCH_ESP8266)  // with ESP8266 boards
+    #define PIN_SELECT_BTN 0
+    #elif defined(ARDUINO_ARCH_ESP32)  // with ESP32 boards
+    #define PIN_SELECT_BTN 17
+    #else
+    #error "No pin for Select button defined"
+    #endif
 #endif
 
 #ifndef PIN_FLIP_BTN
@@ -36,9 +52,17 @@
 #define PIN_SPEED_POT A1
 #endif
 
+// Microphone analog input.
 #ifndef PIN_MIC
-// Microphone.
-#define PIN_MIC A5
+    #if defined(ARDUINO_ARCH_AVR)  // with Arduino boards
+    #define PIN_MIC A5
+    #elif defined(ARDUINO_ARCH_ESP8266)  // with ESP8266 boards
+    #define PIN_MIC A0
+    #elif defined(ARDUINO_ARCH_ESP32)  // with ESP32 boards
+    #define PIN_MIC A0
+    #else
+    #error "No pin for microphone defined"
+    #endif
 #endif
 
 //------------------------------------------------------------------------------

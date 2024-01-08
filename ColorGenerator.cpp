@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include "ColorGenerator.h"
 #include <Arduino.h>
-#include "AnimationBaseFL.h"
+#include "FastLedStrip.h"
 
 //------------------------------------------------------------------------------
 
@@ -43,7 +43,7 @@ namespace
       hue += index;
       hue %= 255;
       // put more emphasis on the red'ish colors
-      hue = EC::AnimationBaseFL::redShift(hue);
+      hue = EC::redShift(hue);
       return CHSV(hue, 255, brightness);
     }
   };

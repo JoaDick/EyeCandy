@@ -37,6 +37,7 @@ SOFTWARE.
 
 // the LED strip
 CRGB leds[NUM_LEDS];
+EC::FastLedStrip mainStrip(leds, NUM_LEDS);
 
 #ifdef FIREWORK_DEBUG
 const uint8_t PARTICLE_COUNT = 1;
@@ -44,12 +45,12 @@ const uint8_t PARTICLE_COUNT = 1;
 const uint8_t PARTICLE_COUNT = 5;
 #endif
 
-EC::FadeOut fadeOut(leds, NUM_LEDS, EC::Firework_fadeRate_default());
-EC::Firework<PARTICLE_COUNT> firework1(leds, NUM_LEDS, true, 1500);
-EC::Firework<PARTICLE_COUNT> firework2(leds, NUM_LEDS, true, 3000);
-EC::Firework<PARTICLE_COUNT> firework3(leds, NUM_LEDS, true, 4500);
-EC::Firework<PARTICLE_COUNT> firework4(leds, NUM_LEDS, true, 6000);
-EC::Firework<PARTICLE_COUNT> firework5(leds, NUM_LEDS, true, 7500);
+EC::FadeOut fadeOut(mainStrip, EC::Firework_fadeRate_default());
+EC::Firework<PARTICLE_COUNT> firework1(mainStrip, true, 1500);
+EC::Firework<PARTICLE_COUNT> firework2(mainStrip, true, 3100);
+EC::Firework<PARTICLE_COUNT> firework3(mainStrip, true, 4700);
+EC::Firework<PARTICLE_COUNT> firework4(mainStrip, true, 6300);
+EC::Firework<PARTICLE_COUNT> firework5(mainStrip, true, 7900);
 
 // run max. 8 Animations simultaneously
 EC::AnimationRunnerS animationRunner;

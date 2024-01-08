@@ -53,7 +53,7 @@ namespace EC
    *   the entire LED strip
    */
   class EssentialVU
-      : public VuBaseFL
+      : public VuBaseFL2
   {
   public:
     /** Default fading speed.
@@ -96,17 +96,24 @@ namespace EC
     /// Usually there's nothing to configure here; only for debugging.
     VuRangeExtender vuRangeExtender;
 
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param audioSource  Read the audio samples from there.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     */
+    /// Deprecated; only for legacy compatibility.
     EssentialVU(CRGB *ledStrip,
                 uint16_t ledCount,
                 float &audioSource,
                 bool overlayMode = false)
-        : VuBaseFL(overlayMode, ledStrip, ledCount, audioSource, fadeRate_default())
+        : EssentialVU(audioSource, FastLedStrip(ledStrip, ledCount), overlayMode)
+    {
+    }
+
+    /** Constructor
+     * @param audioSource  Read the audio samples from there.
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     */
+    EssentialVU(float &audioSource,
+                FastLedStrip ledStrip,
+                bool overlayMode = false)
+        : VuBaseFL2(audioSource, ledStrip, overlayMode, fadeRate_default())
     {
       animationDelay = 10;
     }
@@ -117,14 +124,11 @@ namespace EC
     {
       if (enableVuBar)
       {
-        lineRel(0, _vuLevel * (ledCount - 1), vuBarColor);
+        strip.normLineRel(0.0, _vuLevel, vuBarColor);
       }
-
-      const float peakLevel = vuPeakHandler.peakLevel();
-      if (enablePeakDot &&
-          peakLevel > 0.0)
+      if (enablePeakDot)
       {
-        safePixel(peakLevel * (ledCount - 1)) = peakDotColor;
+        strip.optPixel(vuPeakHandler.peakLevel()) = peakDotColor;
       }
 
 #ifdef ESSENTIAL_VU_DEBUG

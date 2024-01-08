@@ -41,7 +41,7 @@ namespace EC
    * https://github.com/FastLED/FastLED/blob/master/examples/Pride2015/Pride2015.ino
    */
   class Pride2015
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
     uint16_t sPseudotime = 0;
     uint16_t sLastMillis = 0;
@@ -53,13 +53,18 @@ namespace EC
      */
     bool moreRed = true;
 
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     */
+    /// Deprecated; only for legacy compatibility.
     Pride2015(CRGB *ledStrip,
               uint16_t ledCount)
-        : AnimationBaseFL(false, ledStrip, ledCount)
+        : Pride2015(FastLedStrip(ledStrip, ledCount))
+    {
+    }
+
+    /** Constructor
+     * @param ledStrip  The LED strip.
+     */
+    explicit Pride2015(FastLedStrip ledStrip)
+        : AnimationBaseFL2(ledStrip, false)
     {
     }
 
@@ -72,7 +77,7 @@ namespace EC
       uint16_t brightnessthetainc16 = beatsin88(203, (25 * 256), (40 * 256));
       uint8_t msmultiplier = beatsin88(147, 23, 60);
 
-      uint16_t hue16 = sHue16; //gHue * 256;
+      uint16_t hue16 = sHue16; // gHue * 256;
       uint16_t hueinc16 = beatsin88(113, 1, 3000);
 
       uint16_t ms = millis();
@@ -82,7 +87,7 @@ namespace EC
       sHue16 += deltams * beatsin88(400, 5, 9);
       uint16_t brightnesstheta16 = sPseudotime;
 
-      for (uint16_t i = 0; i < ledCount; i++)
+      for (uint16_t i = 0; i < strip.ledCount(); i++)
       {
         hue16 += hueinc16;
         uint8_t hue8 = hue16 / 256;
@@ -101,9 +106,9 @@ namespace EC
         CRGB newcolor = CHSV(hue8, sat8, bri8);
 
         uint16_t pixelnumber = i;
-        pixelnumber = (ledCount - 1) - pixelnumber;
+        pixelnumber = (strip.ledCount() - 1) - pixelnumber;
 
-        nblend(pixel(pixelnumber), newcolor, 64);
+        nblend(strip[pixelnumber], newcolor, 64);
       }
     }
   };

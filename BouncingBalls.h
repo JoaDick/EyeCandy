@@ -26,7 +26,7 @@ namespace EC
    */
   template <uint16_t NUM_BALLS = 3>
   class BouncingBalls
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
     static constexpr float GRAVITY = -9.81; // Downward (negative) acceleration of gravity in m/s^2
     static constexpr float h0 = 1.0;        // Starting height, in meters, of the ball (strip length)
@@ -41,15 +41,21 @@ namespace EC
     float COR[NUM_BALLS];     // Coefficient of Restitution (bounce damping)
 
   public:
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     */
+    /// Deprecated; only for legacy compatibility.
     BouncingBalls(CRGB *ledStrip,
                   uint16_t ledCount,
                   bool overlayMode = false)
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount, 0)
+        : BouncingBalls(FastLedStrip(ledStrip, ledCount), overlayMode)
+    {
+    }
+
+    /** Constructor
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     */
+    explicit BouncingBalls(FastLedStrip ledStrip,
+                           bool overlayMode = false)
+        : AnimationBaseFL2(ledStrip, overlayMode, 0)
     {
       for (int i = 0; i < NUM_BALLS; i++)
       { // Initialize variables
@@ -82,12 +88,12 @@ namespace EC
           if (vImpact[i] < 0.01)
             vImpact[i] = vImpact0; // If the ball is barely moving, "pop" it back up at vImpact0
         }
-        pos[i] = round(h[i] * (ledCount - 1) / h0); // Map "h" to a "pos" integer index position on the LED strip
+        pos[i] = round(h[i] * (strip.ledCount() - 1) / h0); // Map "h" to a "pos" integer index position on the LED strip
       }
 
       // Choose color of LEDs, then the "pos" LED on
       for (int i = 0; i < NUM_BALLS; i++)
-        pixel(pos[i]) = CHSV(uint8_t(i * 40), 255, 255);
+        strip[pos[i]] = CHSV(uint8_t(i * 40), 255, 255);
     }
   };
 

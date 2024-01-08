@@ -36,32 +36,45 @@ namespace EC
    * Useful as trigger Pattern in combination with other Overlays.
    */
   class FadeOut
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
   public:
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param fadeRate  Fading speed; Lower value = longer glowing.
-     */
+    /// Deprecated; only for legacy compatibility.
     FadeOut(CRGB *ledStrip,
             uint16_t ledCount,
             uint8_t fadeRate)
-        : FadeOut(ledStrip, ledCount, false, fadeRate)
+        : FadeOut(FastLedStrip(ledStrip, ledCount), false, fadeRate)
+    {
+    }
+
+    /// Deprecated; only for legacy compatibility.
+    FadeOut(CRGB *ledStrip,
+            uint16_t ledCount,
+            bool overlayMode,
+            uint8_t fadeRate)
+        : FadeOut(FastLedStrip(ledStrip, ledCount), overlayMode, fadeRate)
     {
     }
 
     /** Constructor
      * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
+     * @param fadeRate  Fading speed; Lower value = longer glowing.
+     */
+    FadeOut(FastLedStrip ledStrip,
+            uint8_t fadeRate)
+        : FadeOut(ledStrip, false, fadeRate)
+    {
+    }
+
+    /** Constructor
+     * @param ledStrip  The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      * @param fadeRate  Fading speed; Lower value = longer glowing.
      */
-    FadeOut(CRGB *ledStrip,
-            uint16_t ledCount,
+    FadeOut(FastLedStrip ledStrip,
             bool overlayMode,
             uint8_t fadeRate)
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount, fadeRate)
+        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate)
     {
     }
 
@@ -75,7 +88,7 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      fadeToBlackBy(ledStrip, ledCount, fadeRate);
+      strip.fadeToBlackBy(fadeRate);
     }
   };
 

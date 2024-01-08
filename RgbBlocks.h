@@ -36,7 +36,7 @@ namespace EC
    * Mainly intended for testing LED strips.
    */
   class RgbBlocks
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
     static const uint8_t _blockCount = 6;
     uint16_t _animationCounter = 0;
@@ -56,15 +56,19 @@ namespace EC
      */
     static uint16_t animationDelay_default() { return 100; }
 
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     */
+    /// Deprecated; only for legacy compatibility.
     RgbBlocks(CRGB *ledStrip,
               uint16_t ledCount)
-        : AnimationBaseFL(false, ledStrip, ledCount)
+        : RgbBlocks(FastLedStrip(ledStrip, ledCount))
     {
-      mirroredByDefault();
+    }
+
+    /** Constructor
+     * @param ledStrip  The LED strip.
+     */
+    explicit RgbBlocks(FastLedStrip ledStrip)
+        : AnimationBaseFL2(ledStrip.getReversedStrip(), false)
+    {
       animationDelay = animationDelay_default();
     }
 
@@ -84,15 +88,15 @@ namespace EC
 
       if (blockSize > 0)
       {
-        for (uint16_t i = 0; i < ledCount; ++i)
+        for (uint16_t i = 0; i < strip.ledCount(); ++i)
         {
           const uint16_t colorIndex = ((i + _animationCounter) / blockSize) % _blockCount;
-          pixel(i) = colorTable[colorIndex];
+          strip[i] = colorTable[colorIndex];
         }
       }
       else
       {
-        fill_solid(ledStrip, ledCount, CRGB::Black);
+        strip.fillSolid(CRGB::Black);
       }
     }
 

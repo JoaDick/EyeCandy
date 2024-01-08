@@ -36,7 +36,7 @@ namespace EC
 
   /// VU meter with its color depending on the current VU level.
   class RainbowLevelVU
-      : public VuBaseFL
+      : public VuBaseFL2
   {
   public:
     /** Default fading speed.
@@ -77,17 +77,24 @@ namespace EC
     /// Usually there's nothing to configure here; only for debugging.
     VuRangeExtender vuRangeExtender;
 
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param audioSource  Read the audio samples from there.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     */
+    /// Deprecated; only for legacy compatibility.
     RainbowLevelVU(CRGB *ledStrip,
                    uint16_t ledCount,
                    float &audioSource,
                    bool overlayMode = false)
-        : VuBaseFL(overlayMode, ledStrip, ledCount, audioSource, fadeRate_default())
+        : RainbowLevelVU(audioSource, FastLedStrip(ledStrip, ledCount), overlayMode)
+    {
+    }
+
+    /** Constructor
+     * @param audioSource  Read the audio samples from there.
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     */
+    RainbowLevelVU(float &audioSource,
+                   FastLedStrip ledStrip,
+                   bool overlayMode = false)
+        : VuBaseFL2(audioSource, ledStrip, overlayMode, fadeRate_default())
     {
       animationDelay = 10;
     }
@@ -102,15 +109,13 @@ namespace EC
 
       if (enableVuBar)
       {
-        const CRGB barColor = CHSV(redShift(hue), 255, volume);
-        lineRel(0, vuLevel * (ledCount - 1), barColor);
+        const CRGB vuBarColor = CHSV(redShift(hue), 255, volume);
+        strip.normLineRel(0.0, vuLevel, vuBarColor);
       }
-
-      if (enablePeakDot &&
-          peakLevel > 0.0)
+      if (enablePeakDot)
       {
-        const CRGB dotColor = CHSV(redShift(hue + 128), 255, volume);
-        safePixel(peakLevel * (ledCount - 1)) = dotColor;
+        const CRGB peakDotColor = CHSV(redShift(hue + 128), 255, volume);
+        strip.optPixel(peakLevel) = peakDotColor;
       }
     }
 

@@ -36,7 +36,7 @@ namespace EC
    * Example for an Animation that can be used as Pattern and as Overlay.
    */
   class MovingDot
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
     int16_t _position = 0;
     bool _rising = false;
@@ -61,17 +61,25 @@ namespace EC
      */
     static uint16_t animationDelay_default() { return 20; }
 
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     * @param foregroundColor  Draw the dot with this color.
-     */
+    /// Deprecated; only for legacy compatibility.
     MovingDot(CRGB *ledStrip,
               uint16_t ledCount,
               bool overlayMode = false,
               const CRGB &foregroundColor = foregroundColor_default())
-        : AnimationBaseFL(overlayMode, ledStrip, ledCount, fadeRate_default()), foregroundColor(foregroundColor)
+        : MovingDot(FastLedStrip(ledStrip, ledCount), overlayMode, foregroundColor)
+    {
+      animationDelay = animationDelay_default();
+    }
+
+    /** Constructor
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     * @param foregroundColor  Draw the dot with this color.
+     */
+    MovingDot(FastLedStrip ledStrip,
+              bool overlayMode = false,
+              const CRGB &foregroundColor = foregroundColor_default())
+        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default()), foregroundColor(foregroundColor)
     {
       animationDelay = animationDelay_default();
     }
@@ -82,7 +90,7 @@ namespace EC
     {
       if (animationDelay)
       {
-        pixel(_position) = foregroundColor;
+        strip[_position] = foregroundColor;
       }
     }
 
@@ -91,7 +99,7 @@ namespace EC
     {
       if (_rising)
       {
-        if (_position < ledCount - 1)
+        if (_position < strip.ledCount() - 1)
           ++_position;
         else
           _rising = false;

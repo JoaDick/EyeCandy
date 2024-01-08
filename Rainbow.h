@@ -35,7 +35,7 @@ namespace EC
   /** Many many Rainbow variations.
    */
   class Rainbow
-      : public AnimationBaseFL
+      : public AnimationBaseFL2
   {
     uint8_t _hue = 0;
 
@@ -69,16 +69,19 @@ namespace EC
     bool moreRed = moreRed_default();
     static bool moreRed_default() { return true; }
 
-    /** Constructor.
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param deltahue  "Stretch" of the rainbow pattern.
-     */
+    /// Deprecated; only for legacy compatibility.
     Rainbow(CRGB *ledStrip,
             uint16_t ledCount)
-        : AnimationBaseFL(false, ledStrip, ledCount)
+        : Rainbow(FastLedStrip(ledStrip, ledCount))
     {
-      mirroredByDefault();
+    }
+
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     */
+    explicit Rainbow(FastLedStrip ledStrip)
+        : AnimationBaseFL2(ledStrip.getReversedStrip(), false)
+    {
       animationDelay = animationDelay_default();
     }
 
@@ -86,14 +89,14 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      for (uint16_t i = 0; i < ledCount; i++)
+      for (auto i = 0; i < strip.ledCount(); i++)
       {
         uint8_t pixelHue = _hue + i * deltahue;
         if (moreRed)
         {
           pixelHue = redShift(pixelHue);
         }
-        pixel(i) = CHSV(pixelHue, 255, volume);
+        strip[i] = CHSV(pixelHue, 255, volume);
       }
     }
 

@@ -36,7 +36,7 @@ namespace EC
 
   /// VU dot only, dancing around the current VU level.
   class DancingDotVU
-      : public VuBaseFL
+      : public VuBaseFL2
   {
   public:
     /** Default fading speed.
@@ -59,17 +59,24 @@ namespace EC
     /// Usually there's nothing to configure here; only for debugging.
     VuRangeExtender vuRangeExtender;
 
-    /** Constructor.
-     * @param ledStrip  The LED strip.
-     * @param ledCount  Number of LEDs.
-     * @param audioSource  Read the audio samples from there.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     */
+    /// Deprecated; only for legacy compatibility.
     DancingDotVU(CRGB *ledStrip,
                  uint16_t ledCount,
                  float &audioSource,
                  bool overlayMode = false)
-        : VuBaseFL(overlayMode, ledStrip, ledCount, audioSource, fadeRate_default())
+        : DancingDotVU(audioSource, FastLedStrip(ledStrip, ledCount), overlayMode)
+    {
+    }
+
+    /** Constructor
+     * @param audioSource  Read the audio samples from there.
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     */
+    DancingDotVU(float &audioSource,
+                 FastLedStrip ledStrip,
+                 bool overlayMode = false)
+        : VuBaseFL2(audioSource, ledStrip, overlayMode, fadeRate_default())
     {
       animationDelay = 10;
     }
@@ -78,15 +85,18 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
+      // TODO: Make this configurable?
+      static const int8_t dotSize = 3;
+
       if (vuPeakHandler.peakLevel() > 0.0)
       {
-        const uint16_t pixelPos = vuPeakHandler.peakLevel() * (ledCount - 1);
+        const auto startIndex = strip.toPixelIndex(vuPeakHandler.peakLevel());
         if (colorGenerator)
         {
           color = colorGenerator->generateColor(vuPeakHandler.peakLevel() * 255);
         }
-        safePixel(pixelPos) = color;
-        safePixel(pixelPos - 1) = color;
+
+        strip.lineRel(startIndex, -dotSize, color);
       }
     }
 

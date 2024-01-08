@@ -80,7 +80,7 @@ public:
             // falling "peak ball"?
             if (a0 < 0.0)
             {
-                if (acc == 0)
+                if (acc == 0.0)
                 {
                     pos = vuLevel;
                 }
@@ -100,7 +100,7 @@ public:
             if (vuLevel > peakThreshold)
             {
                 // ready for trigger?
-                if (acc == 0)
+                if (acc == 0.0)
                 {
                     peakDetected = true;
                     acc = a0;
@@ -120,13 +120,8 @@ public:
             if (pos <= vuLevel)
             {
                 acc = 0.0;
-                pos = vuLevel;
-            }
-            else if (pos < 0.0)
-            {
-                acc = 0.0;
                 vel = 0.0;
-                pos = 0.0;
+                pos = vuLevel >= peakThreshold ? vuLevel : 0.0;
             }
         }
         // rising "peak bubble"?
