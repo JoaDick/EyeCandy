@@ -50,8 +50,7 @@ namespace EC
     /** Draw the dot with this color.
      * This setting can be adjusted at runtime.
      */
-    CRGB foregroundColor = foregroundColor_default();
-    static CRGB foregroundColor_default() { return CRGB(255, 0, 0); }
+    CRGB color = CRGB::Red;
 
     /** Delay between moving the dot by 1 pixel (in ms).
      * 0 makes the dot disappear.
@@ -61,28 +60,32 @@ namespace EC
      */
     static uint16_t animationDelay_default() { return 20; }
 
-    /// Deprecated; only for legacy compatibility.
-    MovingDot(CRGB *ledStrip,
-              uint16_t ledCount,
-              bool overlayMode = false,
-              const CRGB &foregroundColor = foregroundColor_default())
-        : MovingDot(FastLedStrip(ledStrip, ledCount), overlayMode, foregroundColor)
+#if (1)
+    /** Constructor
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     */
+    MovingDot(FastLedStrip ledStrip,
+              bool overlayMode)
+        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default())
     {
       animationDelay = animationDelay_default();
     }
 
+#else // DRAFT
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
-     * @param foregroundColor  Draw the dot with this color.
+     * @param color  Draw the dot with this color.
      */
     MovingDot(FastLedStrip ledStrip,
-              bool overlayMode = false,
-              const CRGB &foregroundColor = foregroundColor_default())
-        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default()), foregroundColor(foregroundColor)
+              bool overlayMode,
+              CRGB color = CRGB::Red)
+        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default()), color(color)
     {
       animationDelay = animationDelay_default();
     }
+#endif
 
   private:
     /// @see AnimationBase::showOverlay()
@@ -90,7 +93,7 @@ namespace EC
     {
       if (animationDelay)
       {
-        strip[_position] = foregroundColor;
+        strip[_position] = color;
       }
     }
 

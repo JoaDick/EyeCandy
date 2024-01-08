@@ -42,23 +42,15 @@ namespace EC
     /** Fill LED strip with this color.
      * This setting can be adjusted at runtime.
      */
-    CRGB backgroundColor;
-
-    /// Deprecated; only for legacy compatibility.
-    StaticBackground(CRGB *ledStrip,
-                     uint16_t ledCount,
-                     const CRGB &backgroundColor)
-        : StaticBackground(FastLedStrip(ledStrip, ledCount), backgroundColor)
-    {
-    }
+    CRGB color;
 
     /** Constructor
      * @param ledStrip  The LED strip.
-     * @param backgroundColor  Fill LED strip with this color.
+     * @param color  Fill LED strip with this color.
      */
     StaticBackground(FastLedStrip ledStrip,
-                     const CRGB &backgroundColor)
-        : AnimationBaseFL2(ledStrip, false), backgroundColor(backgroundColor)
+                     CRGB color)
+        : AnimationBaseFL2(ledStrip, false), color(color)
     {
     }
 
@@ -66,7 +58,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      strip.fillSolid(backgroundColor);
+      strip.fillSolid(color);
     }
   };
 

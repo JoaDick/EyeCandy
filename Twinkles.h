@@ -53,20 +53,12 @@ namespace EC
     uint8_t effectRate = effectRate_default();
     static uint8_t effectRate_default() { return 50; }
 
-    /// Deprecated; only for legacy compatibility.
-    Twinkles(CRGB *ledStrip,
-             uint16_t ledCount,
-             bool overlayMode = false)
-        : Twinkles(FastLedStrip(ledStrip, ledCount), overlayMode)
-    {
-    }
-
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
-    explicit Twinkles(FastLedStrip ledStrip,
-                      bool overlayMode = false)
+    Twinkles(FastLedStrip ledStrip,
+             bool overlayMode)
         : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default())
     {
     }
@@ -78,7 +70,7 @@ namespace EC
       if (random8() < effectRate)
       {
         uint16_t i = random(strip.ledCount());
-        auto& pixel = strip[i];
+        auto &pixel = strip[i];
         if (pixel.getLuma() < 3)
         {
           pixel = CHSV(redShift(random(256)), 255, random(64) + 192);

@@ -62,13 +62,6 @@ namespace EC
      */
     static uint16_t animationDelay_default() { return 35; }
 
-    /// Deprecated; only for legacy compatibility.
-    RainbowBuiltin(CRGB *ledStrip,
-                   uint16_t ledCount)
-        : RainbowBuiltin(FastLedStrip(ledStrip, ledCount))
-    {
-    }
-
     /** Constructor.
      * @param ledStrip  The LED strip.
      */

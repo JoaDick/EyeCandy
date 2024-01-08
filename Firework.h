@@ -50,15 +50,6 @@ namespace EC
     /// Delay (in ms) before relaunching the Particles.
     uint16_t launchDelay = Firework_launchDelay_default();
 
-    /// Deprecated; only for legacy compatibility.
-    Firework(CRGB *ledStrip,
-             uint16_t ledCount,
-             bool overlayMode,
-             uint16_t launchDelay = Firework_launchDelay_default())
-        : Firework(FastLedStrip(ledStrip, ledCount), overlayMode, launchDelay)
-    {
-    }
-
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.

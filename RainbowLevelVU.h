@@ -77,15 +77,6 @@ namespace EC
     /// Usually there's nothing to configure here; only for debugging.
     VuRangeExtender vuRangeExtender;
 
-    /// Deprecated; only for legacy compatibility.
-    RainbowLevelVU(CRGB *ledStrip,
-                   uint16_t ledCount,
-                   float &audioSource,
-                   bool overlayMode = false)
-        : RainbowLevelVU(audioSource, FastLedStrip(ledStrip, ledCount), overlayMode)
-    {
-    }
-
     /** Constructor
      * @param audioSource  Read the audio samples from there.
      * @param ledStrip  The LED strip.
@@ -93,8 +84,8 @@ namespace EC
      */
     RainbowLevelVU(float &audioSource,
                    FastLedStrip ledStrip,
-                   bool overlayMode = false)
-        : VuBaseFL2(audioSource, ledStrip, overlayMode, fadeRate_default())
+                   bool overlayMode)
+        : VuBaseFL2(ledStrip, overlayMode, fadeRate_default(), audioSource)
     {
       animationDelay = 10;
     }

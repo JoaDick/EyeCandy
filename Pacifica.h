@@ -43,13 +43,6 @@ namespace EC
       : public AnimationBaseFL2
   {
   public:
-    /// Deprecated; only for legacy compatibility.
-    Pacifica(CRGB *ledStrip,
-             uint16_t ledCount)
-        : Pacifica(FastLedStrip(ledStrip, ledCount))
-    {
-    }
-
     /** Constructor
      * @param ledStrip  The LED strip.
      */
@@ -165,7 +158,7 @@ namespace EC
       {
         uint8_t threshold = scale8(sin8(wave), 20) + basethreshold;
         wave += 7;
-        auto& pixel = strip[i];
+        auto &pixel = strip[i];
         uint8_t l = pixel.getAverageLight();
         if (l > threshold)
         {
@@ -181,7 +174,7 @@ namespace EC
     {
       for (uint16_t i = 0; i < strip.ledCount(); i++)
       {
-        auto& pixel = strip[i];
+        auto &pixel = strip[i];
         pixel.blue = scale8(pixel.blue, 145);
         pixel.green = scale8(pixel.green, 200);
         pixel |= CRGB(2, 5, 7);

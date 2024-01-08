@@ -120,13 +120,6 @@ namespace EC
     /// suggested range 50-200.
     fract8 SPARKING = Fire2012_SPARKING_default();
 
-    /// Deprecated; only for legacy compatibility.
-    Fire2012(CRGB *ledStrip,
-             uint16_t ledCount)
-        : Fire2012(FastLedStrip(ledStrip, ledCount))
-    {
-    }
-
     /** Constructor
      * @param ledStrip  The LED strip.
      */

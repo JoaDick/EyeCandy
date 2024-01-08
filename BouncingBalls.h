@@ -41,20 +41,12 @@ namespace EC
     float COR[NUM_BALLS];     // Coefficient of Restitution (bounce damping)
 
   public:
-    /// Deprecated; only for legacy compatibility.
-    BouncingBalls(CRGB *ledStrip,
-                  uint16_t ledCount,
-                  bool overlayMode = false)
-        : BouncingBalls(FastLedStrip(ledStrip, ledCount), overlayMode)
-    {
-    }
-
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
-    explicit BouncingBalls(FastLedStrip ledStrip,
-                           bool overlayMode = false)
+    BouncingBalls(FastLedStrip ledStrip,
+                  bool overlayMode)
         : AnimationBaseFL2(ledStrip, overlayMode, 0)
     {
       for (int i = 0; i < NUM_BALLS; i++)

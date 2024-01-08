@@ -54,13 +54,6 @@ namespace EC
      */
     static uint16_t animationDelay_default() { return 100; }
 
-    /// Deprecated; only for legacy compatibility.
-    RainbowTwinkle(CRGB *ledStrip,
-                   uint16_t ledCount)
-        : RainbowTwinkle(FastLedStrip(ledStrip, ledCount))
-    {
-    }
-
     /** Constructor.
      * @param ledStrip  The LED strip.
      */

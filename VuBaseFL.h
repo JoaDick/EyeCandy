@@ -33,6 +33,7 @@ SOFTWARE.
 namespace EC
 {
 
+#if (0) // delete me!
   /** Base class suitable for most VUs which are using FastLED.
    * Child classes must fulfill the same requirements as for #AnimationBase.
    */
@@ -77,6 +78,7 @@ namespace EC
     /// Most child classes won't need access to this.
     float &_audioSource;
   };
+#endif
 
   //------------------------------------------------------------------------------
 
@@ -95,18 +97,18 @@ namespace EC
 
   protected:
     /** Constructor.
-     * @param audioSource  Read the audio samples from there.
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      * @param fadeRate  Fading speed:
      *                  Lower value = longer glowing; 0 = black background.
      *                  Only relevant when default implementation of
      *                  showPattern() is used.
+     * @param audioSource  Read the audio samples from there.
      */
-    VuBaseFL2(float &audioSource,
-              FastLedStrip ledStrip,
+    VuBaseFL2(FastLedStrip ledStrip,
               bool overlayMode,
-              uint8_t fadeRate = 0)
+              uint8_t fadeRate,
+              float &audioSource)
         : AnimationBaseFL2(ledStrip, overlayMode, fadeRate), _audioSource(audioSource)
     {
     }

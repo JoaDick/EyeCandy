@@ -69,13 +69,6 @@ namespace EC
     bool moreRed = moreRed_default();
     static bool moreRed_default() { return true; }
 
-    /// Deprecated; only for legacy compatibility.
-    Rainbow(CRGB *ledStrip,
-            uint16_t ledCount)
-        : Rainbow(FastLedStrip(ledStrip, ledCount))
-    {
-    }
-
     /** Constructor.
      * @param ledStrip  The LED strip.
      */

@@ -34,6 +34,7 @@ SOFTWARE.
 namespace EC
 {
 
+#if (0) // delete me!
   /** Simple base class suitable for most Animations which are using FastLED.
    * Child classes must fulfill the same requirements as for #AnimationBase.
    */
@@ -240,6 +241,7 @@ namespace EC
     bool _defaultMirrored = false;
     CRGB *_ledStrip;
   };
+#endif
 
   //------------------------------------------------------------------------------
 

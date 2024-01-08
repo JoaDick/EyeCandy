@@ -60,7 +60,7 @@ EC::Rainbow rainbow(rainbowStrip);
 EC::RgbBlocks rgbBlocks(rgbBlocksStrip);
 
 // Overlays
-EC::MovingDot movingDotOverlay(movingDotStrip, true);
+EC::MovingDot movingDotOverlay(movingDotStrip, true/*, CRGB::SteelBlue*/);
 
 // run max. 8 Animations simultaneously
 EC::AnimationRunnerS animationRunner;
@@ -79,7 +79,7 @@ void setup()
 
     // set up Animations
     rainbow.volume = 100;
-    movingDotOverlay.foregroundColor = CRGB::SteelBlue;
+    movingDotOverlay.color = CRGB::SteelBlue;
 
     animationRunner.add(rainbow);
     animationRunner.add(rgbBlocks);
@@ -122,7 +122,7 @@ void updateColor()
         rainbow.volume = hue;
         rgbBlocks.blockSize = hue / 10;
 
-        movingDotOverlay.foregroundColor = CHSV(hue + 64, 255, 255);
+        movingDotOverlay.color = CHSV(hue + 64, 255, 255);
     }
 }
 

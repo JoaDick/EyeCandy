@@ -34,7 +34,9 @@ SOFTWARE.
 namespace EC
 {
 
-  /// VU dot only, dancing around the current VU level.
+  /** VU dot only, dancing around the current VU level.
+   * Can be used as Pattern or as Overlay.
+   */
   class DancingDotVU
       : public VuBaseFL2
   {
@@ -47,7 +49,7 @@ namespace EC
     /** Draw the peak dot with this color.
      * This setting can be adjusted at runtime.
      */
-    CRGB peakDotColor = CRGB(255, 0, 0);
+    CRGB color = CRGB::Red;
 
     /// Usually there's nothing to configure here; only for debugging.
     VuPeakForceHandler vuPeakHandler;
@@ -55,15 +57,7 @@ namespace EC
     /// Usually there's nothing to configure here; only for debugging.
     VuRangeExtender vuRangeExtender;
 
-    /// Deprecated; only for legacy compatibility.
-    DancingDotVU(CRGB *ledStrip,
-                 uint16_t ledCount,
-                 float &audioSource,
-                 bool overlayMode = false)
-        : DancingDotVU(audioSource, FastLedStrip(ledStrip, ledCount), overlayMode)
-    {
-    }
-
+#if (1)
     /** Constructor
      * @param audioSource  Read the audio samples from there.
      * @param ledStrip  The LED strip.
@@ -71,11 +65,28 @@ namespace EC
      */
     DancingDotVU(float &audioSource,
                  FastLedStrip ledStrip,
-                 bool overlayMode = false)
-        : VuBaseFL2(audioSource, ledStrip, overlayMode, fadeRate_default())
+                 bool overlayMode)
+        : VuBaseFL2(ledStrip, overlayMode, fadeRate_default(), audioSource)
     {
       animationDelay = 10;
     }
+
+#else // DRAFT
+    /** Constructor
+     * @param audioSource  Read the audio samples from there.
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     * @param color  Draw the dot with this color.
+     */
+    DancingDotVU(float &audioSource,
+                 FastLedStrip ledStrip,
+                 bool overlayMode,
+                 CRGB color = CRGB::Red)
+        : VuBaseFL2(ledStrip, overlayMode, fadeRate_default(), audioSource), color(color)
+    {
+      animationDelay = 10;
+    }
+#endif
 
   private:
     /// @see AnimationBase::showOverlay()
@@ -87,7 +98,7 @@ namespace EC
       if (vuPeakHandler.peakLevel() > 0.0)
       {
         const auto startIndex = strip.toPixelIndex(vuPeakHandler.peakLevel());
-        strip.lineRel(startIndex, -dotSize, peakDotColor);
+        strip.lineRel(startIndex, -dotSize, color);
       }
     }
 

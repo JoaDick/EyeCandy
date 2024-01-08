@@ -83,12 +83,13 @@ void makeBouncingDotVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vuPeak = new EC::RainbowLevelVU(audioSample, strip);
+    auto vuPeak = new EC::RainbowLevelVU(audioSample, strip, false);
     vuPeak->enableVuBar = false;
     vuPeak->vuHueRange = 0.5;
 
+    // auto glitter = new EC::PeakGlitterVU(audioSample, strip, true, CRGB(128, 64, 0));
     auto glitter = new EC::PeakGlitterVU(audioSample, strip, true);
-    glitter->glitterColor = CRGB(128, 64, 0);
+    glitter->color = CRGB(128, 64, 0);
 
     repo.add(vuPeak);
     repo.add(glitter);
@@ -98,12 +99,12 @@ void makeDancingDotVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu = new EC::RainbowLevelVU(audioSample, strip);
+    auto vu = new EC::RainbowLevelVU(audioSample, strip, false);
     vu->enablePeakDot = false;
     vu->fadeRate = 0;
     vu->volume = 64;
     repo.add(vu);
-    repo.add(new EC::DancingDotVU(audioSample, strip, true));
+    repo.add(new EC::DancingDotVU(audioSample, strip, true/*, CRGB::Red*/));
 }
 
 void makeDoubleBouncingDotVU(EC::AnimationRepo &repo)
@@ -124,7 +125,7 @@ void makeDoubleBouncingDotVU(EC::AnimationRepo &repo)
     vu2->baseHueStep = 0.11;
     vu2->vuLevelHandler.smoothingFactor = 9;
 
-    repo.add(new EC::FadeOut(strip, 50));
+    repo.add(new EC::FadeOut(strip, false, 50));
     repo.add(vu1);
     repo.add(vu2);
 }
@@ -133,11 +134,11 @@ void makeDoubleDancingDotVU1(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu1 = new EC::DancingDotVU(audioSample, strip, true);
-    vu1->peakDotColor = CRGB(255, 0, 0);
+    auto vu1 = new EC::DancingDotVU(audioSample, strip, true/*, CRGB(255, 0, 0)*/);
+    vu1->color = CRGB(255, 0, 0);
 
-    auto vu2 = new EC::DancingDotVU(audioSample, strip.getReversedStrip(), true);
-    vu2->peakDotColor = CRGB(0, 255, 0);
+    auto vu2 = new EC::DancingDotVU(audioSample, strip.getReversedStrip(), true/*, CRGB(0, 255, 0)*/);
+    vu2->color = CRGB(0, 255, 0);
     vu2->vuPeakHandler.inertia = 0.55;
     vu2->vuPeakHandler.friction = 0.14;
 
@@ -152,11 +153,11 @@ void makeDoubleDancingDotVU2(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu1 = new EC::DancingDotVU(audioSample, strip, true);
-    vu1->peakDotColor = CHSV(20, 255, 255);
+    auto vu1 = new EC::DancingDotVU(audioSample, strip, true/*, CHSV(20, 255, 255)*/);
+    vu1->color = CHSV(20, 255, 255);
 
-    auto vu2 = new EC::DancingDotVU(audioSample, strip.getReversedStrip(), true);
-    vu2->peakDotColor = CHSV(20 + 128, 255, 255);
+    auto vu2 = new EC::DancingDotVU(audioSample, strip.getReversedStrip(), true/*, CHSV(20 + 128, 255, 255)*/);
+    vu2->color = CHSV(20 + 128, 255, 255);
     vu2->vuPeakHandler.inertia = 0.55;
     vu2->vuPeakHandler.friction = 0.14;
 
@@ -170,7 +171,7 @@ void makeEssentialVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::EssentialVU(audioSample, strip));
+    repo.add(new EC::EssentialVU(audioSample, strip, false));
 }
 
 void makeFireVU(EC::AnimationRepo &repo)
@@ -231,14 +232,14 @@ void makePeakGlitterVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::PeakGlitterVU(audioSample, strip));
+    repo.add(new EC::PeakGlitterVU(audioSample, strip, false));
 }
 
 void makeRainbowBubbleVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu = new EC::RainbowLevelVU(audioSample, strip);
+    auto vu = new EC::RainbowLevelVU(audioSample, strip, false);
     vu->vuPeakHandler.a0 = 0.5;
     vu->vuPeakHandler.v0 = 0.1;
     vu->vuHueRange = 0.67;
@@ -249,7 +250,7 @@ void makeRainbowBubbleCenteredVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu = new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(true));
+    auto vu = new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(true), false);
     vu->vuPeakHandler.a0 = 0.5;
     vu->vuPeakHandler.v0 = 0.1;
     vu->vuHueRange = 0.67;
@@ -261,7 +262,7 @@ void makeRainbowBubbleInwardVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu = new EC::RainbowLevelVU(audioSample, strip.getHalfStrip());
+    auto vu = new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(), false);
     vu->vuPeakHandler.a0 = 0.5;
     vu->vuPeakHandler.v0 = 0.1;
     vu->vuHueRange = 0.67;
@@ -273,14 +274,14 @@ void makeRainbowLevelVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::RainbowLevelVU(audioSample, strip));
+    repo.add(new EC::RainbowLevelVU(audioSample, strip, false));
 }
 
 void makeRainbowLevelCenteredVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(true)));
+    repo.add(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(true), false));
     repo.add(new EC::Kaleidoscope(strip));
 }
 
@@ -288,7 +289,7 @@ void makeRainbowLevelInwardVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip()));
+    repo.add(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(), false));
     repo.add(new EC::Kaleidoscope(strip));
 }
 
@@ -304,7 +305,7 @@ void makeVuSequence2(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto baseVU = new EC::EssentialVU(audioSample, strip);
+    auto baseVU = new EC::EssentialVU(audioSample, strip, false);
     baseVU->enableVuBar = false;
     baseVU->fadeRate = 0;
     repo.add(baseVU);
@@ -316,7 +317,7 @@ void makeVuSequence3(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto baseVU = new EC::EssentialVU(audioSample, strip);
+    auto baseVU = new EC::EssentialVU(audioSample, strip, false);
     baseVU->fadeRate = 0;
     repo.add(baseVU);
     animationDuration = 16;
@@ -326,7 +327,7 @@ void makeVuSequence4(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::EssentialVU(audioSample, strip));
+    repo.add(new EC::EssentialVU(audioSample, strip, false));
     repo.add(new EC::PeakGlitterVU(audioSample, strip, true));
     animationDuration = 10;
 }
@@ -335,7 +336,7 @@ void makeVuSequence5(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::RainbowLevelVU(audioSample, strip));
+    repo.add(new EC::RainbowLevelVU(audioSample, strip, false));
     repo.add(new EC::PeakGlitterVU(audioSample, strip, true));
     animationDuration = 10;
 }

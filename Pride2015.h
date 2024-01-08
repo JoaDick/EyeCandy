@@ -53,13 +53,6 @@ namespace EC
      */
     bool moreRed = true;
 
-    /// Deprecated; only for legacy compatibility.
-    Pride2015(CRGB *ledStrip,
-              uint16_t ledCount)
-        : Pride2015(FastLedStrip(ledStrip, ledCount))
-    {
-    }
-
     /** Constructor
      * @param ledStrip  The LED strip.
      */

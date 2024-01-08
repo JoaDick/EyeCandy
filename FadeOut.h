@@ -39,33 +39,6 @@ namespace EC
       : public AnimationBaseFL2
   {
   public:
-    /// Deprecated; only for legacy compatibility.
-    FadeOut(CRGB *ledStrip,
-            uint16_t ledCount,
-            uint8_t fadeRate)
-        : FadeOut(FastLedStrip(ledStrip, ledCount), false, fadeRate)
-    {
-    }
-
-    /// Deprecated; only for legacy compatibility.
-    FadeOut(CRGB *ledStrip,
-            uint16_t ledCount,
-            bool overlayMode,
-            uint8_t fadeRate)
-        : FadeOut(FastLedStrip(ledStrip, ledCount), overlayMode, fadeRate)
-    {
-    }
-
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param fadeRate  Fading speed; Lower value = longer glowing.
-     */
-    FadeOut(FastLedStrip ledStrip,
-            uint8_t fadeRate)
-        : FadeOut(ledStrip, false, fadeRate)
-    {
-    }
-
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.

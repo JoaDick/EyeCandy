@@ -74,7 +74,7 @@ namespace EC
       const auto ledIndex = toLedIndex(index);
       if (ledIndex < 0 || ledIndex >= size)
       {
-        fillLedBlock(CRGB(64, 0, 0), 0, size - 1);
+        fillLedBlock(0, size - 1, CRGB(64, 0, 0));
         return s_trashPixel;
       }
       return m_ledArray[ledIndex];
@@ -101,7 +101,7 @@ namespace EC
      * Strip boundaries are checked, so parts of the line may even be off the strip.
      * Both \a firstIndex and \a lastIndex are included in the line.
      */
-    void lineAbs(int16_t firstIndex, int16_t lastIndex, const CRGB &color)
+    void lineAbs(int16_t firstIndex, int16_t lastIndex, CRGB color)
     {
       const auto size = getSize();
       auto firstLedIndex = toLedIndex(firstIndex);
@@ -132,14 +132,14 @@ namespace EC
         }
         lastLedIndex = size - 1;
       }
-      fillLedBlock(color, firstLedIndex, lastLedIndex);
+      fillLedBlock(firstLedIndex, lastLedIndex, color);
     }
 
     /** Draw a line in the given \a color with the given \a length, starting at \a startIndex.
      * Strip boundaries are checked, so parts of the line may even be off the strip.
      * @note A negative value for \a length will draw in the opposite direction.
      */
-    void lineRel(int16_t startIndex, int16_t length, const CRGB &color)
+    void lineRel(int16_t startIndex, int16_t length, CRGB color)
     {
       if (length)
       {
@@ -192,7 +192,7 @@ namespace EC
      * 1.0 corresponds to the end of the strip.
      * @see toPixelIndex()
      */
-    void normLineAbs(float firstPos, float lastPos, const CRGB &color)
+    void normLineAbs(float firstPos, float lastPos, CRGB color)
     {
       lineAbs(toPixelIndex(firstPos), toPixelIndex(lastPos), color);
     }
@@ -205,7 +205,7 @@ namespace EC
      * A negative value for \a length will draw in the opposite direction.
      * @see toPixelIndex()
      */
-    void normLineRel(float startPos, float length, const CRGB &color)
+    void normLineRel(float startPos, float length, CRGB color)
     {
       if (length)
       {
@@ -216,9 +216,9 @@ namespace EC
     }
 
     /// Fill the entire strip with the given \a color.
-    void fillSolid(const CRGB &color)
+    void fillSolid(CRGB color)
     {
-      fillLedBlock(color, 0, getSize() - 1);
+      fillLedBlock(0, getSize() - 1, color);
     }
 
     /// Same as FastLed's fadeToBlackBy()
@@ -440,7 +440,7 @@ namespace EC
       return getReversed();
     }
 
-    void fillLedBlock(const CRGB &color, int16_t firstLedIndex, int16_t lastLedIndex)
+    void fillLedBlock(int16_t firstLedIndex, int16_t lastLedIndex, CRGB color)
     {
       CRGB *firstLed = &m_ledArray[firstLedIndex];
       CRGB *lastLed = &m_ledArray[lastLedIndex];

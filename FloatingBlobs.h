@@ -41,13 +41,6 @@ namespace EC
     FloatingBlobController<5> blobs;
 
   public:
-    /// Deprecated; only for legacy compatibility.
-    FloatingBlobs(CRGB *ledStrip,
-                  uint16_t ledCount)
-        : FloatingBlobs(FastLedStrip(ledStrip, ledCount))
-    {
-    }
-
     /** Constructor
      * @param ledStrip  The LED strip.
      */

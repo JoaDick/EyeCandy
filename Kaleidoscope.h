@@ -41,20 +41,12 @@ namespace EC
       : public AnimationBaseFL2
   {
   public:
-    /// Deprecated; only for legacy compatibility.
-    Kaleidoscope(CRGB *ledStrip,
-                  uint16_t ledCount,
-                  bool mirrored = true)
-        : Kaleidoscope(FastLedStrip(ledStrip, ledCount), mirrored)
-    {
-    }
-
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param mirrored  false = straight copying, true = mirror the content
      */
     explicit Kaleidoscope(FastLedStrip ledStrip,
-                           bool mirrored = true)
+                          bool mirrored = true)
         : AnimationBaseFL2(ledStrip, true), mirrored(mirrored)
     {
     }

@@ -78,7 +78,7 @@ void makeBalls(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::BouncingBalls<>(strip));
+    repo.add(new EC::BouncingBalls<>(strip, false));
 }
 
 void makeFloatingBlobs(EC::AnimationRepo &repo)
@@ -112,8 +112,8 @@ void makeGlitterDot(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::Glitter(strip));
-    repo.add(new EC::MovingDot(strip, true));
+    repo.add(new EC::Glitter(strip, false));
+    repo.add(new EC::MovingDot(strip, true/*, CRGB::Red*/));
 }
 
 void makeFireAndBalls(EC::AnimationRepo &repo)
@@ -135,7 +135,7 @@ void makeFireworks(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::FadeOut(strip, EC::Firework_fadeRate_default()));
+    repo.add(new EC::FadeOut(strip, false, EC::Firework_fadeRate_default()));
     repo.add(new EC::Firework<>(strip, true, 1500));
     repo.add(new EC::Firework<>(strip, true, 3100));
     repo.add(new EC::Firework<>(strip, true, 4700));
@@ -214,7 +214,7 @@ void makeTwinkles(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::Twinkles(strip));
+    repo.add(new EC::Twinkles(strip, false));
 }
 
 void makeWaterfall(EC::AnimationRepo &repo)

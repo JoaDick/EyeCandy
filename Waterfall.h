@@ -46,13 +46,6 @@ namespace EC
 #endif
 
   public:
-    /// Deprecated; only for legacy compatibility.
-    Waterfall(CRGB *ledStrip,
-              uint16_t ledCount)
-        : Waterfall(FastLedStrip(ledStrip, ledCount))
-    {
-    }
-
     /** Constructor.
      * @param ledStrip  The LED strip.
      */

@@ -41,7 +41,7 @@ EC::FastLedStrip mainStrip(leds, NUM_LEDS);
 EC::FastLedStrip workingStrip = mainStrip.getHalfStrip();
 
 // the main animation
-EC::MovingDot mainAnimation(workingStrip);
+EC::MovingDot mainAnimation(workingStrip, false/*, CRGB::Red*/);
 // overlay for adding some glitter (in the lower part only)
 EC::Glitter glitterOverlay(workingStrip.getHalfStrip(), true);
 
@@ -62,7 +62,7 @@ void setup()
 
     // configure the core Animation
     mainAnimation.fadeRate = 20;
-    glitterOverlay.foregroundColor = CRGB(64, 64, 0);
+    glitterOverlay.color = CRGB(64, 64, 0);
     glitterOverlay.effectRate = 100;
 
     // add the core Animation

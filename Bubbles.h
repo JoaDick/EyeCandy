@@ -51,20 +51,12 @@ namespace EC
      */
     static uint8_t fadeRate_default() { return 0; }
 
-    /// Deprecated; only for legacy compatibility.
-    Bubbles(CRGB *ledStrip,
-            uint16_t ledCount,
-            bool overlayMode = false)
-        : Bubbles(FastLedStrip(ledStrip, ledCount), overlayMode)
-    {
-    }
-
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
-    explicit Bubbles(FastLedStrip ledStrip,
-                     bool overlayMode = false)
+    Bubbles(FastLedStrip ledStrip,
+            bool overlayMode)
         : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default())
     {
       animationDelay = 10;

@@ -53,7 +53,7 @@ namespace EC
     /** Draw the glitter with this color.
      * This setting can be adjusted at runtime.
      */
-    CRGB glitterColor = CRGB(255, 255, 255);
+    CRGB color = CRGB::White;
 
     /// Usually there's nothing to configure here; mainly for debugging.
     VuPeakHandler vuPeakHandler;
@@ -61,15 +61,7 @@ namespace EC
     /// Usually there's nothing to configure here; mainly for debugging.
     VuRangeExtender vuRangeExtender;
 
-    /// Deprecated; only for legacy compatibility.
-    PeakGlitterVU(CRGB *ledStrip,
-                  uint16_t ledCount,
-                  float &audioSource,
-                  bool overlayMode = false)
-        : PeakGlitterVU(audioSource, FastLedStrip(ledStrip, ledCount), overlayMode)
-    {
-    }
-
+#if (1)
     /** Constructor
      * @param audioSource  Read the audio samples from there.
      * @param ledStrip  The LED strip.
@@ -77,14 +69,34 @@ namespace EC
      */
     PeakGlitterVU(float &audioSource,
                   FastLedStrip ledStrip,
-                  bool overlayMode = false)
-        : VuBaseFL2(audioSource, ledStrip, overlayMode, fadeRate_default())
+                  bool overlayMode)
+        : VuBaseFL2(ledStrip, overlayMode, fadeRate_default(), audioSource)
     {
       animationDelay = 10;
       vuPeakHandler.peakHold = 20;
       vuPeakHandler.peakDecay = 0;
       vuRangeExtender.smoothingFactor = 3;
     }
+
+#else // DRAFT
+    /** Constructor
+     * @param audioSource  Read the audio samples from there.
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     * @param color  Draw the glitter with this color.
+     */
+    PeakGlitterVU(float &audioSource,
+                  FastLedStrip ledStrip,
+                  bool overlayMode,
+                  CRGB color = CRGB::White)
+        : VuBaseFL2(ledStrip, overlayMode, fadeRate_default(), audioSource), color(color)
+    {
+      animationDelay = 10;
+      vuPeakHandler.peakHold = 20;
+      vuPeakHandler.peakDecay = 0;
+      vuRangeExtender.smoothingFactor = 3;
+    }
+#endif
 
   private:
     /// @see AnimationBase::showOverlay()
@@ -106,7 +118,7 @@ namespace EC
 
       if (_peakLevel > 0.0)
       {
-        strip.normPixel(_peakLevel) = glitterColor;
+        strip.normPixel(_peakLevel) = color;
         _peakLevel = 0.0;
       }
     }

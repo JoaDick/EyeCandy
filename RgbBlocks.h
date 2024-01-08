@@ -56,13 +56,6 @@ namespace EC
      */
     static uint16_t animationDelay_default() { return 100; }
 
-    /// Deprecated; only for legacy compatibility.
-    RgbBlocks(CRGB *ledStrip,
-              uint16_t ledCount)
-        : RgbBlocks(FastLedStrip(ledStrip, ledCount))
-    {
-    }
-
     /** Constructor
      * @param ledStrip  The LED strip.
      */

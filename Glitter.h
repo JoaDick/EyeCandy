@@ -49,8 +49,7 @@ namespace EC
     /** Draw the Glitter with this color.
      * This setting can be adjusted at runtime.
      */
-    CRGB foregroundColor = foregroundColor_default();
-    static CRGB foregroundColor_default() { return CRGB::White; }
+    CRGB color = CRGB::White;
 
     /** Effect occurrence rate.
      * Higher value = more glitter.
@@ -60,25 +59,32 @@ namespace EC
     uint8_t effectRate = effectRate_default();
     static uint8_t effectRate_default() { return 20; }
 
-    /// Deprecated; only for legacy compatibility.
-    Glitter(CRGB *ledStrip,
-            uint16_t ledCount,
-            bool overlayMode = false)
-        : Glitter(FastLedStrip(ledStrip, ledCount), overlayMode)
-    {
-      animationDelay = 10;
-    }
-
+#if (1)
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      */
     Glitter(FastLedStrip ledStrip,
-            bool overlayMode = false)
+            bool overlayMode)
         : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default())
     {
       animationDelay = 10;
     }
+
+#else // DRAFT
+    /** Constructor
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     * @param color  Draw the glitter with this color.
+     */
+    Glitter(FastLedStrip ledStrip,
+            bool overlayMode,
+            CRGB color = CRGB::White)
+        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default()), color(color)
+    {
+      animationDelay = 10;
+    }
+#endif
 
   private:
     /// @see AnimationBase::updateAnimation()
@@ -95,7 +101,7 @@ namespace EC
     {
       if (_mustAddGlitter)
       {
-        strip[random16(strip.ledCount())] = foregroundColor;
+        strip[random16(strip.ledCount())] = color;
         _mustAddGlitter = false;
       }
     }
