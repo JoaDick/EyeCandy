@@ -35,7 +35,7 @@ namespace EC
   /** A twinkling rainbow animation.
    */
   class RainbowTwinkle
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
     uint8_t _hue = random(0xFF);
 
@@ -58,7 +58,7 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit RainbowTwinkle(FastLedStrip ledStrip)
-        : AnimationBaseFL2(ledStrip, false, fadeRate_default())
+        : AnimationBaseFL(ledStrip, false, fadeRate_default())
     {
       animationDelay = animationDelay_default();
       for (auto i = 0; i < strip.ledCount(); i++)

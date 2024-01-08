@@ -97,7 +97,7 @@ namespace EC
   in step 3 above).
   */
   template <uint16_t NUM_LEDS>
-  class Fire2012 : public AnimationBaseFL2
+  class Fire2012 : public AnimationBaseFL
   {
     static const uint16_t FRAMES_PER_SECOND = 60;
 
@@ -124,7 +124,7 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit Fire2012(FastLedStrip ledStrip)
-        : AnimationBaseFL2(ledStrip, false)
+        : AnimationBaseFL(ledStrip, false)
     {
       patternDelay = 1000 / FRAMES_PER_SECOND;
       animationDelay = Fire2012_animationDelay_default();

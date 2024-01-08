@@ -38,7 +38,7 @@ namespace EC
    * @see FastLedStrip::getHalfStrip()
    */
   class Kaleidoscope
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
   public:
     /** Constructor
@@ -47,7 +47,7 @@ namespace EC
      */
     explicit Kaleidoscope(FastLedStrip ledStrip,
                           bool mirrored = true)
-        : AnimationBaseFL2(ledStrip, true), mirrored(mirrored)
+        : AnimationBaseFL(ledStrip, true), mirrored(mirrored)
     {
     }
 

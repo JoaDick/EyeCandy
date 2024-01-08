@@ -36,7 +36,7 @@ namespace EC
    * Mainly intended for testing LED strips.
    */
   class RgbBlocks
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
     static const uint8_t _blockCount = 6;
     uint16_t _animationCounter = 0;
@@ -60,7 +60,7 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit RgbBlocks(FastLedStrip ledStrip)
-        : AnimationBaseFL2(ledStrip.getReversedStrip(), false)
+        : AnimationBaseFL(ledStrip.getReversedStrip(), false)
     {
       animationDelay = animationDelay_default();
     }

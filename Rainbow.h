@@ -35,7 +35,7 @@ namespace EC
   /** Many many Rainbow variations.
    */
   class Rainbow
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
     uint8_t _hue = 0;
 
@@ -73,7 +73,7 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit Rainbow(FastLedStrip ledStrip)
-        : AnimationBaseFL2(ledStrip.getReversedStrip(), false)
+        : AnimationBaseFL(ledStrip.getReversedStrip(), false)
     {
       animationDelay = animationDelay_default();
     }

@@ -53,7 +53,7 @@ namespace EC
    *   the entire LED strip
    */
   class EssentialVU
-      : public VuBaseFL2
+      : public VuBaseFL
   {
   public:
     /** Default fading speed.
@@ -104,7 +104,7 @@ namespace EC
     EssentialVU(float &audioSource,
                 FastLedStrip ledStrip,
                 bool overlayMode)
-        : VuBaseFL2(ledStrip, overlayMode, fadeRate_default(), audioSource)
+        : VuBaseFL(ledStrip, overlayMode, fadeRate_default(), audioSource)
     {
       animationDelay = 10;
     }

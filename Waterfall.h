@@ -37,7 +37,7 @@ namespace EC
 
   /// A Waterfall Animation.
   class Waterfall
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
 #ifdef WATERFALL_DEBUG
     static const uint8_t DROPLET_COUNT = 1;
@@ -50,7 +50,7 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit Waterfall(FastLedStrip ledStrip)
-        : AnimationBaseFL2(ledStrip, false)
+        : AnimationBaseFL(ledStrip, false)
     {
       animationDelay = 10;
     }

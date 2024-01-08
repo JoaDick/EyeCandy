@@ -36,7 +36,7 @@ namespace EC
   /** Coloured Blobs floating around.
    */
   class FloatingBlobs
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
     FloatingBlobController<5> blobs;
 
@@ -45,7 +45,7 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit FloatingBlobs(FastLedStrip ledStrip)
-        : AnimationBaseFL2(ledStrip, false)
+        : AnimationBaseFL(ledStrip, false)
     {
       patternDelay = 10;
     }

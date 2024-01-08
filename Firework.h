@@ -44,7 +44,7 @@ namespace EC
    */
   template <uint8_t PARTICLE_COUNT = 5>
   class Firework
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
   public:
     /// Delay (in ms) before relaunching the Particles.
@@ -58,7 +58,7 @@ namespace EC
     Firework(FastLedStrip ledStrip,
              bool overlayMode,
              uint16_t launchDelay = Firework_launchDelay_default())
-        : AnimationBaseFL2(ledStrip, overlayMode, Firework_fadeRate_default()), launchDelay(launchDelay)
+        : AnimationBaseFL(ledStrip, overlayMode, Firework_fadeRate_default()), launchDelay(launchDelay)
     {
 #ifdef FIREWORK_DEBUG
       // patternDelay = 20;
@@ -71,7 +71,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      AnimationBaseFL2::showPattern(currentMillis);
+      AnimationBaseFL::showPattern(currentMillis);
       _particles[0].dump();
     }
 #endif

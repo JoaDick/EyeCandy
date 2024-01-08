@@ -26,7 +26,7 @@ namespace EC
    */
   template <uint16_t NUM_BALLS = 3>
   class BouncingBalls
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
     static constexpr float GRAVITY = -9.81; // Downward (negative) acceleration of gravity in m/s^2
     static constexpr float h0 = 1.0;        // Starting height, in meters, of the ball (strip length)
@@ -47,7 +47,7 @@ namespace EC
      */
     BouncingBalls(FastLedStrip ledStrip,
                   bool overlayMode)
-        : AnimationBaseFL2(ledStrip, overlayMode, 0)
+        : AnimationBaseFL(ledStrip, overlayMode, 0)
     {
       for (int i = 0; i < NUM_BALLS; i++)
       { // Initialize variables

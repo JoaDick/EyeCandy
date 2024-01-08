@@ -36,7 +36,7 @@ namespace EC
    * Can be used as Pattern or as Overlay.
    */
   class Twinkles
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
   public:
     /** Default fading speed.
@@ -59,7 +59,7 @@ namespace EC
      */
     Twinkles(FastLedStrip ledStrip,
              bool overlayMode)
-        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default())
+        : AnimationBaseFL(ledStrip, overlayMode, fadeRate_default())
     {
     }
 

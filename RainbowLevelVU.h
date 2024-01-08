@@ -36,7 +36,7 @@ namespace EC
 
   /// VU meter with its color depending on the current VU level.
   class RainbowLevelVU
-      : public VuBaseFL2
+      : public VuBaseFL
   {
   public:
     /** Default fading speed.
@@ -85,7 +85,7 @@ namespace EC
     RainbowLevelVU(float &audioSource,
                    FastLedStrip ledStrip,
                    bool overlayMode)
-        : VuBaseFL2(ledStrip, overlayMode, fadeRate_default(), audioSource)
+        : VuBaseFL(ledStrip, overlayMode, fadeRate_default(), audioSource)
     {
       animationDelay = 10;
     }

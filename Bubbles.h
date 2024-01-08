@@ -37,7 +37,7 @@ namespace EC
 
   /// Rising Bubbles.
   class Bubbles
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
 #ifdef BUBBLES_DEBUG
     static const uint8_t BUBBLES_COUNT = 1;
@@ -57,7 +57,7 @@ namespace EC
      */
     Bubbles(FastLedStrip ledStrip,
             bool overlayMode)
-        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default())
+        : AnimationBaseFL(ledStrip, overlayMode, fadeRate_default())
     {
       animationDelay = 10;
     }

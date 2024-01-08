@@ -40,14 +40,14 @@ namespace EC
    * https://github.com/FastLED/FastLED/blob/master/examples/Pacifica/Pacifica.ino
    */
   class Pacifica
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
   public:
     /** Constructor
      * @param ledStrip  The LED strip.
      */
     explicit Pacifica(FastLedStrip ledStrip)
-        : AnimationBaseFL2(ledStrip, false)
+        : AnimationBaseFL(ledStrip, false)
     {
       patternDelay = 20;
     }

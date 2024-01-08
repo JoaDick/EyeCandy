@@ -42,7 +42,7 @@ namespace EC
    * Recommended to use as Overlay together with another VU meter.
    */
   class PeakGlitterVU
-      : public VuBaseFL2
+      : public VuBaseFL
   {
   public:
     /** Default fading speed.
@@ -70,7 +70,7 @@ namespace EC
     PeakGlitterVU(float &audioSource,
                   FastLedStrip ledStrip,
                   bool overlayMode)
-        : VuBaseFL2(ledStrip, overlayMode, fadeRate_default(), audioSource)
+        : VuBaseFL(ledStrip, overlayMode, fadeRate_default(), audioSource)
     {
       animationDelay = 10;
       vuPeakHandler.peakHold = 20;
@@ -89,7 +89,7 @@ namespace EC
                   FastLedStrip ledStrip,
                   bool overlayMode,
                   CRGB color = CRGB::White)
-        : VuBaseFL2(ledStrip, overlayMode, fadeRate_default(), audioSource), color(color)
+        : VuBaseFL(ledStrip, overlayMode, fadeRate_default(), audioSource), color(color)
     {
       animationDelay = 10;
       vuPeakHandler.peakHold = 20;

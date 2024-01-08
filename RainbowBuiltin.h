@@ -40,7 +40,7 @@ namespace EC
    * possibilities.
    */
   class RainbowBuiltin
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
     uint8_t _hue = 0;
 
@@ -66,7 +66,7 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit RainbowBuiltin(FastLedStrip ledStrip)
-        : AnimationBaseFL2(ledStrip, false)
+        : AnimationBaseFL(ledStrip, false)
     {
       animationDelay = animationDelay_default();
     }

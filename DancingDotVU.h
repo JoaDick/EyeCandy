@@ -38,7 +38,7 @@ namespace EC
    * Can be used as Pattern or as Overlay.
    */
   class DancingDotVU
-      : public VuBaseFL2
+      : public VuBaseFL
   {
   public:
     /** Default fading speed.
@@ -66,7 +66,7 @@ namespace EC
     DancingDotVU(float &audioSource,
                  FastLedStrip ledStrip,
                  bool overlayMode)
-        : VuBaseFL2(ledStrip, overlayMode, fadeRate_default(), audioSource)
+        : VuBaseFL(ledStrip, overlayMode, fadeRate_default(), audioSource)
     {
       animationDelay = 10;
     }
@@ -82,7 +82,7 @@ namespace EC
                  FastLedStrip ledStrip,
                  bool overlayMode,
                  CRGB color = CRGB::Red)
-        : VuBaseFL2(ledStrip, overlayMode, fadeRate_default(), audioSource), color(color)
+        : VuBaseFL(ledStrip, overlayMode, fadeRate_default(), audioSource), color(color)
     {
       animationDelay = 10;
     }

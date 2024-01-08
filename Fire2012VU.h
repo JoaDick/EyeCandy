@@ -48,7 +48,7 @@ namespace EC
 #ifndef FIRE2012VU_DEBUG
       : public PseudoAnimationBase
 #else
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
 #endif
   {
   public:
@@ -70,7 +70,7 @@ namespace EC
 #ifndef FIRE2012VU_DEBUG
         : _audioSource(audioSource), _fire(fire)
 #else
-        : AnimationBaseFL2(fire.getStrip(), true), _audioSource(audioSource), _fire(fire)
+        : AnimationBaseFL(fire.getStrip(), true), _audioSource(audioSource), _fire(fire)
 #endif
     {
       animationDelay = 10;
@@ -111,7 +111,7 @@ namespace EC
     {
       vuLevelHandler.addSample(_audioSource);
 #ifdef FIRE2012VU_DEBUG
-      AnimationBaseFL2::processAnimation(currentMillis, wasModified);
+      AnimationBaseFL::processAnimation(currentMillis, wasModified);
 #else
       PseudoAnimationBase::processAnimation(currentMillis, wasModified);
 #endif

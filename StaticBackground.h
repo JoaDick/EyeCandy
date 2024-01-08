@@ -36,7 +36,7 @@ namespace EC
    * Mainly intended as example, but can also be used in combination with Overlays.
    */
   class StaticBackground
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
   public:
     /** Fill LED strip with this color.
@@ -50,7 +50,7 @@ namespace EC
      */
     StaticBackground(FastLedStrip ledStrip,
                      CRGB color)
-        : AnimationBaseFL2(ledStrip, false), color(color)
+        : AnimationBaseFL(ledStrip, false), color(color)
     {
     }
 

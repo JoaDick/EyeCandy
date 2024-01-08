@@ -41,7 +41,7 @@ namespace EC
    * https://github.com/FastLED/FastLED/blob/master/examples/Pride2015/Pride2015.ino
    */
   class Pride2015
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
     uint16_t sPseudotime = 0;
     uint16_t sLastMillis = 0;
@@ -57,7 +57,7 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit Pride2015(FastLedStrip ledStrip)
-        : AnimationBaseFL2(ledStrip, false)
+        : AnimationBaseFL(ledStrip, false)
     {
     }
 

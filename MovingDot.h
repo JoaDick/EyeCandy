@@ -36,7 +36,7 @@ namespace EC
    * Example for an Animation that can be used as Pattern and as Overlay.
    */
   class MovingDot
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
     int16_t _position = 0;
     bool _rising = false;
@@ -67,7 +67,7 @@ namespace EC
      */
     MovingDot(FastLedStrip ledStrip,
               bool overlayMode)
-        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default())
+        : AnimationBaseFL(ledStrip, overlayMode, fadeRate_default())
     {
       animationDelay = animationDelay_default();
     }

@@ -36,7 +36,7 @@ namespace EC
    * Can be used as Pattern or as Overlay.
    */
   class Glitter
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
     bool _mustAddGlitter = false;
 
@@ -66,7 +66,7 @@ namespace EC
      */
     Glitter(FastLedStrip ledStrip,
             bool overlayMode)
-        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default())
+        : AnimationBaseFL(ledStrip, overlayMode, fadeRate_default())
     {
       animationDelay = 10;
     }
@@ -80,7 +80,7 @@ namespace EC
     Glitter(FastLedStrip ledStrip,
             bool overlayMode,
             CRGB color = CRGB::White)
-        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default()), color(color)
+        : AnimationBaseFL(ledStrip, overlayMode, fadeRate_default()), color(color)
     {
       animationDelay = 10;
     }

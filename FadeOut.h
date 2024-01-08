@@ -36,7 +36,7 @@ namespace EC
    * Useful as trigger Pattern in combination with other Overlays.
    */
   class FadeOut
-      : public AnimationBaseFL2
+      : public AnimationBaseFL
   {
   public:
     /** Constructor
@@ -47,7 +47,7 @@ namespace EC
     FadeOut(FastLedStrip ledStrip,
             bool overlayMode,
             uint8_t fadeRate)
-        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate)
+        : AnimationBaseFL(ledStrip, overlayMode, fadeRate)
     {
     }
 
