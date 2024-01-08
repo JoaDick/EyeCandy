@@ -77,6 +77,8 @@ void setup()
 const uint16_t defaultAnimationDuration = 20;
 uint16_t animationDuration = defaultAnimationDuration;
 
+// ---------- VUs ----------
+
 void makeBouncingDotVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -164,6 +166,13 @@ void makeDoubleDancingDotVU2(EC::AnimationRepo &repo)
     repo.add(vu2);
 }
 
+void makeEssentialVU(EC::AnimationRepo &repo)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::EssentialVU(audioSample, strip));
+}
+
 void makeFireVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -189,6 +198,7 @@ void makeFlareVU(EC::FastLedStrip strip, EC::AnimationRepo &repo)
 void makeFlareVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
+
     makeFlareVU(strip, repo);
 }
 
@@ -215,6 +225,13 @@ void makeFlareInwardVU(EC::AnimationRepo &repo)
     fire2->animationDelay = 13;
     repo.add(fire2);
     repo.add(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire2));
+}
+
+void makePeakGlitterVU(EC::AnimationRepo &repo)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::PeakGlitterVU(audioSample, strip));
 }
 
 void makeRainbowBubbleVU(EC::AnimationRepo &repo)
@@ -252,6 +269,13 @@ void makeRainbowBubbleInwardVU(EC::AnimationRepo &repo)
     repo.add(new EC::Kaleidoscope(strip));
 }
 
+void makeRainbowLevelVU(EC::AnimationRepo &repo)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::RainbowLevelVU(audioSample, strip));
+}
+
 void makeRainbowLevelCenteredVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -272,9 +296,7 @@ void makeRainbowLevelInwardVU(EC::AnimationRepo &repo)
 
 void makeVuSequence1(EC::AnimationRepo &repo)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    repo.add(new EC::PeakGlitterVU(audioSample, strip));
+    makePeakGlitterVU(repo);
     animationDuration = 8;
 }
 
@@ -326,9 +348,7 @@ void makeVuSequence6(EC::AnimationRepo &repo)
 
 void makeVuSequence7(EC::AnimationRepo &repo)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    repo.add(new EC::RainbowLevelVU(audioSample, strip));
+    makeRainbowLevelVU(repo);
     // animationDuration = 15;
 }
 

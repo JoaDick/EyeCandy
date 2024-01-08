@@ -29,6 +29,7 @@ SOFTWARE.
 *******************************************************************************/
 
 #include <EyeCandy.h>
+// #define NUM_LEDS 50
 #include <Animation_IO_config.h>
 #include <AudioNormalizer.h>
 #include <ButtonHandler.h>
@@ -38,7 +39,7 @@ SOFTWARE.
 // the LED strip
 CRGB leds[NUM_LEDS];
 
-#define EnableStaticPatterns 0
+#define EnableStaticPatterns 0 // fixme!
 
 #if (EnableStaticPatterns)
 // Patterns
@@ -74,6 +75,8 @@ bool autoMode = true;
 float audioSample = 0.0;
 AudioNormalizer normalizer;
 
+#define PRINT_MEMORY_USAGE 1
+
 //------------------------------------------------------------------------------
 
 void setup()
@@ -93,7 +96,9 @@ void setup()
     Serial.begin(115200);
     Serial.println();
     // Serial.println(F("Welcome to EyeCandy"));
-    // printMemoryUsage();
+#if (PRINT_MEMORY_USAGE)
+    printMemoryUsage();
+#endif
 
 #if (EnableStaticPatterns)
     // Base Animation (select one)
@@ -162,20 +167,31 @@ void makeAnimation3(EC::AnimationRepo &repo)
 
 // ---------- Animations ----------
 
+void makeBalls(EC::AnimationRepo &repo)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::BouncingBalls<>(strip));
+}
+
 void makeBubbles(EC::AnimationRepo &repo)
 {
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
 #if (0)
-    repo.add(new EC::Bubbles(leds, NUM_LEDS));
+    repo.add(new EC::Bubbles(strip));
 #else
-    repo.add(new EC::Pacifica(leds, NUM_LEDS));
-    repo.add(new EC::FadeOut(leds, NUM_LEDS, true, 150));
-    repo.add(new EC::Bubbles(leds, NUM_LEDS, true));
+    repo.add(new EC::Pacifica(strip));
+    repo.add(new EC::FadeOut(strip, true, 150));
+    repo.add(new EC::Bubbles(strip, true));
 #endif
 }
 
 void makeFire(EC::AnimationRepo &repo)
 {
-    auto fire = new EC::Fire2012<NUM_LEDS>(leds, NUM_LEDS);
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto fire = new EC::Fire2012<NUM_LEDS>(strip);
     auto fireChanger = new EC::Fire2012Changer<NUM_LEDS>(*fire);
 
     repo.add(fireChanger);
@@ -184,89 +200,63 @@ void makeFire(EC::AnimationRepo &repo)
 
 void makeFireworks(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::FadeOut(leds, NUM_LEDS, EC::Firework_fadeRate_default()));
-    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 1500));
-    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 3000));
-    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 4500));
-    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 6000));
-    repo.add(new EC::Firework<>(leds, NUM_LEDS, true, 7500));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::FadeOut(strip, EC::Firework_fadeRate_default()));
+    repo.add(new EC::Firework<>(strip, true, 1500));
+    repo.add(new EC::Firework<>(strip, true, 3100));
+    repo.add(new EC::Firework<>(strip, true, 4700));
+    repo.add(new EC::Firework<>(strip, true, 6300));
+    repo.add(new EC::Firework<>(strip, true, 7900));
 }
 
 void makeFlare(EC::AnimationRepo &repo)
 {
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
     const uint16_t fireLedCount = NUM_LEDS / 2 + NUM_LEDS / 10;
-    auto fire = new EC::Fire2012<NUM_LEDS>(leds, fireLedCount);
+    EC::FastLedStrip fireStrip = strip.getSubStrip(0, fireLedCount, true);
+
+    auto fire = new EC::Fire2012<NUM_LEDS>(fireStrip);
     fire->SPARKING = 75;
     fire->animationDelay = 10;
-    fire->mirrored = true;
 
     repo.add(fire);
-    repo.add(new EC::Kaleidoscope(leds, NUM_LEDS));
+    repo.add(new EC::Kaleidoscope(strip));
 }
 
 void makePacifica(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::Pacifica(leds, NUM_LEDS));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::Pacifica(strip));
 }
 
 void makePride(EC::AnimationRepo &repo)
 {
-    // auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
+    EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto pride = new EC::Pride2015(leds, NUM_LEDS);
-    // pride->resizeStrip(kaleidoscope->remainLedCount());
-    // pride->mirrored = true;
-
-    repo.add(pride);
-    // repo.add(kaleidoscope);
+    repo.add(new EC::Pride2015(strip));
 }
 
 void makeWaterfall(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::Waterfall(leds, NUM_LEDS));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::Waterfall(strip));
 }
 
 // ---------- VUs ----------
 
-void makeRainbowBubbleVU(EC::AnimationRepo &repo)
-{
-    auto vu = new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample);
-    vu->vuPeakHandler.a0 = 0.5;
-    vu->vuPeakHandler.v0 = 0.1;
-    vu->vuHueRange = 0.67;
-    repo.add(vu);
-}
-
-void makeRainbowBubbleCenteredVU(EC::AnimationRepo &repo)
-{
-    auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
-    auto vu = new EC::RainbowLevelVU(leds, kaleidoscope->remainLedCount(), audioSample);
-    vu->vuPeakHandler.a0 = 0.5;
-    vu->vuPeakHandler.v0 = 0.1;
-    vu->vuHueRange = 0.67;
-    vu->mirrored = true;
-    repo.add(vu);
-    repo.add(kaleidoscope);
-}
-
-void makeRainbowBubbleInwardVU(EC::AnimationRepo &repo)
-{
-    auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
-    auto vu = new EC::RainbowLevelVU(leds, kaleidoscope->remainLedCount(), audioSample);
-    vu->vuPeakHandler.a0 = 0.5;
-    vu->vuPeakHandler.v0 = 0.1;
-    vu->vuHueRange = 0.67;
-    repo.add(vu);
-    repo.add(kaleidoscope);
-}
-
 void makeBouncingDotVU(EC::AnimationRepo &repo)
 {
-    auto vuPeak = new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample);
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuPeak = new EC::RainbowLevelVU(audioSample, strip);
     vuPeak->enableVuBar = false;
     vuPeak->vuHueRange = 0.5;
 
-    auto glitter = new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample, true);
+    auto glitter = new EC::PeakGlitterVU(audioSample, strip, true);
     glitter->glitterColor = CRGB(128, 64, 0);
 
     repo.add(vuPeak);
@@ -275,141 +265,183 @@ void makeBouncingDotVU(EC::AnimationRepo &repo)
 
 void makeDancingDotVU(EC::AnimationRepo &repo)
 {
-    auto vu = new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample);
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vu = new EC::RainbowLevelVU(audioSample, strip);
     vu->enablePeakDot = false;
     vu->fadeRate = 0;
     vu->volume = 64;
     repo.add(vu);
-    repo.add(new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true));
+    repo.add(new EC::DancingDotVU(audioSample, strip, true));
 }
 
 void makeDoubleBouncingDotVU(EC::AnimationRepo &repo)
 {
-    auto vu1 = new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample, true);
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vu1 = new EC::RainbowLevelVU(audioSample, strip, true);
     vu1->enableVuBar = false;
     vu1->volume = 255;
     vu1->vuHueRange = 0.4;
     vu1->baseHueStep = -0.17;
     vu1->vuLevelHandler.smoothingFactor = 6;
 
-    auto vu2 = new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample, true);
-    vu2->mirrored = true;
+    auto vu2 = new EC::RainbowLevelVU(audioSample, strip.getReversedStrip(), true);
     vu2->enableVuBar = false;
     vu2->volume = 255;
     vu2->vuHueRange = 0.6;
     vu2->baseHueStep = 0.11;
     vu2->vuLevelHandler.smoothingFactor = 9;
 
-    repo.add(new EC::FadeOut(leds, NUM_LEDS, 50));
+    repo.add(new EC::FadeOut(strip, 50));
     repo.add(vu1);
     repo.add(vu2);
 }
 
 void makeDoubleDancingDotVU1(EC::AnimationRepo &repo)
 {
-    auto vu1 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vu1 = new EC::DancingDotVU(audioSample, strip, true);
     vu1->peakDotColor = CRGB(255, 0, 0);
 
-    auto vu2 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
-    vu2->mirrored = true;
+    auto vu2 = new EC::DancingDotVU(audioSample, strip.getReversedStrip(), true);
     vu2->peakDotColor = CRGB(0, 255, 0);
     vu2->vuPeakHandler.inertia = 0.55;
     vu2->vuPeakHandler.friction = 0.14;
 
-    auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
-    auto pride = new EC::Pride2015(leds, kaleidoscope->remainLedCount());
-    // pride->mirrored = true;
-
-    repo.add(pride);
-    repo.add(kaleidoscope);
-    repo.add(new EC::FadeOut(leds, NUM_LEDS, true, 100));
+    repo.add(new EC::Pride2015(strip.getHalfStrip(/*true*/)));
+    repo.add(new EC::Kaleidoscope(strip));
+    repo.add(new EC::FadeOut(strip, true, 100));
     repo.add(vu1);
     repo.add(vu2);
 }
 
 void makeDoubleDancingDotVU2(EC::AnimationRepo &repo)
 {
-    auto vu1 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vu1 = new EC::DancingDotVU(audioSample, strip, true);
     vu1->peakDotColor = CHSV(20, 255, 255);
 
-    auto vu2 = new EC::DancingDotVU(leds, NUM_LEDS, audioSample, true);
-    vu2->mirrored = true;
+    auto vu2 = new EC::DancingDotVU(audioSample, strip.getReversedStrip(), true);
     vu2->peakDotColor = CHSV(20 + 128, 255, 255);
     vu2->vuPeakHandler.inertia = 0.55;
     vu2->vuPeakHandler.friction = 0.14;
 
-    repo.add(new EC::FloatingBlobs(leds, NUM_LEDS));
-    repo.add(new EC::FadeOut(leds, NUM_LEDS, true, 230));
+    repo.add(new EC::FloatingBlobs(strip));
+    repo.add(new EC::FadeOut(strip, true, 230));
     repo.add(vu1);
     repo.add(vu2);
 }
 
 void makeEssentialVU(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::EssentialVU(leds, NUM_LEDS, audioSample));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::EssentialVU(audioSample, strip));
 }
 
 void makeFireVU(EC::AnimationRepo &repo)
 {
-    auto fire = new EC::Fire2012<NUM_LEDS>(leds, NUM_LEDS);
-#ifndef FIRE2012VU_DEBUG
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto fire = new EC::Fire2012<NUM_LEDS>(strip);
     auto fireChanger = new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire);
-#else
-    auto fireChanger = new EC::Fire2012VU<NUM_LEDS>(leds, NUM_LEDS, audioSample, *fire);
-#endif
     repo.add(fire);
     repo.add(fireChanger);
 }
 
 void makePeakGlitterVU(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample));
-    animationDuration = 10;
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::PeakGlitterVU(audioSample, strip));
+}
+
+void makeRainbowBubbleVU(EC::AnimationRepo &repo)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vu = new EC::RainbowLevelVU(audioSample, strip);
+    vu->vuPeakHandler.a0 = 0.5;
+    vu->vuPeakHandler.v0 = 0.1;
+    vu->vuHueRange = 0.67;
+    repo.add(vu);
+}
+
+void makeRainbowBubbleCenteredVU(EC::AnimationRepo &repo)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vu = new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(true));
+    vu->vuPeakHandler.a0 = 0.5;
+    vu->vuPeakHandler.v0 = 0.1;
+    vu->vuHueRange = 0.67;
+    repo.add(vu);
+    repo.add(new EC::Kaleidoscope(strip));
+}
+
+void makeRainbowBubbleInwardVU(EC::AnimationRepo &repo)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vu = new EC::RainbowLevelVU(audioSample, strip.getHalfStrip());
+    vu->vuPeakHandler.a0 = 0.5;
+    vu->vuPeakHandler.v0 = 0.1;
+    vu->vuHueRange = 0.67;
+    repo.add(vu);
+    repo.add(new EC::Kaleidoscope(strip));
 }
 
 void makeRainbowLevelVU(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::RainbowLevelVU(audioSample, strip));
 }
 
 void makeRainbowLevelCenteredVU(EC::AnimationRepo &repo)
 {
-    auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
-    auto vu = new EC::RainbowLevelVU(leds, kaleidoscope->remainLedCount(), audioSample);
-    vu->mirrored = true;
-    repo.add(vu);
-    repo.add(kaleidoscope);
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(true)));
+    repo.add(new EC::Kaleidoscope(strip));
 }
 
 void makeRainbowLevelInwardVU(EC::AnimationRepo &repo)
 {
-    auto kaleidoscope = new EC::Kaleidoscope(leds, NUM_LEDS);
-    auto vu = new EC::RainbowLevelVU(leds, kaleidoscope->remainLedCount(), audioSample);
-    repo.add(vu);
-    repo.add(kaleidoscope);
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip()));
+    repo.add(new EC::Kaleidoscope(strip));
 }
 
 // ---------- VU sequence ----------
 
 void makeVuSequence1(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample));
+    makePeakGlitterVU(repo);
     animationDuration = 5;
 }
 
 void makeVuSequence2(EC::AnimationRepo &repo)
 {
-    auto baseVU = new EC::EssentialVU(leds, NUM_LEDS, audioSample);
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto baseVU = new EC::EssentialVU(audioSample, strip);
     baseVU->enableVuBar = false;
     baseVU->fadeRate = 0;
     repo.add(baseVU);
-    repo.add(new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample, true));
+    repo.add(new EC::PeakGlitterVU(audioSample, strip, true));
     animationDuration = 10;
 }
 
 void makeVuSequence3(EC::AnimationRepo &repo)
 {
-    auto baseVU = new EC::EssentialVU(leds, NUM_LEDS, audioSample);
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto baseVU = new EC::EssentialVU(audioSample, strip);
     baseVU->fadeRate = 0;
     repo.add(baseVU);
     animationDuration = 10;
@@ -417,15 +449,19 @@ void makeVuSequence3(EC::AnimationRepo &repo)
 
 void makeVuSequence4(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::EssentialVU(leds, NUM_LEDS, audioSample));
-    repo.add(new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample, true));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::EssentialVU(audioSample, strip));
+    repo.add(new EC::PeakGlitterVU(audioSample, strip, true));
     animationDuration = 10;
 }
 
 void makeVuSequence5(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::RainbowLevelVU(leds, NUM_LEDS, audioSample));
-    repo.add(new EC::PeakGlitterVU(leds, NUM_LEDS, audioSample, true));
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    repo.add(new EC::RainbowLevelVU(audioSample, strip));
+    repo.add(new EC::PeakGlitterVU(audioSample, strip, true));
     animationDuration = 15;
 }
 
@@ -504,10 +540,14 @@ void makeVuSequence17(EC::AnimationRepo &repo)
 
 //------------------------------------------------------------------------------
 
-EC::AnimationBuilderFct nextAnimation = nullptr;
-
 EC::AnimationBuilderFct allAnimations[] = {
-    // &makeDoubleDancingDotVU2,
+#if (EnableStaticPatterns)
+    &makeAnimation0,
+    &makeAnimation1,
+    &makeAnimation2,
+    &makeAnimation3,
+#else
+    // &makeFireworks,
 
     &makeVuSequence1,
     &makeVuSequence2,
@@ -533,13 +573,7 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeWaterfall,
     &makeFire,
     &makeFlare,
-#if (EnableStaticPatterns)
-    &makeAnimation0,
-    &makeAnimation1,
-    &makeAnimation2,
-    &makeAnimation3,
 #endif
-    // &makeFireworks,
     nullptr};
 
 EC::AnimationChangerSoft animationChanger(animationRunner, allAnimations);
@@ -750,6 +784,7 @@ void printSampleRate(uint32_t currentMillis)
 
 //------------------------------------------------------------------------------
 
+#if (PRINT_MEMORY_USAGE)
 void printMemoryUsage()
 {
     Serial.print(F("Memory usage for "));
@@ -759,6 +794,9 @@ void printMemoryUsage()
 
     Serial.print(F("BouncingBalls<> = "));
     Serial.println(sizeof(EC::BouncingBalls<>));
+
+    Serial.print(F("Bubbles = "));
+    Serial.println(sizeof(EC::Bubbles));
 
     Serial.print(F("FadeOut = "));
     Serial.println(sizeof(EC::FadeOut));
@@ -814,8 +852,14 @@ void printMemoryUsage()
     Serial.print(F("WaterfallDroplet = "));
     Serial.println(sizeof(EC::WaterfallDroplet));
 
+    Serial.print(F("DancingDotVU = "));
+    Serial.println(sizeof(EC::DancingDotVU));
+
     Serial.print(F("EssentialVU = "));
     Serial.println(sizeof(EC::EssentialVU));
+
+    Serial.print(F("Fire2012VU = "));
+    Serial.println(sizeof(EC::Fire2012VU<NUM_LEDS>));
 
     Serial.print(F("PeakGlitterVU = "));
     Serial.println(sizeof(EC::PeakGlitterVU));
@@ -823,5 +867,6 @@ void printMemoryUsage()
     Serial.print(F("RainbowLevelVU = "));
     Serial.println(sizeof(EC::RainbowLevelVU));
 }
+#endif
 
 //------------------------------------------------------------------------------

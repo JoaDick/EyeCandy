@@ -72,6 +72,8 @@ void setup()
 const uint16_t defaultAnimationDuration = 20;
 const uint16_t animationDuration = defaultAnimationDuration;
 
+// ---------- Animations ----------
+
 void makeBalls(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -139,7 +141,6 @@ void makeFireworks(EC::AnimationRepo &repo)
     repo.add(new EC::Firework<>(strip, true, 4700));
     repo.add(new EC::Firework<>(strip, true, 6300));
     repo.add(new EC::Firework<>(strip, true, 7900));
-    // animationDuration = 3 * defaultAnimationDuration;
 }
 
 void makeFlare(EC::AnimationRepo &repo)
@@ -227,7 +228,7 @@ void makeWaterfall(EC::AnimationRepo &repo)
 
 EC::AnimationBuilderFct allAnimations[] = {
     // &makeRgbBlocks,
-    &makeFireworks,
+    // &makeFireworks,
 
     &makeTwinkles,
     &makeRainbowBuiltin,
