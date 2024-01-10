@@ -60,7 +60,7 @@ EC::Rainbow rainbow(rainbowStrip);
 EC::RgbBlocks rgbBlocks(rgbBlocksStrip);
 
 // Overlays
-EC::MovingDot movingDotOverlay(movingDotStrip, true/*, CRGB::SteelBlue*/);
+EC::MovingDot movingDotOverlay(movingDotStrip, true /*, CRGB::SteelBlue*/);
 
 // run max. 8 Animations simultaneously
 EC::AnimationRunnerS animationRunner;

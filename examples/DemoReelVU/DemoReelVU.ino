@@ -49,7 +49,7 @@ bool autoMode = true;
 float audioSample = 0.0;
 AudioNormalizer normalizer;
 
-#define PRINT_MEMORY_USAGE 1
+#define PRINT_MEMORY_USAGE 0
 
 //------------------------------------------------------------------------------
 
@@ -104,7 +104,7 @@ void makeDancingDotVU(EC::AnimationRepo &repo)
     vu->fadeRate = 0;
     vu->volume = 64;
     repo.add(vu);
-    repo.add(new EC::DancingDotVU(audioSample, strip, true/*, CRGB::Red*/));
+    repo.add(new EC::DancingDotVU(audioSample, strip, true /*, CRGB::Red*/));
 }
 
 void makeDoubleBouncingDotVU(EC::AnimationRepo &repo)
@@ -134,10 +134,10 @@ void makeDoubleDancingDotVU1(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu1 = new EC::DancingDotVU(audioSample, strip, true/*, CRGB(255, 0, 0)*/);
+    auto vu1 = new EC::DancingDotVU(audioSample, strip, true /*, CRGB(255, 0, 0)*/);
     vu1->color = CRGB(255, 0, 0);
 
-    auto vu2 = new EC::DancingDotVU(audioSample, strip.getReversedStrip(), true/*, CRGB(0, 255, 0)*/);
+    auto vu2 = new EC::DancingDotVU(audioSample, strip.getReversedStrip(), true /*, CRGB(0, 255, 0)*/);
     vu2->color = CRGB(0, 255, 0);
     vu2->vuPeakHandler.inertia = 0.55;
     vu2->vuPeakHandler.friction = 0.14;
@@ -153,10 +153,10 @@ void makeDoubleDancingDotVU2(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu1 = new EC::DancingDotVU(audioSample, strip, true/*, CHSV(20, 255, 255)*/);
+    auto vu1 = new EC::DancingDotVU(audioSample, strip, true /*, CHSV(20, 255, 255)*/);
     vu1->color = CHSV(20, 255, 255);
 
-    auto vu2 = new EC::DancingDotVU(audioSample, strip.getReversedStrip(), true/*, CHSV(20 + 128, 255, 255)*/);
+    auto vu2 = new EC::DancingDotVU(audioSample, strip.getReversedStrip(), true /*, CHSV(20 + 128, 255, 255)*/);
     vu2->color = CHSV(20 + 128, 255, 255);
     vu2->vuPeakHandler.inertia = 0.55;
     vu2->vuPeakHandler.friction = 0.14;

@@ -41,7 +41,7 @@ EC::FastLedStrip mainStrip(leds, NUM_LEDS);
 EC::FastLedStrip workingStrip = mainStrip.getHalfStrip();
 
 // the main animation
-EC::MovingDot mainAnimation(workingStrip, false/*, CRGB::Red*/);
+EC::MovingDot mainAnimation(workingStrip, false /*, CRGB::Red*/);
 // overlay for adding some glitter (in the lower part only)
 EC::Glitter glitterOverlay(workingStrip.getHalfStrip(), true);
 
