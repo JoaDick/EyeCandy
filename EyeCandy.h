@@ -57,3 +57,6 @@ SOFTWARE.
 #include "Fire2012VU.h"
 #include "PeakGlitterVU.h"
 #include "RainbowLevelVU.h"
+
+// Testing / Debugging
+#include "TestVU1.h"
