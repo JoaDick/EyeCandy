@@ -59,4 +59,5 @@ SOFTWARE.
 #include "RainbowLevelVU.h"
 
 // Testing / Debugging
+#include "VuTools.h"
 #include "TestVU1.h"

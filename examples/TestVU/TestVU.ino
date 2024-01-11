@@ -80,6 +80,12 @@ uint16_t animationDuration = defaultAnimationDuration;
 
 //------------------------------------------------------------------------------
 
+void makeRawAudioVU(EC::AnimationRepo &repo)
+{
+    repo.add(new EC::RawAudioVU(audioSample, {leds, NUM_LEDS}));
+    // animationDuration = 10;
+}
+
 void makeEssentialVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -115,6 +121,7 @@ void makeTestVU1(EC::AnimationRepo &repo)
 //------------------------------------------------------------------------------
 
 EC::AnimationBuilderFct allAnimations[] = {
+    &makeRawAudioVU,
     &makeTestVU1,
     &makeEssentialVU,
 
@@ -174,15 +181,7 @@ void loop()
     const uint32_t currentMillis = millis();
     audioSample = normalizer.analogRead(PIN_MIC);
 
-#if (0)
-    // Teleplot: raw audio samples
-    Serial.print(">-:");
-    Serial.println(-1.0);
-    Serial.print(">+:");
-    Serial.println(1.0);
-    Serial.print(">raw:");
-    Serial.println(audioSample);
-#endif
+    EC::logAudioSample(audioSample);
 
     updateColor();
     updateSpeed();
