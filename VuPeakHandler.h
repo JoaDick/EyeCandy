@@ -29,13 +29,18 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-/** Helper class for calculating the peak dot position of a VU meter.
- * Just provide the output of a #VuLevelHandler instance, and get the position
- * of the corresponding peak dot.
- */
-class VuPeakHandler
+namespace EC
 {
-public:
+
+  //------------------------------------------------------------------------------
+
+  /** Helper class for calculating the peak dot position of a VU meter.
+   * Just provide the output of a #VuLevelHandler instance, and get the position
+   * of the corresponding peak dot.
+   */
+  class VuPeakHandler
+  {
+  public:
     /// Delay (in ms) before the dot starts to fall down.
     uint16_t peakHold = 200;
 
@@ -53,11 +58,11 @@ public:
     /** Curent position of the peak dot.
      * @return A value between 0.0 ... 1.0, representing the dot's position.
      * @note Be aware that an overloaded / clipped / too loud audio signal may
-     * return values greater than 1.0!
+     * return values greater than 1.0 or less than 0.0!
      */
     float peakLevel()
     {
-        return _peakLevel;
+      return _peakLevel;
     }
 
     /** Calculate the peak dot's position.
@@ -72,57 +77,117 @@ public:
     bool process(float vuLevel,
                  uint32_t currentMillis)
     {
-        bool peakDetected = false;
-        // rising?
-        if (vuLevel >= _peakLevel)
+      bool peakDetected = false;
+      // rising?
+      if (vuLevel >= _peakLevel)
+      {
+        _lastPeakTime = 0;
+        _maxPeakValue = vuLevel;
+        _peakLevel = vuLevel;
+      }
+      // falling
+      else
+      {
+        // new peak detected?
+        if (_lastPeakTime == 0)
         {
-            _lastPeakTime = 0;
-            _maxPeakValue = vuLevel;
-            _peakLevel = vuLevel;
+          peakDetected = true;
+          _lastPeakTime = currentMillis;
         }
-        // falling
+        // peak hold?
+        else if (currentMillis <= _lastPeakTime + peakHold)
+        {
+          // nothing to do
+        }
+        // peak decay
         else
         {
-            // new peak detected?
-            if (_lastPeakTime == 0)
-            {
-                peakDetected = true;
-                _lastPeakTime = currentMillis;
-            }
-            // peak hold?
-            else if (currentMillis <= _lastPeakTime + peakHold)
-            {
-                // nothing to do
-            }
-            // peak decay
-            else
-            {
-                const uint16_t decayTime = currentMillis - (_lastPeakTime + peakHold);
-                if (decayTime < peakDecay)
-                {
-                    const float decayFactor = float(peakDecay - decayTime) / peakDecay;
-                    _peakLevel = _maxPeakValue * decayFactor;
-                }
-                else
-                {
-                    _peakLevel = 0.0;
-                }
-            }
-        }
-
-        // peak too low?
-        if (_peakLevel <= peakThreshold)
-        {
+          const uint16_t decayTime = currentMillis - (_lastPeakTime + peakHold);
+          if (decayTime < peakDecay)
+          {
+            const float decayFactor = float(peakDecay - decayTime) / peakDecay;
+            _peakLevel = _maxPeakValue * decayFactor;
+          }
+          else
+          {
             _peakLevel = 0.0;
-            // peakDetected = false;
-            _lastPeakTime = 0;
+          }
         }
+      }
 
-        return peakDetected;
+      // peak too low?
+      if (_peakLevel <= peakThreshold)
+      {
+        _peakLevel = 0.0;
+        // peakDetected = false;
+        _lastPeakTime = 0;
+      }
+
+      return peakDetected;
     }
 
-private:
+  private:
     uint32_t _lastPeakTime = 0;
     float _maxPeakValue = 0.0;
     float _peakLevel = 0.0;
-};
+  };
+
+  //------------------------------------------------------------------------------
+
+  /** Helper class for calculating the inverse peak dot position of a VU meter.
+   * In essence the same as VuPeakHandler, but it is following the minimum VU
+   * level instead of the maximum VU level (as a "normal" VU does). \n
+   * This thing was born during development as a utility to track the dynamic
+   * range of an audio signal. But the effect is really interesting, so it can
+   * of course also be used for creating really exceptional VUs. \n
+   * Just give it a try!
+   */
+  class VuPeakHandlerInv
+  {
+  public:
+    /// Delay (in ms) before the dot starts to fall down.
+    uint16_t &peakHold = _peakHandler.peakHold;
+
+    /** Falling speed equivalent.
+     * Time (in ms) the dot would need to fall down the entire strip.
+     */
+    uint16_t &peakDecay = _peakHandler.peakDecay;
+
+    /** VU levels below that level will set the dot's position to 0.
+     * Render the dot only when its position is greater than 0.0, so it will
+     * disappear during silence.
+     */
+    float &peakThreshold = _peakHandler.peakThreshold;
+
+    /** Curent position of the peak dot.
+     * @return A value between 0.0 ... 1.0, representing the dot's position.
+     * @note Be aware that an overloaded / clipped / too loud audio signal may
+     * return values greater than 1.0 or less than 0.0!
+     */
+    float peakLevel()
+    {
+      return 1.0 - _peakHandler.peakLevel();
+    }
+
+    /** Calculate the peak dot's position.
+     * @param vuLevel  Returnvalue of VuLevelHandler::capture()
+     * @param currentMillis  Current time, i.e. the returnvalue of millis().
+     * @retval true   A new peak has been detected.
+     * @retval false  No peak detected.
+     * Use peakLevel() to get the position of the peak dot.
+     * A new peak is reported, when the current \a vuLevel value is below the
+     * previous one.
+     */
+    bool process(float vuLevel,
+                 uint32_t currentMillis)
+    {
+      return _peakHandler.process(1.0 - vuLevel, currentMillis);
+    }
+
+  private:
+    VuPeakHandler _peakHandler;
+  };
+
+  //------------------------------------------------------------------------------
+
+}

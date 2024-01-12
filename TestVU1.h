@@ -48,27 +48,47 @@ namespace EC
     /** Default fading speed.
      * Lower value = longer glowing; 0 = solid black background.
      */
-    static uint8_t fadeRate_default() { return 50; }
+    static uint8_t fadeRate_default() { return 20; }
 
     /** Draw the VU bar with this color.
      * This setting can be adjusted at runtime.
      */
     CRGB vuBarColor = CRGB(0, 64, 0);
 
+    /** Draw the VU dot with this color.
+     * This setting can be adjusted at runtime.
+     */
+    CRGB vuDotColor = CRGB(0, 255, 0);
+
     /** Draw the peak dot with this color.
      * This setting can be adjusted at runtime.
      */
     CRGB peakDotColor = CRGB(255, 0, 0);
 
-    /** Render the VU bar.
+    /** Draw the inverse peak dot with this color.
      * This setting can be adjusted at runtime.
      */
-    bool enableVuBar = true;
+    CRGB peakInvDotColor = CRGB(0, 0, 255);
+
+    /** Render the VU level as bar.
+     * This setting can be adjusted at runtime.
+     */
+    bool enableVuBar = false;
+
+    /** Render the VU level as dot.
+     * This setting can be adjusted at runtime.
+     */
+    bool enableVuDot = true;
 
     /** Render the peak dot.
      * This setting can be adjusted at runtime.
      */
     bool enablePeakDot = true;
+
+    /** Render the inverse peak dot.
+     * This setting can be adjusted at runtime.
+     */
+    bool enablePeakInvDot = true;
 
     /** Stretch the "interesting" part of the VU meter over the entire LED strip.
      * This setting can be adjusted at runtime.
@@ -81,6 +101,13 @@ namespace EC
      * - Don't call any of its methods!
      */
     VuPeakHandler vuPeakHandler;
+
+    /** Configure the following properties according to your needs:
+     * - VuPeakHandlerInv::peakHold
+     * - VuPeakHandlerInv::peakDecay
+     * - Don't call any of its methods!
+     */
+    VuPeakHandlerInv vuPeakHandlerInv;
 
     /// Usually there's nothing to configure here; only for debugging.
     VuRangeExtender vuRangeExtender;
@@ -96,6 +123,10 @@ namespace EC
         : VuBaseFL(ledStrip, overlayMode, fadeRate_default(), audioSource)
     {
       animationDelay = 10;
+      vuPeakHandler.peakHold = 500;
+      vuPeakHandler.peakDecay = 3000;
+      vuPeakHandlerInv.peakHold = vuPeakHandler.peakHold;
+      vuPeakHandlerInv.peakDecay = vuPeakHandler.peakDecay;
     }
 
   private:
@@ -106,10 +137,20 @@ namespace EC
       {
         strip.normLineRel(0.0, _vuLevel, vuBarColor);
       }
+      if (enableVuDot)
+      {
+        strip.normLineAbs(_vuLevel, _lastVuLevel, vuDotColor);
+        // strip.normPixel(_vuLevel) = vuDotColor;
+      }
       if (enablePeakDot)
       {
         strip.optPixel(vuPeakHandler.peakLevel()) = peakDotColor;
       }
+      if (enablePeakInvDot)
+      {
+        strip.optPixel(vuPeakHandlerInv.peakLevel()) = peakInvDotColor;
+      }
+      _lastVuLevel = _vuLevel;
 
 #ifdef TESTVU1_DEBUG
       // Teleplot: VU levels
@@ -133,10 +174,12 @@ namespace EC
         _vuLevel = vuRangeExtender.process(_vuLevel);
       }
       vuPeakHandler.process(_vuLevel, currentMillis);
+      vuPeakHandlerInv.process(_vuLevel, currentMillis);
     }
 
   private:
     float _vuLevel = 0.0;
+    float _lastVuLevel = 0.0;
   };
 
 } // namespace EC

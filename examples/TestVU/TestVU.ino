@@ -127,11 +127,11 @@ void makeTestVU1(EC::AnimationRepo &repo)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     auto baseVU = new EC::TestVU1(audioSample, strip, false);
-    baseVU->vuBarColor = CRGB(64, 0, 32);
-    baseVU->peakDotColor = CRGB(64, 32, 0);
-    baseVU->vuPeakHandler.peakHold = 500;
-    baseVU->enableRangeExtender = true;
-    baseVU->fadeRate = 0;
+    // baseVU->vuBarColor = CRGB(64, 0, 32);
+    // baseVU->peakDotColor = CRGB(64, 32, 0);
+    // baseVU->vuPeakHandler.peakHold = 500;
+    // baseVU->enableRangeExtender = true;
+    // baseVU->fadeRate = 0;
 
     repo.add(baseVU);
 
@@ -142,6 +142,8 @@ void makeTestVU1(EC::AnimationRepo &repo)
 //------------------------------------------------------------------------------
 
 EC::AnimationBuilderFct allAnimations[] = {
+    &makeTestVU1,
+
     &makeSampleAvgVU,
     &makeSampleAvgVU_smoothed,
     &makeRawAudioVU,
