@@ -35,6 +35,23 @@ namespace EC
 
   //------------------------------------------------------------------------------
 
+  /** Helper for logging raw audio samples to Teleplot extension of VS Code.
+   * \a audioSample must have been normalized via AudioNormalizer.
+   * @see https://marketplace.visualstudio.com/items?itemName=alexnesnes.teleplot
+   */
+  void logAudioSample(float audioSample)
+  {
+    // Teleplot: raw audio samples
+    Serial.print(">-:");
+    Serial.println(-1.0);
+    Serial.print(">+:");
+    Serial.println(1.0);
+    Serial.print(">raw:");
+    Serial.println(audioSample);
+  }
+
+  //------------------------------------------------------------------------------
+
   /** Display the raw audio samples as VU.
    * Useful e.g. for roughly checking the audio level at the analog input pin -
    * because that signal is also used as audio source for all other VUs. \n
@@ -45,6 +62,11 @@ namespace EC
       : public AnimationBaseFL
   {
   public:
+    /** Set to true for logging audio samples over serial line (via Teleplot).
+     * @see logAudioSample()
+     */
+    bool enableTeleplot = false;
+
     /** Constructor
      * @param audioSource  Read the audio samples from there.
      * @param ledStrip  The LED strip.
@@ -69,29 +91,104 @@ namespace EC
 
       _lastSample = sample;
 
+      if (enableTeleplot)
+      {
+        logAudioSample(sample);
+      }
+
       AnimationBaseFL::processAnimation(currentMillis, wasModified);
     }
 
+  private:
     float &_audioSource;
+
     float _lastSample = 0.5;
   };
 
   //------------------------------------------------------------------------------
 
-  /** Helper for logging raw audio samples to Teleplot extension of VS Code.
-   * \a audioSample must have been normalized via AudioNormalizer.
-   * @see https://marketplace.visualstudio.com/items?itemName=alexnesnes.teleplot
+  /** A VU that takes the average of some (absolute) audio samples as VU value.
+   * There's also a floating average over the last few VU values (by default), as
+   * an attempt to make the VU appear smoother and less twitchy.
+   * But no matter how - it's not really looking very appealing. \n
+   * But the fundamentally bad part is that the VU is always higly dependant on
+   * the audio level at the analog input. \n
+   * --> Fail; not useful :-(
    */
-  void logAudioSample(float audioSample)
+  class SampleAvgVU
+      : public AnimationBaseFL
   {
-    // Teleplot: raw audio samples
-    Serial.print(">-:");
-    Serial.println(-1.0);
-    Serial.print(">+:");
-    Serial.println(1.0);
-    Serial.print(">raw:");
-    Serial.println(audioSample);
-  }
+  public:
+    /** Incorporate that many previous VU values for smoothing the output.
+     * 0 means no smoothing.
+     */
+    uint8_t smoothingFactor = 3;
+
+    /** Constructor
+     * @param audioSource  Read the audio samples from there.
+     * @param ledStrip  The LED strip.
+     */
+    SampleAvgVU(float &audioSource,
+                FastLedStrip ledStrip)
+        : AnimationBaseFL(ledStrip, false, 50), _audioSource(audioSource)
+    {
+      // Calculate the average value every 10ms, resulting in 100Hz refresh rate.
+      animationDelay = 10;
+      // The LED strip is also updated every 10ms, resulting in 100 "FPS" for the VU.
+      // -- Note: That's the default value; see AnimationBase::patternDelay.
+    }
+
+  private:
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      const float sample = _audioSource;
+      const float absSample = sample < 0.0 ? -sample : sample;
+
+      _sampleAvgSum += absSample;
+      ++_sampleCount;
+
+      AnimationBaseFL::processAnimation(currentMillis, wasModified);
+    }
+
+    /// @see AnimationBase::updateAnimation()
+    void updateAnimation(uint32_t currentMillis) override
+    {
+      if (_sampleCount == 0)
+      {
+        return;
+      }
+
+      const float thisVuLevel = _sampleAvgSum / _sampleCount;
+      _sampleAvgSum = 0.0;
+      _sampleCount = 0;
+
+      if (smoothingFactor == 0)
+      {
+        _vuLevel = thisVuLevel;
+      }
+      else
+      {
+        _vuLevel *= smoothingFactor;
+        _vuLevel += thisVuLevel;
+        _vuLevel /= smoothingFactor + 1;
+      }
+    }
+
+    /// @see AnimationBase::showOverlay()
+    void showOverlay(uint32_t currentMillis) override
+    {
+      strip.normLineRel(0.0, _vuLevel, CRGB(0, 128, 0));
+    }
+
+  private:
+    float &_audioSource;
+
+    float _vuLevel = 0.0;
+
+    float _sampleAvgSum = 0.0;
+    uint16_t _sampleCount = 0;
+  };
 
   //------------------------------------------------------------------------------
 

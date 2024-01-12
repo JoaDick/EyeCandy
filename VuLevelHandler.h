@@ -48,7 +48,7 @@ SOFTWARE.
 class VuLevelHandler
 {
 public:
-    /** Incorporate how many previous VU values for smoothing the output.
+    /** Incorporate that many previous VU values for smoothing the output.
      * 0 means no smoothing.
      */
     uint8_t smoothingFactor = 5;

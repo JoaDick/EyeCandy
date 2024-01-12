@@ -82,7 +82,28 @@ uint16_t animationDuration = defaultAnimationDuration;
 
 void makeRawAudioVU(EC::AnimationRepo &repo)
 {
-    repo.add(new EC::RawAudioVU(audioSample, {leds, NUM_LEDS}));
+    auto vu = new EC::RawAudioVU(audioSample, {leds, NUM_LEDS});
+    vu->enableTeleplot = true;
+
+    repo.add(vu);
+    // animationDuration = 10;
+}
+
+void makeSampleAvgVU(EC::AnimationRepo &repo)
+{
+    auto vu = new EC::SampleAvgVU(audioSample, {leds, NUM_LEDS});
+    vu->smoothingFactor = 0;
+
+    repo.add(vu);
+    // animationDuration = 10;
+}
+
+void makeSampleAvgVU_smoothed(EC::AnimationRepo &repo)
+{
+    auto vu = new EC::SampleAvgVU(audioSample, {leds, NUM_LEDS});
+    vu->smoothingFactor = 3;
+
+    repo.add(vu);
     // animationDuration = 10;
 }
 
@@ -121,6 +142,8 @@ void makeTestVU1(EC::AnimationRepo &repo)
 //------------------------------------------------------------------------------
 
 EC::AnimationBuilderFct allAnimations[] = {
+    &makeSampleAvgVU,
+    &makeSampleAvgVU_smoothed,
     &makeRawAudioVU,
     &makeTestVU1,
     &makeEssentialVU,
@@ -181,7 +204,7 @@ void loop()
     const uint32_t currentMillis = millis();
     audioSample = normalizer.analogRead(PIN_MIC);
 
-    EC::logAudioSample(audioSample);
+    // EC::logAudioSample(audioSample);
 
     updateColor();
     updateSpeed();
