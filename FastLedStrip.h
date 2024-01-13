@@ -156,20 +156,11 @@ namespace EC
      */
     int16_t toPixelIndex(float pos) const
     {
-#if (0)
-      // valid range is: 0.0 <= pos < 1.0
-      // example with 4 pixel:
-      // pos:    ... -0.01|0.00   0.24|0.25   0.49|0.50   0.74|0.75   0.99|1.00 ...
-      // index:  ... -0.01|0.00   0.99|1.00   1.99|2.00   2.99|3.00   3.99|4.00 ...
-      // LED:   off-strip |     0     |     1     |     2     |     3     | off-strip
-      return pos * getSize();
-#else
       // example with 5 pixel:
       // pos:    ... -0.25|-0.24  0.24|0.25   0.49|0.50   0.74|0.75   0.99|1.00   1.24|1.25 ...
       // index:  ... -0.50|-0.49  0.49|0.50   1.49|1.50   2.49|2.50   3.49|3.50   4.49|4.50 ...
       // LED:   off-strip |     0     |     1     |     2     |     3     |     4     | off-strip
       return round(pos * (getSize() - 1));
-#endif
     }
 
     /** Access the optional pixel at the normalized position \a pos.

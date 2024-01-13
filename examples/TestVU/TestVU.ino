@@ -29,6 +29,7 @@ SOFTWARE.
 //------------------------------------------------------------------------------
 
 #include <EyeCandy.h>
+// #define LED_COLOR_ORDER RGB
 // #define NUM_LEDS 50
 #include <Animation_IO_config.h>
 #include <AudioNormalizer.h>
@@ -89,18 +90,62 @@ void makeRawAudioVU(EC::AnimationRepo &repo)
     // animationDuration = 10;
 }
 
+/** Enable logging VU level over Serial.
+ * Using Teleplot extension of VS Code for rendering the diagrams.
+ * @see https://marketplace.visualstudio.com/items?itemName=alexnesnes.teleplot
+ */
+#define ENABLE_TELEPLOT 1
+
+/** Make a VU that takes the average of some (absolute) audio samples as VU value.
+ * Not really looking very appealing, and the fundamentally bad part is that the
+ * VU is always higly dependant on the audio level at the analog input.
+ * --> Fail; not useful :-(
+ */
 void makeSampleAvgVU(EC::AnimationRepo &repo)
 {
-    auto vu = new EC::SampleAvgVU(audioSample, {leds, NUM_LEDS});
+    auto drawFunction = [](EC::FastLedStrip &strip, EC::SampleAvgVU &vu)
+    {
+        strip.normLineRel(0.0, vu.vuLevelAvg, CRGB(0, 128, 0));
+
+#if (ENABLE_TELEPLOT)
+        Serial.print(">-:");
+        Serial.println(0.0);
+        Serial.print(">+:");
+        Serial.println(1.0);
+        Serial.print(">avg:");
+        Serial.println(vu.vuLevelAvg);
+#endif
+    };
+
+    auto vu = new EC::SampleAvgVU(audioSample, {leds, NUM_LEDS}, drawFunction);
     vu->smoothingFactor = 0;
 
     repo.add(vu);
     // animationDuration = 10;
 }
 
+/** Same as makeSampleAvgVU(), but with a floating average over the last few VU values.
+ * That's an attempt to make the VU appear smoother and less twitchy.
+ * But no matter how - it's still not looking very appealing.
+ * --> Next fail!
+ */
 void makeSampleAvgVU_smoothed(EC::AnimationRepo &repo)
 {
-    auto vu = new EC::SampleAvgVU(audioSample, {leds, NUM_LEDS});
+    auto drawFunction = [](EC::FastLedStrip &strip, EC::SampleAvgVU &vu)
+    {
+        strip.normLineRel(0.0, vu.vuLevelAvg, CRGB(0, 128, 0));
+
+#if (ENABLE_TELEPLOT)
+        Serial.print(">-:");
+        Serial.println(0.0);
+        Serial.print(">+:");
+        Serial.println(1.0);
+        Serial.print(">avg:");
+        Serial.println(vu.vuLevelAvg);
+#endif
+    };
+
+    auto vu = new EC::SampleAvgVU(audioSample, {leds, NUM_LEDS}, drawFunction);
     vu->smoothingFactor = 3;
 
     repo.add(vu);
@@ -142,7 +187,7 @@ void makeTestVU1(EC::AnimationRepo &repo)
 //------------------------------------------------------------------------------
 
 EC::AnimationBuilderFct allAnimations[] = {
-    &makeTestVU1,
+    // &makeTestVU1,
 
     &makeSampleAvgVU,
     &makeSampleAvgVU_smoothed,

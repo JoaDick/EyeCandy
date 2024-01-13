@@ -108,30 +108,37 @@ namespace EC
 
   //------------------------------------------------------------------------------
 
-  /** A VU that takes the average of some (absolute) audio samples as VU value.
-   * There's also a floating average over the last few VU values (by default), as
-   * an attempt to make the VU appear smoother and less twitchy.
-   * But no matter how - it's not really looking very appealing. \n
-   * But the fundamentally bad part is that the VU is always higly dependant on
-   * the audio level at the analog input. \n
-   * --> Fail; not useful :-(
+  /** A VU that takes the average of some (absolute) audio samples as VU level.
+   * There's also an option for a floating average over the last few VU level
+   * values (as an attempt to make the VU appear smoother and less twitchy).
+   * @note This VU doesn't manipulate the LED strip by itself.
+   * Instead, it requires a custom function (provided via constructor) for
+   * rendering the content on the LED strip.
    */
   class SampleAvgVU
       : public AnimationBaseFL
   {
   public:
+    /// Signature of the function for rendering the VU on the LED strip.
+    using DrawingFct = void (*)(FastLedStrip &strip, SampleAvgVU &vu);
+
     /** Incorporate that many previous VU values for smoothing the output.
      * 0 means no smoothing.
      */
-    uint8_t smoothingFactor = 3;
+    uint8_t smoothingFactor = 0;
+
+    /// VU level calculated by averaging (absolute) audio samples.
+    float vuLevelAvg = 0.0;
 
     /** Constructor
      * @param audioSource  Read the audio samples from there.
      * @param ledStrip  The LED strip.
+     * @param drawingFct  Pointer to a function for rendering the VU on the LED strip.
      */
     SampleAvgVU(float &audioSource,
-                FastLedStrip ledStrip)
-        : AnimationBaseFL(ledStrip, false, 50), _audioSource(audioSource)
+                FastLedStrip ledStrip,
+                DrawingFct drawingFct)
+        : AnimationBaseFL(ledStrip, false, 50), _audioSource(audioSource), _drawingFct(drawingFct)
     {
       // Calculate the average value every 10ms, resulting in 100Hz refresh rate.
       animationDelay = 10;
@@ -157,35 +164,36 @@ namespace EC
         return;
       }
 
-      const float thisVuLevel = _sampleAvgSum / _sampleCount;
-      _sampleAvgSum = 0.0;
-      _sampleCount = 0;
+      const float thisVuLevelAvg = _sampleAvgSum / _sampleCount;
 
       if (smoothingFactor == 0)
       {
-        _vuLevel = thisVuLevel;
+        vuLevelAvg = thisVuLevelAvg;
       }
       else
       {
-        _vuLevel *= smoothingFactor;
-        _vuLevel += thisVuLevel;
-        _vuLevel /= smoothingFactor + 1;
+        vuLevelAvg *= smoothingFactor;
+        vuLevelAvg += thisVuLevelAvg;
+        vuLevelAvg /= smoothingFactor + 1;
       }
+
+      // prepare for next intervall
+      _sampleCount = 0;
+      _sampleAvgSum = 0.0;
     }
 
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      strip.normLineRel(0.0, _vuLevel, CRGB(0, 128, 0));
+      _drawingFct(strip, *this);
     }
 
   private:
     float &_audioSource;
+    DrawingFct _drawingFct;
 
-    float _vuLevel = 0.0;
-
-    float _sampleAvgSum = 0.0;
     uint16_t _sampleCount = 0;
+    float _sampleAvgSum = 0.0;
   };
 
   //------------------------------------------------------------------------------
