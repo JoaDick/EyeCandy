@@ -75,7 +75,7 @@ public:
      */
     void addSample(float audioSample)
     {
-        _rmsSum += audioSample * audioSample;
+        _rmsSum += square(audioSample);
         ++_rmsCount;
     }
 

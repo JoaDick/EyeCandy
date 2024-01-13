@@ -149,14 +149,27 @@ namespace EC
     }
 
     /** Convert the given normalized position \a pos to its corresponding pixel index.
-     * \a pos = 0.0 corresponds to the first pixel of the strip; 0.999... corresponds to
-     * the last pixel of the strip.
-     * @note \a pos < 0.0 and \a pos >= 1.0 result in off-strip indices.
-     * But all methods can tolerate these :-)
+     * \a pos = 0.0 corresponds to the first pixel; 1.0 corresponds to the last pixel.
+     * @note \a pos < 0.0 or \a pos > 1.0 result in off-strip indices (plus giving half a pixel
+     * safety margin at both ends).
+     * However, all methods dealing with normalized positions can tolerate these :-)
      */
     int16_t toPixelIndex(float pos) const
     {
+#if (0)
+      // valid range is: 0.0 <= pos < 1.0
+      // example with 4 pixel:
+      // pos:    ... -0.01|0.00   0.24|0.25   0.49|0.50   0.74|0.75   0.99|1.00 ...
+      // index:  ... -0.01|0.00   0.99|1.00   1.99|2.00   2.99|3.00   3.99|4.00 ...
+      // LED:   off-strip |     0     |     1     |     2     |     3     | off-strip
       return pos * getSize();
+#else
+      // example with 5 pixel:
+      // pos:    ... -0.25|-0.24  0.24|0.25   0.49|0.50   0.74|0.75   0.99|1.00   1.24|1.25 ...
+      // index:  ... -0.50|-0.49  0.49|0.50   1.49|1.50   2.49|2.50   3.49|3.50   4.49|4.50 ...
+      // LED:   off-strip |     0     |     1     |     2     |     3     |     4     | off-strip
+      return round(pos * (getSize() - 1));
+#endif
     }
 
     /** Access the optional pixel at the normalized position \a pos.
@@ -164,7 +177,8 @@ namespace EC
      * This means that the (optional) pixel at exactly \a pos == 0.0 will \e not be drawn. \n
      * This may be useful when the Animation wants to implement something like a simple
      * "invalid" or "muted" state of a pixel algorithm.
-     * @see toPixelIndex(), normPixel()
+     * @param pos  Normalized pixel position.
+     * @see normPixel()
      */
     CRGB &optPixel(float pos)
     {
@@ -176,8 +190,7 @@ namespace EC
      * (i.e. the pixel's setting will be ignored). \n
      * This may be useful for Animations where something "drops off" the strip.
      * @param pos  Normalized pixel position.
-     * @note \a pos = 0.0 corresponds to the begin of the strip; 1.0 corresponds to
-     * the end of the strip.
+     * @note \a pos = 0.0 corresponds to the first pixel; 1.0 corresponds to the last pixel.
      * @see toPixelIndex()
      */
     CRGB &normPixel(float pos)
@@ -187,9 +200,7 @@ namespace EC
 
     /** Draw a line in the given \a color from the normalized position \a firstPos to \a lastPos.
      * Strip boundaries are checked, so parts of the line may even be off the strip.
-     * @note The valid position range for drawing is 0.0 <= \a pos < 1.0
-     * @note \a firstPos or \a lastPos = 0.0 corresponds to the begin of the strip,
-     * 1.0 corresponds to the end of the strip.
+     * @note \a firstPos or \a lastPos = 0.0 corresponds to the first pixel; 1.0 corresponds to the last pixel.
      * @see toPixelIndex()
      */
     void normLineAbs(float firstPos, float lastPos, CRGB color)
@@ -199,8 +210,7 @@ namespace EC
 
     /** Draw a line in the given \a color with the given \a length, starting at the normalized position \a startPos.
      * Strip boundaries are checked, so parts of the line may even be off the strip.
-     * @note \a startPos = 0.0 corresponds to the begin of the strip; 1.0 corresponds to
-     * the end of the strip. \n
+     * @note \a startPos = 0.0 corresponds to the first pixel; 1.0 corresponds to the last pixel. \n
      * \a length = 1.0 corresponds to the whole strip. \n
      * A negative value for \a length will draw in the opposite direction.
      * @see toPixelIndex()

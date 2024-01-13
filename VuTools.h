@@ -26,6 +26,7 @@ SOFTWARE.
 *******************************************************************************/
 
 #include <Arduino.h>
+#include <math.h>
 #include "AnimationBaseFL.h"
 
 //------------------------------------------------------------------------------
@@ -83,7 +84,7 @@ namespace EC
     {
       float sample = (_audioSource + 1.0) / 2.0;
 
-      strip.normPixel(0.999) = CRGB(64, 0, 0);
+      strip.normPixel(1.0) = CRGB(64, 0, 0);
       strip.normPixel(0.0) = CRGB(0, 0, 64);
 
       strip.normLineAbs(_lastSample, sample, CRGB(0, 128, 0));
@@ -142,10 +143,7 @@ namespace EC
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      const float sample = _audioSource;
-      const float absSample = sample < 0.0 ? -sample : sample;
-
-      _sampleAvgSum += absSample;
+      _sampleAvgSum += fabs(_audioSource);
       ++_sampleCount;
 
       AnimationBaseFL::processAnimation(currentMillis, wasModified);
