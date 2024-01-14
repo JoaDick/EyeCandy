@@ -54,11 +54,11 @@ public:
     uint8_t smoothingFactor = 5;
 
     /** Noise floor threshold (in dB_FS).
-     * Volume levels below that value are treated as silence.
+     * Volume levels below that value are treated as silence - like a squelch.
      * Change that value only with care; the default is fine for 10 bit ADCs
      * like in the Arduino.
      */
-    float noiseFloor = -28.5;
+    float noiseFloor_dB = -28.5;
 
     /** VU level of last call to capture().
      * @return A value between 0.0 ... 1.0, representing the current volume.
@@ -97,19 +97,19 @@ public:
         _rmsSum = 0.0;
         _rmsCount = 0;
 
-        float volume_dB = noiseFloor;
+        float volume_dB = noiseFloor_dB;
         if (volume_RMS > 0.0)
         {
             // https://en.wikipedia.org/wiki/DBFS#RMS_levels
             volume_dB = 20.0 * log10(volume_RMS) + 3.0;
-            if (volume_dB < noiseFloor)
+            if (volume_dB < noiseFloor_dB)
             {
-                volume_dB = noiseFloor;
+                volume_dB = noiseFloor_dB;
             }
         }
 
         _vuLevel *= smoothingFactor;
-        _vuLevel += (noiseFloor - volume_dB) / noiseFloor;
+        _vuLevel += (noiseFloor_dB - volume_dB) / noiseFloor_dB;
         _vuLevel /= smoothingFactor + 1;
 
         return _vuLevel;

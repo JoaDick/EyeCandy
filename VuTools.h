@@ -125,15 +125,6 @@ namespace EC
     /// Signature of the function for rendering the VU on the LED strip.
     using DrawingFct = void (*)(FastLedStrip &strip, LowLevelAudioPlaygroundVU &vu);
 
-    /** Set to true for logging averaged audio samples over serial line.
-     * Use the Teleplot extension of VS Code for rendering the diagrams.
-     * @see https://marketplace.visualstudio.com/items?itemName=alexnesnes.teleplot
-     */
-    bool enableTeleplotAvg = false;
-
-    /// Same as enableTeleplotAvg, but for RMS audio samples.
-    bool enableTeleplotRms = false;
-
     /** Incorporate that many previous VU values for smoothing the output.
      * 0 means no smoothing.
      */
@@ -155,6 +146,35 @@ namespace EC
     /// Peak detection for RMS VU level.
     VuPeakHandler vuPeakHandlerRms;
 
+    /// Same as vuLevelAvg, but on a logarithmic scale.
+    float vuLevelAvg_log = 0.0;
+
+    /// Same as vuLevelRms, but on a logarithmic scale.
+    float vuLevelRms_log = 0.0;
+
+    /// Same as vuPeakHandlerAvg, but on a logarithmic scale.
+    VuPeakHandler vuPeakHandlerAvg_log;
+
+    /// Same as vuPeakHandlerRms, but on a logarithmic scale.
+    VuPeakHandler vuPeakHandlerRms_log;
+
+    /** Set to true for logging averaged audio samples over serial line.
+     * Use the Teleplot extension of VS Code for rendering the diagrams.
+     * @see https://marketplace.visualstudio.com/items?itemName=alexnesnes.teleplot
+     */
+    bool enableTeleplotAvg = false;
+
+    /// Same as enableTeleplotAvg, but for RMS audio samples.
+    bool enableTeleplotRms = false;
+
+    /// Also enable logging of averaged / RMS audio samples on a logarithmic scale.
+    bool enableTeleplot_log = false;
+
+    /** Noise floor for conversion to a logarithmic scale.
+     * Volume levels below that value are treated as silence - like a squelch.
+     */
+    float noiseFloor_dB = -28.5;
+
     /** Constructor
      * @param audioSource  Read the audio samples from there.
      * @param ledStrip  The LED strip.
@@ -174,6 +194,11 @@ namespace EC
       vuPeakHandlerAvg.peakDecay = 2500;
       vuPeakHandlerRms.peakHold = vuPeakHandlerAvg.peakHold;
       vuPeakHandlerRms.peakDecay = vuPeakHandlerAvg.peakDecay;
+
+      vuPeakHandlerAvg_log.peakHold = vuPeakHandlerAvg.peakHold;
+      vuPeakHandlerAvg_log.peakDecay = vuPeakHandlerAvg.peakDecay;
+      vuPeakHandlerRms_log.peakHold = vuPeakHandlerAvg.peakHold;
+      vuPeakHandlerRms_log.peakDecay = vuPeakHandlerAvg.peakDecay;
     }
 
   private:
@@ -214,8 +239,33 @@ namespace EC
         vuLevelRms /= smoothingFactor + 1;
       }
 
+      float thisVuLevelAvg_dB = noiseFloor_dB;
+      if (vuLevelAvg > 0.0)
+      {
+        // https://en.wikipedia.org/wiki/DBFS#RMS_levels
+        thisVuLevelAvg_dB = 20.0 * log10(vuLevelAvg) + 3.0;
+        if (thisVuLevelAvg_dB < noiseFloor_dB)
+        {
+          thisVuLevelAvg_dB = noiseFloor_dB;
+        }
+      }
+      vuLevelAvg_log = (noiseFloor_dB - thisVuLevelAvg_dB) / noiseFloor_dB;
+
+      float thisVuLevelRms_dB = noiseFloor_dB;
+      if (vuLevelRms > 0.0)
+      {
+        thisVuLevelRms_dB = 20.0 * log10(vuLevelRms) + 3.0;
+        if (thisVuLevelRms_dB < noiseFloor_dB)
+        {
+          thisVuLevelRms_dB = noiseFloor_dB;
+        }
+      }
+      vuLevelRms_log = (noiseFloor_dB - thisVuLevelRms_dB) / noiseFloor_dB;
+
       vuPeakHandlerAvg.process(vuLevelAvg, currentMillis);
       vuPeakHandlerRms.process(vuLevelRms, currentMillis);
+      vuPeakHandlerAvg_log.process(vuLevelAvg_log, currentMillis);
+      vuPeakHandlerRms_log.process(vuLevelRms_log, currentMillis);
 
       // prepare for next intervall
       _sampleCount = 0;
@@ -237,6 +287,10 @@ namespace EC
         Serial.println(enableTeleplotAvg ? vuLevelAvg : 0.0);
         Serial.print(F(">RMS:"));
         Serial.println(enableTeleplotRms ? vuLevelRms : 0.0);
+        Serial.print(F(">avg_log:"));
+        Serial.println(enableTeleplot_log && enableTeleplotAvg ? vuLevelAvg_log : 0.0);
+        Serial.print(F(">RMS_log:"));
+        Serial.println(enableTeleplot_log && enableTeleplotRms ? vuLevelRms_log : 0.0);
       }
     }
 

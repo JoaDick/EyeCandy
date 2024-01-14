@@ -45,7 +45,7 @@ EC::AnimationRunnerM animationRunner;
 
 ButtonHandler selectButton;
 
-bool autoMode = false;
+bool autoMode = true;
 
 float audioSample = 0.0;
 AudioNormalizer normalizer;
@@ -76,7 +76,7 @@ void setup()
 
 //------------------------------------------------------------------------------
 
-const uint16_t defaultAnimationDuration = 30;
+const uint16_t defaultAnimationDuration = 10;
 uint16_t animationDuration = defaultAnimationDuration;
 
 //------------------------------------------------------------------------------
@@ -259,6 +259,110 @@ void makeAvgVsRmsVU_peak_smoothed(EC::AnimationRepo &repo)
     // animationDuration = 10;
 }
 
+/** Make a VU that displays the averaged VU values as dots on a linear and logarithmic scale.
+ * Let's try a different approach, since the difference between averaged
+ * and RMS values isn't really big. \n
+ * --> Quite twitchy... Probably a bit of smoothing should always be applied.
+ */
+void makeAvgVsAvgLog(EC::AnimationRepo &repo)
+{
+    auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
+    {
+        strip.normPixel(vu.vuLevelAvg) += CRGB(0, 32, 0);
+        strip.normPixel(vu.vuLevelAvg_log) += CRGB(32, 128, 0);
+        strip.optPixel(vu.vuPeakHandlerAvg.peakLevel()) += CRGB(0, 64, 0);
+        strip.optPixel(vu.vuPeakHandlerAvg_log.peakLevel()) += CRGB(64, 255, 0);
+    };
+
+    auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
+    vu->enableTeleplotAvg = true;
+    vu->enableTeleplot_log = true;
+    vu->smoothingFactor = 0;
+    vu->fadeRate = 0;
+
+    repo.add(vu);
+    // animationDuration = 10;
+}
+
+/** Same as makeAvgVsAvgLog(), but with smoothing.
+ * --> This Looking really promising - and also far less dependant on the audio level
+ * at the analog input.
+ */
+void makeAvgVsAvgLog_smoothed(EC::AnimationRepo &repo)
+{
+    auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
+    {
+        strip.normPixel(vu.vuLevelAvg) += CRGB(0, 32, 0);
+        strip.normPixel(vu.vuLevelAvg_log) += CRGB(32, 128, 0);
+        strip.optPixel(vu.vuPeakHandlerAvg.peakLevel()) += CRGB(0, 64, 0);
+        strip.optPixel(vu.vuPeakHandlerAvg_log.peakLevel()) += CRGB(64, 255, 0);
+    };
+
+    auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
+    vu->enableTeleplotAvg = true;
+    vu->enableTeleplot_log = true;
+    vu->smoothingFactor = 3;
+    vu->fadeRate = 0;
+
+    repo.add(vu);
+    // animationDuration = 10;
+}
+
+/** Same as makeAvgVsAvgLog(), plus RMS stuff.
+ * Let's see the difference between avg and RMS on a logarithmic scale. Smoothing is
+ * also enabled, because the twitchy stuff without it won't be helpful. \n
+ * --> Here the difference between RMS and avg still isn't too much, but much more
+ * visible. So the additional effort for RMS could probably be worth it.
+ */
+void makeAvgLogVsRmsLogVU(EC::AnimationRepo &repo)
+{
+    auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
+    {
+        strip.normPixel(vu.vuLevelAvg) += CRGB(0, 32, 0);
+        strip.normPixel(vu.vuLevelRms) += CRGB(0, 0, 32);
+        strip.normPixel(vu.vuLevelAvg_log) += CRGB(32, 128, 0);
+        strip.normPixel(vu.vuLevelRms_log) += CRGB(16, 0, 128);
+        strip.optPixel(vu.vuPeakHandlerAvg.peakLevel()) += CRGB(0, 64, 0);
+        strip.optPixel(vu.vuPeakHandlerRms.peakLevel()) += CRGB(0, 0, 64);
+        strip.optPixel(vu.vuPeakHandlerAvg_log.peakLevel()) += CRGB(64, 255, 0);
+        strip.optPixel(vu.vuPeakHandlerRms_log.peakLevel()) += CRGB(32, 0, 255);
+    };
+
+    auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
+    vu->enableTeleplotAvg = true;
+    vu->enableTeleplotRms = true;
+    vu->enableTeleplot_log = true;
+    vu->smoothingFactor = 5;
+    vu->fadeRate = 0;
+
+    repo.add(vu);
+    // animationDuration = 10;
+}
+
+/** Make the final VU - RMS on a logarithmic scale with a peak detection.
+ * --> I'd call this one a success :-) \n
+ * The only open thing is that this is still somehow dependant on the audio level
+ * at the analog input. But that's going to be another investigation...
+*/
+void makeRmsLogVU(EC::AnimationRepo &repo)
+{
+    auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
+    {
+        strip.normLineAbs(0.0, vu.vuLevelRms_log, CRGB(0, 32, 128));
+        strip.optPixel(vu.vuPeakHandlerRms_log.peakLevel()) += CRGB(64, 0, 255);
+    };
+
+    auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
+    vu->enableTeleplotRms = true;
+    vu->enableTeleplot_log = true;
+    vu->smoothingFactor = 5;
+    vu->fadeRate = 0;
+
+    repo.add(vu);
+    // animationDuration = 10;
+}
+
+/// An outlook what is possible.
 void makeEssentialVU(EC::AnimationRepo &repo)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -270,7 +374,6 @@ void makeEssentialVU(EC::AnimationRepo &repo)
     baseVU->fadeRate = 0;
 
     repo.add(baseVU);
-
     // animationDuration = 10;
 }
 
@@ -304,8 +407,10 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeAvgVsRmsVU_smoothed,
     &makeAvgVsRmsVU_peak,
     &makeAvgVsRmsVU_peak_smoothed,
-    // &makeRawAudioVU,
-    // &makeTestVU1,
+    &makeAvgVsAvgLog,
+    &makeAvgVsAvgLog_smoothed,
+    &makeAvgLogVsRmsLogVU,
+    &makeRmsLogVU,
     &makeEssentialVU,
 
     nullptr};
