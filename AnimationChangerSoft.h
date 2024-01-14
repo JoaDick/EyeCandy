@@ -158,8 +158,8 @@ namespace EC
       : public Animation
   {
     AnimationScene _scene;
-    AnimationBuilderFct *_allAnimationBuilders;
-    AnimationBuilderFct _nextAnimationBuilder = nullptr;
+    AnimationSceneBuilderFct *_allAnimationBuilders;
+    AnimationSceneBuilderFct _nextAnimationBuilder = nullptr;
     uint8_t _nextIndex;
     uint32_t _fadingStartTime = 0;
 
@@ -175,10 +175,10 @@ namespace EC
     uint16_t fadingDuration = 1000;
 
     /** Constructor.
-     * @param allAnimations  Array with all functions that set up an Animation Scene.
+     * @param allAnimations  Array with all functions that set up an AnimationScene.
      *                       Last entry must be NULL.
      */
-    explicit AnimationSceneChangerSoft(AnimationBuilderFct allAnimations[])
+    explicit AnimationSceneChangerSoft(AnimationSceneBuilderFct allAnimations[])
         : _allAnimationBuilders(allAnimations)
     {
       selectFirst();

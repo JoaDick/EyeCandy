@@ -26,7 +26,6 @@ SOFTWARE.
 *******************************************************************************/
 
 #include "Animation.h"
-#include "AnimationRepo.h" // Deprecated - only temporary.
 
 //------------------------------------------------------------------------------
 
@@ -45,8 +44,7 @@ namespace EC
    * destroy them accordingly.
    */
   class AnimationScene
-      : public Animation,
-        public AnimationRepo // Deprecated - only temporary for compatibility.
+      : public Animation
   {
   public:
     /// Destructor. Also destroys all previously added Animations.
@@ -62,19 +60,7 @@ namespace EC
     template <class AnimationType>
     AnimationType *append(AnimationType *animation)
     {
-#if (1)
-      add(animation);
-#else
-      Animation *tail = findTail();
-      if (tail)
-      {
-        tail->next = animation;
-      }
-      else
-      {
-        _head = animation;
-      }
-#endif
+      intern_add(animation);
       return animation;
     }
 
@@ -94,13 +80,8 @@ namespace EC
     }
 
   private:
-    /// @see AnimationRepo::add()
-    /// Deprecated - only temporary for compatibility.
-    bool add(Animation *animation) override
+    void intern_add(Animation *animation)
     {
-#if (0)
-      append(animation);
-#else
       Animation *tail = findTail();
       if (tail)
       {
@@ -110,15 +91,6 @@ namespace EC
       {
         _head = animation;
       }
-#endif
-      return true;
-    }
-
-    /// @see AnimationRepo::add()
-    /// Deprecated - only temporary for compatibility.
-    bool add(Animation &animation) override
-    {
-      return false;
     }
 
     /// @see Animation::processAnimation()
@@ -147,5 +119,12 @@ namespace EC
   private:
     Animation *_head = nullptr;
   };
+
+  //------------------------------------------------------------------------------
+
+  /** Pointer to a function that composes an AnimationScene.
+   * @param scene  Append Animations there.
+   */
+  using AnimationSceneBuilderFct = void (*)(AnimationScene &scene);
 
 } // namespace EC

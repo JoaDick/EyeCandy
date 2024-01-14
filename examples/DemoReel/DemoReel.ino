@@ -38,9 +38,6 @@ SOFTWARE.
 // the LED strip
 CRGB leds[NUM_LEDS];
 
-// // run max. 8 Animations simultaneously
-// EC::AnimationRunnerS animationRunner;
-
 ButtonHandler selectButton;
 
 bool autoMode = true;
@@ -74,49 +71,49 @@ const uint16_t animationDuration = defaultAnimationDuration;
 
 // ---------- Animations ----------
 
-void makeBalls(EC::AnimationRepo &repo)
+void makeBalls(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::BouncingBalls<>(strip, false));
+    scene.append(new EC::BouncingBalls<>(strip, false));
 }
 
-void makeFloatingBlobs(EC::AnimationRepo &repo)
+void makeFloatingBlobs(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::FloatingBlobs(strip));
+    scene.append(new EC::FloatingBlobs(strip));
 }
 
-void makeBubbles(EC::AnimationRepo &repo)
+void makeBubbles(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::Pacifica(strip));
-    repo.add(new EC::FadeOut(strip, true, 150));
-    repo.add(new EC::Bubbles(strip, true));
+    scene.append(new EC::Pacifica(strip));
+    scene.append(new EC::FadeOut(strip, true, 150));
+    scene.append(new EC::Bubbles(strip, true));
 }
 
-void makeFire(EC::AnimationRepo &repo)
+void makeFire(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     auto fire = new EC::Fire2012<NUM_LEDS>(strip);
     auto fireChanger = new EC::Fire2012Changer<NUM_LEDS>(*fire);
 
-    repo.add(fireChanger);
-    repo.add(fire);
+    scene.append(fireChanger);
+    scene.append(fire);
 }
 
-void makeGlitterDot(EC::AnimationRepo &repo)
+void makeGlitterDot(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::Glitter(strip, false));
-    repo.add(new EC::MovingDot(strip, true /*, CRGB::Red*/));
+    scene.append(new EC::Glitter(strip, false));
+    scene.append(new EC::MovingDot(strip, true /*, CRGB::Red*/));
 }
 
-void makeFireAndBalls(EC::AnimationRepo &repo)
+void makeFireAndBalls(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
@@ -127,23 +124,23 @@ void makeFireAndBalls(EC::AnimationRepo &repo)
 
     auto balls = new EC::BouncingBalls<>(strip.getReversedStrip(), true);
 
-    repo.add(fire);
-    repo.add(balls);
+    scene.append(fire);
+    scene.append(balls);
 }
 
-void makeFireworks(EC::AnimationRepo &repo)
+void makeFireworks(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::FadeOut(strip, false, EC::Firework_fadeRate_default()));
-    repo.add(new EC::Firework<>(strip, true, 1500));
-    repo.add(new EC::Firework<>(strip, true, 3100));
-    repo.add(new EC::Firework<>(strip, true, 4700));
-    repo.add(new EC::Firework<>(strip, true, 6300));
-    repo.add(new EC::Firework<>(strip, true, 7900));
+    scene.append(new EC::FadeOut(strip, false, EC::Firework_fadeRate_default()));
+    scene.append(new EC::Firework<>(strip, true, 1500));
+    scene.append(new EC::Firework<>(strip, true, 3100));
+    scene.append(new EC::Firework<>(strip, true, 4700));
+    scene.append(new EC::Firework<>(strip, true, 6300));
+    scene.append(new EC::Firework<>(strip, true, 7900));
 }
 
-void makeFlare(EC::AnimationRepo &repo)
+void makeFlare(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
@@ -154,79 +151,79 @@ void makeFlare(EC::AnimationRepo &repo)
     fire->SPARKING = 75;
     fire->animationDelay = 10;
 
-    repo.add(fire);
-    repo.add(new EC::Kaleidoscope(strip));
+    scene.append(fire);
+    scene.append(new EC::Kaleidoscope(strip));
 }
 
-void makePacifica(EC::AnimationRepo &repo)
+void makePacifica(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::Pacifica(strip));
+    scene.append(new EC::Pacifica(strip));
 }
 
-void makePride(EC::AnimationRepo &repo)
+void makePride(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::Pride2015(strip));
+    scene.append(new EC::Pride2015(strip));
 }
 
-void makePrideMirror(EC::AnimationRepo &repo)
+void makePrideMirror(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::Pride2015(strip.getHalfStrip(true)));
-    repo.add(new EC::Kaleidoscope(strip));
+    scene.append(new EC::Pride2015(strip.getHalfStrip(true)));
+    scene.append(new EC::Kaleidoscope(strip));
 }
 
-void makeRainbow(EC::AnimationRepo &repo)
+void makeRainbow(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::Rainbow(strip));
+    scene.append(new EC::Rainbow(strip));
 }
 
-void makeRainbowBuiltin(EC::AnimationRepo &repo)
+void makeRainbowBuiltin(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::RainbowBuiltin(strip));
+    scene.append(new EC::RainbowBuiltin(strip));
 }
 
-void makeRgbBlocks(EC::AnimationRepo &repo)
+void makeRgbBlocks(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::RgbBlocks(strip));
+    scene.append(new EC::RgbBlocks(strip));
 }
 
-void makeRainbowTwinkle(EC::AnimationRepo &repo)
+void makeRainbowTwinkle(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     auto rainbow = new EC::RainbowTwinkle(strip);
     rainbow->animationDelay = 25;
-    repo.add(rainbow);
+    scene.append(rainbow);
 }
 
-void makeTwinkles(EC::AnimationRepo &repo)
+void makeTwinkles(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::Twinkles(strip, false));
+    scene.append(new EC::Twinkles(strip, false));
 }
 
-void makeWaterfall(EC::AnimationRepo &repo)
+void makeWaterfall(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::Waterfall(strip));
+    scene.append(new EC::Waterfall(strip));
 }
 
 //------------------------------------------------------------------------------
 
-EC::AnimationBuilderFct allAnimations[] = {
+EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeRgbBlocks,
 
     &makeTwinkles,
@@ -247,7 +244,8 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeFireworks,
     nullptr};
 
-EC::AnimationSceneChangerSoft animationChanger(/*animationRunner,*/ allAnimations);
+// EC::AnimationSceneChanger animationChanger(allAnimations);
+EC::AnimationSceneChangerSoft animationChanger(allAnimations);
 
 //------------------------------------------------------------------------------
 

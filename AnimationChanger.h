@@ -100,15 +100,15 @@ namespace EC
       : public Animation
   {
     AnimationScene _scene;
-    AnimationBuilderFct *_allAnimationBuilders;
+    AnimationSceneBuilderFct *_allAnimationBuilders;
     uint8_t _nextIndex;
 
   public:
     /** Constructor.
-     * @param allAnimations Array with all functions that set up an Animation Scene.
+     * @param allAnimations Array with all functions that set up an AnimationScene.
      *                      Last entry must be NULL.
      */
-    explicit AnimationSceneChanger(AnimationBuilderFct allAnimations[])
+    explicit AnimationSceneChanger(AnimationSceneBuilderFct allAnimations[])
         : _allAnimationBuilders(allAnimations)
     {
       selectFirst();
@@ -127,7 +127,7 @@ namespace EC
     uint8_t selectNext()
     {
       const uint8_t retval = _nextIndex;
-      AnimationBuilderFct animationBuilder = _allAnimationBuilders[_nextIndex];
+      AnimationSceneBuilderFct animationBuilder = _allAnimationBuilders[_nextIndex];
       if (animationBuilder)
       {
         _scene.reset();
