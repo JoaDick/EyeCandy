@@ -43,11 +43,11 @@ namespace EC
   void logAudioSample(float audioSample)
   {
     // Teleplot: raw audio samples
-    Serial.print(">-:");
+    Serial.print(F(">-:"));
     Serial.println(-1.0);
-    Serial.print(">+:");
+    Serial.print(F(">+:"));
     Serial.println(1.0);
-    Serial.print(">raw:");
+    Serial.print(F(">raw:"));
     Serial.println(audioSample);
   }
 
@@ -64,6 +64,8 @@ namespace EC
   {
   public:
     /** Set to true for logging audio samples over serial line (via Teleplot).
+     * Use the Teleplot extension of VS Code for rendering the diagrams.
+     * @see https://marketplace.visualstudio.com/items?itemName=alexnesnes.teleplot
      * @see logAudioSample()
      */
     bool enableTeleplot = false;
@@ -108,36 +110,49 @@ namespace EC
 
   //------------------------------------------------------------------------------
 
-  /** A VU that takes the average of some (absolute) audio samples as VU level.
-   * There's also an option for a floating average over the last few VU level
-   * values (as an attempt to make the VU appear smoother and less twitchy).
+  /** A VU as playground for exploring low level audio processing.
    * @note This VU doesn't manipulate the LED strip by itself.
    * Instead, it requires a custom function (provided via constructor) for
-   * rendering the content on the LED strip.
+   * rendering the content on the LED strip. \n
+   * Its main purpose is to provide a playground for exploring the low level math
+   * behind the scenes.
    */
-  class SampleAvgVU
+  class LowLevelAudioPlaygroundVU
       : public AnimationBaseFL
   {
   public:
     /// Signature of the function for rendering the VU on the LED strip.
-    using DrawingFct = void (*)(FastLedStrip &strip, SampleAvgVU &vu);
+    using DrawingFct = void (*)(FastLedStrip &strip, LowLevelAudioPlaygroundVU &vu);
+
+    /** Set to true for logging audio samples over serial line.
+     * Use the Teleplot extension of VS Code for rendering the diagrams.
+     * @see https://marketplace.visualstudio.com/items?itemName=alexnesnes.teleplot
+     */
+    bool enableTeleplot = false;
 
     /** Incorporate that many previous VU values for smoothing the output.
      * 0 means no smoothing.
      */
     uint8_t smoothingFactor = 0;
 
-    /// VU level calculated by averaging (absolute) audio samples.
+    /** VU level calculated by averaging (absolute) audio samples.
+     * This value can be used by the function for rendering the VU on the LED strip.
+     */
     float vuLevelAvg = 0.0;
+
+    /** VU level calculated as RMS of the audio samples.
+     * This value can be used by the function for rendering the VU on the LED strip.
+     */
+    float vuLevelRms = 0.0;
 
     /** Constructor
      * @param audioSource  Read the audio samples from there.
      * @param ledStrip  The LED strip.
      * @param drawingFct  Pointer to a function for rendering the VU on the LED strip.
      */
-    SampleAvgVU(float &audioSource,
-                FastLedStrip ledStrip,
-                DrawingFct drawingFct)
+    LowLevelAudioPlaygroundVU(float &audioSource,
+                              FastLedStrip ledStrip,
+                              DrawingFct drawingFct)
         : AnimationBaseFL(ledStrip, false, 50), _audioSource(audioSource), _drawingFct(drawingFct)
     {
       // Calculate the average value every 10ms, resulting in 100Hz refresh rate.
@@ -151,6 +166,7 @@ namespace EC
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
       _sampleAvgSum += fabs(_audioSource);
+      _sampleRmsSum += square(_audioSource);
       ++_sampleCount;
 
       AnimationBaseFL::processAnimation(currentMillis, wasModified);
@@ -165,27 +181,45 @@ namespace EC
       }
 
       const float thisVuLevelAvg = _sampleAvgSum / _sampleCount;
+      const float thisVuLevelRms = sqrt(_sampleRmsSum / _sampleCount);
 
       if (smoothingFactor == 0)
       {
         vuLevelAvg = thisVuLevelAvg;
+        vuLevelRms = thisVuLevelRms;
       }
       else
       {
         vuLevelAvg *= smoothingFactor;
         vuLevelAvg += thisVuLevelAvg;
         vuLevelAvg /= smoothingFactor + 1;
+
+        vuLevelRms *= smoothingFactor;
+        vuLevelRms += thisVuLevelRms;
+        vuLevelRms /= smoothingFactor + 1;
       }
 
       // prepare for next intervall
       _sampleCount = 0;
       _sampleAvgSum = 0.0;
+      _sampleRmsSum = 0.0;
     }
 
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
       _drawingFct(strip, *this);
+      if (enableTeleplot)
+      {
+        Serial.print(F(">-:"));
+        Serial.println(0.0);
+        Serial.print(F(">+:"));
+        Serial.println(1.0);
+        Serial.print(F(">avg:"));
+        Serial.println(vuLevelAvg);
+        Serial.print(F(">RMS:"));
+        Serial.println(vuLevelRms);
+      }
     }
 
   private:
@@ -194,6 +228,7 @@ namespace EC
 
     uint16_t _sampleCount = 0;
     float _sampleAvgSum = 0.0;
+    float _sampleRmsSum = 0.0;
   };
 
   //------------------------------------------------------------------------------

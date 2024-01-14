@@ -84,17 +84,11 @@ uint16_t animationDuration = defaultAnimationDuration;
 void makeRawAudioVU(EC::AnimationRepo &repo)
 {
     auto vu = new EC::RawAudioVU(audioSample, {leds, NUM_LEDS});
-    vu->enableTeleplot = true;
+    // vu->enableTeleplot = true;
 
     repo.add(vu);
     // animationDuration = 10;
 }
-
-/** Enable logging VU level over Serial.
- * Using Teleplot extension of VS Code for rendering the diagrams.
- * @see https://marketplace.visualstudio.com/items?itemName=alexnesnes.teleplot
- */
-#define ENABLE_TELEPLOT 1
 
 /** Make a VU that takes the average of some (absolute) audio samples as VU value.
  * Not really looking very appealing, and the fundamentally bad part is that the
@@ -103,21 +97,13 @@ void makeRawAudioVU(EC::AnimationRepo &repo)
  */
 void makeSampleAvgVU(EC::AnimationRepo &repo)
 {
-    auto drawFunction = [](EC::FastLedStrip &strip, EC::SampleAvgVU &vu)
+    auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
     {
         strip.normLineRel(0.0, vu.vuLevelAvg, CRGB(0, 128, 0));
-
-#if (ENABLE_TELEPLOT)
-        Serial.print(">-:");
-        Serial.println(0.0);
-        Serial.print(">+:");
-        Serial.println(1.0);
-        Serial.print(">avg:");
-        Serial.println(vu.vuLevelAvg);
-#endif
     };
 
-    auto vu = new EC::SampleAvgVU(audioSample, {leds, NUM_LEDS}, drawFunction);
+    auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
+    vu->enableTeleplot = true;
     vu->smoothingFactor = 0;
 
     repo.add(vu);
@@ -131,22 +117,102 @@ void makeSampleAvgVU(EC::AnimationRepo &repo)
  */
 void makeSampleAvgVU_smoothed(EC::AnimationRepo &repo)
 {
-    auto drawFunction = [](EC::FastLedStrip &strip, EC::SampleAvgVU &vu)
+    auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
     {
         strip.normLineRel(0.0, vu.vuLevelAvg, CRGB(0, 128, 0));
+    };
 
-#if (ENABLE_TELEPLOT)
-        Serial.print(">-:");
-        Serial.println(0.0);
-        Serial.print(">+:");
-        Serial.println(1.0);
-        Serial.print(">avg:");
-        Serial.println(vu.vuLevelAvg);
+    auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
+    vu->enableTeleplot = true;
+    vu->smoothingFactor = 3;
+
+    repo.add(vu);
+    // animationDuration = 10;
+}
+
+/** Make a VU that takes the RMS (Root Mean Square) of audio samples as VU value.
+ * Interestingly, this is looking very similar to makeSampleAvgVU(), so smoothing this
+ * VU can probably be skipped... However, let's try to compare Average and RMS directly.
+ * @see https://audiosorcerer.com/post/rms-in-audio/#4-what-is-rms-in-audio
+ */
+void makeSampleRmsVU(EC::AnimationRepo &repo)
+{
+    auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
+    {
+        strip.normLineRel(0.0, vu.vuLevelRms, CRGB(0, 0, 128));
+    };
+
+    auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
+    vu->enableTeleplot = true;
+    vu->smoothingFactor = 0;
+
+    repo.add(vu);
+    // animationDuration = 10;
+}
+
+/** Make a VU that displays tha averaged VU values and RMS VU values as dots.
+ * Just to compare them. It seems like RMS level is only slightly higher than avg level.
+ */
+void makeAvgVsRmsVU(EC::AnimationRepo &repo)
+{
+    auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
+    {
+#if (1)
+        strip.normPixel(vu.vuLevelAvg) += CRGB(0, 128, 0);
+        strip.normPixel(vu.vuLevelRms) += CRGB(0, 0, 128);
+#else
+        const auto indexVuLevelAvg = strip.toPixelIndex(vu.vuLevelAvg);
+        const auto indexVuLevelRms = strip.toPixelIndex(vu.vuLevelRms);
+        for (auto i = 0; i < indexVuLevelAvg; ++i)
+        {
+            strip.pixel(i) += CRGB(0, 128, 0);
+        }
+        for (auto i = 0; i < indexVuLevelRms; ++i)
+        {
+            strip.pixel(i) += CRGB(0, 0, 128);
+        }
 #endif
     };
 
-    auto vu = new EC::SampleAvgVU(audioSample, {leds, NUM_LEDS}, drawFunction);
+    auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
+    vu->enableTeleplot = true;
+    vu->smoothingFactor = 0;
+    vu->fadeRate = 0;
+
+    repo.add(vu);
+    // animationDuration = 10;
+}
+
+/** Same as makeAvgVsRmsVU(), but with a floating average over the last few VU values.
+ * This also shows clearly that RMS level is only slightly higher than avg level.
+ * In Conclusion, the additional math for RMS over averaging might not be worth the
+ * effort (at least not from just a visual standpoint).
+ */
+void makeAvgVsRmsVU_smoothed(EC::AnimationRepo &repo)
+{
+    auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
+    {
+#if (1)
+        strip.normPixel(vu.vuLevelAvg) += CRGB(0, 128, 0);
+        strip.normPixel(vu.vuLevelRms) += CRGB(0, 0, 128);
+#else
+        const auto indexVuLevelAvg = strip.toPixelIndex(vu.vuLevelAvg);
+        const auto indexVuLevelRms = strip.toPixelIndex(vu.vuLevelRms);
+        for (auto i = 0; i < indexVuLevelAvg; ++i)
+        {
+            strip.pixel(i) += CRGB(0, 128, 0);
+        }
+        for (auto i = 0; i < indexVuLevelRms; ++i)
+        {
+            strip.pixel(i) += CRGB(0, 0, 128);
+        }
+#endif
+    };
+
+    auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
+    vu->enableTeleplot = true;
     vu->smoothingFactor = 3;
+    vu->fadeRate = 0;
 
     repo.add(vu);
     // animationDuration = 10;
@@ -187,12 +253,18 @@ void makeTestVU1(EC::AnimationRepo &repo)
 //------------------------------------------------------------------------------
 
 EC::AnimationBuilderFct allAnimations[] = {
-    // &makeTestVU1,
+    // &makeRawAudioVU,
+
+    &makeAvgVsRmsVU,
+    &makeAvgVsRmsVU_smoothed,
 
     &makeSampleAvgVU,
     &makeSampleAvgVU_smoothed,
+    &makeSampleRmsVU,
+    &makeAvgVsRmsVU,
+    &makeAvgVsRmsVU_smoothed,
     &makeRawAudioVU,
-    &makeTestVU1,
+    // &makeTestVU1,
     &makeEssentialVU,
 
     nullptr};
