@@ -103,7 +103,7 @@ void makeSampleAvgVU(EC::AnimationRepo &repo)
     };
 
     auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
-    vu->enableTeleplot = true;
+    vu->enableTeleplotAvg = true;
     vu->smoothingFactor = 0;
 
     repo.add(vu);
@@ -123,7 +123,7 @@ void makeSampleAvgVU_smoothed(EC::AnimationRepo &repo)
     };
 
     auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
-    vu->enableTeleplot = true;
+    vu->enableTeleplotAvg = true;
     vu->smoothingFactor = 3;
 
     repo.add(vu);
@@ -143,7 +143,7 @@ void makeSampleRmsVU(EC::AnimationRepo &repo)
     };
 
     auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
-    vu->enableTeleplot = true;
+    vu->enableTeleplotRms = true;
     vu->smoothingFactor = 0;
 
     repo.add(vu);
@@ -161,7 +161,7 @@ void makeSampleRmsVU_smoothed(EC::AnimationRepo &repo)
     };
 
     auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
-    vu->enableTeleplot = true;
+    vu->enableTeleplotRms = true;
     vu->smoothingFactor = 3;
 
     repo.add(vu);
@@ -180,7 +180,8 @@ void makeAvgVsRmsVU(EC::AnimationRepo &repo)
     };
 
     auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
-    vu->enableTeleplot = true;
+    vu->enableTeleplotAvg = true;
+    vu->enableTeleplotRms = true;
     vu->smoothingFactor = 0;
     vu->fadeRate = 0;
 
@@ -202,7 +203,8 @@ void makeAvgVsRmsVU_smoothed(EC::AnimationRepo &repo)
     };
 
     auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
-    vu->enableTeleplot = true;
+    vu->enableTeleplotAvg = true;
+    vu->enableTeleplotRms = true;
     vu->smoothingFactor = 3;
     vu->fadeRate = 0;
 
@@ -224,7 +226,8 @@ void makeAvgVsRmsVU_peak(EC::AnimationRepo &repo)
     };
 
     auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
-    vu->enableTeleplot = true;
+    vu->enableTeleplotAvg = true;
+    vu->enableTeleplotRms = true;
     vu->smoothingFactor = 0;
     vu->fadeRate = 0;
 
@@ -247,7 +250,8 @@ void makeAvgVsRmsVU_peak_smoothed(EC::AnimationRepo &repo)
     };
 
     auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
-    vu->enableTeleplot = true;
+    vu->enableTeleplotAvg = true;
+    vu->enableTeleplotRms = true;
     vu->smoothingFactor = 3;
     vu->fadeRate = 0;
 

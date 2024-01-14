@@ -125,11 +125,14 @@ namespace EC
     /// Signature of the function for rendering the VU on the LED strip.
     using DrawingFct = void (*)(FastLedStrip &strip, LowLevelAudioPlaygroundVU &vu);
 
-    /** Set to true for logging audio samples over serial line.
+    /** Set to true for logging averaged audio samples over serial line.
      * Use the Teleplot extension of VS Code for rendering the diagrams.
      * @see https://marketplace.visualstudio.com/items?itemName=alexnesnes.teleplot
      */
-    bool enableTeleplot = false;
+    bool enableTeleplotAvg = false;
+
+    /// Same as enableTeleplotAvg, but for RMS audio samples.
+    bool enableTeleplotRms = false;
 
     /** Incorporate that many previous VU values for smoothing the output.
      * 0 means no smoothing.
@@ -224,16 +227,16 @@ namespace EC
     void showOverlay(uint32_t currentMillis) override
     {
       _drawingFct(strip, *this);
-      if (enableTeleplot)
+      if (enableTeleplotAvg || enableTeleplotRms)
       {
         Serial.print(F(">-:"));
         Serial.println(0.0);
         Serial.print(F(">+:"));
         Serial.println(1.0);
         Serial.print(F(">avg:"));
-        Serial.println(vuLevelAvg);
+        Serial.println(enableTeleplotAvg ? vuLevelAvg : 0.0);
         Serial.print(F(">RMS:"));
-        Serial.println(vuLevelRms);
+        Serial.println(enableTeleplotRms ? vuLevelRms : 0.0);
       }
     }
 
