@@ -38,14 +38,14 @@ SOFTWARE.
 // the LED strip
 CRGB leds[NUM_LEDS];
 
-// run max. 8 Animations simultaneously
-EC::AnimationRunnerS animationRunner;
+// // run max. 8 Animations simultaneously
+// EC::AnimationRunnerS animationRunner;
 
 ButtonHandler selectButton;
 
 bool autoMode = true;
 
-#define PRINT_MEMORY_USAGE 0
+#define PRINT_MEMORY_USAGE 1
 
 //------------------------------------------------------------------------------
 
@@ -247,7 +247,7 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeFireworks,
     nullptr};
 
-EC::AnimationChangerSoft animationChanger(animationRunner, allAnimations);
+EC::AnimationSceneChangerSoft animationChanger(/*animationRunner,*/ allAnimations);
 
 //------------------------------------------------------------------------------
 

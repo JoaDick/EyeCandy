@@ -40,6 +40,9 @@ namespace EC
   class Animation
   {
   public:
+    Animation(const Animation &) = delete;
+    Animation &operator=(const Animation &) = delete;
+
     /// Destructor.
     virtual ~Animation() = default;
 
@@ -97,7 +100,9 @@ namespace EC
       processAnimation(currentMillis, wasModified);
     }
 
-  private:
+  protected:
+    Animation() = default;
+
     /** Process the Animation.
      * This method must be implemented by all child classes.
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
@@ -107,6 +112,11 @@ namespace EC
      * Its value shall be set to true when the Animation changed the strip's content.
      */
     virtual void processAnimation(uint32_t currentMillis, bool &wasModified) = 0;
+
+  private:
+    // Only for use by friend classes.
+    Animation *next = nullptr;
+    friend class AnimationScene;
   };
 
 } // namespace EC

@@ -1,0 +1,66 @@
+
+
+
+240114 AnimationScene initial commit
+
+Sketch uses 27198 bytes (84%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1011 bytes (49%) of dynamic memory, leaving 1037 bytes for local variables. Maximum is 2048 bytes.
+
+BouncingBalls<> = 91
+Bubbles = 191
+FadeOut = 21
+Fire2012<*> = 162
+Fire2012Changer = 16
+Firework<> = 157
+FireworkParticle = 22
+FloatingBlobs = 226
+Glitter = 26
+Kaleidoscope = 22
+MovingDot = 27
+Pacifica = 165
+Pride2015 = 28
+Rainbow = 25
+RainbowBuiltin = 23
+RainbowTwinkle = 22
+RgbBlocks = 24
+StaticBackground = 24
+Twinkles = 22
+Waterfall = 396
+WaterfallDroplet = 25
+
+
+
+240114 Baseline
+---------------
+* 89ec5f2 Merge branch 'master' into feature/TestVU
+* Arduino Uno
+* DemoReel.ino
+* #define PRINT_MEMORY_USAGE 1
++ without using makeRgbBlocks()
+
+Sketch uses 27248 bytes (84%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1025 bytes (50%) of dynamic memory, leaving 1023 bytes for local variables. Maximum is 2048 bytes.
+
+Memory usage for 90 LEDs:
+<*> is dependant on NUM_LEDS
+BouncingBalls<> = 89
+Bubbles = 189
+FadeOut = 19
+Fire2012<*> = 160
+Fire2012Changer = 14
+Firework<> = 155
+FireworkParticle = 22
+FloatingBlobs = 224
+Glitter = 24
+Kaleidoscope = 20
+MovingDot = 25
+Pacifica = 163
+Pride2015 = 26
+Rainbow = 23
+RainbowBuiltin = 21
+RainbowTwinkle = 20
+RgbBlocks = 22
+StaticBackground = 22
+Twinkles = 20
+Waterfall = 394
+WaterfallDroplet = 25

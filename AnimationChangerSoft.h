@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include <FastLED.h>
 #include "AnimationRunner.h"
+#include "AnimationScene.h"
 
 //------------------------------------------------------------------------------
 
@@ -143,5 +144,119 @@ namespace EC
       return map(quadBrightness, 0, 255, 0, maxBrightness);
     }
   };
+
+  //------------------------------------------------------------------------------
+
+  /** Alternative helper class for cycling through different Animation Scenes.
+   * Same as AnimationChangerSoft, but uses an internal AnimationScene (instead of
+   * an external AnimationRunner). \n
+   * Implements a soft fade-out / fade-in effect when changing the Animation.
+   * @note This class controls the overall brightness of the LED strip via
+   * FastLED.setBrightness()
+   */
+  class AnimationSceneChangerSoft
+      : public Animation
+  {
+    AnimationScene _scene;
+    AnimationBuilderFct *_allAnimationBuilders;
+    AnimationBuilderFct _nextAnimationBuilder = nullptr;
+    uint8_t _nextIndex;
+    uint32_t _fadingStartTime = 0;
+
+  public:
+    /** Maximum brightness of the LED strip.
+     * This setting can be adjusted at runtime.
+     */
+    uint8_t maxBrightness = 255;
+
+    /** Total duration of the fade-out & fade-in effect (in ms).
+     * This setting can be adjusted at runtime.
+     */
+    uint16_t fadingDuration = 1000;
+
+    /** Constructor.
+     * @param allAnimations  Array with all functions that set up an Animation Scene.
+     *                       Last entry must be NULL.
+     */
+    explicit AnimationSceneChangerSoft(AnimationBuilderFct allAnimations[])
+        : _allAnimationBuilders(allAnimations)
+    {
+      selectFirst();
+    }
+
+    /// Select the first AnimationScene.
+    void selectFirst()
+    {
+      _nextIndex = 0;
+      selectNext();
+    }
+
+    /** Select the next AnimationScene.
+     * @return Index of currently selected AnimationScene.
+     */
+    uint8_t selectNext()
+    {
+      const uint8_t retval = _nextIndex;
+      _nextAnimationBuilder = _allAnimationBuilders[_nextIndex];
+      if (_nextAnimationBuilder)
+      {
+        if (_allAnimationBuilders[++_nextIndex] == nullptr)
+        {
+          _nextIndex = 0;
+        }
+      }
+      return retval;
+    }
+
+  private:
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      _scene.process(currentMillis, wasModified);
+      FastLED.setBrightness(processTakeover(currentMillis));
+    }
+
+    uint8_t processTakeover(uint32_t currentMillis)
+    {
+      int16_t linearBrightness = 255;
+
+      // must fade out?
+      if (_nextAnimationBuilder)
+      {
+        if (_fadingStartTime == 0)
+        {
+          _fadingStartTime = currentMillis;
+        }
+        linearBrightness = map(currentMillis, _fadingStartTime, _fadingStartTime + fadingDuration / 2, 255, 0);
+        if (linearBrightness <= 0)
+        {
+          linearBrightness = 0;
+          FastLED.clear();
+          _scene.reset();
+          _nextAnimationBuilder(_scene);
+          _nextAnimationBuilder = nullptr;
+          _fadingStartTime = currentMillis;
+        }
+      }
+      else
+      {
+        // must fade in?
+        if (_fadingStartTime > 0)
+        {
+          linearBrightness = map(currentMillis, _fadingStartTime, _fadingStartTime + fadingDuration / 2, 0, 255);
+          if (linearBrightness >= 255)
+          {
+            linearBrightness = 255;
+            _fadingStartTime = 0;
+          }
+        }
+      }
+
+      const uint16_t quadBrightness = (linearBrightness * linearBrightness) >> 8;
+      return map(quadBrightness, 0, 255, 0, maxBrightness);
+    }
+  };
+
+  //------------------------------------------------------------------------------
 
 } // namespace EC
