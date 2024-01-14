@@ -45,7 +45,7 @@ ButtonHandler selectButton;
 
 bool autoMode = true;
 
-#define PRINT_MEMORY_USAGE 1
+#define PRINT_MEMORY_USAGE 0
 
 //------------------------------------------------------------------------------
 
@@ -113,7 +113,7 @@ void makeGlitterDot(EC::AnimationRepo &repo)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     repo.add(new EC::Glitter(strip, false));
-    repo.add(new EC::MovingDot(strip, true/*, CRGB::Red*/));
+    repo.add(new EC::MovingDot(strip, true /*, CRGB::Red*/));
 }
 
 void makeFireAndBalls(EC::AnimationRepo &repo)
@@ -228,7 +228,6 @@ void makeWaterfall(EC::AnimationRepo &repo)
 
 EC::AnimationBuilderFct allAnimations[] = {
     // &makeRgbBlocks,
-    // &makeFireworks,
 
     &makeTwinkles,
     &makeRainbowBuiltin,
