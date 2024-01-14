@@ -150,28 +150,33 @@ void makeSampleRmsVU(EC::AnimationRepo &repo)
     // animationDuration = 10;
 }
 
-/** Make a VU that displays tha averaged VU values and RMS VU values as dots.
+/** Same as makeSampleRmsVU(), but with a floating average over the last few VU values (smoothing).
+ * Not really much helpful, but mainly for completeness of the comparisons.
+ */
+void makeSampleRmsVU_smoothed(EC::AnimationRepo &repo)
+{
+    auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
+    {
+        strip.normLineRel(0.0, vu.vuLevelRms, CRGB(0, 0, 128));
+    };
+
+    auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
+    vu->enableTeleplot = true;
+    vu->smoothingFactor = 3;
+
+    repo.add(vu);
+    // animationDuration = 10;
+}
+
+/** Make a VU that displays the averaged VU values and RMS VU values as dots.
  * Just to compare them. It seems like RMS level is only slightly higher than avg level.
  */
 void makeAvgVsRmsVU(EC::AnimationRepo &repo)
 {
     auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
     {
-#if (1)
         strip.normPixel(vu.vuLevelAvg) += CRGB(0, 128, 0);
         strip.normPixel(vu.vuLevelRms) += CRGB(0, 0, 128);
-#else
-        const auto indexVuLevelAvg = strip.toPixelIndex(vu.vuLevelAvg);
-        const auto indexVuLevelRms = strip.toPixelIndex(vu.vuLevelRms);
-        for (auto i = 0; i < indexVuLevelAvg; ++i)
-        {
-            strip.pixel(i) += CRGB(0, 128, 0);
-        }
-        for (auto i = 0; i < indexVuLevelRms; ++i)
-        {
-            strip.pixel(i) += CRGB(0, 0, 128);
-        }
-#endif
     };
 
     auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
@@ -183,7 +188,7 @@ void makeAvgVsRmsVU(EC::AnimationRepo &repo)
     // animationDuration = 10;
 }
 
-/** Same as makeAvgVsRmsVU(), but with a floating average over the last few VU values.
+/** Same as makeAvgVsRmsVU(), but with smoothing.
  * This also shows clearly that RMS level is only slightly higher than avg level.
  * In Conclusion, the additional math for RMS over averaging might not be worth the
  * effort (at least not from just a visual standpoint).
@@ -192,21 +197,53 @@ void makeAvgVsRmsVU_smoothed(EC::AnimationRepo &repo)
 {
     auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
     {
-#if (1)
         strip.normPixel(vu.vuLevelAvg) += CRGB(0, 128, 0);
         strip.normPixel(vu.vuLevelRms) += CRGB(0, 0, 128);
-#else
-        const auto indexVuLevelAvg = strip.toPixelIndex(vu.vuLevelAvg);
-        const auto indexVuLevelRms = strip.toPixelIndex(vu.vuLevelRms);
-        for (auto i = 0; i < indexVuLevelAvg; ++i)
-        {
-            strip.pixel(i) += CRGB(0, 128, 0);
-        }
-        for (auto i = 0; i < indexVuLevelRms; ++i)
-        {
-            strip.pixel(i) += CRGB(0, 0, 128);
-        }
-#endif
+    };
+
+    auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
+    vu->enableTeleplot = true;
+    vu->smoothingFactor = 3;
+    vu->fadeRate = 0;
+
+    repo.add(vu);
+    // animationDuration = 10;
+}
+
+/** Same as makeAvgVsRmsVU(), but with a peak detection.
+ * So we can better compare them and see the difference.
+ */
+void makeAvgVsRmsVU_peak(EC::AnimationRepo &repo)
+{
+    auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
+    {
+        strip.normPixel(vu.vuLevelAvg) += CRGB(0, 128, 0);
+        strip.normPixel(vu.vuLevelRms) += CRGB(0, 0, 128);
+        strip.optPixel(vu.vuPeakHandlerAvg.peakLevel()) += CRGB(0, 255, 0);
+        strip.optPixel(vu.vuPeakHandlerRms.peakLevel()) += CRGB(0, 0, 255);
+    };
+
+    auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
+    vu->enableTeleplot = true;
+    vu->smoothingFactor = 0;
+    vu->fadeRate = 0;
+
+    repo.add(vu);
+    // animationDuration = 10;
+}
+
+/** Same as makeAvgVsRmsVU_peak(), but with smoothing.
+ * Just for completeness. Nevertheless, the main problem still exists:
+ * The VU is still higly dependant on the audio level at the analog input.
+ */
+void makeAvgVsRmsVU_peak_smoothed(EC::AnimationRepo &repo)
+{
+    auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
+    {
+        strip.normPixel(vu.vuLevelAvg) += CRGB(0, 128, 0);
+        strip.normPixel(vu.vuLevelRms) += CRGB(0, 0, 128);
+        strip.optPixel(vu.vuPeakHandlerAvg.peakLevel()) += CRGB(0, 255, 0);
+        strip.optPixel(vu.vuPeakHandlerRms.peakLevel()) += CRGB(0, 0, 255);
     };
 
     auto vu = new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction);
@@ -253,17 +290,17 @@ void makeTestVU1(EC::AnimationRepo &repo)
 //------------------------------------------------------------------------------
 
 EC::AnimationBuilderFct allAnimations[] = {
-    // &makeRawAudioVU,
-
-    &makeAvgVsRmsVU,
-    &makeAvgVsRmsVU_smoothed,
+    &makeRawAudioVU,
 
     &makeSampleAvgVU,
     &makeSampleAvgVU_smoothed,
     &makeSampleRmsVU,
+    &makeSampleRmsVU_smoothed,
     &makeAvgVsRmsVU,
     &makeAvgVsRmsVU_smoothed,
-    &makeRawAudioVU,
+    &makeAvgVsRmsVU_peak,
+    &makeAvgVsRmsVU_peak_smoothed,
+    // &makeRawAudioVU,
     // &makeTestVU1,
     &makeEssentialVU,
 

@@ -28,6 +28,7 @@ SOFTWARE.
 #include <Arduino.h>
 #include <math.h>
 #include "AnimationBaseFL.h"
+#include "VuPeakHandler.h"
 
 //------------------------------------------------------------------------------
 
@@ -145,6 +146,12 @@ namespace EC
      */
     float vuLevelRms = 0.0;
 
+    /// Peak detection for averaged VU level.
+    VuPeakHandler vuPeakHandlerAvg;
+
+    /// Peak detection for RMS VU level.
+    VuPeakHandler vuPeakHandlerRms;
+
     /** Constructor
      * @param audioSource  Read the audio samples from there.
      * @param ledStrip  The LED strip.
@@ -159,6 +166,11 @@ namespace EC
       animationDelay = 10;
       // The LED strip is also updated every 10ms, resulting in 100 "FPS" for the VU.
       // -- Note: That's the default value; see AnimationBase::patternDelay.
+
+      vuPeakHandlerAvg.peakHold = 750;
+      vuPeakHandlerAvg.peakDecay = 2500;
+      vuPeakHandlerRms.peakHold = vuPeakHandlerAvg.peakHold;
+      vuPeakHandlerRms.peakDecay = vuPeakHandlerAvg.peakDecay;
     }
 
   private:
@@ -198,6 +210,9 @@ namespace EC
         vuLevelRms += thisVuLevelRms;
         vuLevelRms /= smoothingFactor + 1;
       }
+
+      vuPeakHandlerAvg.process(vuLevelAvg, currentMillis);
+      vuPeakHandlerRms.process(vuLevelRms, currentMillis);
 
       // prepare for next intervall
       _sampleCount = 0;
