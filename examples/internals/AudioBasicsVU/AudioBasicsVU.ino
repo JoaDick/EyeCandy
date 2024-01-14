@@ -24,7 +24,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-/// A sketch for VU testing during EyeCandy development.
+/// A sketch telling the story how the basic audio processing of a VU evolved.
 
 //------------------------------------------------------------------------------
 
@@ -40,8 +40,8 @@ SOFTWARE.
 // the LED strip
 CRGB leds[NUM_LEDS];
 
-// run max. 16 Animations simultaneously
-EC::AnimationRunnerM animationRunner;
+// run max. 8 Animations simultaneously
+EC::AnimationRunnerS animationRunner;
 
 ButtonHandler selectButton;
 
@@ -50,18 +50,11 @@ bool autoMode = true;
 float audioSample = 0.0;
 AudioNormalizer normalizer;
 
-#define PRINT_MEMORY_USAGE 0
-
 //------------------------------------------------------------------------------
 
 void setup()
 {
     pinMode(PIN_SELECT_BTN, INPUT_PULLUP);
-    pinMode(PIN_FLIP_BTN, INPUT_PULLUP);
-    pinMode(PIN_COLOR_POT, INPUT_PULLUP);
-    pinMode(PIN_SPEED_POT, INPUT_PULLUP);
-    pinMode(PIN_MIC, INPUT);
-    pinMode(LED_BUILTIN, OUTPUT);
 
     analogReference(EXTERNAL);
 
@@ -69,9 +62,6 @@ void setup()
     FastLED.clear();
 
     Serial.begin(115200);
-#if (PRINT_MEMORY_USAGE)
-    printMemoryUsage();
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -132,7 +122,7 @@ void makeSampleAvgVU_smoothed(EC::AnimationRepo &repo)
 
 /** Make a VU that takes the RMS (Root Mean Square) of audio samples as VU value.
  * Interestingly, this is looking very similar to makeSampleAvgVU(), so smoothing this
- * VU can probably be skipped... However, let's try to compare Average and RMS directly.
+ * VU will probably also look very similar...
  * @see https://audiosorcerer.com/post/rms-in-audio/#4-what-is-rms-in-audio
  */
 void makeSampleRmsVU(EC::AnimationRepo &repo)
@@ -152,6 +142,7 @@ void makeSampleRmsVU(EC::AnimationRepo &repo)
 
 /** Same as makeSampleRmsVU(), but with a floating average over the last few VU values (smoothing).
  * Not really much helpful, but mainly for completeness of the comparisons.
+ * However, let's try to compare Average and RMS directly.
  */
 void makeSampleRmsVU_smoothed(EC::AnimationRepo &repo)
 {
@@ -192,7 +183,7 @@ void makeAvgVsRmsVU(EC::AnimationRepo &repo)
 /** Same as makeAvgVsRmsVU(), but with smoothing.
  * This also shows clearly that RMS level is only slightly higher than avg level.
  * In Conclusion, the additional math for RMS over averaging might not be worth the
- * effort (at least not from just a visual standpoint).
+ * effort (at least not from just a visual viewpoint).
  */
 void makeAvgVsRmsVU_smoothed(EC::AnimationRepo &repo)
 {
@@ -310,8 +301,8 @@ void makeAvgVsAvgLog_smoothed(EC::AnimationRepo &repo)
 
 /** Same as makeAvgVsAvgLog(), plus RMS stuff.
  * Let's see the difference between avg and RMS on a logarithmic scale. Smoothing is
- * also enabled, because the twitchy stuff without it won't be helpful. \n
- * --> Here the difference between RMS and avg still isn't too much, but much more
+ * also enabled, because the twitchy stuff without smoothing won't be helpful. \n
+ * --> Here the difference between RMS and avg still isn't too much, but clearly more
  * visible. So the additional effort for RMS could probably be worth it.
  */
 void makeAvgLogVsRmsLogVU(EC::AnimationRepo &repo)
@@ -339,11 +330,11 @@ void makeAvgLogVsRmsLogVU(EC::AnimationRepo &repo)
     // animationDuration = 10;
 }
 
-/** Make the final VU - RMS on a logarithmic scale with a peak detection.
+/** Make the final VU - RMS on a logarithmic scale with peak detection.
  * --> I'd call this one a success :-) \n
  * The only open thing is that this is still somehow dependant on the audio level
  * at the analog input. But that's going to be another investigation...
-*/
+ */
 void makeRmsLogVU(EC::AnimationRepo &repo)
 {
     auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
@@ -362,43 +353,21 @@ void makeRmsLogVU(EC::AnimationRepo &repo)
     // animationDuration = 10;
 }
 
-/// An outlook what is possible.
+/// And finally an outlook what is possible.
 void makeEssentialVU(EC::AnimationRepo &repo)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    auto baseVU = new EC::EssentialVU(audioSample, strip, false);
+    auto baseVU = new EC::EssentialVU(audioSample, {leds, NUM_LEDS}, false);
     baseVU->vuBarColor = CRGB(64, 0, 32);
     baseVU->peakDotColor = CRGB(64, 32, 0);
-    baseVU->vuPeakHandler.peakHold = 500;
-    baseVU->fadeRate = 0;
 
     repo.add(baseVU);
     // animationDuration = 10;
-}
-
-void makeTestVU1(EC::AnimationRepo &repo)
-{
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    auto baseVU = new EC::TestVU1(audioSample, strip, false);
-    // baseVU->vuBarColor = CRGB(64, 0, 32);
-    // baseVU->peakDotColor = CRGB(64, 32, 0);
-    // baseVU->vuPeakHandler.peakHold = 500;
-    // baseVU->enableRangeExtender = true;
-    // baseVU->fadeRate = 0;
-
-    repo.add(baseVU);
-
-    // animationDuration = 10;
-    // autoMode = false;
 }
 
 //------------------------------------------------------------------------------
 
 EC::AnimationBuilderFct allAnimations[] = {
     &makeRawAudioVU,
-
     &makeSampleAvgVU,
     &makeSampleAvgVU_smoothed,
     &makeSampleRmsVU,
@@ -469,12 +438,6 @@ void loop()
     const uint32_t currentMillis = millis();
     audioSample = normalizer.analogRead(PIN_MIC);
 
-    // EC::logAudioSample(audioSample);
-
-    updateColor();
-    updateSpeed();
-    updateFlip();
-
     handleAnimationChange(currentMillis);
 
     if (animationChanger.process(currentMillis))
@@ -487,75 +450,6 @@ void loop()
     }
     FastLED.show();
     // printSampleRate(currentMillis);
-}
-
-//------------------------------------------------------------------------------
-
-template <typename IN_TYPE, typename OUT_TYPE>
-OUT_TYPE constrainAndMap(const IN_TYPE &x,
-                         const IN_TYPE &minThreshold, const IN_TYPE &maxThreshold,
-                         const OUT_TYPE &outMin, const OUT_TYPE &outMax)
-{
-    return map(constrain(x, minThreshold, maxThreshold), minThreshold, maxThreshold, outMin, outMax);
-}
-
-//------------------------------------------------------------------------------
-
-void updateColor()
-{
-    const uint16_t analogValue = constrainAndMap(analogRead(PIN_COLOR_POT), 50, 900, 0, 256);
-
-    if (analogValue < 256)
-    {
-        const uint8_t hue = analogValue;
-
-        static uint16_t lastHue = 0;
-        if (hue != lastHue)
-        {
-            // Serial.print("hue: ");
-            // Serial.println(hue);
-            lastHue = analogValue;
-        }
-
-        animationChanger.maxBrightness = analogValue;
-    }
-}
-
-//------------------------------------------------------------------------------
-
-void updateSpeed()
-{
-    const uint16_t analogValue = constrainAndMap(analogRead(PIN_SPEED_POT), 50, 900, 0, 256);
-
-    if (analogValue < 256)
-    {
-        const uint8_t animationSpeed = analogValue;
-        const uint8_t animationDelay = animationSpeed ? 256 - animationSpeed : 0;
-
-        static uint16_t lastSpeed = 0;
-        if (animationSpeed != lastSpeed)
-        {
-            // Serial.print("speed: ");
-            // Serial.print(animationSpeed);
-            // Serial.print(" delay: ");
-            // Serial.println(animationDelay);
-            lastSpeed = analogValue;
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-
-void updateFlip()
-{
-    const bool flipped = !digitalRead(PIN_FLIP_BTN);
-
-    if (flipped)
-    {
-    }
-    else
-    {
-    }
 }
 
 //------------------------------------------------------------------------------
@@ -576,23 +470,5 @@ void printSampleRate(uint32_t currentMillis)
         Serial.println(F(" Hz sample rate"));
     }
 }
-
-//------------------------------------------------------------------------------
-
-#if (PRINT_MEMORY_USAGE)
-void printMemoryUsage()
-{
-    Serial.print(F("Memory usage for "));
-    Serial.print(NUM_LEDS);
-    Serial.println(F(" LEDs:"));
-    Serial.println(F("<*> is dependant on NUM_LEDS"));
-
-    Serial.print(F("EssentialVU = "));
-    Serial.println(sizeof(EC::EssentialVU));
-
-    Serial.print(F("TestVU1 = "));
-    Serial.println(sizeof(EC::TestVU1));
-}
-#endif
 
 //------------------------------------------------------------------------------
