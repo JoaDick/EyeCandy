@@ -119,4 +119,101 @@ namespace EC
     friend class AnimationScene;
   };
 
+  //------------------------------------------------------------------------------
+
+  /** Helper class for composing a complex Animation out of multiple separate Animations.
+   * When the AnimationScene's process() method is called, it calls the process()
+   * methods of all appended Animations in the order as they were appended. \n
+   * Thus the first one should usually be a Pattern (which renders the entire LED strip),
+   * and all subsequently appended should be Overlays (which only render certain LEDs).
+   * Pseudo-Animations, which don't manipulate the LED strip (but perform other
+   * processing), can be appended at any position.
+   * @see append()
+   * @note All appended Animations \e must be allocated on the heap. This class will
+   * destroy them accordingly.
+   */
+  class AnimationScene
+      : public Animation
+  {
+  public:
+    /// Destructor. Also destroys all previously added Animations.
+    ~AnimationScene()
+    {
+      reset();
+    }
+
+    /** Append the given \a animation to the AnimationScene.
+     * @note \a animation must be allocated on the heap. The AnimationScene takes
+     * care of deleting it when no more needed.
+     */
+    template <class AnimationType>
+    AnimationType *append(AnimationType *animation)
+    {
+      intern_add(animation);
+      return animation;
+    }
+
+    /** Remove (and delete) all previously added Animations.
+     * This AnimationScene is empty afterwards, and can be filled again with new animations.
+     * @see append()
+     */
+    void reset()
+    {
+      while (_head)
+      {
+        Animation *toDelete = _head;
+        _head = _head->next;
+        toDelete->next = nullptr;
+        delete toDelete;
+      }
+    }
+
+  private:
+    void intern_add(Animation *animation)
+    {
+      Animation *tail = findTail();
+      if (tail)
+      {
+        tail->next = animation;
+      }
+      else
+      {
+        _head = animation;
+      }
+    }
+
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      Animation *next = _head;
+      while (next)
+      {
+        next->process(currentMillis, wasModified);
+        next = next->next;
+      }
+    }
+
+    Animation *findTail()
+    {
+      Animation *tail = nullptr;
+      Animation *next = _head;
+      while (next)
+      {
+        tail = next;
+        next = next->next;
+      }
+      return tail;
+    }
+
+  private:
+    Animation *_head = nullptr;
+  };
+
+  //------------------------------------------------------------------------------
+
+  /** Pointer to a function that composes an AnimationScene.
+   * @param scene  Append Animations there.
+   */
+  using AnimationSceneBuilderFct = void (*)(AnimationScene &scene);
+
 } // namespace EC

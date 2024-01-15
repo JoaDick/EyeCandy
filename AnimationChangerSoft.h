@@ -27,7 +27,6 @@ SOFTWARE.
 
 #include <FastLED.h>
 #include "AnimationRunner.h"
-#include "AnimationScene.h"
 
 //------------------------------------------------------------------------------
 

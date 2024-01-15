@@ -26,7 +26,6 @@ SOFTWARE.
 *******************************************************************************/
 
 #include "Animation.h"
-#include "AnimationScene.h"
 #include "AnimationChanger.h"
 #include "AnimationChangerSoft.h"
 #include "AnimationRunner.h"

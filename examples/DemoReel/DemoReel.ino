@@ -117,15 +117,12 @@ void makeFireAndBalls(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto fire = new EC::Fire2012<NUM_LEDS>(strip);
+    auto fire = scene.append(new EC::Fire2012<NUM_LEDS>(strip));
     fire->COOLING = 155;
     fire->SPARKING = 75;
     fire->animationDelay = 10;
 
-    auto balls = new EC::BouncingBalls<>(strip.getReversedStrip(), true);
-
-    scene.append(fire);
-    scene.append(balls);
+    scene.append(new EC::BouncingBalls<>(strip.getReversedStrip(), true));
 }
 
 void makeFireworks(EC::AnimationScene &scene)
@@ -147,11 +144,10 @@ void makeFlare(EC::AnimationScene &scene)
     const uint16_t fireLedCount = NUM_LEDS / 2 + NUM_LEDS / 10;
     EC::FastLedStrip fireStrip = strip.getSubStrip(0, fireLedCount, true);
 
-    auto fire = new EC::Fire2012<NUM_LEDS>(fireStrip);
+    auto fire = scene.append(new EC::Fire2012<NUM_LEDS>(fireStrip));
     fire->SPARKING = 75;
     fire->animationDelay = 10;
 
-    scene.append(fire);
     scene.append(new EC::Kaleidoscope(strip));
 }
 
@@ -202,9 +198,8 @@ void makeRainbowTwinkle(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto rainbow = new EC::RainbowTwinkle(strip);
+    auto rainbow = scene.append(new EC::RainbowTwinkle(strip));
     rainbow->animationDelay = 25;
-    scene.append(rainbow);
 }
 
 void makeTwinkles(EC::AnimationScene &scene)
