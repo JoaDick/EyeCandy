@@ -39,9 +39,6 @@ SOFTWARE.
 // the LED strip
 CRGB leds[NUM_LEDS];
 
-// run max. 16 Animations simultaneously
-EC::AnimationRunnerM animationRunner;
-
 ButtonHandler selectButton;
 
 bool autoMode = true;
@@ -79,361 +76,351 @@ uint16_t animationDuration = defaultAnimationDuration;
 
 // ---------- VUs ----------
 
-void makeBouncingDotVU(EC::AnimationRepo &repo)
+void makeBouncingDotVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vuPeak = new EC::RainbowLevelVU(audioSample, strip, false);
+    auto vuPeak = scene.append(new EC::RainbowLevelVU(audioSample, strip, false));
     vuPeak->enableVuBar = false;
     vuPeak->vuHueRange = 0.5;
 
-    // auto glitter = new EC::PeakGlitterVU(audioSample, strip, true, CRGB(128, 64, 0));
-    auto glitter = new EC::PeakGlitterVU(audioSample, strip, true);
+    // auto glitter = scene.append(new EC::PeakGlitterVU(audioSample, strip, true, CRGB(128, 64, 0));
+    auto glitter = scene.append(new EC::PeakGlitterVU(audioSample, strip, true));
     glitter->color = CRGB(128, 64, 0);
-
-    repo.add(vuPeak);
-    repo.add(glitter);
 }
 
-void makeDancingDotVU(EC::AnimationRepo &repo)
+void makeDancingDotVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu = new EC::RainbowLevelVU(audioSample, strip, false);
+    auto vu = scene.append(new EC::RainbowLevelVU(audioSample, strip, false));
     vu->enablePeakDot = false;
     vu->fadeRate = 0;
     vu->volume = 64;
-    repo.add(vu);
-    repo.add(new EC::DancingDotVU(audioSample, strip, true /*, CRGB::Red*/));
+
+    scene.append(new EC::DancingDotVU(audioSample, strip, true /*, CRGB::Red*/));
 }
 
-void makeDoubleBouncingDotVU(EC::AnimationRepo &repo)
+void makeDoubleBouncingDotVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu1 = new EC::RainbowLevelVU(audioSample, strip, true);
+    scene.append(new EC::FadeOut(strip, false, 50));
+
+    auto vu1 = scene.append(new EC::RainbowLevelVU(audioSample, strip, true));
     vu1->enableVuBar = false;
     vu1->volume = 255;
     vu1->vuHueRange = 0.4;
     vu1->baseHueStep = -0.17;
     vu1->vuLevelHandler.smoothingFactor = 6;
 
-    auto vu2 = new EC::RainbowLevelVU(audioSample, strip.getReversedStrip(), true);
+    auto vu2 = scene.append(new EC::RainbowLevelVU(audioSample, strip.getReversedStrip(), true));
     vu2->enableVuBar = false;
     vu2->volume = 255;
     vu2->vuHueRange = 0.6;
     vu2->baseHueStep = 0.11;
     vu2->vuLevelHandler.smoothingFactor = 9;
-
-    repo.add(new EC::FadeOut(strip, false, 50));
-    repo.add(vu1);
-    repo.add(vu2);
 }
 
-void makeDoubleDancingDotVU1(EC::AnimationRepo &repo)
+void makeDoubleDancingDotVU1(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu1 = new EC::DancingDotVU(audioSample, strip, true /*, CRGB(255, 0, 0)*/);
+    scene.append(new EC::Pride2015(strip.getHalfStrip(/*true*/)));
+    scene.append(new EC::Kaleidoscope(strip));
+    scene.append(new EC::FadeOut(strip, true, 100));
+
+    auto vu1 = scene.append(new EC::DancingDotVU(audioSample, strip, true /*, CRGB(255, 0, 0)*/));
     vu1->color = CRGB(255, 0, 0);
 
-    auto vu2 = new EC::DancingDotVU(audioSample, strip.getReversedStrip(), true /*, CRGB(0, 255, 0)*/);
+    auto vu2 = scene.append(new EC::DancingDotVU(audioSample, strip.getReversedStrip(), true /*, CRGB(0, 255, 0)*/));
     vu2->color = CRGB(0, 255, 0);
     vu2->vuPeakHandler.inertia = 0.55;
     vu2->vuPeakHandler.friction = 0.14;
-
-    repo.add(new EC::Pride2015(strip.getHalfStrip(/*true*/)));
-    repo.add(new EC::Kaleidoscope(strip));
-    repo.add(new EC::FadeOut(strip, true, 100));
-    repo.add(vu1);
-    repo.add(vu2);
 }
 
-void makeDoubleDancingDotVU2(EC::AnimationRepo &repo)
+void makeDoubleDancingDotVU2(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu1 = new EC::DancingDotVU(audioSample, strip, true /*, CHSV(20, 255, 255)*/);
+    scene.append(new EC::FloatingBlobs(strip));
+    scene.append(new EC::FadeOut(strip, true, 230));
+
+    auto vu1 = scene.append(new EC::DancingDotVU(audioSample, strip, true /*, CHSV(20, 255, 255)*/));
     vu1->color = CHSV(20, 255, 255);
 
-    auto vu2 = new EC::DancingDotVU(audioSample, strip.getReversedStrip(), true /*, CHSV(20 + 128, 255, 255)*/);
+    auto vu2 = scene.append(new EC::DancingDotVU(audioSample, strip.getReversedStrip(), true /*, CHSV(20 + 128, 255, 255)*/));
     vu2->color = CHSV(20 + 128, 255, 255);
     vu2->vuPeakHandler.inertia = 0.55;
     vu2->vuPeakHandler.friction = 0.14;
-
-    repo.add(new EC::FloatingBlobs(strip));
-    repo.add(new EC::FadeOut(strip, true, 230));
-    repo.add(vu1);
-    repo.add(vu2);
 }
 
-void makeEssentialVU(EC::AnimationRepo &repo)
+void makeEssentialVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::EssentialVU(audioSample, strip, false));
+    scene.append(new EC::EssentialVU(audioSample, strip, false));
 }
 
-void makeFireVU(EC::AnimationRepo &repo)
+void makeFireVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     auto fire = new EC::Fire2012<NUM_LEDS>(strip);
     auto fireChanger = new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire);
-    repo.add(fire);
-    repo.add(fireChanger);
+
+    scene.append(fire);
+    scene.append(fireChanger);
 }
 
-void makeFlareVU(EC::FastLedStrip strip, EC::AnimationRepo &repo)
+void makeFlareVU(EC::FastLedStrip strip, EC::AnimationScene &scene)
 {
     const uint16_t fireLedCount = strip.ledCount() / 2 + strip.ledCount() / 10;
     EC::FastLedStrip fireStrip = strip.getSubStrip(0, fireLedCount, true);
     auto fire = new EC::Fire2012<NUM_LEDS>(fireStrip);
     fire->animationDelay = 10;
 
-    repo.add(fire);
-    repo.add(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire));
-    repo.add(new EC::Kaleidoscope(strip));
+    scene.append(fire);
+    scene.append(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire));
+    scene.append(new EC::Kaleidoscope(strip));
 }
 
-void makeFlareVU(EC::AnimationRepo &repo)
+void makeFlareVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    makeFlareVU(strip, repo);
+    makeFlareVU(strip, scene);
 }
 
-void makeFlareDoubleVU(EC::AnimationRepo &repo)
+void makeFlareDoubleVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    makeFlareVU(strip.getHalfStrip(), repo);
-    repo.add(new EC::Kaleidoscope(strip));
+    makeFlareVU(strip.getHalfStrip(), scene);
+    scene.append(new EC::Kaleidoscope(strip));
 }
 
-void makeFlareInwardVU(EC::AnimationRepo &repo)
+void makeFlareInwardVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     EC::FastLedStrip fireStrip1 = strip.getHalfStrip();
     auto fire1 = new EC::Fire2012<NUM_LEDS>(fireStrip1);
     fire1->animationDelay = 11;
-    repo.add(fire1);
-    repo.add(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire1));
+    scene.append(fire1);
+    scene.append(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire1));
 
     EC::FastLedStrip fireStrip2 = strip.getSubStrip(fireStrip1.ledCount(), 0, true);
     auto fire2 = new EC::Fire2012<NUM_LEDS>(fireStrip2);
     fire2->animationDelay = 13;
-    repo.add(fire2);
-    repo.add(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire2));
+    scene.append(fire2);
+    scene.append(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire2));
 }
 
-void makePeakGlitterVU(EC::AnimationRepo &repo)
+void makePeakGlitterVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::PeakGlitterVU(audioSample, strip, false));
+    scene.append(new EC::PeakGlitterVU(audioSample, strip, false));
 }
 
-void makeRainbowBubbleVU(EC::AnimationRepo &repo)
+void makeRainbowBubbleVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu = new EC::RainbowLevelVU(audioSample, strip, false);
+    auto vu = scene.append(new EC::RainbowLevelVU(audioSample, strip, false));
     vu->vuPeakHandler.a0 = 0.5;
     vu->vuPeakHandler.v0 = 0.1;
     vu->vuHueRange = 0.67;
-    repo.add(vu);
 }
 
-void makeRainbowBubbleCenteredVU(EC::AnimationRepo &repo)
+void makeRainbowBubbleCenteredVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu = new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(true), false);
+    auto vu = scene.append(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(true), false));
     vu->vuPeakHandler.a0 = 0.5;
     vu->vuPeakHandler.v0 = 0.1;
     vu->vuHueRange = 0.67;
-    repo.add(vu);
-    repo.add(new EC::Kaleidoscope(strip));
+
+    scene.append(new EC::Kaleidoscope(strip));
 }
 
-void makeRainbowBubbleInwardVU(EC::AnimationRepo &repo)
+void makeRainbowBubbleInwardVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vu = new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(), false);
+    auto vu = scene.append(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(), false));
     vu->vuPeakHandler.a0 = 0.5;
     vu->vuPeakHandler.v0 = 0.1;
     vu->vuHueRange = 0.67;
-    repo.add(vu);
-    repo.add(new EC::Kaleidoscope(strip));
+
+    scene.append(new EC::Kaleidoscope(strip));
 }
 
-void makeRainbowLevelVU(EC::AnimationRepo &repo)
+void makeRainbowLevelVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::RainbowLevelVU(audioSample, strip, false));
+    scene.append(new EC::RainbowLevelVU(audioSample, strip, false));
 }
 
-void makeRainbowLevelCenteredVU(EC::AnimationRepo &repo)
+void makeRainbowLevelCenteredVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(true), false));
-    repo.add(new EC::Kaleidoscope(strip));
+    scene.append(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(true), false));
+    scene.append(new EC::Kaleidoscope(strip));
 }
 
-void makeRainbowLevelInwardVU(EC::AnimationRepo &repo)
+void makeRainbowLevelInwardVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(), false));
-    repo.add(new EC::Kaleidoscope(strip));
+    scene.append(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(), false));
+    scene.append(new EC::Kaleidoscope(strip));
 }
 
 // ---------- VU sequence ----------
 
-void makeVuSequence1(EC::AnimationRepo &repo)
+void makeVuSequence1(EC::AnimationScene &scene)
 {
-    makePeakGlitterVU(repo);
+    makePeakGlitterVU(scene);
     animationDuration = 8;
 }
 
-void makeVuSequence2(EC::AnimationRepo &repo)
+void makeVuSequence2(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto baseVU = new EC::EssentialVU(audioSample, strip, false);
+    auto baseVU = scene.append(new EC::EssentialVU(audioSample, strip, false));
     baseVU->enableVuBar = false;
     baseVU->fadeRate = 0;
-    repo.add(baseVU);
-    repo.add(new EC::PeakGlitterVU(audioSample, strip, true));
+
+    scene.append(new EC::PeakGlitterVU(audioSample, strip, true));
     animationDuration = 12;
 }
 
-void makeVuSequence3(EC::AnimationRepo &repo)
+void makeVuSequence3(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto baseVU = new EC::EssentialVU(audioSample, strip, false);
+    auto baseVU = scene.append(new EC::EssentialVU(audioSample, strip, false));
     baseVU->fadeRate = 0;
-    repo.add(baseVU);
     animationDuration = 16;
 }
 
-void makeVuSequence4(EC::AnimationRepo &repo)
+void makeVuSequence4(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::EssentialVU(audioSample, strip, false));
-    repo.add(new EC::PeakGlitterVU(audioSample, strip, true));
+    scene.append(new EC::EssentialVU(audioSample, strip, false));
+    scene.append(new EC::PeakGlitterVU(audioSample, strip, true));
     animationDuration = 10;
 }
 
-void makeVuSequence5(EC::AnimationRepo &repo)
+void makeVuSequence5(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    repo.add(new EC::RainbowLevelVU(audioSample, strip, false));
-    repo.add(new EC::PeakGlitterVU(audioSample, strip, true));
+    scene.append(new EC::RainbowLevelVU(audioSample, strip, false));
+    scene.append(new EC::PeakGlitterVU(audioSample, strip, true));
     animationDuration = 10;
 }
 
-void makeVuSequence6(EC::AnimationRepo &repo)
+void makeVuSequence6(EC::AnimationScene &scene)
 {
-    makeBouncingDotVU(repo);
+    makeBouncingDotVU(scene);
     animationDuration = 10;
 }
 
-void makeVuSequence7(EC::AnimationRepo &repo)
+void makeVuSequence7(EC::AnimationScene &scene)
 {
-    makeRainbowLevelVU(repo);
+    makeRainbowLevelVU(scene);
     // animationDuration = 15;
 }
 
-void makeVuSequence8(EC::AnimationRepo &repo)
+void makeVuSequence8(EC::AnimationScene &scene)
 {
-    makeRainbowBubbleVU(repo);
+    makeRainbowBubbleVU(scene);
     // animationDuration = 20;
 }
 
-void makeVuSequence9(EC::AnimationRepo &repo)
+void makeVuSequence9(EC::AnimationScene &scene)
 {
-    makeRainbowLevelInwardVU(repo);
+    makeRainbowLevelInwardVU(scene);
     // animationDuration = 15;
 }
 
-void makeVuSequence10(EC::AnimationRepo &repo)
+void makeVuSequence10(EC::AnimationScene &scene)
 {
-    makeRainbowLevelCenteredVU(repo);
+    makeRainbowLevelCenteredVU(scene);
     // animationDuration = 15;
 }
 
-void makeVuSequence11(EC::AnimationRepo &repo)
+void makeVuSequence11(EC::AnimationScene &scene)
 {
-    makeRainbowBubbleCenteredVU(repo);
+    makeRainbowBubbleCenteredVU(scene);
     // animationDuration = 15;
 }
 
-void makeVuSequence12(EC::AnimationRepo &repo)
+void makeVuSequence12(EC::AnimationScene &scene)
 {
-    makeRainbowBubbleInwardVU(repo);
+    makeRainbowBubbleInwardVU(scene);
     // animationDuration = 20;
 }
 
-void makeVuSequence13(EC::AnimationRepo &repo)
+void makeVuSequence13(EC::AnimationScene &scene)
 {
-    makeDancingDotVU(repo);
+    makeDancingDotVU(scene);
     // animationDuration = 15;
 }
 
-void makeVuSequence14(EC::AnimationRepo &repo)
+void makeVuSequence14(EC::AnimationScene &scene)
 {
-    makeDoubleBouncingDotVU(repo);
+    makeDoubleBouncingDotVU(scene);
     // animationDuration = 15;
 }
 
-void makeVuSequence15(EC::AnimationRepo &repo)
+void makeVuSequence15(EC::AnimationScene &scene)
 {
-    makeDoubleDancingDotVU1(repo);
+    makeDoubleDancingDotVU1(scene);
     // animationDuration = 20;
 }
 
-void makeVuSequence16(EC::AnimationRepo &repo)
+void makeVuSequence16(EC::AnimationScene &scene)
 {
-    makeDoubleDancingDotVU2(repo);
+    makeDoubleDancingDotVU2(scene);
     // animationDuration = 15;
 }
 
-void makeVuSequence17(EC::AnimationRepo &repo)
+void makeVuSequence17(EC::AnimationScene &scene)
 {
-    makeFireVU(repo);
+    makeFireVU(scene);
     animationDuration = 30;
 }
 
-void makeVuSequence18(EC::AnimationRepo &repo)
+void makeVuSequence18(EC::AnimationScene &scene)
 {
-    makeFlareInwardVU(repo);
+    makeFlareInwardVU(scene);
 }
 
-void makeVuSequence19(EC::AnimationRepo &repo)
+void makeVuSequence19(EC::AnimationScene &scene)
 {
-    makeFlareVU(repo);
+    makeFlareVU(scene);
 }
 
-void makeVuSequence20(EC::AnimationRepo &repo)
+void makeVuSequence20(EC::AnimationScene &scene)
 {
-    makeFlareDoubleVU(repo);
+    makeFlareDoubleVU(scene);
     // autoMode = false;
 }
 
 //------------------------------------------------------------------------------
 
-EC::AnimationBuilderFct nextAnimation = nullptr;
+EC::AnimationSceneBuilderFct nextAnimation = nullptr;
 
-EC::AnimationBuilderFct allAnimations[] = {
+EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeVuSequence1,
     &makeVuSequence2,
     &makeVuSequence3,
@@ -456,7 +443,7 @@ EC::AnimationBuilderFct allAnimations[] = {
     &makeVuSequence20,
     nullptr};
 
-EC::AnimationChangerSoft animationChanger(animationRunner, allAnimations);
+EC::AnimationSceneChangerSoft animationChanger(allAnimations);
 
 //------------------------------------------------------------------------------
 

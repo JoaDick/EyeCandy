@@ -134,10 +134,7 @@ namespace EC
   using AnimationRunnerS = BasicAnimationRunner<uint8_t>;
 
   /// "Medium" AnimationRunner for max 16 Animations.
-  using AnimationRunnerM = BasicAnimationRunner<uint16_t>;
-
-  /// "Large" AnimationRunner for max 32 Animations.
-  using AnimationRunnerL = BasicAnimationRunner<uint32_t>;
+  // using AnimationRunnerM = BasicAnimationRunner<uint16_t>;
 
   //------------------------------------------------------------------------------
 

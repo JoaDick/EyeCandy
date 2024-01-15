@@ -45,7 +45,7 @@ const uint8_t PARTICLE_COUNT = 1;
 const uint8_t PARTICLE_COUNT = 5;
 #endif
 
-EC::FadeOut fadeOut(mainStrip, EC::Firework_fadeRate_default());
+EC::FadeOut fadeOut(mainStrip, false, EC::Firework_fadeRate_default());
 EC::Firework<PARTICLE_COUNT> firework1(mainStrip, true, 1500);
 EC::Firework<PARTICLE_COUNT> firework2(mainStrip, true, 3100);
 EC::Firework<PARTICLE_COUNT> firework3(mainStrip, true, 4700);

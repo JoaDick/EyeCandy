@@ -34,6 +34,8 @@ SOFTWARE.
 #include <AudioNormalizer.h>
 #include <ButtonHandler.h>
 
+// !!! This sketch is currently broken and needs repair :-( !!!
+
 //------------------------------------------------------------------------------
 
 // the LED strip
@@ -65,8 +67,8 @@ EC::MovingDot movingDotOverlay(leds, NUM_LEDS, true);
 EC::Twinkles twinklesOverlay(leds, NUM_LEDS, true);
 #endif
 
-// run max. 16 Animations simultaneously
-EC::AnimationRunnerM animationRunner;
+// run max. 8 Animations simultaneously
+EC::AnimationRunnerS animationRunner;
 
 ButtonHandler selectButton;
 
