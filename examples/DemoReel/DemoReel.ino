@@ -239,8 +239,8 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeFireworks,
     nullptr};
 
-// EC::AnimationSceneChanger animationChanger(allAnimations);
-EC::AnimationSceneChangerSoft animationChanger(allAnimations);
+// EC::AnimationChanger animationChanger(allAnimations);
+EC::AnimationChangerSoft animationChanger(allAnimations);
 
 //------------------------------------------------------------------------------
 

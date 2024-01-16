@@ -396,7 +396,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
 
     nullptr};
 
-EC::AnimationSceneChangerSoft animationChanger(allAnimations);
+EC::AnimationChangerSoft animationChanger(allAnimations);
 
 //------------------------------------------------------------------------------
 

@@ -27,7 +27,6 @@ SOFTWARE.
 
 #include "Animation.h"
 #include "AnimationChanger.h"
-#include "AnimationChangerSoft.h"
 
 // Pattern
 #include "BouncingBalls.h"

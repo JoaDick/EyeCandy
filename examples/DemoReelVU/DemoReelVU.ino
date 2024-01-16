@@ -443,7 +443,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeVuSequence20,
     nullptr};
 
-EC::AnimationSceneChangerSoft animationChanger(allAnimations);
+EC::AnimationChangerSoft animationChanger(allAnimations);
 
 //------------------------------------------------------------------------------
 
