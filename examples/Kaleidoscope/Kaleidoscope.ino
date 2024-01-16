@@ -48,8 +48,7 @@ EC::Glitter glitterOverlay(workingStrip.getHalfStrip(), true);
 // overlay for doing the Kaleidoscope magic
 EC::Kaleidoscope kaleidoscopeOverlay(mainStrip);
 
-// run max. 8 Animations simultaneously
-EC::AnimationRunnerS animationRunner;
+EC::AnimationSceneStatic animationScene;
 
 //------------------------------------------------------------------------------
 
@@ -60,24 +59,24 @@ void setup()
     Serial.begin(115200);
     Serial.println(F("Welcome to EyeCandy"));
 
-    // configure the core Animation
+    // configure the core Animation + Overlay
     mainAnimation.fadeRate = 20;
     glitterOverlay.color = CRGB(64, 64, 0);
     glitterOverlay.effectRate = 100;
 
     // add the core Animation
-    animationRunner.add(mainAnimation);
-    animationRunner.add(glitterOverlay);
-
+    animationScene.append(mainAnimation);
+    // add the overlay
+    animationScene.append(glitterOverlay);
     // Kaleidoscope should be added as last one
-    animationRunner.add(kaleidoscopeOverlay);
+    animationScene.append(kaleidoscopeOverlay);
 }
 
 //------------------------------------------------------------------------------
 
 void loop()
 {
-    if (animationRunner.process())
+    if (animationScene.process())
     {
         EVERY_N_SECONDS(15)
         {

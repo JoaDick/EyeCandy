@@ -46,8 +46,7 @@ EC::Fire2012<NUM_LEDS> fire2012(fireStrip);
 EC::Pride2015 pride2015(prideStrip);
 EC::Kaleidoscope kaleidoscopeOverlay(mainStrip);
 
-// run max. 8 Animations simultaneously
-EC::AnimationRunnerS animationRunner;
+EC::AnimationSceneStatic animationScene;
 
 //------------------------------------------------------------------------------
 
@@ -63,13 +62,13 @@ void setup()
 
     // set up Animations to run
     fire2012.animationDelay = 30;
-    animationRunner.add(fire2012);
+    animationScene.append(fire2012);
 
     pride2015.moreRed = false;
-    animationRunner.add(pride2015);
+    animationScene.append(pride2015);
 
     // Kaleidoscope should be added as last one
-    animationRunner.add(kaleidoscopeOverlay);
+    animationScene.append(kaleidoscopeOverlay);
 }
 
 //------------------------------------------------------------------------------
@@ -79,7 +78,7 @@ void loop()
     updateColor();
     updateSpeed();
 
-    if (animationRunner.process())
+    if (animationScene.process())
     {
         FastLED.show();
     }

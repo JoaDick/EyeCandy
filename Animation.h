@@ -29,6 +29,12 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
+#ifndef EC_ENABLE_ANIMATION_SCENE_MULTI
+#define EC_ENABLE_ANIMATION_SCENE_MULTI 0
+#endif
+
+//------------------------------------------------------------------------------
+
 namespace EC
 {
 
@@ -114,9 +120,13 @@ namespace EC
     virtual void processAnimation(uint32_t currentMillis, bool &wasModified) = 0;
 
   private:
-    // Only for use by friend classes.
-    Animation *next = nullptr;
     friend class AnimationScene;
+    friend class AnimationSceneStatic;
+    Animation *nextAnimation = nullptr;
+#if (EC_ENABLE_ANIMATION_SCENE_MULTI)
+    friend class AnimationSceneMulti;
+    Animation *nextToDelete = nullptr;
+#endif
   };
 
   //------------------------------------------------------------------------------
@@ -143,13 +153,14 @@ namespace EC
     }
 
     /** Append the given \a animation to the AnimationScene.
+     * @return The given \a animation (so the caller can apply further settings)
      * @note \a animation must be allocated on the heap. The AnimationScene takes
      * care of deleting it when no more needed.
      */
     template <class AnimationType>
     AnimationType *append(AnimationType *animation)
     {
-      intern_add(animation);
+      storeAnimation(animation);
       return animation;
     }
 
@@ -159,54 +170,38 @@ namespace EC
      */
     void reset()
     {
-      while (_head)
+      while (_animationListHead)
       {
-        Animation *toDelete = _head;
-        _head = _head->next;
-        toDelete->next = nullptr;
+        Animation *toDelete = _animationListHead;
+        _animationListHead = _animationListHead->nextAnimation;
         delete toDelete;
       }
     }
 
   private:
-    void intern_add(Animation *animation)
-    {
-      Animation *tail = findTail();
-      if (tail)
-      {
-        tail->next = animation;
-      }
-      else
-      {
-        _head = animation;
-      }
-    }
-
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      Animation *next = _head;
-      while (next)
+      Animation *animation = _animationListHead;
+      while (animation)
       {
-        next->process(currentMillis, wasModified);
-        next = next->next;
+        animation->process(currentMillis, wasModified);
+        animation = animation->nextAnimation;
       }
     }
 
-    Animation *findTail()
+    void storeAnimation(Animation *animation)
     {
-      Animation *tail = nullptr;
-      Animation *next = _head;
-      while (next)
+      Animation **tailPtr = &_animationListHead;
+      while (*tailPtr)
       {
-        tail = next;
-        next = next->next;
+        tailPtr = &(*tailPtr)->nextAnimation;
       }
-      return tail;
+      *tailPtr = animation;
     }
 
   private:
-    Animation *_head = nullptr;
+    Animation *_animationListHead = nullptr;
   };
 
   //------------------------------------------------------------------------------
@@ -215,5 +210,174 @@ namespace EC
    * @param scene  Append Animations there.
    */
   using AnimationSceneBuilderFct = void (*)(AnimationScene &scene);
+
+  //------------------------------------------------------------------------------
+
+  /// Same as AnimationScene, but the Animations must \e not be allocated on the heap.
+  class AnimationSceneStatic
+      : public Animation
+  {
+  public:
+    /// Destructor. Also removes all previously added Animations.
+    ~AnimationSceneStatic()
+    {
+      reset();
+    }
+
+    /** Append the given \a animation to the AnimationScene.
+     * @return Pointer to the given \a animation (so the caller can apply further settings)
+     */
+    template <class AnimationType>
+    AnimationType *append(AnimationType &animation)
+    {
+      storeAnimation(&animation);
+      return &animation;
+    }
+
+    /** Remove all previously added Animations.
+     * This AnimationScene is empty afterwards, and can be filled again with new animations.
+     * @see append()
+     */
+    void reset()
+    {
+      while (_animationListHead)
+      {
+        Animation *toClear = _animationListHead;
+        _animationListHead = _animationListHead->nextAnimation;
+        toClear->nextAnimation = nullptr;
+      }
+    }
+
+  private:
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      Animation *animation = _animationListHead;
+      while (animation)
+      {
+        animation->process(currentMillis, wasModified);
+        animation = animation->nextAnimation;
+      }
+    }
+
+    void storeAnimation(Animation *animation)
+    {
+      Animation **tailPtr = &_animationListHead;
+      while (*tailPtr)
+      {
+        tailPtr = &(*tailPtr)->nextAnimation;
+      }
+      *tailPtr = animation;
+    }
+
+  private:
+    Animation *_animationListHead = nullptr;
+  };
+
+  //------------------------------------------------------------------------------
+
+#if (EC_ENABLE_ANIMATION_SCENE_MULTI)
+  /** A combination of AnimationScene and AnimationSceneStatic.
+   * Meaning that the Animations can either be allocated on the heap, or have
+   * static lifetime. This AnimationScene can handle both appropriately. \n
+   * Unfortunately this flexibility comes with a cost - that's why this class is
+   * disabled by default. To enable it,
+   * @code
+   * #define EC_ENABLE_ANIMATION_SCENE_MULTI 1
+   * @endcode
+   * \e before including the EyeCandy headers.
+   */
+  class AnimationSceneMulti
+      : public Animation
+  {
+  public:
+    /** Destructor.
+     * Also destroys all previously added Animations on the heap.
+     * @see reset()
+     */
+    ~AnimationSceneMulti()
+    {
+      reset();
+    }
+
+    /** Append the given (allocated) \a animation to the AnimationScene (given as pointer).
+     * @return The given \a animation (so the caller can apply further settings)
+     * @note \a animation must be allocated on the heap. The AnimationScene takes
+     * care of deleting it when no more needed.
+     */
+    template <class AnimationType>
+    AnimationType *append(AnimationType *animation)
+    {
+      appendHeapAnimation(animation);
+      return animation;
+    }
+
+    /** Append the given (static) \a animation to the AnimationScene (given as reference).
+     * @return Pointer to the given \a animation (so the caller can apply further settings)
+     * @note \a animation must have static lifetime (i.e. it is \e not allocated on the heap).
+     * It will not be deleted when no more needed.
+     */
+    template <class AnimationType>
+    AnimationType *append(AnimationType &animation)
+    {
+      addToAnimationList(&animation);
+      return &animation;
+    }
+
+    /** Remove (and destroy if necessary) all previously added Animations.
+     * This AnimationScene is empty afterwards, and can be filled again with new animations.
+     * @see append()
+     */
+    void reset()
+    {
+      while (_animationListHead)
+      {
+        Animation *toClear = _animationListHead;
+        _animationListHead = _animationListHead->nextAnimation;
+        toClear->nextAnimation = nullptr;
+      }
+
+      while (_deleteListHead)
+      {
+        Animation *toDelete = _deleteListHead;
+        _deleteListHead = _deleteListHead->nextToDelete;
+        delete toDelete;
+      }
+    }
+
+  private:
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      Animation *next = _animationListHead;
+      while (next)
+      {
+        next->process(currentMillis, wasModified);
+        next = next->nextAnimation;
+      }
+    }
+
+    void appendHeapAnimation(Animation *animation)
+    {
+      addToAnimationList(animation);
+      animation->nextToDelete = _deleteListHead;
+      _deleteListHead = animation;
+    }
+
+    void addToAnimationList(Animation *animation)
+    {
+      Animation **tailPtr = &_animationListHead;
+      while (*tailPtr)
+      {
+        tailPtr = &(*tailPtr)->nextAnimation;
+      }
+      *tailPtr = animation;
+    }
+
+  private:
+    Animation *_animationListHead = nullptr;
+    Animation *_deleteListHead = nullptr;
+  };
+#endif
 
 } // namespace EC

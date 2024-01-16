@@ -62,8 +62,7 @@ EC::RgbBlocks rgbBlocks(rgbBlocksStrip);
 // Overlays
 EC::MovingDot movingDotOverlay(movingDotStrip, true /*, CRGB::SteelBlue*/);
 
-// run max. 8 Animations simultaneously
-EC::AnimationRunnerS animationRunner;
+EC::AnimationSceneStatic animationScene;
 
 //------------------------------------------------------------------------------
 
@@ -81,9 +80,9 @@ void setup()
     rainbow.volume = 100;
     movingDotOverlay.color = CRGB::SteelBlue;
 
-    animationRunner.add(rainbow);
-    animationRunner.add(rgbBlocks);
-    animationRunner.add(movingDotOverlay);
+    animationScene.append(rainbow);
+    animationScene.append(rgbBlocks);
+    animationScene.append(movingDotOverlay);
 }
 
 //------------------------------------------------------------------------------
@@ -93,7 +92,7 @@ void loop()
     updateColor();
     updateSpeed();
 
-    if (animationRunner.process())
+    if (animationScene.process())
     {
         FastLED.show();
     }
