@@ -144,11 +144,11 @@ namespace EC
       }
       if (enablePeakDot)
       {
-        strip.optPixel(vuPeakHandler.peakLevel()) = peakDotColor;
+        strip.optPixel(vuPeakHandler.getVU()) = peakDotColor;
       }
       if (enablePeakInvDot)
       {
-        strip.optPixel(vuPeakHandlerInv.peakLevel()) = peakInvDotColor;
+        strip.optPixel(vuPeakHandlerInv.getVU()) = peakInvDotColor;
       }
       _lastVuLevel = _vuLevel;
 
@@ -161,7 +161,7 @@ namespace EC
       Serial.print(">VU:");
       Serial.println(_vuLevel);
       Serial.print(">peak:");
-      Serial.println(vuPeakHandler.peakLevel());
+      Serial.println(vuPeakHandler.getVU());
 #endif
     }
 

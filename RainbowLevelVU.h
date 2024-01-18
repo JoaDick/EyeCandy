@@ -94,8 +94,8 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      const float vuLevel = vuRangeExtender.vuLevel();
-      const float peakLevel = vuPeakHandler.peakLevel();
+      const float vuLevel = vuRangeExtender.getVU();
+      const float peakLevel = vuPeakHandler.getVU();
       const uint8_t hue = _startHue + vuLevel * vuHueRange * 255;
 
       if (enableVuBar)
@@ -113,8 +113,7 @@ namespace EC
     /// @see AnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
     {
-      float vuLevel = vuLevelHandler.capture();
-      vuLevel = vuRangeExtender.process(vuLevel);
+      const float vuLevel = vuRangeExtender.process(vuLevelHandler.capture());
       vuPeakHandler.process(vuLevel, currentMillis);
 
       _startHue += baseHueStep;

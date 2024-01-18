@@ -211,8 +211,8 @@ void makeAvgVsRmsVU_peak(EC::AnimationScene &scene)
     {
         strip.normPixel(vu.vuLevelAvg) += CRGB(0, 128, 0);
         strip.normPixel(vu.vuLevelRms) += CRGB(0, 0, 128);
-        strip.optPixel(vu.vuPeakHandlerAvg.peakLevel()) += CRGB(0, 255, 0);
-        strip.optPixel(vu.vuPeakHandlerRms.peakLevel()) += CRGB(0, 0, 255);
+        strip.optPixel(vu.vuPeakHandlerAvg.getVU()) += CRGB(0, 255, 0);
+        strip.optPixel(vu.vuPeakHandlerRms.getVU()) += CRGB(0, 0, 255);
     };
 
     auto vu = scene.append(new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction));
@@ -234,8 +234,8 @@ void makeAvgVsRmsVU_peak_smoothed(EC::AnimationScene &scene)
     {
         strip.normPixel(vu.vuLevelAvg) += CRGB(0, 128, 0);
         strip.normPixel(vu.vuLevelRms) += CRGB(0, 0, 128);
-        strip.optPixel(vu.vuPeakHandlerAvg.peakLevel()) += CRGB(0, 255, 0);
-        strip.optPixel(vu.vuPeakHandlerRms.peakLevel()) += CRGB(0, 0, 255);
+        strip.optPixel(vu.vuPeakHandlerAvg.getVU()) += CRGB(0, 255, 0);
+        strip.optPixel(vu.vuPeakHandlerRms.getVU()) += CRGB(0, 0, 255);
     };
 
     auto vu = scene.append(new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction));
@@ -258,8 +258,8 @@ void makeAvgVsAvgLog(EC::AnimationScene &scene)
     {
         strip.normPixel(vu.vuLevelAvg) += CRGB(0, 32, 0);
         strip.normPixel(vu.vuLevelAvg_log) += CRGB(32, 128, 0);
-        strip.optPixel(vu.vuPeakHandlerAvg.peakLevel()) += CRGB(0, 64, 0);
-        strip.optPixel(vu.vuPeakHandlerAvg_log.peakLevel()) += CRGB(64, 255, 0);
+        strip.optPixel(vu.vuPeakHandlerAvg.getVU()) += CRGB(0, 64, 0);
+        strip.optPixel(vu.vuPeakHandlerAvg_log.getVU()) += CRGB(64, 255, 0);
     };
 
     auto vu = scene.append(new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction));
@@ -281,8 +281,8 @@ void makeAvgVsAvgLog_smoothed(EC::AnimationScene &scene)
     {
         strip.normPixel(vu.vuLevelAvg) += CRGB(0, 32, 0);
         strip.normPixel(vu.vuLevelAvg_log) += CRGB(32, 128, 0);
-        strip.optPixel(vu.vuPeakHandlerAvg.peakLevel()) += CRGB(0, 64, 0);
-        strip.optPixel(vu.vuPeakHandlerAvg_log.peakLevel()) += CRGB(64, 255, 0);
+        strip.optPixel(vu.vuPeakHandlerAvg.getVU()) += CRGB(0, 64, 0);
+        strip.optPixel(vu.vuPeakHandlerAvg_log.getVU()) += CRGB(64, 255, 0);
     };
 
     auto vu = scene.append(new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction));
@@ -308,10 +308,10 @@ void makeAvgLogVsRmsLogVU(EC::AnimationScene &scene)
         strip.normPixel(vu.vuLevelRms) += CRGB(0, 0, 32);
         strip.normPixel(vu.vuLevelAvg_log) += CRGB(32, 128, 0);
         strip.normPixel(vu.vuLevelRms_log) += CRGB(16, 0, 128);
-        strip.optPixel(vu.vuPeakHandlerAvg.peakLevel()) += CRGB(0, 64, 0);
-        strip.optPixel(vu.vuPeakHandlerRms.peakLevel()) += CRGB(0, 0, 64);
-        strip.optPixel(vu.vuPeakHandlerAvg_log.peakLevel()) += CRGB(64, 255, 0);
-        strip.optPixel(vu.vuPeakHandlerRms_log.peakLevel()) += CRGB(32, 0, 255);
+        strip.optPixel(vu.vuPeakHandlerAvg.getVU()) += CRGB(0, 64, 0);
+        strip.optPixel(vu.vuPeakHandlerRms.getVU()) += CRGB(0, 0, 64);
+        strip.optPixel(vu.vuPeakHandlerAvg_log.getVU()) += CRGB(64, 255, 0);
+        strip.optPixel(vu.vuPeakHandlerRms_log.getVU()) += CRGB(32, 0, 255);
     };
 
     auto vu = scene.append(new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction));
@@ -334,7 +334,7 @@ void makeRmsLogVU(EC::AnimationScene &scene)
     auto drawFunction = [](EC::FastLedStrip &strip, EC::LowLevelAudioPlaygroundVU &vu)
     {
         strip.normLineAbs(0.0, vu.vuLevelRms_log, CRGB(0, 32, 128));
-        strip.optPixel(vu.vuPeakHandlerRms_log.peakLevel()) += CRGB(64, 0, 255);
+        strip.optPixel(vu.vuPeakHandlerRms_log.getVU()) += CRGB(64, 0, 255);
     };
 
     auto vu = scene.append(new EC::LowLevelAudioPlaygroundVU(audioSample, {leds, NUM_LEDS}, drawFunction));

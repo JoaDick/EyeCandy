@@ -56,10 +56,10 @@ namespace EC
     CRGB color = CRGB::White;
 
     /// Usually there's nothing to configure here; mainly for debugging.
-    VuPeakHandler vuPeakHandler;
+    VuRangeExtender vuRangeExtender;
 
     /// Usually there's nothing to configure here; mainly for debugging.
-    VuRangeExtender vuRangeExtender;
+    VuPeakHandler vuPeakHandler;
 
 #if (1)
     /** Constructor
@@ -126,11 +126,10 @@ namespace EC
     /// @see AnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
     {
-      float vuLevel = vuLevelHandler.capture();
-      vuLevel = vuRangeExtender.process(vuLevel);
+      const float vuLevel = vuRangeExtender.process(vuLevelHandler.capture());
       if (vuPeakHandler.process(vuLevel, currentMillis))
       {
-        _peakLevel = vuPeakHandler.peakLevel();
+        _peakLevel = vuPeakHandler.getVU();
       }
     }
 

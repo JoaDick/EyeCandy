@@ -86,15 +86,15 @@ namespace EC
      */
     bool enableRangeExtender = true;
 
+    /// Usually there's nothing to configure here; only for debugging.
+    VuRangeExtender vuRangeExtender;
+
     /** Configure the following properties according to your needs:
      * - VuPeakHandler::peakHold
      * - VuPeakHandler::peakDecay
      * - Don't call any of its methods!
      */
     VuPeakHandler vuPeakHandler;
-
-    /// Usually there's nothing to configure here; only for debugging.
-    VuRangeExtender vuRangeExtender;
 
     /** Constructor
      * @param audioSource  Read the audio samples from there.
@@ -119,7 +119,7 @@ namespace EC
       }
       if (enablePeakDot)
       {
-        strip.optPixel(vuPeakHandler.peakLevel()) = peakDotColor;
+        strip.optPixel(vuPeakHandler.getVU()) = peakDotColor;
       }
 
 #ifdef ESSENTIAL_VU_DEBUG
@@ -130,7 +130,7 @@ namespace EC
       Serial.print(" VU:");
       Serial.print(10.0 * _vuLevel);
       Serial.print(" peak:");
-      Serial.print(10.0 * peakLevel);
+      Serial.print(10.0 * vuPeakHandler.getVU());
       Serial.println();
 #endif
     }

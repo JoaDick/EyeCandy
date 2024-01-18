@@ -30,24 +30,27 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-/** Helper class for calculating the volume level of a VU meter.
- * Main feature is the internal transformation to a logarithmic scale (instead
- * of sticking to a linear scale), so both silent and loud audio signals will
- * lead to suitable results with a similar peak-to-peak range. \n
- * Usage: Continously feed in normalized audio samples via addSample() from your
- * loop() function.
- * Eventually, when the VU meter shall be rendered, call capture() to obtain the
- * current VU level. \n
- * This class is internally doing the following:
- * - calculate the RMS volume of all audio samples since last capture() calling
- * - convert RMS value to a dB / full-scale value (ca. -28.5 ... +3.0 dB_FS)
- * - scale that inconvenient dB_FS value to the range 0.0 ... 1.0
- * - smooth out the last few VU values for a less twitchy appearance
- * @note Use #AudioNormalizer for pre-processing the raw ADC values.
- */
-class VuLevelHandler
+namespace EC
 {
-public:
+
+  /** Helper class for calculating the volume level of a VU meter.
+   * Main feature is the internal transformation to a logarithmic scale (instead
+   * of sticking to a linear scale), so both silent and loud audio signals will
+   * lead to suitable results with a similar peak-to-peak range. \n
+   * Usage: Continously feed in normalized audio samples via addSample() from your
+   * loop() function.
+   * Eventually, when the VU meter shall be rendered, call capture() to obtain the
+   * current VU level. \n
+   * This class is internally doing the following:
+   * - calculate the RMS volume of all audio samples since last capture() calling
+   * - convert RMS value to a dB / full-scale value (ca. -28.5 ... +3.0 dB_FS)
+   * - scale that inconvenient dB_FS value to the range 0.0 ... 1.0
+   * - smooth out the last few VU values for a less twitchy appearance
+   * @note Use #AudioNormalizer for pre-processing the raw ADC values.
+   */
+  class VuLevelHandler
+  {
+  public:
     /** Incorporate that many previous VU values for smoothing the output.
      * 0 means no smoothing.
      */
@@ -60,14 +63,15 @@ public:
      */
     float noiseFloor_dB = -28.5;
 
-    /** VU level of last call to capture().
-     * @return A value between 0.0 ... 1.0, representing the current volume.
+    /** Get the current VU level.
+     * This means the VU level of the last call to capture().
+     * @return A normalized VU value between 0.0 ... 1.0, representing the current volume.
      * @note Be aware that an overloaded / clipped / too loud audio signal may
      * return values greater than 1.0!
      */
-    float vuLevel()
+    float getVU()
     {
-        return _vuLevel;
+      return _vuLevel;
     }
 
     /** Feed in normalized audio samples.
@@ -75,69 +79,73 @@ public:
      */
     void addSample(float audioSample)
     {
-        _rmsSum += square(audioSample);
-        ++_rmsCount;
+      _rmsSum += square(audioSample);
+      ++_rmsCount;
     }
 
     /** Call this method to obtain the current VU level.
      * Call it ONLY when the VU meter Animation shall be rendered.
-     * @return A value between 0.0 ... 1.0, representing the current volume.
+     * @return A normalized VU value between 0.0 ... 1.0, representing the current volume.
      * @note Be aware that an overloaded / clipped / too loud audio signal may
-     * return VU values greater than 1.0!
+     * return values greater than 1.0!
      */
     float capture()
     {
-        // no change?
-        if (_rmsCount == 0)
-        {
-            return _vuLevel;
-        }
-
-        volume_RMS = sqrt(_rmsSum / _rmsCount);
-        _rmsSum = 0.0;
-        _rmsCount = 0;
-
-        float volume_dB = noiseFloor_dB;
-        if (volume_RMS > 0.0)
-        {
-            // https://en.wikipedia.org/wiki/DBFS#RMS_levels
-            volume_dB = 20.0 * log10(volume_RMS) + 3.0;
-            if (volume_dB < noiseFloor_dB)
-            {
-                volume_dB = noiseFloor_dB;
-            }
-        }
-
-        _vuLevel *= smoothingFactor;
-        _vuLevel += (noiseFloor_dB - volume_dB) / noiseFloor_dB;
-        _vuLevel /= smoothingFactor + 1;
-
+      // no change?
+      if (_rmsCount == 0)
+      {
         return _vuLevel;
+      }
+
+      volume_RMS = sqrt(_rmsSum / _rmsCount);
+      _rmsSum = 0.0;
+      _rmsCount = 0;
+
+      float volume_dB = noiseFloor_dB;
+      if (volume_RMS > 0.0)
+      {
+        // https://en.wikipedia.org/wiki/DBFS#RMS_levels
+        volume_dB = 20.0 * log10(volume_RMS) + 3.0;
+        if (volume_dB < noiseFloor_dB)
+        {
+          volume_dB = noiseFloor_dB;
+        }
+      }
+
+      _vuLevel *= smoothingFactor;
+      _vuLevel += (noiseFloor_dB - volume_dB) / noiseFloor_dB;
+      _vuLevel /= smoothingFactor + 1;
+
+      return _vuLevel;
     }
 
     /// The intermediate RMS volume. Only for debugging; don't modify!
     float volume_RMS = 0.0;
 
-private:
+  private:
     float _rmsSum = 0.0;
     uint16_t _rmsCount = 0;
     float _vuLevel = 0.0;
-};
+  };
+
+}
+
+//------------------------------------------------------------------------------
 
 inline float constrainF(float value, float minValue, float maxValue)
 {
-    if (value > maxValue)
-    {
-        value = maxValue;
-    }
-    if (value < minValue)
-    {
-        value = minValue;
-    }
-    return value;
+  if (value > maxValue)
+  {
+    value = maxValue;
+  }
+  if (value < minValue)
+  {
+    value = minValue;
+  }
+  return value;
 }
 
 inline float constrainF(float value, float maxValue = 1.0)
 {
-    return constrainF(value, 0.0, maxValue);
+  return constrainF(value, 0.0, maxValue);
 }

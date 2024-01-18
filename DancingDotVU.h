@@ -95,9 +95,9 @@ namespace EC
       // TODO: Make this configurable?
       static const int8_t dotSize = 3;
 
-      if (vuPeakHandler.peakLevel() > 0.0)
+      if (vuPeakHandler.getVU() > 0.0)
       {
-        const auto startIndex = strip.toPixelIndex(vuPeakHandler.peakLevel());
+        const auto startIndex = strip.toPixelIndex(vuPeakHandler.getVU());
         strip.lineRel(startIndex, -dotSize, color);
       }
     }
@@ -105,8 +105,7 @@ namespace EC
     /// @see AnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
     {
-      float vuLevel = vuLevelHandler.capture();
-      vuLevel = vuRangeExtender.process(vuLevel);
+      const float vuLevel = vuRangeExtender.process(vuLevelHandler.capture());
       vuPeakHandler.process(vuLevel, currentMillis);
     }
   };

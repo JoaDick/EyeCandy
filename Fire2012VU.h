@@ -83,17 +83,16 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      strip.normPixel(vuPeakHandler.peakLevel()) = CRGB(0, 0, 255);
+      strip.normPixel(vuPeakHandler.getVU()) = CRGB(0, 0, 255);
     }
 #endif
 
     /// @see PseudoAnimationBase::updateAnimation()
     void updateAnimation(uint32_t currentMillis) override
     {
-      float vuLevel = vuLevelHandler.capture();
-      vuLevel = vuRangeExtender.process(vuLevel);
+      float vuLevel = vuRangeExtender.process(vuLevelHandler.capture());
       vuPeakHandler.process(vuLevel, currentMillis);
-      vuLevel = constrainF(vuPeakHandler.peakLevel());
+      vuLevel = constrainF(vuPeakHandler.getVU());
 
       /// COOLING: How much does the air cool as it rises?
       /// Less cooling = taller flames.  More cooling = shorter flames.

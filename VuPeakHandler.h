@@ -36,7 +36,7 @@ namespace EC
 
   /** Helper class for calculating the peak dot position of a VU meter.
    * Just provide the output of a #VuLevelHandler instance, and get the position
-   * of the corresponding peak dot.
+   * of the corresponding peak dot via getVU().
    */
   class VuPeakHandler
   {
@@ -55,24 +55,25 @@ namespace EC
      */
     float peakThreshold = 0.005;
 
-    /** Curent position of the peak dot.
-     * @return A value between 0.0 ... 1.0, representing the dot's position.
+    /** Get the current VU level.
+     * This means the curent position of the peak dot.
+     * @return A normalized VU value between 0.0 ... 1.0, representing the dot's position.
      * @note Be aware that an overloaded / clipped / too loud audio signal may
      * return values greater than 1.0 or less than 0.0!
      */
-    float peakLevel()
+    float getVU()
     {
       return _peakLevel;
     }
 
-    /** Calculate the peak dot's position.
-     * @param vuLevel  Returnvalue of VuLevelHandler::capture()
+    /** Calculate the peak dot's position for the given \a vuLevel.
+     * @param vuLevel  The current VU level.
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
      * @retval true   A new peak has been detected.
      * @retval false  No peak detected.
-     * Use peakLevel() to get the position of the peak dot.
+     * Use getVU() to get the position of the peak dot.
      * A new peak is reported, when the current \a vuLevel value is below the
-     * previous one.
+     * previous one for the first time.
      */
     bool process(float vuLevel,
                  uint32_t currentMillis)
@@ -159,24 +160,25 @@ namespace EC
      */
     float &peakThreshold = _peakHandler.peakThreshold;
 
-    /** Curent position of the peak dot.
-     * @return A value between 0.0 ... 1.0, representing the dot's position.
+    /** Get the current VU level.
+     * This means the curent position of the peak dot.
+     * @return A normalized VU value between 0.0 ... 1.0, representing the dot's position.
      * @note Be aware that an overloaded / clipped / too loud audio signal may
      * return values greater than 1.0 or less than 0.0!
      */
-    float peakLevel()
+    float getVU()
     {
-      return 1.0 - _peakHandler.peakLevel();
+      return 1.0 - _peakHandler.getVU();
     }
 
     /** Calculate the peak dot's position.
-     * @param vuLevel  Returnvalue of VuLevelHandler::capture()
+     * @param vuLevel  The current VU level.
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
      * @retval true   A new peak has been detected.
      * @retval false  No peak detected.
-     * Use peakLevel() to get the position of the peak dot.
-     * A new peak is reported, when the current \a vuLevel value is below the
-     * previous one.
+     * Use getVU() to get the position of the peak dot.
+     * A new peak is reported, when the current \a vuLevel value is above the
+     * previous one for the first time.
      */
     bool process(float vuLevel,
                  uint32_t currentMillis)

@@ -76,6 +76,12 @@ uint16_t animationDuration = defaultAnimationDuration;
 
 // ---------- VUs ----------
 
+void makeRawAudioVU(EC::AnimationScene &scene)
+{
+    auto vu = scene.append(new EC::RawAudioVU(audioSample, {leds, NUM_LEDS}));
+    // animationDuration = 10;
+}
+
 void makeBouncingDotVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -421,6 +427,7 @@ void makeVuSequence20(EC::AnimationScene &scene)
 EC::AnimationSceneBuilderFct nextAnimation = nullptr;
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
+    // &makeRawAudioVU,
     &makeVuSequence1,
     &makeVuSequence2,
     &makeVuSequence3,
