@@ -58,7 +58,7 @@ namespace EC
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
      */
-    static uint16_t animationDelay_default() { return 20; }
+    static uint16_t modelUpdatePeriod_default() { return 20; }
 
 #if (1)
     /** Constructor
@@ -69,7 +69,7 @@ namespace EC
               bool overlayMode)
         : AnimationBaseFL(ledStrip, overlayMode, fadeRate_default())
     {
-      animationDelay = animationDelay_default();
+      modelUpdatePeriod = modelUpdatePeriod_default();
     }
 
 #else // DRAFT
@@ -83,7 +83,7 @@ namespace EC
               CRGB color = CRGB::Red)
         : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default()), color(color)
     {
-      animationDelay = animationDelay_default();
+      modelUpdatePeriod = modelUpdatePeriod_default();
     }
 #endif
 
@@ -91,14 +91,14 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      if (animationDelay)
+      if (modelUpdatePeriod)
       {
         strip[_position] = color;
       }
     }
 
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see AnimationBase::updateModel()
+    void updateModel(uint32_t currentMillis) override
     {
       if (_rising)
       {

@@ -47,15 +47,6 @@ namespace EC
     uint32_t _nextShowPattern = 0;
 
   public:
-    /** Delay (in ms) before calling updateAnimation() the next time.
-     * 0 means don't call updateAnimation()
-     * This value is generally assigned by the Animation implementation.
-     * Change it only if the child class explicitly uses this as configuration
-     * option, i.e. when it also offers a static \c animationDelay_default()
-     * method.
-     */
-    uint16_t animationDelay = 0;
-
     /** Delay (in ms) between updating the LED strip.
      * It determines how frequent showPattern() is getting called (not relevant
      * in overlay mode).
@@ -63,7 +54,16 @@ namespace EC
      * This value is generally assigned by the Animation implementation, and
      * there's usually no need to change it.
      */
-    uint8_t patternDelay = 10;
+    uint8_t patternUpdatePeriod = 10;
+
+    /** Delay (in ms) before calling updateModel() the next time.
+     * 0 means don't call updateModel()
+     * This value is generally assigned by the Animation implementation.
+     * Change it only if the child class explicitly uses this as configuration
+     * option, i.e. when it also offers a static \c modelUpdatePeriod_default()
+     * method.
+     */
+    uint16_t modelUpdatePeriod = 0;
 
   protected:
     /** Constructor.
@@ -102,7 +102,7 @@ namespace EC
      * Timing is determined via getAnimationDelay().
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
      */
-    virtual void updateAnimation(uint32_t currentMillis)
+    virtual void updateModel(uint32_t currentMillis)
     {
     }
 
@@ -110,11 +110,11 @@ namespace EC
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      if (animationDelay > 0)
+      if (modelUpdatePeriod > 0)
       {
-        if (currentMillis >= _lastUpdateAnimation + animationDelay)
+        if (currentMillis >= _lastUpdateAnimation + modelUpdatePeriod)
         {
-          updateAnimation(currentMillis);
+          updateModel(currentMillis);
           _lastUpdateAnimation = currentMillis;
         }
       }
@@ -131,7 +131,7 @@ namespace EC
         if (currentMillis >= _nextShowPattern)
         {
           showPattern(currentMillis);
-          _nextShowPattern = currentMillis + patternDelay;
+          _nextShowPattern = currentMillis + patternUpdatePeriod;
           wasModified = true;
         }
       }

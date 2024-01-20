@@ -68,7 +68,7 @@ namespace EC
             bool overlayMode)
         : AnimationBaseFL(ledStrip, overlayMode, fadeRate_default())
     {
-      animationDelay = 10;
+      modelUpdatePeriod = 10;
     }
 
 #else // DRAFT
@@ -82,13 +82,13 @@ namespace EC
             CRGB color = CRGB::White)
         : AnimationBaseFL(ledStrip, overlayMode, fadeRate_default()), color(color)
     {
-      animationDelay = 10;
+      modelUpdatePeriod = 10;
     }
 #endif
 
   private:
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see AnimationBase::updateModel()
+    void updateModel(uint32_t currentMillis) override
     {
       if (random8() < effectRate)
       {

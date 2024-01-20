@@ -72,7 +72,7 @@ namespace EC
                   bool overlayMode)
         : VuBaseFL(ledStrip, overlayMode, fadeRate_default(), audioSource)
     {
-      animationDelay = 10;
+      modelUpdatePeriod = 10;
       vuPeakHandler.peakHold = 20;
       vuPeakHandler.peakDecay = 0;
       vuRangeExtender.smoothingFactor = 3;
@@ -91,7 +91,7 @@ namespace EC
                   CRGB color = CRGB::White)
         : VuBaseFL(ledStrip, overlayMode, fadeRate_default(), audioSource), color(color)
     {
-      animationDelay = 10;
+      modelUpdatePeriod = 10;
       vuPeakHandler.peakHold = 20;
       vuPeakHandler.peakDecay = 0;
       vuRangeExtender.smoothingFactor = 3;
@@ -123,8 +123,8 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see AnimationBase::updateModel()
+    void updateModel(uint32_t currentMillis) override
     {
       const float vuLevel = vuRangeExtender.process(vuLevelHandler.capture());
       if (vuPeakHandler.process(vuLevel, currentMillis))

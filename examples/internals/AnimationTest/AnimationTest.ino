@@ -153,7 +153,7 @@ void makeAnimation1(EC::AnimationRepo &repo)
 void makeAnimation2(EC::AnimationRepo &repo)
 {
     repo.add(rainbowTwinkle);
-    rainbowTwinkle.animationDelay = 25;
+    rainbowTwinkle.modelUpdatePeriod = 25;
 }
 
 void makeAnimation3(EC::AnimationRepo &repo)
@@ -161,7 +161,7 @@ void makeAnimation3(EC::AnimationRepo &repo)
     repo.add(fire2012);
     fire2012.COOLING = 155;
     fire2012.SPARKING = 75;
-    fire2012.animationDelay = 10;
+    fire2012.modelUpdatePeriod = 10;
     repo.add(bouncingBallsOverlay);
     bouncingBallsOverlay.mirrored = true;
 }
@@ -221,7 +221,7 @@ void makeFlare(EC::AnimationRepo &repo)
 
     auto fire = new EC::Fire2012<NUM_LEDS>(fireStrip);
     fire->SPARKING = 75;
-    fire->animationDelay = 10;
+    fire->modelUpdatePeriod = 10;
 
     repo.add(fire);
     repo.add(new EC::Kaleidoscope(strip));
@@ -718,7 +718,7 @@ void updateSpeed()
     if (analogValue < 256)
     {
         const uint8_t animationSpeed = analogValue;
-        const uint8_t animationDelay = animationSpeed ? 256 - animationSpeed : 0;
+        const uint8_t modelUpdatePeriod = animationSpeed ? 256 - animationSpeed : 0;
 
         static uint16_t lastSpeed = 0;
         if (animationSpeed != lastSpeed)
@@ -727,19 +727,19 @@ void updateSpeed()
             Serial.print("speed: ");
             Serial.print(animationSpeed);
             Serial.print(" delay: ");
-            Serial.println(animationDelay);
+            Serial.println(modelUpdatePeriod);
         }
 
 #if (EnableStaticPatterns)
         fire2012.SPARKING = animationSpeed;
-        movingDot.animationDelay = animationDelay;
-        rainbow.animationDelay = animationDelay;
-        // rainbowBuiltin.animationDelay = animationDelay;
-        rainbowTwinkle.animationDelay = animationDelay;
-        // rgbBlocks.animationDelay = 8 * animationDelay;
+        movingDot.modelUpdatePeriod = modelUpdatePeriod;
+        rainbow.modelUpdatePeriod = modelUpdatePeriod;
+        // rainbowBuiltin.modelUpdatePeriod = modelUpdatePeriod;
+        rainbowTwinkle.modelUpdatePeriod = modelUpdatePeriod;
+        // rgbBlocks.modelUpdatePeriod = 8 * modelUpdatePeriod;
         twinkles.fadeRate = animationSpeed;
 
-        movingDotOverlay.animationDelay = 2 * animationDelay;
+        movingDotOverlay.modelUpdatePeriod = 2 * modelUpdatePeriod;
 #endif
     }
 }
@@ -756,11 +756,11 @@ void updateFlip()
 
     if (flipped)
     {
-        fire2012.animationDelay = 15;
+        fire2012.modelUpdatePeriod = 15;
     }
     else
     {
-        fire2012.animationDelay = 0;
+        fire2012.modelUpdatePeriod = 0;
         fire2012.gPal = EC::Fire2012_gPal_default();
     }
 #endif

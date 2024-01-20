@@ -55,7 +55,7 @@ namespace EC
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
      */
-    static uint16_t animationDelay_default() { return 35; }
+    static uint16_t modelUpdatePeriod_default() { return 35; }
 
     /** Brightness of the rainbow.
      * This setting can be adjusted at runtime.
@@ -75,7 +75,7 @@ namespace EC
     explicit Rainbow(FastLedStrip ledStrip)
         : AnimationBaseFL(ledStrip.getReversedStrip(), false)
     {
-      animationDelay = animationDelay_default();
+      modelUpdatePeriod = modelUpdatePeriod_default();
     }
 
   private:
@@ -93,8 +93,8 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see AnimationBase::updateModel()
+    void updateModel(uint32_t currentMillis) override
     {
       ++_hue;
     }

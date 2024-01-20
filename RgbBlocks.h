@@ -54,7 +54,7 @@ namespace EC
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
      */
-    static uint16_t animationDelay_default() { return 100; }
+    static uint16_t modelUpdatePeriod_default() { return 100; }
 
     /** Constructor
      * @param ledStrip  The LED strip.
@@ -62,7 +62,7 @@ namespace EC
     explicit RgbBlocks(FastLedStrip ledStrip)
         : AnimationBaseFL(ledStrip.getReversedStrip(), false)
     {
-      animationDelay = animationDelay_default();
+      modelUpdatePeriod = modelUpdatePeriod_default();
     }
 
   private:
@@ -93,8 +93,8 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see AnimationBase::updateModel()
+    void updateModel(uint32_t currentMillis) override
     {
       if (++_animationCounter >= _blockCount * blockSize)
       {

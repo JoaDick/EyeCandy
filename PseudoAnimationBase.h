@@ -34,7 +34,7 @@ namespace EC
 
   /** Helper base class for periodic custom processing.
    * Benefit of this helper is that it can be added to an #AnimationRunner, thus
-   * the child's updateAnimation() method is getting called frequently.
+   * the child's updateModel() method is getting called frequently.
    * May e.g. be used for manipulating another Animation's configuration setting
    * automatically during runtime.
    */
@@ -44,30 +44,30 @@ namespace EC
     uint32_t _lastUpdateAnimation = 0;
 
   public:
-    /** Delay (in ms) before calling updateAnimation() the next time.
-     * 0 means don't call updateAnimation()
+    /** Delay (in ms) before calling updateModel() the next time.
+     * 0 means don't call updateModel()
      * This value is generally assigned by the Animation implementation.
      * Change it only if the child class explicitly uses this as configuration
-     * option, i.e. when it also offers a static \c animationDelay_default()
+     * option, i.e. when it also offers a static \c modelUpdatePeriod_default()
      * method.
      */
-    uint16_t animationDelay = 0;
+    uint16_t modelUpdatePeriod = 0;
 
   protected:
     /** Process the Pseudo-Animation's duties.
      * This method must be implemented by all child classes.
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
      */
-    virtual void updateAnimation(uint32_t currentMillis) = 0;
+    virtual void updateModel(uint32_t currentMillis) = 0;
 
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      if (animationDelay > 0)
+      if (modelUpdatePeriod > 0)
       {
-        if (currentMillis >= _lastUpdateAnimation + animationDelay)
+        if (currentMillis >= _lastUpdateAnimation + modelUpdatePeriod)
         {
-          updateAnimation(currentMillis);
+          updateModel(currentMillis);
           _lastUpdateAnimation = currentMillis;
         }
       }

@@ -50,12 +50,12 @@ namespace EC
     explicit Fire2012Changer(Fire2012<NUM_LEDS> &fire)
         : PseudoAnimationBase(), _fire(fire)
     {
-      animationDelay = 10;
+      modelUpdatePeriod = 10;
     }
 
   private:
-    /// @see PseudoAnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see PseudoAnimationBase::updateModel()
+    void updateModel(uint32_t currentMillis) override
     {
       /// COOLING: How much does the air cool as it rises?
       /// Less cooling = taller flames.  More cooling = shorter flames.

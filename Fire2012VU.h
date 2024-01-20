@@ -73,7 +73,7 @@ namespace EC
         : AnimationBaseFL(fire.getStrip(), true), _audioSource(audioSource), _fire(fire)
 #endif
     {
-      animationDelay = 10;
+      modelUpdatePeriod = 10;
       vuPeakHandler.peakHold = 150;
       vuPeakHandler.peakDecay = 500;
     }
@@ -87,8 +87,8 @@ namespace EC
     }
 #endif
 
-    /// @see PseudoAnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see PseudoAnimationBase::updateModel()
+    void updateModel(uint32_t currentMillis) override
     {
       float vuLevel = vuRangeExtender.process(vuLevelHandler.capture());
       vuPeakHandler.process(vuLevel, currentMillis);

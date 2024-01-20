@@ -122,7 +122,7 @@ namespace EC
             bool overlayMode)
         : VuBaseFL(ledStrip, overlayMode, fadeRate_default(), audioSource)
     {
-      animationDelay = 10;
+      modelUpdatePeriod = 10;
       vuPeakHandler.peakHold = 500;
       vuPeakHandler.peakDecay = 3000;
       vuPeakHandlerInv.peakHold = vuPeakHandler.peakHold;
@@ -165,8 +165,8 @@ namespace EC
 #endif
     }
 
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see AnimationBase::updateModel()
+    void updateModel(uint32_t currentMillis) override
     {
       _vuLevel = vuLevelHandler.capture();
       if (enableRangeExtender)

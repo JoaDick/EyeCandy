@@ -52,7 +52,7 @@ namespace EC
     explicit Waterfall(FastLedStrip ledStrip)
         : AnimationBaseFL(ledStrip, false)
     {
-      animationDelay = 10;
+      modelUpdatePeriod = 10;
     }
 
   private:
@@ -72,12 +72,12 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see AnimationBase::updateModel()
+    void updateModel(uint32_t currentMillis) override
     {
       for (uint8_t i = 0; i < DROPLET_COUNT; ++i)
       {
-        _droplets[i].update(animationDelay);
+        _droplets[i].update(modelUpdatePeriod);
       }
     }
 

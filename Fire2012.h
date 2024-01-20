@@ -62,7 +62,7 @@ namespace EC
   /// Other means delay (in ms) between updating the hue (i.e. "rainbow speed").
   /// @note This delay influences the "Animation speed", but not the LED
   /// refresh rate.
-  inline uint16_t Fire2012_animationDelay_default() { return 0; }
+  inline uint16_t Fire2012_modelUpdatePeriod_default() { return 0; }
 
   /** Fire2012 with programmable Color Palette
   This code is the same fire simulation as the original "Fire2012",
@@ -126,8 +126,8 @@ namespace EC
     explicit Fire2012(FastLedStrip ledStrip)
         : AnimationBaseFL(ledStrip, false)
     {
-      patternDelay = 1000 / FRAMES_PER_SECOND;
-      animationDelay = Fire2012_animationDelay_default();
+      patternUpdatePeriod = 1000 / FRAMES_PER_SECOND;
+      modelUpdatePeriod = Fire2012_modelUpdatePeriod_default();
     }
 
   private:
@@ -209,10 +209,10 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see AnimationBase::updateModel()
+    void updateModel(uint32_t currentMillis) override
     {
-      if (animationDelay)
+      if (modelUpdatePeriod)
       {
         // Fourth, the most sophisticated: this one sets up a new palette every
         // time through the loop, based on a hue that changes every time.

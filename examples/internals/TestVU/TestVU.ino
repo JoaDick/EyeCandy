@@ -511,7 +511,7 @@ void updateSpeed()
     if (analogValue < 256)
     {
         const uint8_t animationSpeed = analogValue;
-        const uint8_t animationDelay = animationSpeed ? 256 - animationSpeed : 0;
+        const uint8_t modelUpdatePeriod = animationSpeed ? 256 - animationSpeed : 0;
 
         static uint16_t lastSpeed = 0;
         if (animationSpeed != lastSpeed)
@@ -519,7 +519,7 @@ void updateSpeed()
             // Serial.print("speed: ");
             // Serial.print(animationSpeed);
             // Serial.print(" delay: ");
-            // Serial.println(animationDelay);
+            // Serial.println(modelUpdatePeriod);
             lastSpeed = analogValue;
         }
     }

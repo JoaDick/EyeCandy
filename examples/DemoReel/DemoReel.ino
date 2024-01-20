@@ -120,7 +120,7 @@ void makeFireAndBalls(EC::AnimationScene &scene)
     auto fire = scene.append(new EC::Fire2012<NUM_LEDS>(strip));
     fire->COOLING = 155;
     fire->SPARKING = 75;
-    fire->animationDelay = 10;
+    fire->modelUpdatePeriod = 10;
 
     scene.append(new EC::BouncingBalls<>(strip.getReversedStrip(), true));
 }
@@ -146,7 +146,7 @@ void makeFlare(EC::AnimationScene &scene)
 
     auto fire = scene.append(new EC::Fire2012<NUM_LEDS>(fireStrip));
     fire->SPARKING = 75;
-    fire->animationDelay = 10;
+    fire->modelUpdatePeriod = 10;
 
     scene.append(new EC::Kaleidoscope(strip));
 }
@@ -199,7 +199,7 @@ void makeRainbowTwinkle(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     auto rainbow = scene.append(new EC::RainbowTwinkle(strip));
-    rainbow->animationDelay = 25;
+    rainbow->modelUpdatePeriod = 25;
 }
 
 void makeTwinkles(EC::AnimationScene &scene)

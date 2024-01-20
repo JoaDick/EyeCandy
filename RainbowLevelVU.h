@@ -87,7 +87,7 @@ namespace EC
                    bool overlayMode)
         : VuBaseFL(ledStrip, overlayMode, fadeRate_default(), audioSource)
     {
-      animationDelay = 10;
+      modelUpdatePeriod = 10;
     }
 
   private:
@@ -110,8 +110,8 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see AnimationBase::updateModel()
+    void updateModel(uint32_t currentMillis) override
     {
       const float vuLevel = vuRangeExtender.process(vuLevelHandler.capture());
       vuPeakHandler.process(vuLevel, currentMillis);

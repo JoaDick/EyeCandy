@@ -3,6 +3,27 @@ DemoReelVU Memory usage log
 
 
 
+Baseline: 51032d2 Prepared DemoReelVU.ino for MemUsage log
+---------
+* Arduino Uno
+
+Sketch uses 25504 bytes (79%) of program storage space. Maximum is 32256 bytes.
+Global variables use 925 bytes (45%) of dynamic memory, leaving 1123 bytes for local variables. Maximum is 2048 bytes.
+
+
+Memory usage for 90 LEDs:
+<*> is dependant on NUM_LEDS
+DancingDotVU = 98
+EssentialVU = 108
+Fire2012VU = 86
+PeakGlitterVU = 102
+RainbowLevelVU = 122
+RawAudioVU = 28
+
+****************************************************************************************************
+
+
+
 240118 Preparations for new VuSource interface
 
 Sketch uses 24560 bytes (76%) of program storage space. Maximum is 32256 bytes.
@@ -11,11 +32,10 @@ Global variables use 891 bytes (43%) of dynamic memory, leaving 1157 bytes for l
 
 
 Baseline: c7ffabe (feature/VuSource)
+---------
 
 Sketch uses 24602 bytes (76%) of program storage space. Maximum is 32256 bytes.
 Global variables use 891 bytes (43%) of dynamic memory, leaving 1157 bytes for local variables. Maximum is 2048 bytes.
-
-************************************************************************************************************************
 
 
 

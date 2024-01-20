@@ -134,12 +134,12 @@ void updateSpeed()
     if (analogValue < 256)
     {
         const uint8_t animationSpeed = analogValue;
-        const uint8_t animationDelay = animationSpeed ? 256 - animationSpeed : 0;
+        const uint8_t modelUpdatePeriod = animationSpeed ? 256 - animationSpeed : 0;
 
-        rainbow.animationDelay = animationDelay;
-        rgbBlocks.animationDelay = 8 * animationDelay;
+        rainbow.modelUpdatePeriod = modelUpdatePeriod;
+        rgbBlocks.modelUpdatePeriod = 8 * modelUpdatePeriod;
 
-        movingDotOverlay.animationDelay = 2 * animationDelay;
+        movingDotOverlay.modelUpdatePeriod = 2 * modelUpdatePeriod;
     }
 }
 

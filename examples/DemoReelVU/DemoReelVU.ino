@@ -184,7 +184,7 @@ void makeFlareVU(EC::FastLedStrip strip, EC::AnimationScene &scene)
     const uint16_t fireLedCount = strip.ledCount() / 2 + strip.ledCount() / 10;
     EC::FastLedStrip fireStrip = strip.getSubStrip(0, fireLedCount, true);
     auto fire = new EC::Fire2012<NUM_LEDS>(fireStrip);
-    fire->animationDelay = 10;
+    fire->modelUpdatePeriod = 10;
 
     scene.append(fire);
     scene.append(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire));
@@ -212,13 +212,13 @@ void makeFlareInwardVU(EC::AnimationScene &scene)
 
     EC::FastLedStrip fireStrip1 = strip.getHalfStrip();
     auto fire1 = new EC::Fire2012<NUM_LEDS>(fireStrip1);
-    fire1->animationDelay = 11;
+    fire1->modelUpdatePeriod = 11;
     scene.append(fire1);
     scene.append(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire1));
 
     EC::FastLedStrip fireStrip2 = strip.getSubStrip(fireStrip1.ledCount(), 0, true);
     auto fire2 = new EC::Fire2012<NUM_LEDS>(fireStrip2);
-    fire2->animationDelay = 13;
+    fire2->modelUpdatePeriod = 13;
     scene.append(fire2);
     scene.append(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire2));
 }

@@ -49,7 +49,7 @@ namespace EC
     explicit Pacifica(FastLedStrip ledStrip)
         : AnimationBaseFL(ledStrip, false)
     {
-      patternDelay = 20;
+      patternUpdatePeriod = 20;
     }
 
   private:

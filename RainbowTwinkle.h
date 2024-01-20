@@ -52,7 +52,7 @@ namespace EC
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
      */
-    static uint16_t animationDelay_default() { return 100; }
+    static uint16_t modelUpdatePeriod_default() { return 100; }
 
     /** Constructor.
      * @param ledStrip  The LED strip.
@@ -60,7 +60,7 @@ namespace EC
     explicit RainbowTwinkle(FastLedStrip ledStrip)
         : AnimationBaseFL(ledStrip, false, fadeRate_default())
     {
-      animationDelay = animationDelay_default();
+      modelUpdatePeriod = modelUpdatePeriod_default();
       for (auto i = 0; i < strip.ledCount(); i++)
       {
         strip[i] = CHSV(redShift(_hue), random(0x2F) + 0xD0, random(0xEF) + 0x10);
@@ -83,8 +83,8 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see AnimationBase::updateModel()
+    void updateModel(uint32_t currentMillis) override
     {
       ++_hue;
     }

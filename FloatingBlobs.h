@@ -47,7 +47,7 @@ namespace EC
     explicit FloatingBlobs(FastLedStrip ledStrip)
         : AnimationBaseFL(ledStrip, false)
     {
-      patternDelay = 10;
+      patternUpdatePeriod = 10;
     }
 
   private:

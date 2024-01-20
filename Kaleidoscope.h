@@ -41,6 +41,12 @@ namespace EC
       : public AnimationBaseFL
   {
   public:
+    /** Determine how the lower part of the strip is duplicated into the upper part.
+     * false = straight copying, true = mirror the content \n
+     * This setting can be adjusted at runtime.
+     */
+    bool mirrored;
+
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param mirrored  false = straight copying, true = mirror the content
@@ -50,11 +56,6 @@ namespace EC
         : AnimationBaseFL(ledStrip, true), mirrored(mirrored)
     {
     }
-
-    /** Determine how the lower part of the strip is duplicated into the upper part.
-     * false = straight copying, true = mirror the content
-     */
-    bool mirrored;
 
   private:
     /// @see AnimationBase::showOverlay()

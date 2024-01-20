@@ -196,9 +196,9 @@ namespace EC
         : AnimationBaseFL(ledStrip, false, 50), _audioSource(audioSource), _drawingFct(drawingFct)
     {
       // Calculate the average value every 10ms, resulting in 100Hz refresh rate.
-      animationDelay = 10;
+      modelUpdatePeriod = 10;
       // The LED strip is also updated every 10ms, resulting in 100 "FPS" for the VU.
-      // -- Note: That's the default value; see AnimationBase::patternDelay.
+      // -- Note: That's the default value; see AnimationBase::patternUpdatePeriod.
 
       vuPeakHandlerAvg.peakHold = 750;
       vuPeakHandlerAvg.peakDecay = 2500;
@@ -222,8 +222,8 @@ namespace EC
       AnimationBaseFL::processAnimation(currentMillis, wasModified);
     }
 
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see AnimationBase::updateModel()
+    void updateModel(uint32_t currentMillis) override
     {
       if (_sampleCount == 0)
       {

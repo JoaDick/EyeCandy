@@ -60,7 +60,7 @@ namespace EC
      * @note This delay influences the "Animation speed", but not the LED
      * refresh rate.
      */
-    static uint16_t animationDelay_default() { return 35; }
+    static uint16_t modelUpdatePeriod_default() { return 35; }
 
     /** Constructor.
      * @param ledStrip  The LED strip.
@@ -68,7 +68,7 @@ namespace EC
     explicit RainbowBuiltin(FastLedStrip ledStrip)
         : AnimationBaseFL(ledStrip, false)
     {
-      animationDelay = animationDelay_default();
+      modelUpdatePeriod = modelUpdatePeriod_default();
     }
 
   private:
@@ -78,8 +78,8 @@ namespace EC
       fill_rainbow(strip.ledArray(), strip.ledCount(), _hue, deltahue);
     }
 
-    /// @see AnimationBase::updateAnimation()
-    void updateAnimation(uint32_t currentMillis) override
+    /// @see AnimationBase::updateModel()
+    void updateModel(uint32_t currentMillis) override
     {
       ++_hue;
     }
