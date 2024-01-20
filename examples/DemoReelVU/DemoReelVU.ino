@@ -46,7 +46,7 @@ bool autoMode = true;
 float audioSample = 0.0;
 AudioNormalizer normalizer;
 
-#define PRINT_MEMORY_USAGE 0
+#define PRINT_MEMORY_USAGE 1
 
 //------------------------------------------------------------------------------
 
@@ -427,7 +427,7 @@ void makeVuSequence20(EC::AnimationScene &scene)
 EC::AnimationSceneBuilderFct nextAnimation = nullptr;
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
-    // &makeRawAudioVU,
+    &makeRawAudioVU,
     &makeVuSequence1,
     &makeVuSequence2,
     &makeVuSequence3,
@@ -529,6 +529,9 @@ void printMemoryUsage()
 
     Serial.print(F("RainbowLevelVU = "));
     Serial.println(sizeof(EC::RainbowLevelVU));
+
+    Serial.print(F("RawAudioVU = "));
+    Serial.println(sizeof(EC::RawAudioVU));
 }
 #endif
 

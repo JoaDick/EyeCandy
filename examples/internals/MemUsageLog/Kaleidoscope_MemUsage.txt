@@ -1,0 +1,24 @@
+Kaleidoscope Memory usage log
+=============================
+
+
+
+240115 AnimationScene support for static Animations
+
+Multi:
+Sketch uses 6900 bytes (21%) of program storage space. Maximum is 32256 bytes.
+Global variables use 730 bytes (35%) of dynamic memory, leaving 1318 bytes for local variables. Maximum is 2048 bytes.
+
+Static:
+Sketch uses 6850 bytes (21%) of program storage space. Maximum is 32256 bytes.
+Global variables use 720 bytes (35%) of dynamic memory, leaving 1328 bytes for local variables. Maximum is 2048 bytes.
+
+
+
+Baseline
+--------
+
+feature/AnimationScene
+
+Sketch uses 6968 bytes (21%) of program storage space. Maximum is 32256 bytes.
+Global variables use 752 bytes (36%) of dynamic memory, leaving 1296 bytes for local variables. Maximum is 2048 bytes.

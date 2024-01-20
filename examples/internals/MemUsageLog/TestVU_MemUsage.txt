@@ -1,0 +1,25 @@
+TestVU Memory usage log
+=======================
+
+
+
+240115 AnimationScene support for static Animations
+
+Sketch uses 16898 bytes (52%) of program storage space. Maximum is 32256 bytes.
+Global variables use 719 bytes (35%) of dynamic memory, leaving 1329 bytes for local variables. Maximum is 2048 bytes.
+
+
+
+Baseline
+--------
+
+feature/AnimationScene
+
+Sketch uses 17200 bytes (53%) of program storage space. Maximum is 32256 bytes.
+Global variables use 771 bytes (37%) of dynamic memory, leaving 1277 bytes for local variables. Maximum is 2048 bytes.
+
+
+Master
+
+Sketch uses 17178 bytes (53%) of program storage space. Maximum is 32256 bytes.
+Global variables use 767 bytes (37%) of dynamic memory, leaving 1281 bytes for local variables. Maximum is 2048 bytes.

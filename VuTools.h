@@ -32,6 +32,12 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
+#ifndef VU_TOOLS_ENABLE_TELEPLOT
+#define VU_TOOLS_ENABLE_TELEPLOT 0
+#endif
+
+//------------------------------------------------------------------------------
+
 namespace EC
 {
 
@@ -43,6 +49,7 @@ namespace EC
    */
   void logAudioSample(float audioSample)
   {
+#if (VU_TOOLS_ENABLE_TELEPLOT)
     // Teleplot: raw audio samples
     Serial.print(F(">-:"));
     Serial.println(-1.0);
@@ -50,6 +57,7 @@ namespace EC
     Serial.println(1.0);
     Serial.print(F(">raw:"));
     Serial.println(audioSample);
+#endif
   }
 
   //------------------------------------------------------------------------------
@@ -95,10 +103,12 @@ namespace EC
 
       _lastSample = sample;
 
+#if (VU_TOOLS_ENABLE_TELEPLOT)
       if (enableTeleplot)
       {
         logAudioSample(sample);
       }
+#endif
 
       AnimationBaseFL::processAnimation(currentMillis, wasModified);
     }
@@ -277,6 +287,7 @@ namespace EC
     void showOverlay(uint32_t currentMillis) override
     {
       _drawingFct(strip, *this);
+#if (VU_TOOLS_ENABLE_TELEPLOT)
       if (enableTeleplotAvg || enableTeleplotRms)
       {
         Serial.print(F(">-:"));
@@ -292,6 +303,7 @@ namespace EC
         Serial.print(F(">RMS_log:"));
         Serial.println(enableTeleplot_log && enableTeleplotRms ? vuLevelRms_log : 0.0);
       }
+#endif
     }
 
   private:
