@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 
 //------------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ namespace EC
    * Mainly intended as example, but can also be used in combination with Overlays.
    */
   class StaticBackground
-      : public AnimationBaseFL
+      : public AnimationBase
   {
   public:
     /** Fill LED strip with this color.
@@ -50,7 +50,7 @@ namespace EC
      */
     StaticBackground(FastLedStrip ledStrip,
                      CRGB color)
-        : AnimationBaseFL(ledStrip, false), color(color)
+        : AnimationBase(ledStrip, false), color(color)
     {
     }
 

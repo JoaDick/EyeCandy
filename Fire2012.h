@@ -26,7 +26,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 
 //------------------------------------------------------------------------------
 
@@ -97,7 +97,7 @@ namespace EC
   in step 3 above).
   */
   template <uint16_t NUM_LEDS>
-  class Fire2012 : public AnimationBaseFL
+  class Fire2012 : public AnimationBase
   {
     static const uint16_t FRAMES_PER_SECOND = 60;
 
@@ -124,9 +124,8 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit Fire2012(FastLedStrip ledStrip)
-        : AnimationBaseFL(ledStrip, false)
+        : AnimationBase(1000 / FRAMES_PER_SECOND, ledStrip)
     {
-      patternUpdatePeriod = 1000 / FRAMES_PER_SECOND;
       modelUpdatePeriod = Fire2012_modelUpdatePeriod_default();
     }
 

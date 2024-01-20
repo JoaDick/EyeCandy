@@ -26,7 +26,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 
 //------------------------------------------------------------------------------
 
@@ -40,16 +40,15 @@ namespace EC
    * https://github.com/FastLED/FastLED/blob/master/examples/Pacifica/Pacifica.ino
    */
   class Pacifica
-      : public AnimationBaseFL
+      : public AnimationBase
   {
   public:
     /** Constructor
      * @param ledStrip  The LED strip.
      */
     explicit Pacifica(FastLedStrip ledStrip)
-        : AnimationBaseFL(ledStrip, false)
+        : AnimationBase(20, ledStrip)
     {
-      patternUpdatePeriod = 20;
     }
 
   private:

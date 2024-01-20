@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 #include "VuLevelHandler.h"
 
 //------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ namespace EC
    * Child classes must fulfill the same requirements as for #AnimationBase.
    */
   class VuBaseFL
-      : public AnimationBaseFL
+      : public AnimationBase
   {
   public:
     /** Usually there's nothing to configure here.
@@ -60,7 +60,7 @@ namespace EC
              bool overlayMode,
              uint8_t fadeRate,
              float &audioSource)
-        : AnimationBaseFL(ledStrip, overlayMode, fadeRate), _audioSource(audioSource)
+        : AnimationBase(ledStrip, overlayMode, fadeRate), _audioSource(audioSource)
     {
     }
 
@@ -68,7 +68,7 @@ namespace EC
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
       vuLevelHandler.addSample(_audioSource);
-      AnimationBaseFL::processAnimation(currentMillis, wasModified);
+      AnimationBase::processAnimation(currentMillis, wasModified);
     }
 
   protected:

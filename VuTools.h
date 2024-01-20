@@ -27,7 +27,7 @@ SOFTWARE.
 
 #include <Arduino.h>
 #include <math.h>
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 #include "VuPeakHandler.h"
 
 //------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ namespace EC
    * low than saturated (clipping).
    */
   class RawAudioVU
-      : public AnimationBaseFL
+      : public AnimationBase
   {
   public:
     /** Set to true for logging audio samples over serial line (via Teleplot).
@@ -85,7 +85,7 @@ namespace EC
      */
     RawAudioVU(float &audioSource,
                FastLedStrip ledStrip)
-        : AnimationBaseFL(ledStrip, false, 25), _audioSource(audioSource)
+        : AnimationBase(ledStrip, false, 25), _audioSource(audioSource)
     {
     }
 
@@ -110,7 +110,7 @@ namespace EC
       }
 #endif
 
-      AnimationBaseFL::processAnimation(currentMillis, wasModified);
+      AnimationBase::processAnimation(currentMillis, wasModified);
     }
 
   private:
@@ -129,7 +129,7 @@ namespace EC
    * behind the scenes.
    */
   class LowLevelAudioPlaygroundVU
-      : public AnimationBaseFL
+      : public AnimationBase
   {
   public:
     /// Signature of the function for rendering the VU on the LED strip.
@@ -193,7 +193,7 @@ namespace EC
     LowLevelAudioPlaygroundVU(float &audioSource,
                               FastLedStrip ledStrip,
                               DrawingFct drawingFct)
-        : AnimationBaseFL(ledStrip, false, 50), _audioSource(audioSource), _drawingFct(drawingFct)
+        : AnimationBase(ledStrip, false, 50), _audioSource(audioSource), _drawingFct(drawingFct)
     {
       // Calculate the average value every 10ms, resulting in 100Hz refresh rate.
       modelUpdatePeriod = 10;
@@ -219,7 +219,7 @@ namespace EC
       _sampleRmsSum += square(_audioSource);
       ++_sampleCount;
 
-      AnimationBaseFL::processAnimation(currentMillis, wasModified);
+      AnimationBase::processAnimation(currentMillis, wasModified);
     }
 
     /// @see AnimationBase::updateModel()

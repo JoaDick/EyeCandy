@@ -26,7 +26,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 
 //------------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ namespace EC
    * https://github.com/FastLED/FastLED/blob/master/examples/Pride2015/Pride2015.ino
    */
   class Pride2015
-      : public AnimationBaseFL
+      : public AnimationBase
   {
     uint16_t sPseudotime = 0;
     uint16_t sLastMillis = 0;
@@ -57,7 +57,7 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit Pride2015(FastLedStrip ledStrip)
-        : AnimationBaseFL(ledStrip, false)
+        : AnimationBase(ledStrip)
     {
     }
 

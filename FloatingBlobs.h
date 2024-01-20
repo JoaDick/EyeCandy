@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 #include "FloatingBlobs/FloatingBlobController.hpp"
 
 //------------------------------------------------------------------------------
@@ -36,7 +36,7 @@ namespace EC
   /** Coloured Blobs floating around.
    */
   class FloatingBlobs
-      : public AnimationBaseFL
+      : public AnimationBase
   {
     FloatingBlobController<5> blobs;
 
@@ -45,9 +45,8 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit FloatingBlobs(FastLedStrip ledStrip)
-        : AnimationBaseFL(ledStrip, false)
+        : AnimationBase(10, ledStrip)
     {
-      patternUpdatePeriod = 10;
     }
 
   private:

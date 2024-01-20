@@ -27,7 +27,7 @@ SOFTWARE.
 
 // #define WATERFALL_DEBUG
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 #include "intern/WaterfallDroplet.h"
 
 //------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ namespace EC
 
   /// A Waterfall Animation.
   class Waterfall
-      : public AnimationBaseFL
+      : public AnimationBase
   {
 #ifdef WATERFALL_DEBUG
     static const uint8_t DROPLET_COUNT = 1;
@@ -50,9 +50,8 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit Waterfall(FastLedStrip ledStrip)
-        : AnimationBaseFL(ledStrip, false)
+        : AnimationBase(ledStrip)
     {
-      modelUpdatePeriod = 10;
     }
 
   private:
@@ -60,24 +59,10 @@ namespace EC
     void showPattern(uint32_t currentMillis) override
     {
       fadeLightBy(strip.ledArray(), strip.ledCount(), 25);
-      showOverlay(currentMillis);
-    }
-
-    /// @see AnimationBase::showOverlay()
-    void showOverlay(uint32_t currentMillis) override
-    {
       for (uint8_t i = 0; i < DROPLET_COUNT; ++i)
       {
+        _droplets[i].update(patternUpdatePeriod);
         _droplets[i].show(strip);
-      }
-    }
-
-    /// @see AnimationBase::updateModel()
-    void updateModel(uint32_t currentMillis) override
-    {
-      for (uint8_t i = 0; i < DROPLET_COUNT; ++i)
-      {
-        _droplets[i].update(modelUpdatePeriod);
       }
     }
 

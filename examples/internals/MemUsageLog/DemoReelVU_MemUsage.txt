@@ -3,6 +3,20 @@ DemoReelVU Memory usage log
 
 
 
+240120 Merged AnimationBaseFL into AnimationBase
+
+Sketch uses 25466 bytes (78%) of program storage space. Maximum is 32256 bytes.
+Global variables use 909 bytes (44%) of dynamic memory, leaving 1139 bytes for local variables. Maximum is 2048 bytes.
+
+DancingDotVU = 97
+EssentialVU = 107
+Fire2012VU = 86
+PeakGlitterVU = 101
+RainbowLevelVU = 121
+RawAudioVU = 27
+
+
+
 Baseline: 51032d2 Prepared DemoReelVU.ino for MemUsage log
 ---------
 * Arduino Uno

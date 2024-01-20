@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 
 //------------------------------------------------------------------------------
 
@@ -35,7 +35,7 @@ namespace EC
   /** A twinkling rainbow animation.
    */
   class RainbowTwinkle
-      : public AnimationBaseFL
+      : public AnimationBase
   {
     uint8_t _hue = random(0xFF);
 
@@ -58,7 +58,7 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit RainbowTwinkle(FastLedStrip ledStrip)
-        : AnimationBaseFL(ledStrip, false, fadeRate_default())
+        : AnimationBase(ledStrip, false, fadeRate_default())
     {
       modelUpdatePeriod = modelUpdatePeriod_default();
       for (auto i = 0; i < strip.ledCount(); i++)

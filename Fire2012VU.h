@@ -30,7 +30,7 @@ SOFTWARE.
 #ifndef FIRE2012VU_DEBUG
 #include "PseudoAnimationBase.h"
 #else
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 #endif
 #include "Fire2012.h"
 #include "VuLevelHandler.h"
@@ -48,7 +48,7 @@ namespace EC
 #ifndef FIRE2012VU_DEBUG
       : public PseudoAnimationBase
 #else
-      : public AnimationBaseFL
+      : public AnimationBase
 #endif
   {
   public:
@@ -70,7 +70,7 @@ namespace EC
 #ifndef FIRE2012VU_DEBUG
         : _audioSource(audioSource), _fire(fire)
 #else
-        : AnimationBaseFL(fire.getStrip(), true), _audioSource(audioSource), _fire(fire)
+        : AnimationBase(fire.getStrip(), true), _audioSource(audioSource), _fire(fire)
 #endif
     {
       modelUpdatePeriod = 10;
@@ -110,7 +110,7 @@ namespace EC
     {
       vuLevelHandler.addSample(_audioSource);
 #ifdef FIRE2012VU_DEBUG
-      AnimationBaseFL::processAnimation(currentMillis, wasModified);
+      AnimationBase::processAnimation(currentMillis, wasModified);
 #else
       PseudoAnimationBase::processAnimation(currentMillis, wasModified);
 #endif

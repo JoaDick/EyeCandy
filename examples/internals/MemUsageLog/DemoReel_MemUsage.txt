@@ -3,6 +3,35 @@ DemoReel Memory usage log
 
 
 
+240120 Merged AnimationBaseFL into AnimationBase
+
+Sketch uses 26842 bytes (83%) of program storage space. Maximum is 32256 bytes.
+Global variables use 977 bytes (47%) of dynamic memory, leaving 1071 bytes for local variables. Maximum is 2048 bytes.
+
+BouncingBalls<> = 90
+Bubbles = 190
+FadeOut = 20
+Fire2012<*> = 161
+Fire2012Changer = 16
+Firework<> = 156
+FireworkParticle = 22
+FloatingBlobs = 225
+Glitter = 24
+Kaleidoscope = 21
+MovingDot = 26
+Pacifica = 164
+Pride2015 = 27
+Rainbow = 24
+RainbowBuiltin = 22
+RainbowTwinkle = 21
+RgbBlocks = 23
+StaticBackground = 23
+Twinkles = 21
+Waterfall = 395
+WaterfallDroplet = 25
+
+
+
 Baseline: ea5d600 Preparations for new VuSource interface
 ---------
 * Arduino Uno

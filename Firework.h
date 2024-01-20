@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 #include "intern/FireworkParticle.h"
 
 //------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ namespace EC
    */
   template <uint8_t PARTICLE_COUNT = 5>
   class Firework
-      : public AnimationBaseFL
+      : public AnimationBase
   {
   public:
     /// Delay (in ms) before relaunching the Particles.
@@ -58,7 +58,7 @@ namespace EC
     Firework(FastLedStrip ledStrip,
              bool overlayMode,
              uint16_t launchDelay = Firework_launchDelay_default())
-        : AnimationBaseFL(ledStrip, overlayMode, Firework_fadeRate_default()), launchDelay(launchDelay)
+        : AnimationBase(ledStrip, overlayMode, Firework_fadeRate_default()), launchDelay(launchDelay)
     {
 #ifdef FIREWORK_DEBUG
       // patternUpdatePeriod = 20;
@@ -71,7 +71,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      AnimationBaseFL::showPattern(currentMillis);
+      AnimationBase::showDefaultPattern();
       _particles[0].dump();
     }
 #endif

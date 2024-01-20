@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 
 //------------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ namespace EC
    * Example for an Animation that can be used as Pattern and as Overlay.
    */
   class MovingDot
-      : public AnimationBaseFL
+      : public AnimationBase
   {
     int16_t _position = 0;
     bool _rising = false;
@@ -67,7 +67,7 @@ namespace EC
      */
     MovingDot(FastLedStrip ledStrip,
               bool overlayMode)
-        : AnimationBaseFL(ledStrip, overlayMode, fadeRate_default())
+        : AnimationBase(ledStrip, overlayMode, fadeRate_default())
     {
       modelUpdatePeriod = modelUpdatePeriod_default();
     }
@@ -81,7 +81,7 @@ namespace EC
     MovingDot(FastLedStrip ledStrip,
               bool overlayMode,
               CRGB color = CRGB::Red)
-        : AnimationBaseFL2(ledStrip, overlayMode, fadeRate_default()), color(color)
+        : AnimationBase(ledStrip, overlayMode, fadeRate_default()), color(color)
     {
       modelUpdatePeriod = modelUpdatePeriod_default();
     }

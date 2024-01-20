@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 
 //------------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ namespace EC
    * Mainly intended for testing LED strips.
    */
   class RgbBlocks
-      : public AnimationBaseFL
+      : public AnimationBase
   {
     static const uint8_t _blockCount = 6;
     uint16_t _animationCounter = 0;
@@ -60,7 +60,7 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit RgbBlocks(FastLedStrip ledStrip)
-        : AnimationBaseFL(ledStrip.getReversedStrip(), false)
+        : AnimationBase(ledStrip.getReversedStrip(), false)
     {
       modelUpdatePeriod = modelUpdatePeriod_default();
     }

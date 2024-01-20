@@ -26,67 +26,117 @@ SOFTWARE.
 *******************************************************************************/
 
 #include "Animation.h"
+#include "FastLedStrip.h"
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /** Simple base class suitable for most Animations.
-   * Provides support for Patterns and Overlays.
+  /** Universal base class for most Animations.
+   * This base class provides support for...
+   * - custom Patterns that update the entire LED strip at a fixed rate: showPattern()
+   * - the oftentimes used default Patterns fading background and black background.
+   * - Overlays, which are rendered on top of a Pattern: showOverlay()
+   * - Mathematical models, which are periodically calculated in the background, independently
+   *   from the Pattern's update rate - but without manipulating the LED strip: updateModel()
+   *
+   * Patterns render their content on the LED strip at a fixed frequency, and can be used either
+   * standalone or as first Animation in an AnimationScene. As Pattern in an In an AnimationScene,
+   * they also serve as trigger for the following Oberlays to render their content on the LED
+   * strip. \n
+   * Another typical (but not mandatory) property of a Pattern is that it manipulates all LEDs of
+   * the strip, and not only selected ones like most Overlays do.
    */
   class AnimationBase
       : public Animation
   {
-    // When this is commented out, code size increases significantly, while
-    // static RAM usage decreases !?!?!
-    // const uint8_t dummy = 0;
-
-    const bool _overlayMode;
-    uint32_t _lastUpdateAnimation = 0;
-    uint32_t _nextShowPattern = 0;
-
   public:
-    /** Delay (in ms) between updating the LED strip.
-     * It determines how frequent showPattern() is getting called (not relevant
-     * in overlay mode).
-     * Default of 10ms will result in a refresh rate of 100Hz.
-     * This value is generally assigned by the Animation implementation, and
-     * there's usually no need to change it.
+    /** Fading speed.
+     * Lower value = longer glowing; 0 = solid black background.
+     * Change it only if the child class explicitly uses this as configuration option,
+     * i.e. when it also offers a static \c fadeRate_default() method. \n
+     * Not relevant in Overlay mode.
      */
-    uint8_t patternUpdatePeriod = 10;
+    uint8_t fadeRate;
 
     /** Delay (in ms) before calling updateModel() the next time.
+     * This value is usually assigned by the Animation implementation.
+     * Change it only if the child class explicitly uses this as configuration option,
+     * i.e. when it also offers a static \c modelUpdatePeriod_default() method. \n
      * 0 means don't call updateModel()
-     * This value is generally assigned by the Animation implementation.
-     * Change it only if the child class explicitly uses this as configuration
-     * option, i.e. when it also offers a static \c modelUpdatePeriod_default()
-     * method.
      */
     uint16_t modelUpdatePeriod = 0;
 
-  protected:
-    /** Constructor.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
+    /** Period (in ms) for updating the LED strip's Pattern.
+     * It reflects how frequent showPattern() is getting called. \n
+     * 0 means Overlay mode; Pattern updates are \e not triggered.
+     * @see patternUpdatePeriod_default
      */
-    explicit AnimationBase(bool overlayMode)
-        : _overlayMode(overlayMode)
+    const uint8_t patternUpdatePeriod;
+
+    /** Default value for patternUpdatePeriod (in ms).
+     * This default value of 10ms will result in a LED strip refresh rate of 100Hz.
+     */
+    static constexpr uint8_t patternUpdatePeriod_default = 10;
+
+    /// Only for debugging.
+    FastLedStrip getStrip()
+    {
+      return strip;
+    }
+
+  protected:
+    /** Constructor for Animations that can be used as both, Pattern or Overlay.
+     * @param strip  The LED strip.
+     * @param overlayMode  Set to \c true when Animation shall be an Overlay.
+     * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
+     *                  Only relevant when the default implementation of showPattern() is used.
+     */
+    AnimationBase(FastLedStrip strip,
+                  bool overlayMode,
+                  uint8_t fadeRate = 0)
+        : fadeRate(fadeRate), patternUpdatePeriod(overlayMode ? 0 : patternUpdatePeriod_default), strip(strip)
     {
     }
 
+    /** Constructor for pure Patterns (without Overlay option).
+     * @param strip  The LED strip.
+     */
+    explicit AnimationBase(FastLedStrip strip)
+        : fadeRate(0), patternUpdatePeriod(patternUpdatePeriod_default), strip(strip)
+    {
+    }
+
+    /** Constructor for pure Patterns with custom update rate.
+     * Use this only if you have an urgent reason for a different update rate
+     * than patternUpdatePeriod_default.
+     * @param patternUpdatePeriod  Delay (in ms) between updating the LED strip
+     * @param strip  The LED strip.
+     */
+    AnimationBase(uint8_t patternUpdatePeriod,
+                  FastLedStrip strip)
+        : fadeRate(0), patternUpdatePeriod(patternUpdatePeriod), strip(strip)
+    {
+    }
+
+    /// The LED strip for child classes to draw their Animation.
+    FastLedStrip strip;
+
     /** Render the Animation's Pattern content.
-     * This method must be implemented by all child classes that provide a
-     * Pattern type Animation (#TYPE_SOLID_PATTERN or #TYPE_FADING_PATTERN).
+     * This method must only be implemented by child classes that provide a custom Pattern
+     * functionality. The default implementation provides the oftentimes used fading background
+     * or black background (depending on the setting of fadeRate).
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
      * @note This method is \e not called in Overlay mode.
      */
     virtual void showPattern(uint32_t currentMillis)
     {
+      showDefaultPattern();
     }
 
     /** Render the Animation's Overlay content.
-     * This method must be implemented by all child classes that provide an
-     * Overlay type Animation.
+     * This method must only be implemented by child classes that provide an Overlay functionality.
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
      * @note This method is \e only called in Overlay mode.
      */
@@ -94,39 +144,48 @@ namespace EC
     {
     }
 
-    /** Update the Animation's internal state (but don't show it yet).
-     * This method should be implemented by all child classes that provide an
-     * Overlay type Animation.
-     * It may also be implemented by Pattern type Animations, where the
-     * animation algorithm is separated from showPattern().
-     * Timing is determined via getAnimationDelay().
+    /** Update the Animation's mathematical model.
+     * This method can optionally be implemented by all child classes that have some internal
+     * state, which shall be updated periodically in the background (independently from the
+     * Pattern's update rate).
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
+     * @note This method must not manipulate the LED strip!
+     * @see patternUpdatePeriod
      */
     virtual void updateModel(uint32_t currentMillis)
     {
+    }
+
+    /** Default Pattern implementation.
+     * Makes a fading background or black background, depending on the setting of fadeRate.
+     * @see fadeRate
+     */
+    void showDefaultPattern()
+    {
+      if (fadeRate)
+      {
+        strip.fadeToBlackBy(fadeRate);
+      }
+      else
+      {
+        strip.fillSolid(CRGB::Black);
+      }
     }
 
   protected:
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      if (modelUpdatePeriod > 0)
+      if (modelUpdatePeriod)
       {
-        if (currentMillis >= _lastUpdateAnimation + modelUpdatePeriod)
+        if (currentMillis >= _nextUpdateModel)
         {
           updateModel(currentMillis);
-          _lastUpdateAnimation = currentMillis;
+          _nextUpdateModel = currentMillis + modelUpdatePeriod;
         }
       }
 
-      if (_overlayMode)
-      {
-        if (wasModified)
-        {
-          showOverlay(currentMillis);
-        }
-      }
-      else
+      if (patternUpdatePeriod)
       {
         if (currentMillis >= _nextShowPattern)
         {
@@ -135,7 +194,16 @@ namespace EC
           wasModified = true;
         }
       }
+
+      if (wasModified)
+      {
+        showOverlay(currentMillis);
+      }
     }
+
+  private:
+    uint32_t _nextShowPattern = 0;
+    uint32_t _nextUpdateModel = 0;
   };
 
 } // namespace EC

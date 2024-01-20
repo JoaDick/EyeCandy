@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 
 //------------------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ namespace EC
    * possibilities.
    */
   class RainbowBuiltin
-      : public AnimationBaseFL
+      : public AnimationBase
   {
     uint8_t _hue = 0;
 
@@ -66,7 +66,7 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit RainbowBuiltin(FastLedStrip ledStrip)
-        : AnimationBaseFL(ledStrip, false)
+        : AnimationBase(ledStrip, false)
     {
       modelUpdatePeriod = modelUpdatePeriod_default();
     }

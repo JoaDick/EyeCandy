@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 
 //------------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ namespace EC
    * Can be used as Pattern or as Overlay.
    */
   class Twinkles
-      : public AnimationBaseFL
+      : public AnimationBase
   {
   public:
     /** Default fading speed.
@@ -59,7 +59,7 @@ namespace EC
      */
     Twinkles(FastLedStrip ledStrip,
              bool overlayMode)
-        : AnimationBaseFL(ledStrip, overlayMode, fadeRate_default())
+        : AnimationBase(ledStrip, overlayMode, fadeRate_default())
     {
     }
 

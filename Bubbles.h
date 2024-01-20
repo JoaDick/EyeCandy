@@ -27,7 +27,7 @@ SOFTWARE.
 
 // #define BUBBLES_DEBUG
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 #include "intern/Bubble.h"
 
 //------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ namespace EC
 
   /// Rising Bubbles.
   class Bubbles
-      : public AnimationBaseFL
+      : public AnimationBase
   {
 #ifdef BUBBLES_DEBUG
     static const uint8_t BUBBLES_COUNT = 1;
@@ -57,7 +57,7 @@ namespace EC
      */
     Bubbles(FastLedStrip ledStrip,
             bool overlayMode)
-        : AnimationBaseFL(ledStrip, overlayMode, fadeRate_default())
+        : AnimationBase(ledStrip, overlayMode, fadeRate_default())
     {
       modelUpdatePeriod = 10;
     }

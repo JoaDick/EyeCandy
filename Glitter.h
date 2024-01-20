@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 
 //------------------------------------------------------------------------------
 
@@ -36,10 +36,8 @@ namespace EC
    * Can be used as Pattern or as Overlay.
    */
   class Glitter
-      : public AnimationBaseFL
+      : public AnimationBase
   {
-    bool _mustAddGlitter = false;
-
   public:
     /** Default fading speed.
      * Lower value = longer glowing; 0 = solid black background.
@@ -66,9 +64,8 @@ namespace EC
      */
     Glitter(FastLedStrip ledStrip,
             bool overlayMode)
-        : AnimationBaseFL(ledStrip, overlayMode, fadeRate_default())
+        : AnimationBase(ledStrip, overlayMode, fadeRate_default())
     {
-      modelUpdatePeriod = 10;
     }
 
 #else // DRAFT
@@ -80,29 +77,18 @@ namespace EC
     Glitter(FastLedStrip ledStrip,
             bool overlayMode,
             CRGB color = CRGB::White)
-        : AnimationBaseFL(ledStrip, overlayMode, fadeRate_default()), color(color)
+        : AnimationBase(ledStrip, overlayMode, fadeRate_default()), color(color)
     {
-      modelUpdatePeriod = 10;
     }
 #endif
 
   private:
-    /// @see AnimationBase::updateModel()
-    void updateModel(uint32_t currentMillis) override
-    {
-      if (random8() < effectRate)
-      {
-        _mustAddGlitter = true;
-      }
-    }
-
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      if (_mustAddGlitter)
+      if (random8() < effectRate)
       {
         strip[random16(strip.ledCount())] = color;
-        _mustAddGlitter = false;
       }
     }
   };

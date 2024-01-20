@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 
 //------------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ namespace EC
    * Useful as trigger Pattern in combination with other Overlays.
    */
   class FadeOut
-      : public AnimationBaseFL
+      : public AnimationBase
   {
   public:
     /** Constructor
@@ -47,7 +47,7 @@ namespace EC
     FadeOut(FastLedStrip ledStrip,
             bool overlayMode,
             uint8_t fadeRate)
-        : AnimationBaseFL(ledStrip, overlayMode, fadeRate)
+        : AnimationBase(ledStrip, overlayMode, fadeRate)
     {
     }
 
@@ -55,7 +55,9 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      showOverlay(currentMillis);
+      // Nothing to do here - the interesting part is in showOverlay()
+      // This empty method just exists so that the default implementation
+      // from the base class doesn't come into play.
     }
 
     /// @see AnimationBase::showOverlay()

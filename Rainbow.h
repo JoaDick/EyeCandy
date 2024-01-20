@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBaseFL.h"
+#include "AnimationBase.h"
 
 //------------------------------------------------------------------------------
 
@@ -35,7 +35,7 @@ namespace EC
   /** Many many Rainbow variations.
    */
   class Rainbow
-      : public AnimationBaseFL
+      : public AnimationBase
   {
     uint8_t _hue = 0;
 
@@ -73,7 +73,7 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit Rainbow(FastLedStrip ledStrip)
-        : AnimationBaseFL(ledStrip.getReversedStrip(), false)
+        : AnimationBase(ledStrip.getReversedStrip(), false)
     {
       modelUpdatePeriod = modelUpdatePeriod_default();
     }
