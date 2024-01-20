@@ -801,8 +801,11 @@ void printMemoryUsage()
     Serial.print(F("Bubbles = "));
     Serial.println(sizeof(EC::Bubbles));
 
-    Serial.print(F("FadeOut = "));
-    Serial.println(sizeof(EC::FadeOut));
+    Serial.print(F("FadeOutOverlay = "));
+    Serial.println(sizeof(EC::FadeOutOverlay));
+
+    Serial.print(F("FadeOutPattern = "));
+    Serial.println(sizeof(EC::FadeOutPattern));
 
     Serial.print(F("Fire2012<*> = "));
     Serial.println(sizeof(EC::Fire2012<NUM_LEDS>));

@@ -32,39 +32,67 @@ SOFTWARE.
 namespace EC
 {
 
-  /** Just fade out the current content of the LED strip.
+  /** A Pattern that just fades out the current content of the LED strip.
    * Useful as trigger Pattern in combination with other Overlays.
+   * However, since most Overlays already have this feature built-in through their own base class
+   * AnimationBase, there's likely not a lot of demand for this Pattern...
    */
-  class FadeOut
+  class FadeOutPattern
       : public AnimationBase
   {
   public:
     /** Constructor
      * @param ledStrip  The LED strip.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     * @param fadeRate  Fading speed; Lower value = longer glowing; 0 = black background.
+     */
+    FadeOutPattern(FastLedStrip ledStrip,
+                   uint8_t fadeRate)
+        : AnimationBase(ledStrip, false, fadeRate)
+    {
+    }
+
+    // nothing to do here; everything is handled by base class AnimationBase
+  };
+
+  //------------------------------------------------------------------------------
+
+  /** An Overlay that just fades out the current content of the LED strip.
+   * Sometimes useful, e.g. for dimming the underlying Pattern in an AnimationScene.
+   */
+  class FadeOutOverlay
+      : public Animation
+  {
+  public:
+    /** Fading speed.
+     * Lower value = longer glowing; 0 = solid black background.
+     * Change it only if the child class explicitly uses this as configuration option,
+     * i.e. when it also offers a static \c fadeRate_default() method. \n
+     * Not relevant in Overlay mode.
+     */
+    uint8_t fadeRate;
+
+    /** Constructor
+     * @param ledStrip  The LED strip.
      * @param fadeRate  Fading speed; Lower value = longer glowing.
      */
-    FadeOut(FastLedStrip ledStrip,
-            bool overlayMode,
-            uint8_t fadeRate)
-        : AnimationBase(ledStrip, overlayMode, fadeRate)
+    FadeOutOverlay(FastLedStrip ledStrip,
+                   uint8_t fadeRate)
+        : fadeRate(fadeRate), strip(ledStrip)
     {
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      // Nothing to do here - the interesting part is in showOverlay()
-      // This empty method just exists so that the default implementation
-      // from the base class doesn't come into play.
+      if (wasModified)
+      {
+        strip.fadeToBlackBy(fadeRate);
+      }
     }
 
-    /// @see AnimationBase::showOverlay()
-    void showOverlay(uint32_t currentMillis) override
-    {
-      strip.fadeToBlackBy(fadeRate);
-    }
+  private:
+    FastLedStrip strip;
   };
 
 } // namespace EC

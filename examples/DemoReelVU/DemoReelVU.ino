@@ -111,9 +111,8 @@ void makeDoubleBouncingDotVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    scene.append(new EC::FadeOut(strip, false, 50));
-
-    auto vu1 = scene.append(new EC::RainbowLevelVU(audioSample, strip, true));
+    auto vu1 = scene.append(new EC::RainbowLevelVU(audioSample, strip, false));
+    vu1->fadeRate = 50;
     vu1->enableVuBar = false;
     vu1->volume = 255;
     vu1->vuHueRange = 0.4;
@@ -134,7 +133,7 @@ void makeDoubleDancingDotVU1(EC::AnimationScene &scene)
 
     scene.append(new EC::Pride2015(strip.getHalfStrip(/*true*/)));
     scene.append(new EC::Kaleidoscope(strip));
-    scene.append(new EC::FadeOut(strip, true, 100));
+    scene.append(new EC::FadeOutOverlay(strip, 100));
 
     auto vu1 = scene.append(new EC::DancingDotVU(audioSample, strip, true /*, CRGB(255, 0, 0)*/));
     vu1->color = CRGB(255, 0, 0);
@@ -150,7 +149,7 @@ void makeDoubleDancingDotVU2(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     scene.append(new EC::FloatingBlobs(strip));
-    scene.append(new EC::FadeOut(strip, true, 230));
+    scene.append(new EC::FadeOutOverlay(strip, 230));
 
     auto vu1 = scene.append(new EC::DancingDotVU(audioSample, strip, true /*, CHSV(20, 255, 255)*/));
     vu1->color = CHSV(20, 255, 255);

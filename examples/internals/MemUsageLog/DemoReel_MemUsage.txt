@@ -3,6 +3,15 @@ DemoReel Memory usage log
 
 
 
+240120 Split FadeOut into FadeOutOverlay + FadeOutPattern
+
+Sketch uses 26782 bytes (83%) of program storage space. Maximum is 32256 bytes.
+Global variables use 971 bytes (47%) of dynamic memory, leaving 1077 bytes for local variables. Maximum is 2048 bytes.
+FadeOutOverlay = 9
+FadeOutPattern = 20
+
+
+
 240120 Merged AnimationBaseFL into AnimationBase
 
 Sketch uses 26842 bytes (83%) of program storage space. Maximum is 32256 bytes.

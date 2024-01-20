@@ -37,8 +37,6 @@ namespace EC
   class RainbowTwinkle
       : public AnimationBase
   {
-    uint8_t _hue = random(0xFF);
-
   public:
     /** Default fading speed.
      * Lower value = longer glowing; 0 = solid black background (not
@@ -88,6 +86,8 @@ namespace EC
     {
       ++_hue;
     }
+
+    uint8_t _hue = random(0xFF);
   };
 
 } // namespace EC

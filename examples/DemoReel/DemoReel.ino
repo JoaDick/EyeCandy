@@ -90,7 +90,7 @@ void makeBubbles(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     scene.append(new EC::Pacifica(strip));
-    scene.append(new EC::FadeOut(strip, true, 150));
+    scene.append(new EC::FadeOutOverlay(strip, 150));
     scene.append(new EC::Bubbles(strip, true));
 }
 
@@ -129,8 +129,7 @@ void makeFireworks(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    scene.append(new EC::FadeOut(strip, false, EC::Firework_fadeRate_default()));
-    scene.append(new EC::Firework<>(strip, true, 1500));
+    scene.append(new EC::Firework<>(strip, false, 1500));
     scene.append(new EC::Firework<>(strip, true, 3100));
     scene.append(new EC::Firework<>(strip, true, 4700));
     scene.append(new EC::Firework<>(strip, true, 6300));
@@ -317,8 +316,16 @@ void printMemoryUsage()
     Serial.print(F("Bubbles = "));
     Serial.println(sizeof(EC::Bubbles));
 
+#if (1)
     Serial.print(F("FadeOut = "));
-    Serial.println(sizeof(EC::FadeOut));
+    Serial.println(sizeof(EC::FadeOutPattern));
+#else
+    Serial.print(F("FadeOutOverlay = "));
+    Serial.println(sizeof(EC::FadeOutOverlay));
+
+    Serial.print(F("FadeOutPattern = "));
+    Serial.println(sizeof(EC::FadeOutPattern));
+#endif
 
     Serial.print(F("Fire2012<*> = "));
     Serial.println(sizeof(EC::Fire2012<NUM_LEDS>));
