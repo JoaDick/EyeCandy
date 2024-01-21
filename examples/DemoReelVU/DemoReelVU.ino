@@ -167,6 +167,14 @@ void makeEssentialVU(EC::AnimationScene &scene)
     scene.append(new EC::EssentialVU(audioSample, strip, false));
 }
 
+void makeEssentialVU_a(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, EC::EssentialVU2::fadeRate_default()));
+    scene.append(new EC::EssentialVU2(strip, *vuSource));
+}
+
 void makeFireVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -227,6 +235,14 @@ void makePeakGlitterVU(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     scene.append(new EC::PeakGlitterVU(audioSample, strip, false));
+}
+
+void makePeakGlitterVU_a(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, EC::VuOverlayPeakGlitter::fadeRate_default()));
+    scene.append(new EC::VuOverlayPeakGlitter(strip, *vuSource));
 }
 
 void makeRainbowBubbleVU(EC::AnimationScene &scene)
@@ -294,6 +310,12 @@ void makeVuSequence1(EC::AnimationScene &scene)
     animationDuration = 8;
 }
 
+void makeVuSequence1_a(EC::AnimationScene &scene)
+{
+    makePeakGlitterVU_a(scene);
+    animationDuration = 8;
+}
+
 void makeVuSequence2(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -306,6 +328,18 @@ void makeVuSequence2(EC::AnimationScene &scene)
     animationDuration = 12;
 }
 
+void makeVuSequence2_a(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 0));
+    auto baseVU = scene.append(new EC::EssentialVU2(strip, *vuSource));
+    baseVU->enableVuBar = false;
+
+    scene.append(new EC::VuOverlayPeakGlitter(strip, *vuSource));
+    animationDuration = 12;
+}
+
 void makeVuSequence3(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -315,12 +349,31 @@ void makeVuSequence3(EC::AnimationScene &scene)
     animationDuration = 16;
 }
 
+void makeVuSequence3_a(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 0));
+    auto baseVU = scene.append(new EC::EssentialVU2(strip, *vuSource));
+    animationDuration = 16;
+}
+
 void makeVuSequence4(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     scene.append(new EC::EssentialVU(audioSample, strip, false));
     scene.append(new EC::PeakGlitterVU(audioSample, strip, true));
+    animationDuration = 10;
+}
+
+void makeVuSequence4_a(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, EC::EssentialVU2::fadeRate_default()));
+    scene.append(new EC::EssentialVU2(strip, *vuSource));
+    scene.append(new EC::VuOverlayPeakGlitter(strip, *vuSource));
     animationDuration = 10;
 }
 
@@ -421,16 +474,35 @@ void makeVuSequence20(EC::AnimationScene &scene)
     // autoMode = false;
 }
 
+void makeCompoundVu(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 100));
+    auto vuPeakSource = scene.append(new EC::VuSourcePeakHold(*vuSource));
+
+    scene.append(new EC::VuOverlayLine(strip, *vuSource));
+    scene.append(new EC::VuOverlayDot(strip, *vuPeakSource));
+
+    // autoMode = false;
+}
+
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneBuilderFct nextAnimation = nullptr;
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
+    // &makeCompoundVu,
+
     &makeRawAudioVU,
-    &makeVuSequence1,
-    &makeVuSequence2,
-    &makeVuSequence3,
-    &makeVuSequence4,
+    // &makeVuSequence1,
+    &makeVuSequence1_a,
+    // &makeVuSequence2,
+    &makeVuSequence2_a,
+    // &makeVuSequence3,
+    &makeVuSequence3_a,
+    // &makeVuSequence4,
+    &makeVuSequence4_a,
     &makeVuSequence5,
     &makeVuSequence6,
     &makeVuSequence7,
@@ -449,6 +521,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeVuSequence20,
     nullptr};
 
+// EC::AnimationChanger animationChanger(allAnimations);
 EC::AnimationChangerSoft animationChanger(allAnimations);
 
 //------------------------------------------------------------------------------
@@ -514,6 +587,7 @@ void printMemoryUsage()
     Serial.println(F(" LEDs:"));
     Serial.println(F("<*> is dependant on NUM_LEDS"));
 
+#if (1)
     Serial.print(F("DancingDotVU = "));
     Serial.println(sizeof(EC::DancingDotVU));
 
@@ -531,6 +605,28 @@ void printMemoryUsage()
 
     Serial.print(F("RawAudioVU = "));
     Serial.println(sizeof(EC::RawAudioVU));
+#else
+    Serial.print(F("EssentialVU = "));
+    Serial.println(sizeof(EC::EssentialVU2));
+
+    Serial.print(F("PeakGlitterVU = "));
+    Serial.println(sizeof(EC::VuOverlayPeakGlitter));
+
+    Serial.print(F("VuOverlayDot = "));
+    Serial.println(sizeof(EC::VuOverlayDot));
+
+    Serial.print(F("VuOverlayLine = "));
+    Serial.println(sizeof(EC::VuOverlayLine));
+
+    Serial.print(F("VuSourceAnalogPin = "));
+    Serial.println(sizeof(EC::VuSourceAnalogPin));
+
+    Serial.print(F("VuSourcePeakHold = "));
+    Serial.println(sizeof(EC::VuSourcePeakHold));
+
+    Serial.print(F("RawAudioVU = "));
+    Serial.println(sizeof(EC::RawAudioVU));
+#endif
 }
 #endif
 

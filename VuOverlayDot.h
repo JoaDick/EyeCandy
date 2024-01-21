@@ -25,26 +25,56 @@ SOFTWARE.
 
 *******************************************************************************/
 
+#include "Animation.h"
+#include "FastLedStrip.h"
+#include "VuSource.h"
+
+//------------------------------------------------------------------------------
+
 namespace EC
 {
 
-  /** Interface for classes that provide a VU level value.
+  /** A VU Overlay that draws a dot at the given VU position.
+   * A VU value of 0.0 will hide the dot.
+   * @note The actual VU value is obtained from the given VuSource; a VU value of 0.0 represents
+   * the beginning of the LED strip, 1.0 represents the end.
    */
-  class VuSource
+  class VuOverlayDot
+      : public Animation
   {
   public:
-    /** Get the current VU level.
-     * @return A normalized VU value between 0.0 ... 1.0, representing the current volume.
-     * @note Be aware that an overloaded / clipped / too loud audio signal may
-     * return values greater than 1.0 or lower than 0.0!
+    /** Draw the VU Overlay with this color.
+     * This setting can be adjusted at runtime.
      */
-    virtual float getVU() = 0;
+    CRGB color = CRGB(255, 32, 0);
 
-  protected:
-    VuSource() = default;
-    VuSource(const VuSource &) = default;
-    VuSource &operator=(const VuSource &) = default;
-    ~VuSource() = default;
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     * @param vuSource  Read the VU value from there.
+     */
+    VuOverlayDot(FastLedStrip ledStrip, VuSource &vuSource)
+        : _strip(ledStrip), _vuSource(vuSource)
+    {
+    }
+
+    VuSource &getVuSource()
+    {
+      return _vuSource;
+    }
+
+  private:
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      if (wasModified)
+      {
+        _strip.optPixel(_vuSource.getVU()) = color;
+      }
+    }
+
+  private:
+    FastLedStrip _strip;
+    VuSource &_vuSource;
   };
 
 } // namespace EC

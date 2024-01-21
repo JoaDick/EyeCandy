@@ -29,6 +29,11 @@ SOFTWARE.
 #include "VuPeakHandler.h"
 #include "VuRangeExtender.h"
 
+#include "Animation.h"
+#include "FastLedStrip.h"
+#include "VuPeakHandler.h"
+#include "VuSource.h"
+
 //------------------------------------------------------------------------------
 
 // #define PEAK_GLITTER_VU_DEBUG
@@ -135,6 +140,94 @@ namespace EC
 
   private:
     float _peakLevel = 0.0;
+  };
+
+  //------------------------------------------------------------------------------
+
+  /** A VU Overlay that produces some glitter around the VU peaks.
+   * @note The actual VU value is obtained from the given VuSource.
+   */
+  class VuOverlayPeakGlitter
+      : public Animation
+  {
+  public:
+    /** Default fading speed.
+     * Lower value = longer glowing; 0 = solid black background.
+     */
+    static uint8_t fadeRate_default() { return 50; }
+
+    /** Draw the glitter with this color.
+     * This setting can be adjusted at runtime.
+     */
+    CRGB color = CRGB::White;
+
+    /// Usually there's nothing to configure here; mainly for debugging.
+    VuPeakHandler vuPeakHandler;
+
+    // VuSourcePeakHold vuPeakSource;
+
+#if (0)
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     * @param vuSource  Read the VU value from there.
+     */
+    VuOverlayPeakGlitter(FastLedStrip ledStrip, VuSource &vuSource)
+        : _strip(ledStrip), _vuSource(vuSource)
+    {
+      vuPeakHandler.peakHold = 20;
+      vuPeakHandler.peakDecay = 0;
+    }
+#else // DRAFT
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     * @param vuSource  Read the VU value from there.
+     * @param color  Draw the glitter with this color.
+     */
+    VuOverlayPeakGlitter(FastLedStrip ledStrip, VuSource &vuSource,
+                         CRGB color = CRGB(255, 255, 0) /*CRGB::White*/)
+        : color(color), _strip(ledStrip), _vuSource(vuSource)
+    {
+      vuPeakHandler.peakHold = 20;
+      vuPeakHandler.peakDecay = 0;
+    }
+#endif
+
+    VuSource &getVuSource()
+    {
+      return _vuSource;
+    }
+
+  private:
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      if (wasModified)
+      {
+        if (vuPeakHandler.process(_vuSource.getVU(), currentMillis))
+        {
+          // TODO: let it overshoot a little bit
+          _strip.normPixel(vuPeakHandler.getVU()) = color;
+        }
+
+#ifdef PEAK_GLITTER_VU_DEBUG
+        Serial.print(" -:");
+        Serial.print(0.0);
+        Serial.print(" +:");
+        Serial.print(10.0);
+        Serial.print(" VU:");
+        Serial.print(10.0 * _vuSource.getVU());
+        Serial.print(" peak:");
+        Serial.print(10.0 * vuPeakHandler.getVU());
+        Serial.print(" peakDet:");
+        Serial.print((vuPeakHandler.getVU() > 0.0) ? 0.5 : 0.0);
+        Serial.println();
+#endif
+      }
+    }
+
+  private:
+    FastLedStrip _strip;
+    VuSource &_vuSource;
   };
 
 } // namespace EC

@@ -53,10 +53,6 @@ namespace EC
       {
         reversed ^= true;
       }
-      else if (ledCount == 0)
-      {
-        m_sizeNrev = 1;
-      }
       if (reversed)
       {
         m_sizeNrev |= 0x8000;
@@ -300,14 +296,15 @@ namespace EC
         newSize = -newSize;
         offset -= newSize;
       }
+      if (offset >= size)
+      {
+        newSize = 1;
+        offset = size - 1;
+      }
       if (offset < 0)
       {
         newSize -= -offset;
         offset = 0;
-      }
-      if (offset >= size)
-      {
-        return FastLedStrip(&m_ledArray[size - 1], 1);
       }
       if (offset + newSize >= size)
       {
@@ -419,7 +416,14 @@ namespace EC
       return m_ledArray;
     }
 
+    static FastLedStrip GetNULL() { return FastLedStrip(); }
+
   private:
+    FastLedStrip()
+        : m_ledArray(&s_trashPixel), m_sizeNrev(0)
+    {
+    }
+
     int16_t getSize() const
     {
       return m_sizeNrev & 0x7FFF;

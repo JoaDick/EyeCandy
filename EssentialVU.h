@@ -29,6 +29,10 @@ SOFTWARE.
 #include "VuPeakHandler.h"
 #include "VuRangeExtender.h"
 
+#include "VuOverlayDot.h"
+#include "VuOverlayLine.h"
+#include "VuSourcePeakHold.h"
+
 //------------------------------------------------------------------------------
 
 // #define ESSENTIAL_VU_DEBUG
@@ -148,6 +152,94 @@ namespace EC
 
   private:
     float _vuLevel = 0.0;
+  };
+
+  /** Basic VU meter Animation & Overlay.
+   * Although being called "basic", it already offers a lot of features and
+   * configuration options:
+   * - show VU level bargraph yes/no
+   * - show peak dot yes/no
+   * - solid background or fading background, incl. fading rate
+   * - VU bargraph color
+   * - peak dot color
+   * - background color
+   * - peak hold duration
+   * - peak dot falling speed
+   * - range extender to stretch the "interesting" part of the VU meter over
+   *   the entire LED strip
+   */
+  class EssentialVU2
+      : public Animation
+  {
+  public:
+    /** Default fading speed.
+     * Lower value = longer glowing; 0 = solid black background.
+     */
+    static uint8_t fadeRate_default() { return 50; }
+
+    /** Draw the VU bar with this color.
+     * This setting can be adjusted at runtime.
+     */
+    CRGB &vuBarColor = vuLine.color;
+
+    /** Draw the peak dot with this color.
+     * This setting can be adjusted at runtime.
+     */
+    CRGB &peakDotColor = vuDot.color;
+
+    /** Render the VU bar.
+     * This setting can be adjusted at runtime.
+     */
+    bool enableVuBar = true;
+
+    /** Render the peak dot.
+     * This setting can be adjusted at runtime.
+     */
+    bool enablePeakDot = true;
+
+    VuSourcePeakHold vuPeakSource;
+
+    VuOverlayLine vuLine;
+
+    VuOverlayDot vuDot;
+
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     * @param vuSource  Read the VU value from there.
+     */
+    EssentialVU2(FastLedStrip ledStrip, VuSource &vuSource)
+        : vuPeakSource(vuSource), vuLine(ledStrip, vuSource), vuDot(ledStrip, vuPeakSource)
+    {
+      // vuBarColor = CRGB(0, 64, 0);
+      // peakDotColor = CRGB(255, 0, 0);
+    }
+
+  private:
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      if (enableVuBar)
+      {
+        vuLine.process(currentMillis, wasModified);
+      }
+      if (enablePeakDot)
+      {
+        vuPeakSource.process(currentMillis, wasModified);
+        vuDot.process(currentMillis, wasModified);
+      }
+
+#ifdef ESSENTIAL_VU_DEBUG
+      Serial.print(" -:");
+      Serial.print(0.0);
+      Serial.print(" +:");
+      Serial.print(10.0);
+      Serial.print(" VU:");
+      Serial.print(10.0 * vuLine.getVuSource().getVU());
+      Serial.print(" peak:");
+      Serial.print(10.0 * vuDot.getVuSource().getVU());
+      Serial.println();
+#endif
+    }
   };
 
 } // namespace EC

@@ -55,6 +55,10 @@ SOFTWARE.
 #include "Fire2012VU.h"
 #include "PeakGlitterVU.h"
 #include "RainbowLevelVU.h"
+#include "VuOverlayDot.h"
+#include "VuOverlayLine.h"
+#include "VuSourceAnalogPin.h"
+#include "VuSourcePeakHold.h"
 
 // Testing / Debugging
 #include "VuTools.h"

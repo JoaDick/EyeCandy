@@ -3,6 +3,52 @@ DemoReelVU Memory usage log
 
 
 
+240121 New VuSource + VuOverlay classes
+
+Sketch uses 26616 bytes (82%) of program storage space. Maximum is 32256 bytes.
+Global variables use 963 bytes (47%) of dynamic memory, leaving 1085 bytes for local variables. Maximum is 2048 bytes.
+
+---
+
+Sketch uses 26872 bytes (83%) of program storage space. Maximum is 32256 bytes.
+Global variables use 981 bytes (47%) of dynamic memory, leaving 1067 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 26940 bytes (83%) of program storage space. Maximum is 32256 bytes.
+Global variables use 979 bytes (47%) of dynamic memory, leaving 1069 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 26942 bytes (83%) of program storage space. Maximum is 32256 bytes.
+Global variables use 984 bytes (48%) of dynamic memory, leaving 1064 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 26780 bytes (83%) of program storage space. Maximum is 32256 bytes.
+Global variables use 981 bytes (47%) of dynamic memory, leaving 1067 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 26854 bytes (83%) of program storage space. Maximum is 32256 bytes.
+Global variables use 973 bytes (47%) of dynamic memory, leaving 1075 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 26344 bytes (81%) of program storage space. Maximum is 32256 bytes.
+Global variables use 961 bytes (46%) of dynamic memory, leaving 1087 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 26294 bytes (81%) of program storage space. Maximum is 32256 bytes.
+Global variables use 951 bytes (46%) of dynamic memory, leaving 1097 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 26242 bytes (81%) of program storage space. Maximum is 32256 bytes.
+Global variables use 951 bytes (46%) of dynamic memory, leaving 1097 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 26092 bytes (80%) of program storage space. Maximum is 32256 bytes.
+Global variables use 933 bytes (45%) of dynamic memory, leaving 1115 bytes for local variables. Maximum is 2048 bytes.
+
+---
+
+EssentialVU = 68
+PeakGlitterVU = 33
+VuOverlayDot = 13
+VuOverlayLine = 13
+VuSourceAnalogPin = 75
+VuSourcePeakHold = 32
+RawAudioVU = 27
+
+
+
 240120 Split FadeOut into FadeOutOverlay + FadeOutPattern
 
 Sketch uses 25356 bytes (78%) of program storage space. Maximum is 32256 bytes.

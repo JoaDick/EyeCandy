@@ -89,7 +89,7 @@ namespace EC
   protected:
     /** Constructor for Animations that can be used as both, Pattern or Overlay.
      * @param strip  The LED strip.
-     * @param overlayMode  Set to \c true when Animation shall be an Overlay.
+     * @param overlayMode  Set to \c true when the Animation shall be an Overlay.
      * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
      *                  Only relevant when the default implementation of showPattern() is used.
      */
