@@ -50,13 +50,14 @@ namespace EC
 
     /** Constructor.
      * @param ledStrip  The LED strip.
-     * @param vuSource  Read the VU value from there.
+     * @param vuSource  Input for calculating the VU Overlay.
      */
     VuOverlayDot(FastLedStrip ledStrip, VuSource &vuSource)
         : _strip(ledStrip), _vuSource(vuSource)
     {
     }
 
+    /// Get the VuSource that is used as input.
     VuSource &getVuSource()
     {
       return _vuSource;
@@ -68,6 +69,7 @@ namespace EC
     {
       if (wasModified)
       {
+        // TODO: Option to draw a short line instead of just one pixel
         _strip.optPixel(_vuSource.getVU()) = color;
       }
     }

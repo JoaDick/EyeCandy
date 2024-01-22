@@ -54,7 +54,7 @@ namespace EC
      * i.e. usually when it offers a static \c fadeRate_default() method. \n
      * Not relevant in Overlay mode.
      */
-    uint8_t fadeRate = 0;
+    uint8_t fadeRate;
 
     /** Usually there's nothing to configure here.
      * Publicly accessible mainly for debugging.

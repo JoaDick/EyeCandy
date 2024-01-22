@@ -334,7 +334,7 @@ void makeVuSequence2_a(EC::AnimationScene &scene)
 
     auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 0));
     auto baseVU = scene.append(new EC::EssentialVU2(strip, *vuSource));
-    baseVU->enableVuBar = false;
+    baseVU->enableVuLevelBar = false;
 
     scene.append(new EC::VuOverlayPeakGlitter(strip, *vuSource));
     animationDuration = 12;
@@ -478,11 +478,15 @@ void makeCompoundVu(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 100));
-    auto vuPeakSource = scene.append(new EC::VuSourcePeakHold(*vuSource));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+    auto vuPeakSource = scene.append(new EC::VuSourcePeakHold(*vuLevelSource));
+    // vuPeakSource->vuPeakHandler.peakHold = 1000;
 
-    scene.append(new EC::VuOverlayLine(strip, *vuSource));
-    scene.append(new EC::VuOverlayDot(strip, *vuPeakSource));
+    auto vuLevelBar = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource /*, vuPeakSource*/));
+    auto vuPeakDot = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource, vuLevelSource));
+
+    // scene.append(new EC::VuOverlayLine(strip, *vuLevelSource));
+    // scene.append(new EC::VuOverlayDot(strip, *vuPeakSource));
 
     // autoMode = false;
 }
@@ -492,7 +496,7 @@ void makeCompoundVu(EC::AnimationScene &scene)
 EC::AnimationSceneBuilderFct nextAnimation = nullptr;
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
-    // &makeCompoundVu,
+    &makeCompoundVu,
 
     &makeRawAudioVU,
     // &makeVuSequence1,
@@ -587,7 +591,7 @@ void printMemoryUsage()
     Serial.println(F(" LEDs:"));
     Serial.println(F("<*> is dependant on NUM_LEDS"));
 
-#if (1)
+    // ----- old -----
     Serial.print(F("DancingDotVU = "));
     Serial.println(sizeof(EC::DancingDotVU));
 
@@ -605,12 +609,13 @@ void printMemoryUsage()
 
     Serial.print(F("RawAudioVU = "));
     Serial.println(sizeof(EC::RawAudioVU));
-#else
-    Serial.print(F("EssentialVU = "));
-    Serial.println(sizeof(EC::EssentialVU2));
 
-    Serial.print(F("PeakGlitterVU = "));
-    Serial.println(sizeof(EC::VuOverlayPeakGlitter));
+#if (0)
+    Serial.println();
+
+    // ----- new -----
+    Serial.print(F("EssentialVU2 = "));
+    Serial.println(sizeof(EC::EssentialVU2));
 
     Serial.print(F("VuOverlayDot = "));
     Serial.println(sizeof(EC::VuOverlayDot));
@@ -618,14 +623,20 @@ void printMemoryUsage()
     Serial.print(F("VuOverlayLine = "));
     Serial.println(sizeof(EC::VuOverlayLine));
 
+    Serial.print(F("VuOverlayPeakGlitter = "));
+    Serial.println(sizeof(EC::VuOverlayPeakGlitter));
+
+    Serial.print(F("VuOverlayRainbowDot = "));
+    Serial.println(sizeof(EC::VuOverlayRainbowDot));
+
+    Serial.print(F("VuOverlayRainbowLine = "));
+    Serial.println(sizeof(EC::VuOverlayRainbowLine));
+
     Serial.print(F("VuSourceAnalogPin = "));
     Serial.println(sizeof(EC::VuSourceAnalogPin));
 
     Serial.print(F("VuSourcePeakHold = "));
     Serial.println(sizeof(EC::VuSourcePeakHold));
-
-    Serial.print(F("RawAudioVU = "));
-    Serial.println(sizeof(EC::RawAudioVU));
 #endif
 }
 #endif

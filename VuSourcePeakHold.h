@@ -46,18 +46,18 @@ namespace EC
         public VuSource
   {
   public:
-    /** Configure the following properties according to your needs:
+    /** Access to VuPeakHandler configuration.
+     * Adjust the following properties according to your needs:
      * - VuPeakHandler::peakHold
      * - VuPeakHandler::peakDecay
-     * - Don't call any of its methods!
      */
     VuPeakHandler vuPeakHandler;
 
     /** Constructor.
-     * @param vuLevelSource  Read the current VU level from there.
+     * @param vuSource  Input for calculating the VU peak level.
      */
-    explicit VuSourcePeakHold(VuSource &vuLevelSource)
-        : _vuLevelSource(vuLevelSource)
+    explicit VuSourcePeakHold(VuSource &vuSource)
+        : _vuSource(vuSource)
     {
     }
 
@@ -69,19 +69,25 @@ namespace EC
       return _vuLevel;
     }
 
+    /// Get the VuSource that is used as input.
+    VuSource &getVuSource()
+    {
+      return _vuSource;
+    }
+
   private:
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
       if (wasModified)
       {
-        vuPeakHandler.process(_vuLevelSource.getVU(), currentMillis);
+        vuPeakHandler.process(_vuSource.getVU(), currentMillis);
         _vuLevel = vuPeakHandler.getVU();
       }
     }
 
   private:
-    VuSource &_vuLevelSource;
+    VuSource &_vuSource;
     float _vuLevel = 0.0;
   };
 

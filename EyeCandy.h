@@ -57,6 +57,8 @@ SOFTWARE.
 #include "RainbowLevelVU.h"
 #include "VuOverlayDot.h"
 #include "VuOverlayLine.h"
+#include "VuOverlayRainbowDot.h"
+#include "VuOverlayRainbowLine.h"
 #include "VuSourceAnalogPin.h"
 #include "VuSourcePeakHold.h"
 

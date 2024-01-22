@@ -35,7 +35,6 @@ namespace EC
 {
 
   /** A VU Overlay that draws a line from the first LED to the given VU position.
-   * A VU value of 0.0 will hide the dot.
    * @note The actual VU value is obtained from the given VuSource; a VU value of 0.0 represents
    * the beginning of the LED strip, 1.0 represents the end.
    */
@@ -50,13 +49,14 @@ namespace EC
 
     /** Constructor.
      * @param ledStrip  The LED strip.
-     * @param vuSource  Read the VU value from there.
+     * @param vuSource  Input for calculating the VU Overlay.
      */
     VuOverlayLine(FastLedStrip ledStrip, VuSource &vuSource)
         : _strip(ledStrip), _vuSource(vuSource)
     {
     }
 
+    /// Get the VuSource that is used as input.
     VuSource &getVuSource()
     {
       return _vuSource;

@@ -154,7 +154,7 @@ namespace EC
     float _vuLevel = 0.0;
   };
 
-  /** Basic VU meter Animation & Overlay.
+  /** Basic VU meter Overlay.
    * Although being called "basic", it already offers a lot of features and
    * configuration options:
    * - show VU level bargraph yes/no
@@ -177,55 +177,70 @@ namespace EC
      */
     static uint8_t fadeRate_default() { return 50; }
 
-    /** Draw the VU bar with this color.
+    /** Enable rendering the VU bar.
      * This setting can be adjusted at runtime.
      */
-    CRGB &vuBarColor = vuLine.color;
+    bool enableVuLevelBar = true;
 
-    /** Draw the peak dot with this color.
+    /** Enable rendering the VU peak dot.
      * This setting can be adjusted at runtime.
      */
-    CRGB &peakDotColor = vuDot.color;
+    bool enableVuPeakDot = true;
 
-    /** Render the VU bar.
-     * This setting can be adjusted at runtime.
+    /** Access to VuPeakHandler configuration.
+     * Adjust the following properties according to your needs:
+     * - VuSourcePeakHold::VuPeakHandler::peakHold
+     * - VuSourcePeakHold::VuPeakHandler::peakDecay
      */
-    bool enableVuBar = true;
-
-    /** Render the peak dot.
-     * This setting can be adjusted at runtime.
-     */
-    bool enablePeakDot = true;
-
     VuSourcePeakHold vuPeakSource;
 
-    VuOverlayLine vuLine;
+    /** Access to VuOverlayLine configuration.
+     * Adjust the following properties according to your needs:
+     * - VuOverlayLine::color
+     */
+    VuOverlayLine vuLevelBar;
 
-    VuOverlayDot vuDot;
+    /** Access to VuOverlayDot configuration.
+     * Adjust the following properties according to your needs:
+     * - VuOverlayDot::color
+     */
+    VuOverlayDot vuPeakDot;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
-     * @param vuSource  Read the VU value from there.
+     * @param vuSource  Input for calculating the VU Overlay.
      */
     EssentialVU2(FastLedStrip ledStrip, VuSource &vuSource)
-        : vuPeakSource(vuSource), vuLine(ledStrip, vuSource), vuDot(ledStrip, vuPeakSource)
+        : vuPeakSource(vuSource), vuLevelBar(ledStrip, vuSource), vuPeakDot(ledStrip, vuPeakSource)
     {
-      // vuBarColor = CRGB(0, 64, 0);
-      // peakDotColor = CRGB(255, 0, 0);
+      // vuLevelBar.color = CRGB(0, 64, 0);
+      // vuPeakDot.olor = CRGB(255, 0, 0);
+    }
+
+    /// Get the VuSource that is used for the VU level bar.
+    VuSource &getLevelVuSource()
+    {
+      return vuLevelBar.getVuSource();
+    }
+
+    /// Get the VuSource that is used for the VU peak dot.
+    VuSource &getPeakVuSource()
+    {
+      return vuPeakDot.getVuSource();
     }
 
   private:
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      if (enableVuBar)
+      if (enableVuLevelBar)
       {
-        vuLine.process(currentMillis, wasModified);
+        vuLevelBar.process(currentMillis, wasModified);
       }
-      if (enablePeakDot)
+      if (enableVuPeakDot)
       {
         vuPeakSource.process(currentMillis, wasModified);
-        vuDot.process(currentMillis, wasModified);
+        vuPeakDot.process(currentMillis, wasModified);
       }
 
 #ifdef ESSENTIAL_VU_DEBUG
@@ -234,9 +249,9 @@ namespace EC
       Serial.print(" +:");
       Serial.print(10.0);
       Serial.print(" VU:");
-      Serial.print(10.0 * vuLine.getVuSource().getVU());
+      Serial.print(10.0 * vuLevelBar.getVuSource().getVU());
       Serial.print(" peak:");
-      Serial.print(10.0 * vuDot.getVuSource().getVU());
+      Serial.print(10.0 * vuPeakDot.getVuSource().getVU());
       Serial.println();
 #endif
     }
