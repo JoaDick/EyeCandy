@@ -26,37 +26,43 @@ SOFTWARE.
 *******************************************************************************/
 
 #include "Animation.h"
-#include "VuPeakHandler.h"
+#include "VuPeakGravityHandler.h"
 #include "VuSource.h"
+
+#include "VuPeakHandler.h"
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /** An Animation-Worker for calculating a VU peak level.
+  /** TBD
+   *
+   * An Animation-Worker for calculating a VU peak level.
    * It reads the current VU level from a given VuSource, and calculates the corresponding peak VU
    * level - including peak hold functionality.
    * @note This Worker is only doing the math, thus it provides the result of the calculation
    * through the VuSource interface that it implements. This means that the VU value for rendering
    * LEDs can be obtained - e.g. by an VU Overlay - via the getVU() method.
    */
-  class VuSourcePeakHold
+  class VuSourcePeakGravity
       : public Animation,
         public VuSource
   {
   public:
-    /** Access to VuPeakHandler configuration.
+    /** TBD
+     *
+     * Access to VuPeakHandler configuration.
      * Adjust the following properties according to your needs:
      * - VuPeakHandler::peakHold
      * - VuPeakHandler::peakDecay
      */
-    VuPeakHandler vuPeakHandler;
+    VuPeakGravityHandler vuPeakHandler;
 
     /** Constructor.
      * @param vuSource  Input for calculating the VU peak level.
      */
-    explicit VuSourcePeakHold(VuSource &vuSource)
+    explicit VuSourcePeakGravity(VuSource &vuSource)
         : _vuSource(vuSource)
     {
     }

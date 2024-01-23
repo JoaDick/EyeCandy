@@ -479,8 +479,13 @@ void makeCompoundVu(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
-    auto vuPeakSource = scene.append(new EC::VuSourcePeakHold(*vuLevelSource));
-    // vuPeakSource->vuPeakHandler.peakHold = 1000;
+
+    // auto vuPeakSource = scene.append(new EC::VuSourcePeakHold(*vuLevelSource));
+    // // vuPeakSource->vuPeakHandler.peakHold = 1000;
+
+    auto vuPeakSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
+    // vuPeakSource->vuPeakHandler.presetPunchedBall();
+    // vuPeakSource->vuPeakHandler.presetFloatingBubble();
 
     auto vuLevelBar = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource /*, vuPeakSource*/));
     auto vuPeakDot = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource, vuLevelSource));
@@ -634,6 +639,9 @@ void printMemoryUsage()
 
     Serial.print(F("VuSourceAnalogPin = "));
     Serial.println(sizeof(EC::VuSourceAnalogPin));
+
+    Serial.print(F("VuSourcePeakGravity = "));
+    Serial.println(sizeof(EC::VuSourcePeakGravity));
 
     Serial.print(F("VuSourcePeakHold = "));
     Serial.println(sizeof(EC::VuSourcePeakHold));

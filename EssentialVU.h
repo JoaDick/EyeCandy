@@ -220,13 +220,13 @@ namespace EC
     /// Get the VuSource that is used for the VU level bar.
     VuSource &getLevelVuSource()
     {
-      return vuLevelBar.getVuSource();
+      return vuLevelBar.getInputVuSource();
     }
 
     /// Get the VuSource that is used for the VU peak dot.
     VuSource &getPeakVuSource()
     {
-      return vuPeakDot.getVuSource();
+      return vuPeakDot.getInputVuSource();
     }
 
   private:

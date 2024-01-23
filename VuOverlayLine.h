@@ -57,7 +57,7 @@ namespace EC
     }
 
     /// Get the VuSource that is used as input.
-    VuSource &getVuSource()
+    VuSource &getInputVuSource()
     {
       return _vuSource;
     }

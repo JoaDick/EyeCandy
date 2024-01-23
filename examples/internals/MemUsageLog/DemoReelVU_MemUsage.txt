@@ -3,7 +3,24 @@ DemoReelVU Memory usage log
 
 
 
-240121 New VuOverlayRainbowLine and VuOverlayRainbowDot
+2401xx Replacing RainbowLevelVU
+
+ToDo...
+
+
+
+240123 New VuSourcePeakGravity
+
+Sketch uses 27924 bytes (86%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1015 bytes (49%) of dynamic memory, leaving 1033 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 27940 bytes (86%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1015 bytes (49%) of dynamic memory, leaving 1033 bytes for local variables. Maximum is 2048 bytes.
+
+
+
+
+240122 New VuOverlayRainbowLine and VuOverlayRainbowDot
 
 - additionally using makeCompoundVu()
 
@@ -25,18 +42,6 @@ VuOverlayRainbowDot = 37
 VuOverlayRainbowLine = 37
 VuSourceAnalogPin = 75
 VuSourcePeakHold = 32
-
-Sketch uses 27734 bytes (85%) of program storage space. Maximum is 32256 bytes.
-Global variables use 997 bytes (48%) of dynamic memory, leaving 1051 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 27772 bytes (86%) of program storage space. Maximum is 32256 bytes.
-Global variables use 997 bytes (48%) of dynamic memory, leaving 1051 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 27892 bytes (86%) of program storage space. Maximum is 32256 bytes.
-Global variables use 997 bytes (48%) of dynamic memory, leaving 1051 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 27294 bytes (84%) of program storage space. Maximum is 32256 bytes.
-Global variables use 981 bytes (47%) of dynamic memory, leaving 1067 bytes for local variables. Maximum is 2048 bytes.
 
 
 

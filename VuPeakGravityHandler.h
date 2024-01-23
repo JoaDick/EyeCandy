@@ -35,7 +35,7 @@ namespace EC
   //------------------------------------------------------------------------------
 
   /** Peak dot of a VU meter, influenced by gravity.
-   * Set #a0 < 0.0 for the behaviour of a ball, that's bumped up by the VU bar.
+   * Set #a0 < 0.0 for the behaviour of a falling ball, that's bumped up by the VU bar.
    * Set #a0 > 0.0 for a bubble, floating off the peak.
    */
   class VuPeakGravityHandler
@@ -47,13 +47,32 @@ namespace EC
      */
     float peakThreshold = 0.01;
 
-#if (1)              // "Punched Ball"
-    float a0 = -3.0; /// Takeoff acceleration.
-    float v0 = 0.5;  /// Takeoff velocity.
-#else                // "Floating Bubble"
-    float a0 = 0.5; /// Takeoff acceleration.
-    float v0 = 0.1; /// Takeoff velocity.
-#endif
+    /// Configure a "Punched Ball" behaviour.
+    void presetPunchedBall()
+    {
+      a0 = -3.0; // Takeoff acceleration.
+      v0 = 0.5;  // Takeoff velocity.
+    }
+
+    /// Configure a "Floating Bubble" behaviour.
+    void presetFloatingBubble()
+    {
+      a0 = 0.5; // Takeoff acceleration.
+      v0 = 0.1; // Takeoff velocity.
+    }
+
+    /// Configure a "Peak Hold" alike behaviour (the default).
+    void presetPeakHold()
+    {
+      a0 = -0.4; // Takeoff acceleration.
+      v0 = 0.0;  // Takeoff velocity.
+    }
+
+    /// Takeoff acceleration.
+    float a0 = -0.4;
+
+    /// Takeoff velocity.
+    float v0 = 0.0;
 
     /** Get the current VU level.
      * This means the curent position of the peak dot.
