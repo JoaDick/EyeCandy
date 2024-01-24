@@ -154,6 +154,8 @@ namespace EC
     float _vuLevel = 0.0;
   };
 
+  //------------------------------------------------------------------------------
+
   /** Basic VU meter Overlay.
    * Although being called "basic", it already offers a lot of features and
    * configuration options:

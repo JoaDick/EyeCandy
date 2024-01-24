@@ -3,9 +3,46 @@ DemoReelVU Memory usage log
 
 
 
-2401xx Replacing RainbowLevelVU
+240124 Refactored RainbowLevelVU
 
-ToDo...
+Sketch uses 27670 bytes (85%) of program storage space. Maximum is 32256 bytes.
+Global variables use 977 bytes (47%) of dynamic memory, leaving 1071 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 30400 bytes (94%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1053 bytes (51%) of dynamic memory, leaving 995 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 29782 bytes (92%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1049 bytes (51%) of dynamic memory, leaving 999 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 29780 bytes (92%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1047 bytes (51%) of dynamic memory, leaving 1001 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 29316 bytes (90%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1015 bytes (49%) of dynamic memory, leaving 1033 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 29480 bytes (91%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1009 bytes (49%) of dynamic memory, leaving 1039 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 28980 bytes (89%) of program storage space. Maximum is 32256 bytes.
+Global variables use 993 bytes (48%) of dynamic memory, leaving 1055 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 29746 bytes (92%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1009 bytes (49%) of dynamic memory, leaving 1039 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 29742 bytes (92%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1009 bytes (49%) of dynamic memory, leaving 1039 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 29626 bytes (91%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1009 bytes (49%) of dynamic memory, leaving 1039 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 28942 bytes (89%) of program storage space. Maximum is 32256 bytes.
+Global variables use 993 bytes (48%) of dynamic memory, leaving 1055 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 28726 bytes (89%) of program storage space. Maximum is 32256 bytes.
+Global variables use 993 bytes (48%) of dynamic memory, leaving 1055 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 29418 bytes (91%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1017 bytes (49%) of dynamic memory, leaving 1031 bytes for local variables. Maximum is 2048 bytes.
 
 
 
@@ -13,10 +50,6 @@ ToDo...
 
 Sketch uses 27924 bytes (86%) of program storage space. Maximum is 32256 bytes.
 Global variables use 1015 bytes (49%) of dynamic memory, leaving 1033 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 27940 bytes (86%) of program storage space. Maximum is 32256 bytes.
-Global variables use 1015 bytes (49%) of dynamic memory, leaving 1033 bytes for local variables. Maximum is 2048 bytes.
-
 
 
 

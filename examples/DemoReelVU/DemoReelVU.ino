@@ -95,6 +95,22 @@ void makeBouncingDotVU(EC::AnimationScene &scene)
     glitter->color = CRGB(128, 64, 0);
 }
 
+void makeBouncingDotVU_a(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+    auto vuPeakSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
+    vuPeakSource->vuPeakHandler.presetPunchedBall();
+
+    auto vuPeak = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource));
+    vuPeak->vuHueRange = 0.5;
+
+    // auto glitter = scene.append(new EC::VuOverlayPeakGlitter(strip, vuLevelSource, CRGB(128, 64, 0));
+    auto glitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource));
+    glitter->color = CRGB(128, 64, 0);
+}
+
 void makeDancingDotVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -102,6 +118,19 @@ void makeDancingDotVU(EC::AnimationScene &scene)
     auto vu = scene.append(new EC::RainbowLevelVU(audioSample, strip, false));
     vu->enablePeakDot = false;
     vu->fadeRate = 0;
+    vu->volume = 64;
+
+    scene.append(new EC::DancingDotVU(audioSample, strip, true /*, CRGB::Red*/));
+}
+
+void makeDancingDotVU_a(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 0));
+
+    auto vu = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource));
+    // vu->fadeRate = 0;
     vu->volume = 64;
 
     scene.append(new EC::DancingDotVU(audioSample, strip, true /*, CRGB::Red*/));
@@ -125,6 +154,27 @@ void makeDoubleBouncingDotVU(EC::AnimationScene &scene)
     vu2->vuHueRange = 0.6;
     vu2->baseHueStep = 0.11;
     vu2->vuLevelHandler.smoothingFactor = 9;
+}
+
+void makeDoubleBouncingDotVU_a(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+    auto vuPeakSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
+    vuPeakSource->vuPeakHandler.presetPunchedBall();
+
+    auto vu1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource));
+    vu1->volume = 255;
+    vu1->vuHueRange = 0.4;
+    vu1->baseHueStep = -0.17;
+    // vu1->vuLevelHandler.smoothingFactor = 6;
+
+    auto vu2 = scene.append(new EC::VuOverlayRainbowDot(strip.getReversedStrip(), *vuPeakSource));
+    vu2->volume = 255;
+    vu2->vuHueRange = 0.6;
+    vu2->baseHueStep = 0.11;
+    // vu2->vuLevelHandler.smoothingFactor = 9;
 }
 
 void makeDoubleDancingDotVU1(EC::AnimationScene &scene)
@@ -250,9 +300,20 @@ void makeRainbowBubbleVU(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     auto vu = scene.append(new EC::RainbowLevelVU(audioSample, strip, false));
-    vu->vuPeakHandler.a0 = 0.5;
-    vu->vuPeakHandler.v0 = 0.1;
+    vu->vuPeakHandler.presetFloatingBubble();
     vu->vuHueRange = 0.67;
+}
+
+void makeRainbowBubbleVU_a(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+
+    auto vu = scene.append(new EC::RainbowLevelVU2(strip, *vuLevelSource));
+    vu->vuPeakSource.vuPeakHandler.presetFloatingBubble();
+    vu->vuLevelBar.vuHueRange = 0.67;
+    vu->vuPeakDot.vuHueRange = vu->vuLevelBar.vuHueRange;
 }
 
 void makeRainbowBubbleCenteredVU(EC::AnimationScene &scene)
@@ -260,9 +321,22 @@ void makeRainbowBubbleCenteredVU(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     auto vu = scene.append(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(true), false));
-    vu->vuPeakHandler.a0 = 0.5;
-    vu->vuPeakHandler.v0 = 0.1;
+    vu->vuPeakHandler.presetFloatingBubble();
     vu->vuHueRange = 0.67;
+
+    scene.append(new EC::Kaleidoscope(strip));
+}
+
+void makeRainbowBubbleCenteredVU_a(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+
+    auto vu = scene.append(new EC::RainbowLevelVU2(strip.getHalfStrip(true), *vuLevelSource));
+    vu->vuPeakSource.vuPeakHandler.presetFloatingBubble();
+    vu->vuLevelBar.vuHueRange = 0.67;
+    vu->vuPeakDot.vuHueRange = vu->vuLevelBar.vuHueRange;
 
     scene.append(new EC::Kaleidoscope(strip));
 }
@@ -272,9 +346,22 @@ void makeRainbowBubbleInwardVU(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     auto vu = scene.append(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(), false));
-    vu->vuPeakHandler.a0 = 0.5;
-    vu->vuPeakHandler.v0 = 0.1;
+    vu->vuPeakHandler.presetFloatingBubble();
     vu->vuHueRange = 0.67;
+
+    scene.append(new EC::Kaleidoscope(strip));
+}
+
+void makeRainbowBubbleInwardVU_a(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+
+    auto vu = scene.append(new EC::RainbowLevelVU2(strip.getHalfStrip(), *vuLevelSource));
+    vu->vuPeakSource.vuPeakHandler.presetFloatingBubble();
+    vu->vuLevelBar.vuHueRange = 0.67;
+    vu->vuPeakDot.vuHueRange = vu->vuLevelBar.vuHueRange;
 
     scene.append(new EC::Kaleidoscope(strip));
 }
@@ -283,14 +370,18 @@ void makeRainbowLevelVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    scene.append(new EC::RainbowLevelVU(audioSample, strip, false));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+
+    auto vu = scene.append(new EC::RainbowLevelVU2(strip, *vuLevelSource));
 }
 
 void makeRainbowLevelCenteredVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    scene.append(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(true), false));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+
+    auto vu = scene.append(new EC::RainbowLevelVU2(strip.getHalfStrip(true), *vuLevelSource));
     scene.append(new EC::Kaleidoscope(strip));
 }
 
@@ -298,7 +389,9 @@ void makeRainbowLevelInwardVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    scene.append(new EC::RainbowLevelVU(audioSample, strip.getHalfStrip(), false));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+
+    auto vu = scene.append(new EC::RainbowLevelVU2(strip.getHalfStrip(), *vuLevelSource));
     scene.append(new EC::Kaleidoscope(strip));
 }
 
@@ -386,9 +479,26 @@ void makeVuSequence5(EC::AnimationScene &scene)
     animationDuration = 10;
 }
 
+void makeVuSequence5_a(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+
+    auto vu = scene.append(new EC::RainbowLevelVU2(strip, *vuLevelSource));
+    scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource));
+    animationDuration = 10;
+}
+
 void makeVuSequence6(EC::AnimationScene &scene)
 {
     makeBouncingDotVU(scene);
+    animationDuration = 10;
+}
+
+void makeVuSequence6_a(EC::AnimationScene &scene)
+{
+    makeBouncingDotVU_a(scene);
     animationDuration = 10;
 }
 
@@ -401,6 +511,12 @@ void makeVuSequence7(EC::AnimationScene &scene)
 void makeVuSequence8(EC::AnimationScene &scene)
 {
     makeRainbowBubbleVU(scene);
+    // animationDuration = 20;
+}
+
+void makeVuSequence8_a(EC::AnimationScene &scene)
+{
+    makeRainbowBubbleVU_a(scene);
     // animationDuration = 20;
 }
 
@@ -422,9 +538,21 @@ void makeVuSequence11(EC::AnimationScene &scene)
     // animationDuration = 15;
 }
 
+void makeVuSequence11_a(EC::AnimationScene &scene)
+{
+    makeRainbowBubbleCenteredVU_a(scene);
+    // animationDuration = 15;
+}
+
 void makeVuSequence12(EC::AnimationScene &scene)
 {
     makeRainbowBubbleInwardVU(scene);
+    // animationDuration = 20;
+}
+
+void makeVuSequence12_a(EC::AnimationScene &scene)
+{
+    makeRainbowBubbleInwardVU_a(scene);
     // animationDuration = 20;
 }
 
@@ -434,9 +562,21 @@ void makeVuSequence13(EC::AnimationScene &scene)
     // animationDuration = 15;
 }
 
+void makeVuSequence13_a(EC::AnimationScene &scene)
+{
+    makeDancingDotVU_a(scene);
+    // animationDuration = 15;
+}
+
 void makeVuSequence14(EC::AnimationScene &scene)
 {
     makeDoubleBouncingDotVU(scene);
+    // animationDuration = 15;
+}
+
+void makeVuSequence14_a(EC::AnimationScene &scene)
+{
+    makeDoubleBouncingDotVU_a(scene);
     // animationDuration = 15;
 }
 
@@ -487,8 +627,8 @@ void makeCompoundVu(EC::AnimationScene &scene)
     // vuPeakSource->vuPeakHandler.presetPunchedBall();
     // vuPeakSource->vuPeakHandler.presetFloatingBubble();
 
-    auto vuLevelBar = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource /*, vuPeakSource*/));
-    auto vuPeakDot = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource, vuLevelSource));
+    auto vuLevelBar = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource /*, *vuPeakSource*/));
+    auto vuPeakDot = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource, *vuLevelSource));
 
     // scene.append(new EC::VuOverlayLine(strip, *vuLevelSource));
     // scene.append(new EC::VuOverlayDot(strip, *vuPeakSource));
@@ -501,6 +641,21 @@ void makeCompoundVu(EC::AnimationScene &scene)
 EC::AnimationSceneBuilderFct nextAnimation = nullptr;
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
+    // &makeVuSequence14,
+    // &makeVuSequence14_a,
+    // &makeVuSequence5,
+    // &makeVuSequence5_a,
+    // &makeVuSequence6,
+    // &makeVuSequence6_a,
+    // &makeVuSequence8,
+    // &makeVuSequence8_a,
+    // &makeVuSequence11,
+    // &makeVuSequence11_a,
+    // &makeVuSequence12,
+    // &makeVuSequence12_a,
+    // &makeVuSequence13,
+    // &makeVuSequence13_a,
+
     &makeCompoundVu,
 
     &makeRawAudioVU,
@@ -512,16 +667,23 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeVuSequence3_a,
     // &makeVuSequence4,
     &makeVuSequence4_a,
-    &makeVuSequence5,
-    &makeVuSequence6,
+    // &makeVuSequence5,
+    &makeVuSequence5_a,
+    // &makeVuSequence6,
+    &makeVuSequence6_a,
     &makeVuSequence7,
-    &makeVuSequence8,
+    // &makeVuSequence8,
+    &makeVuSequence8_a,
     &makeVuSequence9,
     &makeVuSequence10,
-    &makeVuSequence11,
-    &makeVuSequence12,
-    &makeVuSequence13,
-    &makeVuSequence14,
+    // &makeVuSequence11,
+    &makeVuSequence11_a,
+    // &makeVuSequence12,
+    &makeVuSequence12_a,
+    // &makeVuSequence13,
+    &makeVuSequence13_a,
+    // &makeVuSequence14,
+    &makeVuSequence14_a,
     &makeVuSequence15,
     &makeVuSequence16,
     &makeVuSequence17,
@@ -621,6 +783,9 @@ void printMemoryUsage()
     // ----- new -----
     Serial.print(F("EssentialVU2 = "));
     Serial.println(sizeof(EC::EssentialVU2));
+
+    Serial.print(F("RainbowLevelVU2 = "));
+    Serial.println(sizeof(EC::RainbowLevelVU2));
 
     Serial.print(F("VuOverlayDot = "));
     Serial.println(sizeof(EC::VuOverlayDot));

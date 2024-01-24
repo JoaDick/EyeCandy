@@ -62,12 +62,20 @@ namespace EC
 
     /** Constructor.
      * @param ledStrip  The LED strip.
+     * @param vuSource  Input for calculating the VU level and color.
+     */
+    VuOverlayRainbowLine(FastLedStrip ledStrip, VuSource &vuSource)
+        : VuOverlayRainbowLine(ledStrip, vuSource, vuSource)
+    {
+    }
+
+    /** Constructor with different input for calculating the VU color.
+     * @param ledStrip  The LED strip.
      * @param vuLevelSource  Input for calculating the VU level.
      * @param vuColorSource  Input for calculating the VU color.
-     *                       NULL means use \a vuLevelSource
      */
-    VuOverlayRainbowLine(FastLedStrip ledStrip, VuSource &vuLevelSource, VuSource *vuColorSource = nullptr)
-        : AnimationBase(ledStrip, true), _vuLevelSource(vuLevelSource), _vuCcolorSource(vuColorSource ? *vuColorSource : vuLevelSource)
+    VuOverlayRainbowLine(FastLedStrip ledStrip, VuSource &vuLevelSource, VuSource &vuColorSource)
+        : AnimationBase(ledStrip, true), _vuLevelSource(vuLevelSource), _vuCcolorSource(vuColorSource)
     {
       modelUpdatePeriod = 10;
     }
