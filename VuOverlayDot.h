@@ -46,14 +46,25 @@ namespace EC
     /** Draw the VU Overlay with this color.
      * This setting can be adjusted at runtime.
      */
-    CRGB color = CRGB(255, 32, 0);
+    CRGB color;
+
+    /** Size of the dot (as fraction of the entire strip).
+     * This setting can be adjusted at runtime.
+     * Choose small values, like e.g. 0.03 for 3% of the strip. \n
+     * 0.0 means exactly 1 pixel.
+     */
+    float size;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param vuSource  Input for calculating the VU Overlay.
+     * @param color  Draw the dot with this color.
+     * @param size  Size of the dot (as fraction of the entire strip). \n
+     *              Choose small values, like e.g. 0.03 for 3% of the strip. \n
+     *              0.0 means exactly 1 pixel.
      */
-    VuOverlayDot(FastLedStrip ledStrip, VuSource &vuSource)
-        : _strip(ledStrip), _vuSource(vuSource)
+    VuOverlayDot(FastLedStrip ledStrip, VuSource &vuSource, CRGB color = CRGB::Red, float size = 0.0)
+        : color(color), size(size), _strip(ledStrip), _vuSource(vuSource)
     {
     }
 
@@ -69,8 +80,18 @@ namespace EC
     {
       if (wasModified)
       {
-        // TODO: Option to draw a short line instead of just one pixel
-        _strip.optPixel(_vuSource.getVU()) = color;
+        const float vuLevel = _vuSource.getVU();
+        if (vuLevel > 0.0)
+        {
+          if (size > 0.0)
+          {
+            _strip.normLineRel(vuLevel, -size, color);
+          }
+          else
+          {
+            _strip.normPixel(vuLevel) = color;
+          }
+        }
       }
     }
 

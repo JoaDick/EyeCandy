@@ -35,12 +35,13 @@ namespace EC
   //------------------------------------------------------------------------------
 
   /** Peak dot of a VU meter, "loosely tied to the VU level".
-   * Behaves as if the VU bar and the peak dot are connected with a rubber band.
+   * Behaves as if the VU level and the peak dot are connected with a rubber band.
    */
   class VuPeakForceHandler
   {
   public:
     float inertia = 0.47;
+
     float friction = 0.125;
 
     /** Get the current VU level.

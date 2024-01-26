@@ -29,33 +29,28 @@ SOFTWARE.
 #include "VuPeakGravityHandler.h"
 #include "VuSource.h"
 
-#include "VuPeakHandler.h"
-
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /** TBD
-   *
-   * An Animation-Worker for calculating a VU peak level.
-   * It reads the current VU level from a given VuSource, and calculates the corresponding peak VU
-   * level - including peak hold functionality.
-   * @note This Worker is only doing the math, thus it provides the result of the calculation
-   * through the VuSource interface that it implements. This means that the VU value for rendering
-   * LEDs can be obtained - e.g. by an VU Overlay - via the getVU() method.
+  /** An Animation-Worker for calculating a VU peak level; as if influenced by gravity.
+   * @note This Worker is only doing the math. It reads the current VU level from a given VuSource,
+   * and calculates the corresponding peak VU level. The result thereof (for rendering the pixels)
+   * can be obtained through the VuSource interface that is provided.
+   * @see VuPeakGravityHandler for the math details.
    */
   class VuSourcePeakGravity
       : public Animation,
         public VuSource
   {
   public:
-    /** TBD
-     *
-     * Access to VuPeakHandler configuration.
+    /** Access to VuPeakGravityHandler configuration.
      * Adjust the following properties according to your needs:
-     * - VuPeakHandler::peakHold
-     * - VuPeakHandler::peakDecay
+     * - Set VuPeakGravityHandler::a0 < 0.0 for the behaviour of a falling ball, that's bumped up by the VU bar.
+     * - Set VuPeakGravityHandler::a0 > 0.0 for a bubble, floating off the peak.
+     * - Or use a preset like VuPeakGravityHandler::presetPunchedBall() or
+     *   VuPeakGravityHandler::presetFloatingBubble()
      */
     VuPeakGravityHandler vuPeakHandler;
 

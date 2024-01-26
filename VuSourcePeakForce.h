@@ -26,7 +26,7 @@ SOFTWARE.
 *******************************************************************************/
 
 #include "Animation.h"
-#include "VuPeakHandler.h"
+#include "VuPeakForceHandler.h"
 #include "VuSource.h"
 
 //------------------------------------------------------------------------------
@@ -34,28 +34,29 @@ SOFTWARE.
 namespace EC
 {
 
-  /** An Animation-Worker for calculating a VU peak level, including peak hold functionality.
+  /** An Animation-Worker for calculating a VU peak level; as if "loosely tied to the VU level"
+   * Behaves as if the VU level and the peak dot are connected with a rubber band.
    * @note This Worker is only doing the math. It reads the current VU level from a given VuSource,
    * and calculates the corresponding peak VU level. The result thereof (for rendering the pixels)
    * can be obtained through the VuSource interface that is provided.
-   * @see VuPeakHandler for the math details.
+   * @see VuPeakForceHandler for the math details.
    */
-  class VuSourcePeakHold
+  class VuSourcePeakForce
       : public Animation,
         public VuSource
   {
   public:
-    /** Access to VuPeakHandler configuration.
+    /** Access to VuPeakForceHandler configuration.
      * Adjust the following properties according to your needs:
-     * - VuPeakHandler::peakHold
-     * - VuPeakHandler::peakDecay
+     * - VuPeakForceHandler::inertia
+     * - VuPeakForceHandler::friction
      */
-    VuPeakHandler vuPeakHandler;
+    VuPeakForceHandler vuPeakHandler;
 
     /** Constructor.
      * @param vuSource  Input for calculating the VU peak level.
      */
-    explicit VuSourcePeakHold(VuSource &vuSource)
+    explicit VuSourcePeakForce(VuSource &vuSource)
         : _vuSource(vuSource)
     {
     }

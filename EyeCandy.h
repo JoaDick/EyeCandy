@@ -60,6 +60,7 @@ SOFTWARE.
 #include "VuOverlayRainbowDot.h"
 #include "VuOverlayRainbowLine.h"
 #include "VuSourceAnalogPin.h"
+#include "VuSourcePeakForce.h"
 #include "VuSourcePeakGravity.h"
 #include "VuSourcePeakHold.h"
 

@@ -128,12 +128,16 @@ void makeDancingDotVU_a(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 0));
+    auto vuPeakSource = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
 
-    auto vu = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource));
-    // vu->fadeRate = 0;
-    vu->volume = 64;
+    auto levelVu = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource));
+    // levelVu->fadeRate = 0;
+    levelVu->volume = 64;
 
-    scene.append(new EC::DancingDotVU(audioSample, strip, true /*, CRGB::Red*/));
+    auto peakVu = scene.append(new EC::VuOverlayDot(strip, *vuPeakSource));
+    // auto peakVu = scene.append(new EC::VuOverlayDot(strip, *vuPeakSource /*, CRGB::Red*/));
+    // peakVu->color = CRGB::Red;
+    // peakVu->size = 0.03;
 }
 
 void makeDoubleBouncingDotVU(EC::AnimationScene &scene)
@@ -194,6 +198,40 @@ void makeDoubleDancingDotVU1(EC::AnimationScene &scene)
     vu2->vuPeakHandler.friction = 0.14;
 }
 
+void makeDoubleDancingDotVU1_a(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::Pride2015(strip.getHalfStrip(/*true*/)));
+    scene.append(new EC::Kaleidoscope(strip));
+    scene.append(new EC::FadeOutOverlay(strip, 150));
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    auto vuPeakSource1 = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
+    // auto vuPeakSource2 = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
+    // vuPeakSource2->vuPeakHandler.inertia = 0.55;
+    // vuPeakSource2->vuPeakHandler.friction = 0.14;
+
+    auto vu1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource1, *vuLevelSource, 0.075));
+    vu1->baseHueStep = 0.03;
+    // vu1->setStartHue(0);
+
+    // auto vu1 = scene.append(new EC::VuOverlayDot(strip, *vuPeakSource1, CRGB(255, 0, 0), 0.03));
+
+    // auto vu1 = scene.append(new EC::VuOverlayDot(strip, *vuPeakSource1 /*, CRGB(255, 0, 0)*/));
+    // vu1->color = CRGB(255, 0, 0);
+    // vu1->size = 0.03;
+
+    auto vu2 = scene.append(new EC::VuOverlayRainbowDot(strip.getReversedStrip(), *vuPeakSource1, *vuLevelSource, 0.075));
+    // vu2->setStartHue(128);
+
+    // auto vu2 = scene.append(new EC::VuOverlayDot(strip.getReversedStrip(), *vuPeakSource2, CRGB(0, 255, 0), 0.03));
+
+    // auto vu2 = scene.append(new EC::VuOverlayDot(strip.getReversedStrip(), *vuPeakSource2 /*, CRGB(0, 255, 0)*/));
+    // vu2->color = CRGB(0, 255, 0);
+    // vu2->size = 0.03;
+}
+
 void makeDoubleDancingDotVU2(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -208,6 +246,35 @@ void makeDoubleDancingDotVU2(EC::AnimationScene &scene)
     vu2->color = CHSV(20 + 128, 255, 255);
     vu2->vuPeakHandler.inertia = 0.55;
     vu2->vuPeakHandler.friction = 0.14;
+}
+
+void makeDoubleDancingDotVU2_a(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::FloatingBlobs(strip));
+    scene.append(new EC::FadeOutOverlay(strip, 230));
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    auto vuPeakSource1 = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
+    // auto vuPeakSource2 = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
+    // vuPeakSource2->vuPeakHandler.inertia = 0.55;
+    // vuPeakSource2->vuPeakHandler.friction = 0.14;
+
+    auto vu1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource1, 0.125));
+    vu1->baseHueStep = 0.03;
+    // vu1->setStartHue(0);
+
+    // auto vu1 = scene.append(new EC::VuOverlayDot(strip, *vuPeakSource1 /*, CHSV(20, 255, 255)*/));
+    // vu1->color = CHSV(20, 255, 255);
+    // vu1->size = 0.1;
+
+    auto vu2 = scene.append(new EC::VuOverlayRainbowDot(strip.getReversedStrip(), *vuPeakSource1, 0.125));
+    // vu2->setStartHue(128);
+
+    // auto vu2 = scene.append(new EC::VuOverlayDot(strip.getReversedStrip(), *vuPeakSource2 /*, CHSV(20 + 128, 255, 255)*/));
+    // vu2->color = CHSV(20 + 128, 255, 255);
+    // vu2->size = 0.1;
 }
 
 void makeEssentialVU(EC::AnimationScene &scene)
@@ -586,9 +653,21 @@ void makeVuSequence15(EC::AnimationScene &scene)
     // animationDuration = 20;
 }
 
+void makeVuSequence15_a(EC::AnimationScene &scene)
+{
+    makeDoubleDancingDotVU1_a(scene);
+    // animationDuration = 20;
+}
+
 void makeVuSequence16(EC::AnimationScene &scene)
 {
     makeDoubleDancingDotVU2(scene);
+    // animationDuration = 15;
+}
+
+void makeVuSequence16_a(EC::AnimationScene &scene)
+{
+    makeDoubleDancingDotVU2_a(scene);
     // animationDuration = 15;
 }
 
@@ -641,8 +720,6 @@ void makeCompoundVu(EC::AnimationScene &scene)
 EC::AnimationSceneBuilderFct nextAnimation = nullptr;
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
-    // &makeVuSequence14,
-    // &makeVuSequence14_a,
     // &makeVuSequence5,
     // &makeVuSequence5_a,
     // &makeVuSequence6,
@@ -655,6 +732,12 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeVuSequence12_a,
     // &makeVuSequence13,
     // &makeVuSequence13_a,
+    // &makeVuSequence14,
+    // &makeVuSequence14_a,
+    // &makeVuSequence15,
+    // &makeVuSequence15_a,
+    // &makeVuSequence16,
+    // &makeVuSequence16_a,
 
     &makeCompoundVu,
 
@@ -684,8 +767,10 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeVuSequence13_a,
     // &makeVuSequence14,
     &makeVuSequence14_a,
-    &makeVuSequence15,
-    &makeVuSequence16,
+    // &makeVuSequence15,
+    &makeVuSequence15_a,
+    // &makeVuSequence16,
+    &makeVuSequence16_a,
     &makeVuSequence17,
     &makeVuSequence18,
     &makeVuSequence19,
@@ -804,6 +889,9 @@ void printMemoryUsage()
 
     Serial.print(F("VuSourceAnalogPin = "));
     Serial.println(sizeof(EC::VuSourceAnalogPin));
+
+    Serial.print(F("VuSourcePeakForce = "));
+    Serial.println(sizeof(EC::VuSourcePeakForce));
 
     Serial.print(F("VuSourcePeakGravity = "));
     Serial.println(sizeof(EC::VuSourcePeakGravity));

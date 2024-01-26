@@ -48,10 +48,13 @@ namespace EC
      */
     static uint8_t fadeRate_default() { return 50; }
 
-    /// How fast the initial hue changes over time.
+    /** How fast the initial hue changes over time.
+     * This setting can be adjusted at runtime.
+     */
     float baseHueStep = -0.05;
 
     /** How much the hue varies depending on the VU level.
+     * This setting can be adjusted at runtime. \n
      * 1.0 means one full color wheel cycle between 0.0 ... 1.0 VU level.
      */
     float vuHueRange = 0.33;
@@ -61,12 +64,22 @@ namespace EC
      */
     uint8_t volume = 128;
 
+    /** Size of the dot (as fraction of the entire strip).
+     * This setting can be adjusted at runtime. \n
+     * Choose small values, like e.g. 0.03 for 3% of the strip. \n
+     * 0.0 means exactly 1 pixel.
+     */
+    float size;
+
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param vuSource  Input for calculating the VU level and color.
+     * @param size  Size of the dot (as fraction of the entire strip). \n
+     *              Choose small values, like e.g. 0.03 for 3% of the strip. \n
+     *              0.0 means exactly 1 pixel.
      */
-    VuOverlayRainbowDot(FastLedStrip ledStrip, VuSource &vuSource)
-        : VuOverlayRainbowDot(ledStrip, vuSource, vuSource)
+    VuOverlayRainbowDot(FastLedStrip ledStrip, VuSource &vuSource, float size = 0.0)
+        : VuOverlayRainbowDot(ledStrip, vuSource, vuSource, size)
     {
     }
 
@@ -74,9 +87,12 @@ namespace EC
      * @param ledStrip  The LED strip.
      * @param vuLevelSource  Input for calculating the VU level.
      * @param vuColorSource  Input for calculating the VU color.
+     * @param size  Size of the dot (as fraction of the entire strip). \n
+     *              Choose small values, like e.g. 0.03 for 3% of the strip. \n
+     *              0.0 means exactly 1 pixel.
      */
-    VuOverlayRainbowDot(FastLedStrip ledStrip, VuSource &vuLevelSource, VuSource &vuColorSource)
-        : AnimationBase(ledStrip, true), _vuLevelSource(vuLevelSource), _vuCcolorSource(vuColorSource)
+    VuOverlayRainbowDot(FastLedStrip ledStrip, VuSource &vuLevelSource, VuSource &vuColorSource, float size = 0.0)
+        : AnimationBase(ledStrip, true), size(size), _vuLevelSource(vuLevelSource), _vuCcolorSource(vuColorSource)
     {
       modelUpdatePeriod = 10;
     }
@@ -103,11 +119,21 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
+      const float vuLevel = _vuLevelSource.getVU();
       const uint8_t hue = _startHue + _vuCcolorSource.getVU() * vuHueRange * 255;
       const CRGB color = CHSV(redShift(hue), 255, volume);
 
-      // TODO: Option to draw a short line instead of just one pixel
-      strip.optPixel(_vuLevelSource.getVU()) = color;
+      if (vuLevel > 0.0)
+      {
+        if (size > 0.0)
+        {
+          strip.normLineRel(vuLevel, -size, color);
+        }
+        else
+        {
+          strip.normPixel(vuLevel) = color;
+        }
+      }
     }
 
     /// @see AnimationBase::updateModel()
