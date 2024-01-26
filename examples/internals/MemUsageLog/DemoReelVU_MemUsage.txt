@@ -3,49 +3,34 @@ DemoReelVU Memory usage log
 
 
 
+240126 Some cleanup
+
+- disabled makeCompoundVu() again
+
+Sketch uses 28048 bytes (86%) of program storage space. Maximum is 32256 bytes.
+Global variables use 977 bytes (47%) of dynamic memory, leaving 1071 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 28058 bytes (86%) of program storage space. Maximum is 32256 bytes.
+Global variables use 977 bytes (47%) of dynamic memory, leaving 1071 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 28060 bytes (86%) of program storage space. Maximum is 32256 bytes.
+Global variables use 977 bytes (47%) of dynamic memory, leaving 1071 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 28072 bytes (87%) of program storage space. Maximum is 32256 bytes.
+Global variables use 979 bytes (47%) of dynamic memory, leaving 1069 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 28146 bytes (87%) of program storage space. Maximum is 32256 bytes.
+Global variables use 979 bytes (47%) of dynamic memory, leaving 1069 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 28178 bytes (87%) of program storage space. Maximum is 32256 bytes.
+Global variables use 979 bytes (47%) of dynamic memory, leaving 1069 bytes for local variables. Maximum is 2048 bytes.
+
+
+
 240126 Replacement for DancingDotVU
 
 Sketch uses 28210 bytes (87%) of program storage space. Maximum is 32256 bytes.
 Global variables use 979 bytes (47%) of dynamic memory, leaving 1069 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 31038 bytes (96%) of program storage space. Maximum is 32256 bytes.
-Global variables use 1023 bytes (49%) of dynamic memory, leaving 1025 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 31100 bytes (96%) of program storage space. Maximum is 32256 bytes.
-Global variables use 1023 bytes (49%) of dynamic memory, leaving 1025 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 31110 bytes (96%) of program storage space. Maximum is 32256 bytes.
-Global variables use 1023 bytes (49%) of dynamic memory, leaving 1025 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 31130 bytes (96%) of program storage space. Maximum is 32256 bytes.
-Global variables use 1023 bytes (49%) of dynamic memory, leaving 1025 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 31214 bytes (96%) of program storage space. Maximum is 32256 bytes.
-Global variables use 1023 bytes (49%) of dynamic memory, leaving 1025 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 31276 bytes (96%) of program storage space. Maximum is 32256 bytes.
-Global variables use 1023 bytes (49%) of dynamic memory, leaving 1025 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 31298 bytes (97%) of program storage space. Maximum is 32256 bytes.
-Global variables use 1023 bytes (49%) of dynamic memory, leaving 1025 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 31048 bytes (96%) of program storage space. Maximum is 32256 bytes.
-Global variables use 1023 bytes (49%) of dynamic memory, leaving 1025 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 31102 bytes (96%) of program storage space. Maximum is 32256 bytes.
-Global variables use 1023 bytes (49%) of dynamic memory, leaving 1025 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 31112 bytes (96%) of program storage space. Maximum is 32256 bytes.
-Global variables use 1023 bytes (49%) of dynamic memory, leaving 1025 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 30694 bytes (95%) of program storage space. Maximum is 32256 bytes.
-Global variables use 1023 bytes (49%) of dynamic memory, leaving 1025 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 30770 bytes (95%) of program storage space. Maximum is 32256 bytes.
-Global variables use 1023 bytes (49%) of dynamic memory, leaving 1025 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 30830 bytes (95%) of program storage space. Maximum is 32256 bytes.
-Global variables use 1023 bytes (49%) of dynamic memory, leaving 1025 bytes for local variables. Maximum is 2048 bytes.
 
 DancingDotVU = 97
 EssentialVU = 107

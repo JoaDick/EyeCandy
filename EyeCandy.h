@@ -50,13 +50,12 @@ SOFTWARE.
 #include "Waterfall.h"
 
 // VU
-#include "DancingDotVU.h"
 #include "EssentialVU.h"
 #include "Fire2012VU.h"
-#include "PeakGlitterVU.h"
 #include "RainbowLevelVU.h"
 #include "VuOverlayDot.h"
 #include "VuOverlayLine.h"
+#include "VuOverlayPeakGlitter.h"
 #include "VuOverlayRainbowDot.h"
 #include "VuOverlayRainbowLine.h"
 #include "VuSourceAnalogPin.h"

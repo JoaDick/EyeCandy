@@ -25,10 +25,6 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "VuBaseFL.h"
-#include "VuPeakHandler.h"
-#include "VuRangeExtender.h"
-
 #include "Animation.h"
 #include "FastLedStrip.h"
 #include "VuPeakHandler.h"
@@ -36,113 +32,8 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-// #define PEAK_GLITTER_VU_DEBUG
-
-//------------------------------------------------------------------------------
-
 namespace EC
 {
-
-  /** VU meter that makes glitter at the peaks.
-   * Recommended to use as Overlay together with another VU meter.
-   */
-  class PeakGlitterVU
-      : public VuBaseFL
-  {
-  public:
-    /** Default fading speed.
-     * Lower value = longer glowing; 0 = solid black background.
-     */
-    static uint8_t fadeRate_default() { return 50; }
-
-    /** Draw the glitter with this color.
-     * This setting can be adjusted at runtime.
-     */
-    CRGB color = CRGB::White;
-
-    /// Usually there's nothing to configure here; mainly for debugging.
-    VuRangeExtender vuRangeExtender;
-
-    /// Usually there's nothing to configure here; mainly for debugging.
-    VuPeakHandler vuPeakHandler;
-
-#if (1)
-    /** Constructor
-     * @param audioSource  Read the audio samples from there.
-     * @param ledStrip  The LED strip.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     */
-    PeakGlitterVU(float &audioSource,
-                  FastLedStrip ledStrip,
-                  bool overlayMode)
-        : VuBaseFL(ledStrip, overlayMode, fadeRate_default(), audioSource)
-    {
-      modelUpdatePeriod = 10;
-      vuPeakHandler.peakHold = 20;
-      vuPeakHandler.peakDecay = 0;
-      vuRangeExtender.smoothingFactor = 3;
-    }
-
-#else // DRAFT
-    /** Constructor
-     * @param audioSource  Read the audio samples from there.
-     * @param ledStrip  The LED strip.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     * @param color  Draw the glitter with this color.
-     */
-    PeakGlitterVU(float &audioSource,
-                  FastLedStrip ledStrip,
-                  bool overlayMode,
-                  CRGB color = CRGB::White)
-        : VuBaseFL(ledStrip, overlayMode, fadeRate_default(), audioSource), color(color)
-    {
-      modelUpdatePeriod = 10;
-      vuPeakHandler.peakHold = 20;
-      vuPeakHandler.peakDecay = 0;
-      vuRangeExtender.smoothingFactor = 3;
-    }
-#endif
-
-  private:
-    /// @see AnimationBase::showOverlay()
-    void showOverlay(uint32_t currentMillis) override
-    {
-#ifdef PEAK_GLITTER_VU_DEBUG
-      Serial.print(" -:");
-      Serial.print(0.0);
-      Serial.print(" +:");
-      Serial.print(10.0);
-      Serial.print(" VU:");
-      Serial.print(10.0 * vuRangeExtender.vuLevel());
-      Serial.print(" peak:");
-      Serial.print(10.0 * _peakLevel);
-      Serial.print(" peakDet:");
-      Serial.print((_peakLevel > 0.0) ? 0.5 : 0.0);
-      Serial.println();
-#endif
-
-      if (_peakLevel > 0.0)
-      {
-        strip.normPixel(_peakLevel) = color;
-        _peakLevel = 0.0;
-      }
-    }
-
-    /// @see AnimationBase::updateModel()
-    void updateModel(uint32_t currentMillis) override
-    {
-      const float vuLevel = vuRangeExtender.process(vuLevelHandler.capture());
-      if (vuPeakHandler.process(vuLevel, currentMillis))
-      {
-        _peakLevel = vuPeakHandler.getVU();
-      }
-    }
-
-  private:
-    float _peakLevel = 0.0;
-  };
-
-  //------------------------------------------------------------------------------
 
   /** A VU Overlay that produces some glitter around the VU peaks.
    * @note The actual VU value is obtained from the given VuSource.

@@ -45,14 +45,15 @@ namespace EC
     /** Draw the VU Overlay with this color.
      * This setting can be adjusted at runtime.
      */
-    CRGB color = CRGB(0, 64, 8);
+    CRGB color;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param vuSource  Input for calculating the VU Overlay.
+     * @param color  Draw the line with this color.
      */
-    VuOverlayLine(FastLedStrip ledStrip, VuSource &vuSource)
-        : _strip(ledStrip), _vuSource(vuSource)
+    VuOverlayLine(FastLedStrip ledStrip, VuSource &vuSource, CRGB color = CRGB(0, 64, 0))
+        : color(color), _strip(ledStrip), _vuSource(vuSource)
     {
     }
 
