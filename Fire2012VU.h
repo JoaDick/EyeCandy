@@ -27,15 +27,9 @@ SOFTWARE.
 
 // #define FIRE2012VU_DEBUG
 
-#ifndef FIRE2012VU_DEBUG
-#include "PseudoAnimationBase.h"
-#else
 #include "AnimationBase.h"
-#endif
 #include "Fire2012.h"
-#include "VuLevelHandler.h"
 #include "VuPeakHandler.h"
-#include "VuRangeExtender.h"
 
 //------------------------------------------------------------------------------
 
@@ -46,52 +40,52 @@ namespace EC
   template <uint16_t NUM_LEDS>
   class Fire2012VU
 #ifndef FIRE2012VU_DEBUG
-      : public PseudoAnimationBase
+      : public Animation
 #else
       : public AnimationBase
 #endif
   {
   public:
-    /// Usually there's nothing to configure here; only for debugging.
-    VuLevelHandler vuLevelHandler;
-
-    /// Usually there's nothing to configure here; only for debugging.
-    VuRangeExtender vuRangeExtender;
-
     /// Usually there's nothing to configure here; mainly for debugging.
     VuPeakHandler vuPeakHandler;
 
     /** Constructor.
-     * @param audioSource  Read the audio samples from there.
      * @param fire  Original #Fire2012 animation to manipulate.
+     * @param vuSource  Read the VU value from there.
      */
-    Fire2012VU(float &audioSource,
-               Fire2012<NUM_LEDS> &fire)
+    Fire2012VU(Fire2012<NUM_LEDS> &fire, VuSource &vuSource)
 #ifndef FIRE2012VU_DEBUG
-        : _audioSource(audioSource), _fire(fire)
+        : _fire(fire), _vuSource(vuSource)
 #else
-        : AnimationBase(fire.getStrip(), true), _audioSource(audioSource), _fire(fire)
+        : AnimationBase(fire.getStrip(), true), _fire(fire), _vuSource(vuSource)
 #endif
     {
-      modelUpdatePeriod = 10;
       vuPeakHandler.peakHold = 150;
       vuPeakHandler.peakDecay = 500;
     }
 
   private:
-#ifdef FIRE2012VU_DEBUG
+#ifndef FIRE2012VU_DEBUG
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      if (wasModified)
+      {
+        updateFireConfig(currentMillis);
+      }
+    }
+#else
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
+      updateFireConfig(currentMillis);
       strip.normPixel(vuPeakHandler.getVU()) = CRGB(0, 0, 255);
     }
 #endif
 
-    /// @see PseudoAnimationBase::updateModel()
-    void updateModel(uint32_t currentMillis) override
+    void updateFireConfig(uint32_t currentMillis)
     {
-      float vuLevel = vuRangeExtender.process(vuLevelHandler.capture());
-      vuPeakHandler.process(vuLevel, currentMillis);
+      float vuLevel = vuPeakHandler.process(_vuSource.getVU(), currentMillis);
       vuLevel = constrainF(vuPeakHandler.getVU());
 
       /// COOLING: How much does the air cool as it rises?
@@ -105,20 +99,9 @@ namespace EC
       _fire.SPARKING = 75 + vuLevel * 115;
     }
 
-    /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
-    {
-      vuLevelHandler.addSample(_audioSource);
-#ifdef FIRE2012VU_DEBUG
-      AnimationBase::processAnimation(currentMillis, wasModified);
-#else
-      PseudoAnimationBase::processAnimation(currentMillis, wasModified);
-#endif
-    }
-
   private:
-    float &_audioSource;
     Fire2012<NUM_LEDS> &_fire;
+    VuSource &_vuSource;
   };
 
 } // namespace EC

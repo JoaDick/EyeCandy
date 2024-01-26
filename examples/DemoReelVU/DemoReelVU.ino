@@ -195,22 +195,22 @@ void makeFireVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto fire = new EC::Fire2012<NUM_LEDS>(strip);
-    auto fireChanger = new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire);
-
-    scene.append(fire);
-    scene.append(fireChanger);
+    auto fire = scene.append(new EC::Fire2012<NUM_LEDS>(strip));
+    auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    scene.append(new EC::Fire2012VU<NUM_LEDS>(*fire, *vuSource));
 }
 
 void makeFlareVU(EC::FastLedStrip strip, EC::AnimationScene &scene)
 {
-    const uint16_t fireLedCount = strip.ledCount() / 2 + strip.ledCount() / 10;
+    const int16_t ledCount = strip.ledCount();
+    const int16_t fireLedCount = ledCount / 2 + ledCount / 10;
     EC::FastLedStrip fireStrip = strip.getSubStrip(0, fireLedCount, true);
-    auto fire = new EC::Fire2012<NUM_LEDS>(fireStrip);
+
+    auto fire = scene.append(new EC::Fire2012<NUM_LEDS>(fireStrip));
     fire->modelUpdatePeriod = 10;
 
-    scene.append(fire);
-    scene.append(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire));
+    auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    scene.append(new EC::Fire2012VU<NUM_LEDS>(*fire, *vuSource));
     scene.append(new EC::Kaleidoscope(strip));
 }
 
@@ -234,16 +234,18 @@ void makeFlareInwardVU(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     EC::FastLedStrip fireStrip1 = strip.getHalfStrip();
-    auto fire1 = new EC::Fire2012<NUM_LEDS>(fireStrip1);
+    auto fire1 = scene.append(new EC::Fire2012<NUM_LEDS>(fireStrip1));
     fire1->modelUpdatePeriod = 11;
-    scene.append(fire1);
-    scene.append(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire1));
+    // scene.append(fire1);
 
     EC::FastLedStrip fireStrip2 = strip.getSubStrip(fireStrip1.ledCount(), 0, true);
-    auto fire2 = new EC::Fire2012<NUM_LEDS>(fireStrip2);
+    auto fire2 = scene.append(new EC::Fire2012<NUM_LEDS>(fireStrip2));
     fire2->modelUpdatePeriod = 13;
-    scene.append(fire2);
-    scene.append(new EC::Fire2012VU<NUM_LEDS>(audioSample, *fire2));
+    // scene.append(fire2);
+
+    auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    scene.append(new EC::Fire2012VU<NUM_LEDS>(*fire1, *vuSource));
+    scene.append(new EC::Fire2012VU<NUM_LEDS>(*fire2, *vuSource));
 }
 
 void makePeakGlitterVU(EC::AnimationScene &scene)
@@ -507,6 +509,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeVuSequence14,
     &makeVuSequence15,
     &makeVuSequence16,
+
     &makeVuSequence17,
     &makeVuSequence18,
     &makeVuSequence19,
