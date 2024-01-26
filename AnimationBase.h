@@ -68,23 +68,18 @@ namespace EC
      */
     uint16_t modelUpdatePeriod = 0;
 
-    /** Period (in ms) for updating the LED strip's Pattern.
-     * It reflects how frequent showPattern() is getting called. \n
-     * 0 means Overlay mode; Pattern updates are \e not triggered.
-     * @see patternUpdatePeriod_default
-     */
-    const uint8_t patternUpdatePeriod;
-
-    /** Default value for patternUpdatePeriod (in ms).
-     * This default value of 10ms will result in a LED strip refresh rate of 100Hz.
-     */
-    static constexpr uint8_t patternUpdatePeriod_default = 10;
-
     /// Only for debugging.
     FastLedStrip getStrip()
     {
       return strip;
     }
+
+    /** Period (in ms) for updating the LED strip's Pattern.
+     * It reflects how frequent showPattern() is getting called. \n
+     * 0 means Overlay mode; Pattern updates are \e not triggered.
+     * @see EC_DEFAULT_UPDATE_PERIOD
+     */
+    const uint8_t patternUpdatePeriod;
 
   protected:
     /** Constructor for Animations that can be used as both, Pattern or Overlay.
@@ -96,7 +91,7 @@ namespace EC
     AnimationBase(FastLedStrip strip,
                   bool overlayMode,
                   uint8_t fadeRate = 0)
-        : fadeRate(fadeRate), patternUpdatePeriod(overlayMode ? 0 : patternUpdatePeriod_default), strip(strip)
+        : fadeRate(fadeRate), patternUpdatePeriod(overlayMode ? 0 : EC_DEFAULT_UPDATE_PERIOD), strip(strip)
     {
     }
 
@@ -104,13 +99,13 @@ namespace EC
      * @param strip  The LED strip.
      */
     explicit AnimationBase(FastLedStrip strip)
-        : fadeRate(0), patternUpdatePeriod(patternUpdatePeriod_default), strip(strip)
+        : fadeRate(0), patternUpdatePeriod(EC_DEFAULT_UPDATE_PERIOD), strip(strip)
     {
     }
 
     /** Constructor for pure Patterns with custom update rate.
      * Use this only if you have an urgent reason for a different update rate
-     * than patternUpdatePeriod_default.
+     * than EC_DEFAULT_UPDATE_PERIOD.
      * @param patternUpdatePeriod  Delay (in ms) between updating the LED strip
      * @param strip  The LED strip.
      */

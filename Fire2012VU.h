@@ -86,7 +86,7 @@ namespace EC
     void updateFireConfig(uint32_t currentMillis)
     {
       float vuLevel = vuPeakHandler.process(_vuSource.getVU(), currentMillis);
-      vuLevel = constrainF(vuPeakHandler.getVU());
+      vuLevel = constrainVU(vuPeakHandler.getVU());
 
       /// COOLING: How much does the air cool as it rises?
       /// Less cooling = taller flames.  More cooling = shorter flames.

@@ -25,8 +25,8 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include <Arduino.h>
 #include <math.h>
+#include "VuSource.h"
 
 //------------------------------------------------------------------------------
 
@@ -49,6 +49,7 @@ namespace EC
    * @note Use #AudioNormalizer for pre-processing the raw ADC values.
    */
   class VuLevelHandler
+      : public VuSource
   {
   public:
     /** Incorporate that many previous VU values for smoothing the output.
@@ -68,8 +69,9 @@ namespace EC
      * @return A normalized VU value between 0.0 ... 1.0, representing the current volume.
      * @note Be aware that an overloaded / clipped / too loud audio signal may
      * return values greater than 1.0!
+     * @see VuSource::getVU()
      */
-    float getVU()
+    float getVU() override
     {
       return _vuLevel;
     }
@@ -128,24 +130,4 @@ namespace EC
     float _vuLevel = 0.0;
   };
 
-}
-
-//------------------------------------------------------------------------------
-
-inline float constrainF(float value, float minValue, float maxValue)
-{
-  if (value > maxValue)
-  {
-    value = maxValue;
-  }
-  if (value < minValue)
-  {
-    value = minValue;
-  }
-  return value;
-}
-
-inline float constrainF(float value, float maxValue = 1.0)
-{
-  return constrainF(value, 0.0, maxValue);
 }

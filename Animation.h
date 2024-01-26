@@ -29,6 +29,13 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
+#ifndef EC_DEFAULT_UPDATE_PERIOD
+/** Default period (in ms) for updating the LED strip's Pattern.
+ * This default value of 10ms will result in a LED strip refresh rate of 100Hz.
+ */
+#define EC_DEFAULT_UPDATE_PERIOD 10
+#endif
+
 #ifndef EC_ENABLE_ANIMATION_SCENE_MULTI
 #define EC_ENABLE_ANIMATION_SCENE_MULTI 0
 #endif

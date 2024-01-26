@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include <Arduino.h>
+#include "VuSource.h"
 
 //------------------------------------------------------------------------------
 
@@ -38,6 +38,7 @@ namespace EC
    * Behaves as if the VU level and the peak dot are connected with a rubber band.
    */
   class VuPeakForceHandler
+      : public VuSource
   {
   public:
     float inertia = 0.47;
@@ -48,8 +49,9 @@ namespace EC
      * This means the curent position of the peak dot.
      * @return A normalized VU value between (typically) 0.0 ... 1.0, representing the dot's position.
      * @note Be aware that the retured value will sometimes exceed these limits!
+     * @see VuSource::getVU()
      */
-    float getVU()
+    float getVU() override
     {
       return pos;
     }

@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBase.h"
+#include "Animation.h"
 #include "FastLedStrip.h"
 #include "VuLevelHandler.h"
 #include "VuRangeExtender.h"
@@ -44,8 +44,7 @@ namespace EC
    * it doesn't manipulate the LED strip.
    */
   class VuSourceAnalogPin
-      : public Animation,
-        public VuSource
+      : public Animation
   {
   public:
     /** Fading speed.
@@ -61,57 +60,73 @@ namespace EC
      */
     VuLevelHandler vuLevelHandler;
 
-    /** Stretch the "interesting" part of the VU meter over the entire LED strip.
-     * This setting can be adjusted at runtime.
-     */
-    bool enableRangeExtender = true;
-
     /** Usually there's nothing to configure here.
      * Publicly accessible mainly for debugging.
      */
     VuRangeExtender vuRangeExtender;
 
-    /** Get the current VU level.
-     * @see VuSource::getVU()
-     */
-    float getVU() override
+    /// Make this class usable as a VuSource.
+    operator VuSource &()
     {
-      return _vuLevel;
+      return _activeVuSource;
     }
 
     /** Constructor for Pattern mode.
      * @param audioSource  Read the audio samples from there.
      * @param strip  The LED strip.
-     * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
-     *                  If the following VU Overlay has a \c fadeRate_default() method, use that.
+     * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background. \n
+     *                  If the following VU Overlay has a \c fadeRate_default() method, use that. \n
      *                  Not relevant in Overlay mode.
+     * @param enableRangeExtender  Stretch the "interesting" part of the VU meter over the entire LED strip.
      */
     VuSourceAnalogPin(float &audioSource,
                       FastLedStrip ledStrip,
-                      uint8_t fadeRate)
-        : fadeRate(fadeRate), patternUpdatePeriod(AnimationBase::patternUpdatePeriod_default), _audioSource(audioSource), _strip(ledStrip)
+                      uint8_t fadeRate,
+                      bool enableRangeExtender = true)
+        : VuSourceAnalogPin(EC_DEFAULT_UPDATE_PERIOD, audioSource, ledStrip, fadeRate, enableRangeExtender)
     {
     }
 
     /** Constructor for Overlay mode.
      * @param audioSource  Read the audio samples from there.
+     * @param enableRangeExtender  Stretch the "interesting" part of the VU meter over the entire LED strip.
      */
-    explicit VuSourceAnalogPin(float &audioSource)
-        : fadeRate(0), patternUpdatePeriod(0), _audioSource(audioSource), _strip(FastLedStrip::GetNULL())
+    explicit VuSourceAnalogPin(float &audioSource,
+                               bool enableRangeExtender = true)
+        : VuSourceAnalogPin(0, audioSource, FastLedStrip::GetNULL(), 0, enableRangeExtender)
+    {
+    }
+
+    /** Constructor for a default Pattern with custom update rate.
+     * Use this only if you have an urgent reason for a different update rate
+     * than EC_DEFAULT_UPDATE_PERIOD.
+     * @param patternUpdatePeriod  Delay (in ms) between updating the LED strip
+     * @param audioSource  Read the audio samples from there.
+     * @param strip  The LED strip.
+     * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background. \n
+     *                  If the following VU Overlay has a \c fadeRate_default() method, use that. \n
+     *                  Not relevant in Overlay mode.
+     * @param enableRangeExtender  Stretch the "interesting" part of the VU meter over the entire LED strip.
+     */
+    VuSourceAnalogPin(uint8_t patternUpdatePeriod,
+                      float &audioSource,
+                      FastLedStrip ledStrip,
+                      uint8_t fadeRate,
+                      bool enableRangeExtender)
+        : fadeRate(fadeRate),
+          patternUpdatePeriod(patternUpdatePeriod),
+          _activeVuSource(enableRangeExtender ? static_cast<VuSource &>(vuRangeExtender) : static_cast<VuSource &>(vuLevelHandler)),
+          _audioSource(audioSource),
+          _strip(ledStrip)
     {
     }
 
     /** Period (in ms) for updating the LED strip's Pattern.
      * It reflects how frequent showPattern() is getting called. \n
      * 0 means Overlay mode; Pattern updates are \e not triggered.
-     * @see patternUpdatePeriod_default
+     * @see EC_DEFAULT_UPDATE_PERIOD
      */
     const uint8_t patternUpdatePeriod;
-
-    /** Default value for patternUpdatePeriod (in ms).
-     * @see AnimationBase::patternUpdatePeriod_default
-     */
-    static constexpr uint8_t patternUpdatePeriod_default = AnimationBase::patternUpdatePeriod_default;
 
   private:
     /// @see Animation::processAnimation()
@@ -138,18 +153,14 @@ namespace EC
 
       if (wasModified)
       {
-        _vuLevel = vuLevelHandler.capture();
-        if (enableRangeExtender)
-        {
-          _vuLevel = vuRangeExtender.process(_vuLevel);
-        }
+        vuRangeExtender.process(vuLevelHandler.capture());
       }
     }
 
   private:
+    VuSource &_activeVuSource;
     float &_audioSource;
     FastLedStrip _strip;
-    float _vuLevel = 0.0;
     uint32_t _nextShowPattern = 0;
   };
 

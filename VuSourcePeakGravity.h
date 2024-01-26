@@ -41,8 +41,7 @@ namespace EC
    * @see VuPeakGravityHandler for the math details.
    */
   class VuSourcePeakGravity
-      : public Animation,
-        public VuSource
+      : public Animation
   {
   public:
     /** Access to VuPeakGravityHandler configuration.
@@ -54,20 +53,18 @@ namespace EC
      */
     VuPeakGravityHandler vuPeakHandler;
 
+    /// Make this class usable as a VuSource.
+    operator VuSource &()
+    {
+      return vuPeakHandler;
+    }
+
     /** Constructor.
      * @param vuSource  Input for calculating the VU peak level.
      */
     explicit VuSourcePeakGravity(VuSource &vuSource)
         : _vuSource(vuSource)
     {
-    }
-
-    /** Get the peak VU level.
-     * @see VuSource::getVU()
-     */
-    float getVU() override
-    {
-      return _vuLevel;
     }
 
     /// Get the VuSource that is used as input.
@@ -83,13 +80,11 @@ namespace EC
       if (wasModified)
       {
         vuPeakHandler.process(_vuSource.getVU(), currentMillis);
-        _vuLevel = vuPeakHandler.getVU();
       }
     }
 
   private:
     VuSource &_vuSource;
-    float _vuLevel = 0.0;
   };
 
 } // namespace EC

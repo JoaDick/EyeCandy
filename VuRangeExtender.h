@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include <Arduino.h>
+#include "VuSource.h"
 
 //------------------------------------------------------------------------------
 
@@ -45,6 +45,7 @@ namespace EC
    * LEDs in the lower and upper part.
    */
   class VuRangeExtender
+      : public VuSource
   {
   public:
     /** Incorporate how many previous VU values for smoothing the output.
@@ -72,8 +73,9 @@ namespace EC
      * @return A normalized VU value between 0.0 ... 1.0, representing the current volume.
      * @note Be aware that an overloaded / clipped / too loud audio signal may
      * return values greater than 1.0!
+     * @see VuSource::getVU()
      */
-    float getVU()
+    float getVU() override
     {
       return _newVuLevel;
     }
@@ -81,17 +83,15 @@ namespace EC
     /** Process VU level adjustment on the given \a vuLevel.
      * Calculates an adjusted VU level which utilizes the entire LED strip.
      * @return A normalized VU value between 0.0 ... 1.0, representing the current volume.
-     * @note Be aware that an overloaded / clipped / too loud audio signal may
-     * return values greater than 1.0!
-     * Its value is constrained to 0.0 ... 1.0, regardless of \a vuLevel.
+     * The value is constrained to 0.0 ... 1.0, regardless of \a vuLevel.
      */
     float process(float vuLevel)
     {
       vuLevelAvg = (vuLevelAvg * (vuLevelAvgLen - 1) + vuLevel) / vuLevelAvgLen;
       deltaAvg = (deltaAvg * (rangeAvgLen - 1) + abs(vuLevel - vuLevelAvg)) / rangeAvgLen;
 
-      rangeMax = constrainF(vuLevelAvg + 2.0 * deltaAvg);
-      rangeMin = constrainF(vuLevelAvg - 2.0 * deltaAvg);
+      rangeMax = constrainVU(vuLevelAvg + 2.0 * deltaAvg);
+      rangeMin = constrainVU(vuLevelAvg - 2.0 * deltaAvg);
 
       dynamicRange = rangeMax - rangeMin;
       if (dynamicRange < dynamicRangeMin)
@@ -103,8 +103,7 @@ namespace EC
       _newVuLevel += (vuLevel - rangeMin) / dynamicRange;
       _newVuLevel /= smoothingFactor + 1;
 
-      // in fact, the value is constrained to 0.0 ... 1.0, regardless of vuLevel
-      _newVuLevel = constrainF(_newVuLevel);
+      _newVuLevel = constrainVU(_newVuLevel);
       return _newVuLevel;
     }
 

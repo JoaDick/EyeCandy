@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include <Arduino.h>
+#include "VuSource.h"
 
 //------------------------------------------------------------------------------
 
@@ -39,6 +39,7 @@ namespace EC
    * of the corresponding peak dot via getVU().
    */
   class VuPeakHandler
+      : public VuSource
   {
   public:
     /// Delay (in ms) before the dot starts to fall down.
@@ -60,8 +61,9 @@ namespace EC
      * @return A normalized VU value between 0.0 ... 1.0, representing the dot's position.
      * @note Be aware that an overloaded / clipped / too loud audio signal may
      * return values greater than 1.0 or less than 0.0!
+     * @see VuSource::getVU()
      */
-    float getVU()
+    float getVU() override
     {
       return _peakLevel;
     }
@@ -144,6 +146,7 @@ namespace EC
    * Just give it a try!
    */
   class VuPeakHandlerInv
+      : public VuSource
   {
   public:
     /// Delay (in ms) before the dot starts to fall down.
@@ -165,8 +168,9 @@ namespace EC
      * @return A normalized VU value between 0.0 ... 1.0, representing the dot's position.
      * @note Be aware that an overloaded / clipped / too loud audio signal may
      * return values greater than 1.0 or less than 0.0!
+     * @see VuSource::getVU()
      */
-    float getVU()
+    float getVU() override
     {
       return 1.0 - _peakHandler.getVU();
     }

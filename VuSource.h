@@ -25,6 +25,10 @@ SOFTWARE.
 
 *******************************************************************************/
 
+#include <Arduino.h>
+
+//------------------------------------------------------------------------------
+
 namespace EC
 {
 
@@ -37,6 +41,7 @@ namespace EC
      * @return A normalized VU value between 0.0 ... 1.0, representing the current volume.
      * @note Be aware that an overloaded / clipped / too loud audio signal may
      * return values greater than 1.0 or lower than 0.0!
+     * @see constrainVU() to fix that.
      */
     virtual float getVU() = 0;
 
@@ -46,5 +51,11 @@ namespace EC
     VuSource &operator=(const VuSource &) = default;
     ~VuSource() = default;
   };
+
+  /// Constrain the given \a vuValue to 0.0 ... 1.0
+  inline float constrainVU(float vuValue)
+  {
+    return constrain(vuValue, 0.0, 1.0);
+  }
 
 } // namespace EC

@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include <Arduino.h>
+#include "VuSource.h"
 
 //------------------------------------------------------------------------------
 
@@ -39,6 +39,7 @@ namespace EC
    * Set #a0 > 0.0 for a bubble, floating off the peak.
    */
   class VuPeakGravityHandler
+      : public VuSource
   {
   public:
     /** VU levels below that level will set the dot's position to 0.
@@ -78,8 +79,9 @@ namespace EC
      * This means the curent position of the peak dot.
      * @return A normalized VU value between (typically) 0.0 ... 1.0, representing the dot's position.
      * @note Be aware that the retured value may sometimes be greater than 1.0!
+     * @see VuSource::getVU()
      */
-    float getVU()
+    float getVU() override
     {
       return pos;
     }

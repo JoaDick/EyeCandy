@@ -42,8 +42,7 @@ namespace EC
    * @see VuPeakForceHandler for the math details.
    */
   class VuSourcePeakForce
-      : public Animation,
-        public VuSource
+      : public Animation
   {
   public:
     /** Access to VuPeakForceHandler configuration.
@@ -53,20 +52,18 @@ namespace EC
      */
     VuPeakForceHandler vuPeakHandler;
 
+    /// Make this class usable as a VuSource.
+    operator VuSource &()
+    {
+      return vuPeakHandler;
+    }
+
     /** Constructor.
      * @param vuSource  Input for calculating the VU peak level.
      */
     explicit VuSourcePeakForce(VuSource &vuSource)
         : _vuSource(vuSource)
     {
-    }
-
-    /** Get the peak VU level.
-     * @see VuSource::getVU()
-     */
-    float getVU() override
-    {
-      return _vuLevel;
     }
 
     /// Get the VuSource that is used as input.
@@ -82,13 +79,11 @@ namespace EC
       if (wasModified)
       {
         vuPeakHandler.process(_vuSource.getVU(), currentMillis);
-        _vuLevel = vuPeakHandler.getVU();
       }
     }
 
   private:
     VuSource &_vuSource;
-    float _vuLevel = 0.0;
   };
 
 } // namespace EC

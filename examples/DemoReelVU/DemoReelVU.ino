@@ -109,26 +109,6 @@ void makeDancingDotVU(EC::AnimationScene &scene)
     auto peakVu = scene.append(new EC::VuOverlayDot(strip, *vuPeakSource));
 }
 
-// void makeDoubleBouncingDotVU(EC::AnimationScene &scene)
-// {
-//     EC::FastLedStrip strip(leds, NUM_LEDS);
-
-//     auto vu1 = scene.append(new EC::RainbowLevelVU(audioSample, strip, false));
-//     vu1->fadeRate = 50;
-//     vu1->enableVuBar = false;
-//     vu1->volume = 255;
-//     vu1->vuHueRange = 0.4;
-//     vu1->baseHueStep = -0.17;
-//     vu1->vuLevelHandler.smoothingFactor = 6;
-
-//     auto vu2 = scene.append(new EC::RainbowLevelVU(audioSample, strip.getReversedStrip(), true));
-//     vu2->enableVuBar = false;
-//     vu2->volume = 255;
-//     vu2->vuHueRange = 0.6;
-//     vu2->baseHueStep = 0.11;
-//     vu2->vuLevelHandler.smoothingFactor = 9;
-// }
-
 void makeDoubleBouncingDotVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
