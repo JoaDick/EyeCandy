@@ -3,27 +3,21 @@ DemoReelVU Memory usage log
 
 
 
-240127 New helper class AnimationTimer
+240128 Option to bypass VU Range Extender
 
-Sketch uses 27644 bytes (85%) of program storage space. Maximum is 32256 bytes.
+#define EC_ENABLE_VU_RANGE_EXTENDER_BYPASS 0
+Sketch uses 27620 bytes (85%) of program storage space. Maximum is 32256 bytes.
 Global variables use 973 bytes (47%) of dynamic memory, leaving 1075 bytes for local variables. Maximum is 2048 bytes.
 
-Sketch uses 27632 bytes (85%) of program storage space. Maximum is 32256 bytes.
-Global variables use 973 bytes (47%) of dynamic memory, leaving 1075 bytes for local variables. Maximum is 2048 bytes.
-
+#define EC_ENABLE_VU_RANGE_EXTENDER_BYPASS 1
 Sketch uses 27638 bytes (85%) of program storage space. Maximum is 32256 bytes.
 Global variables use 973 bytes (47%) of dynamic memory, leaving 1075 bytes for local variables. Maximum is 2048 bytes.
 
-Sketch uses 27642 bytes (85%) of program storage space. Maximum is 32256 bytes.
-Global variables use 973 bytes (47%) of dynamic memory, leaving 1075 bytes for local variables. Maximum is 2048 bytes.
 
-Sketch uses 27732 bytes (85%) of program storage space. Maximum is 32256 bytes.
-Global variables use 973 bytes (47%) of dynamic memory, leaving 1075 bytes for local variables. Maximum is 2048 bytes.
 
-Sketch uses 27658 bytes (85%) of program storage space. Maximum is 32256 bytes.
-Global variables use 973 bytes (47%) of dynamic memory, leaving 1075 bytes for local variables. Maximum is 2048 bytes.
+240127 New helper class AnimationTimer
 
-Sketch uses 27702 bytes (85%) of program storage space. Maximum is 32256 bytes.
+Sketch uses 27644 bytes (85%) of program storage space. Maximum is 32256 bytes.
 Global variables use 973 bytes (47%) of dynamic memory, leaving 1075 bytes for local variables. Maximum is 2048 bytes.
 
 

@@ -30,7 +30,7 @@ SOFTWARE.
 //------------------------------------------------------------------------------
 
 #ifndef EC_ENABLE_VU_RANGE_EXTENDER_BYPASS
-// TODO: implement me
+/// Enable an option to bypass the VU Range Extender functionality.
 #define EC_ENABLE_VU_RANGE_EXTENDER_BYPASS 0
 #endif
 
@@ -75,6 +75,11 @@ namespace EC
      */
     float dynamicRangeMin = 0.15;
 
+#if (EC_ENABLE_VU_RANGE_EXTENDER_BYPASS)
+    /// Set to \c true for disabling the VU Range Extender functionality.
+    bool bypass = false;
+#endif
+
     /** Get the current VU level.
      * This means the adjusted VU level of the last call to process().
      * @return A normalized VU value between 0.0 ... 1.0, representing the current volume.
@@ -91,6 +96,14 @@ namespace EC
      */
     float process(float vuLevel)
     {
+#if (EC_ENABLE_VU_RANGE_EXTENDER_BYPASS)
+      if (bypass)
+      {
+        _newVuLevel = vuLevel;
+        return _newVuLevel;
+      }
+#endif
+
       vuLevelAvg = (vuLevelAvg * (vuLevelAvgLen - 1) + vuLevel) / vuLevelAvgLen;
       deltaAvg = (deltaAvg * (rangeAvgLen - 1) + abs(vuLevel - vuLevelAvg)) / rangeAvgLen;
 

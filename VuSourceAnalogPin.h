@@ -66,7 +66,7 @@ namespace EC
     VuRangeExtender vuRangeExtender;
 
     /// Make this class usable as a VuSource.
-    operator VuSource &() { return _activeVuSource; }
+    operator VuSource &() { return vuRangeExtender; }
 
     /** Constructor for Pattern mode.
      * @param audioSource  Read the audio samples from there.
@@ -74,23 +74,19 @@ namespace EC
      * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background. \n
      *                  If the following VU Overlay has a \c fadeRate_default() method, use that. \n
      *                  Not relevant in Overlay mode.
-     * @param enableRangeExtender  Stretch the "interesting" part of the VU meter over the entire LED strip.
      */
     VuSourceAnalogPin(float &audioSource,
                       FastLedStrip ledStrip,
-                      uint8_t fadeRate,
-                      bool enableRangeExtender = true)
-        : VuSourceAnalogPin(EC_DEFAULT_UPDATE_PERIOD, audioSource, ledStrip, fadeRate, enableRangeExtender)
+                      uint8_t fadeRate)
+        : VuSourceAnalogPin(EC_DEFAULT_UPDATE_PERIOD, audioSource, ledStrip, fadeRate)
     {
     }
 
     /** Constructor for Overlay mode.
      * @param audioSource  Read the audio samples from there.
-     * @param enableRangeExtender  Stretch the "interesting" part of the VU meter over the entire LED strip.
      */
-    explicit VuSourceAnalogPin(float &audioSource,
-                               bool enableRangeExtender = true)
-        : VuSourceAnalogPin(0, audioSource, FastLedStrip::GetNULL(), 0, enableRangeExtender)
+    explicit VuSourceAnalogPin(float &audioSource)
+        : VuSourceAnalogPin(0, audioSource, FastLedStrip::GetNULL(), 0)
     {
     }
 
@@ -103,18 +99,15 @@ namespace EC
      * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background. \n
      *                  If the following VU Overlay has a \c fadeRate_default() method, use that. \n
      *                  Not relevant in Overlay mode.
-     * @param enableRangeExtender  Stretch the "interesting" part of the VU meter over the entire LED strip.
      */
     VuSourceAnalogPin(uint8_t patternUpdatePeriod,
                       float &audioSource,
                       FastLedStrip ledStrip,
-                      uint8_t fadeRate,
-                      bool enableRangeExtender)
+                      uint8_t fadeRate)
         : fadeRate(fadeRate),
-          _patternUpdateTimer(patternUpdatePeriod),
-          _activeVuSource(enableRangeExtender ? static_cast<VuSource &>(vuRangeExtender) : static_cast<VuSource &>(vuLevelHandler)),
+          _strip(ledStrip),
           _audioSource(audioSource),
-          _strip(ledStrip)
+          _patternUpdateTimer(patternUpdatePeriod)
     {
     }
 
@@ -148,9 +141,8 @@ namespace EC
     }
 
   private:
-    VuSource &_activeVuSource;
-    float &_audioSource;
     FastLedStrip _strip;
+    float &_audioSource;
     AnimationTimer _patternUpdateTimer;
   };
 
