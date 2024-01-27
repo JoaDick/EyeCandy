@@ -66,10 +66,7 @@ namespace EC
     VuRangeExtender vuRangeExtender;
 
     /// Make this class usable as a VuSource.
-    operator VuSource &()
-    {
-      return _activeVuSource;
-    }
+    operator VuSource &() { return _activeVuSource; }
 
     /** Constructor for Pattern mode.
      * @param audioSource  Read the audio samples from there.
@@ -100,7 +97,7 @@ namespace EC
     /** Constructor for a default Pattern with custom update rate.
      * Use this only if you have an urgent reason for a different update rate
      * than EC_DEFAULT_UPDATE_PERIOD.
-     * @param patternUpdatePeriod  Delay (in ms) between updating the LED strip
+     * @param patternUpdatePeriod  Period (in ms) for updating the LED strip's Pattern.
      * @param audioSource  Read the audio samples from there.
      * @param strip  The LED strip.
      * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background. \n
@@ -114,19 +111,23 @@ namespace EC
                       uint8_t fadeRate,
                       bool enableRangeExtender)
         : fadeRate(fadeRate),
-          patternUpdatePeriod(patternUpdatePeriod),
+          _patternUpdateTimer(patternUpdatePeriod),
           _activeVuSource(enableRangeExtender ? static_cast<VuSource &>(vuRangeExtender) : static_cast<VuSource &>(vuLevelHandler)),
           _audioSource(audioSource),
           _strip(ledStrip)
     {
     }
 
-    /** Period (in ms) for updating the LED strip's Pattern.
+    /** Get the pause (in ms) between updates of the LED strip's Pattern.
      * It reflects how frequent showPattern() is getting called. \n
-     * 0 means Overlay mode; Pattern updates are \e not triggered.
-     * @see EC_DEFAULT_UPDATE_PERIOD
+     * 0 means Overlay mode; Pattern updates are \e not triggered. \n
+     * @note By default, EC_DEFAULT_UPDATE_PERIOD is used - unless the Animation implementation
+     * configures a differnt value.
      */
-    const uint8_t patternUpdatePeriod;
+    uint16_t getPatternUpdatePeriod() { return _patternUpdateTimer.updatePeriod; }
+
+    /// Only for debugging.
+    FastLedStrip getStrip() { return _strip; }
 
   private:
     /// @see Animation::processAnimation()
@@ -134,21 +135,10 @@ namespace EC
     {
       vuLevelHandler.addSample(_audioSource);
 
-      if (patternUpdatePeriod)
+      if (_patternUpdateTimer.process(currentMillis))
       {
-        if (currentMillis >= _nextShowPattern)
-        {
-          if (fadeRate)
-          {
-            _strip.fadeToBlackBy(fadeRate);
-          }
-          else
-          {
-            _strip.fillSolid(CRGB::Black);
-          }
-          _nextShowPattern = currentMillis + patternUpdatePeriod;
-          wasModified = true;
-        }
+        wasModified = true;
+        _strip.showDefaultPattern(fadeRate);
       }
 
       if (wasModified)
@@ -161,7 +151,7 @@ namespace EC
     VuSource &_activeVuSource;
     float &_audioSource;
     FastLedStrip _strip;
-    uint32_t _nextShowPattern = 0;
+    AnimationTimer _patternUpdateTimer;
   };
 
 } // namespace EC

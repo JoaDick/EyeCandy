@@ -63,10 +63,7 @@ namespace EC
      * return values greater than 1.0 or less than 0.0!
      * @see VuSource::getVU()
      */
-    float getVU() override
-    {
-      return _peakLevel;
-    }
+    float getVU() override { return _peakLevel; }
 
     /** Calculate the peak dot's position for the given \a vuLevel.
      * @param vuLevel  The current VU level.

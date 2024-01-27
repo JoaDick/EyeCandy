@@ -98,11 +98,8 @@ void makeFire(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto fire = new EC::Fire2012<NUM_LEDS>(strip);
-    auto fireChanger = new EC::Fire2012Changer<NUM_LEDS>(*fire);
-
-    scene.append(fireChanger);
-    scene.append(fire);
+    auto fire = scene.append(new EC::Fire2012<NUM_LEDS>(strip));
+    scene.append(new EC::Fire2012Changer<NUM_LEDS>(*fire));
 }
 
 void makeGlitterDot(EC::AnimationScene &scene)
@@ -120,7 +117,7 @@ void makeFireAndBalls(EC::AnimationScene &scene)
     auto fire = scene.append(new EC::Fire2012<NUM_LEDS>(strip));
     fire->COOLING = 155;
     fire->SPARKING = 75;
-    fire->modelUpdatePeriod = 10;
+    fire->setModelUpdatePeriod(10);
 
     scene.append(new EC::BouncingBalls<>(strip.getReversedStrip(), true));
 }
@@ -145,7 +142,7 @@ void makeFlare(EC::AnimationScene &scene)
 
     auto fire = scene.append(new EC::Fire2012<NUM_LEDS>(fireStrip));
     fire->SPARKING = 75;
-    fire->modelUpdatePeriod = 10;
+    fire->setModelUpdatePeriod(10);
 
     scene.append(new EC::Kaleidoscope(strip));
 }
@@ -198,7 +195,7 @@ void makeRainbowTwinkle(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     auto rainbow = scene.append(new EC::RainbowTwinkle(strip));
-    rainbow->modelUpdatePeriod = 25;
+    rainbow->setModelUpdatePeriod(25);
 }
 
 void makeTwinkles(EC::AnimationScene &scene)

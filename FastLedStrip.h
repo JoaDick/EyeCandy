@@ -225,6 +225,23 @@ namespace EC
       nscale8(m_ledArray, getSize(), 255 - fadeBy);
     }
 
+    /** Helper function for rendering an oftentimes used Pattern background.
+     * Depending on the setting of \a fadeRate, it makes either a fading background, or a solid
+     * black background.
+     * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
+     */
+    void showDefaultPattern(uint8_t fadeRate)
+    {
+      if (fadeRate)
+      {
+        fadeToBlackBy(fadeRate);
+      }
+      else
+      {
+        fillSolid(CRGB::Black);
+      }
+    }
+
     /// Get a new strip with the same underlying LED pixel array, but reversed drawing direction.
     FastLedStrip getReversedStrip() const
     {

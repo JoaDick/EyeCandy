@@ -61,9 +61,9 @@ namespace EC
         : AnimationBase(ledStrip, overlayMode, Firework_fadeRate_default()), launchDelay(launchDelay)
     {
 #ifdef FIREWORK_DEBUG
-      // patternUpdatePeriod = 20;
+      // setPatternUpdatePeriod(20);
 #endif
-      modelUpdatePeriod = 10;
+      setModelUpdatePeriod(10);
     }
 
   private:
@@ -91,7 +91,7 @@ namespace EC
       bool mustLaunch = true;
       for (uint8_t i = 0; i < PARTICLE_COUNT; ++i)
       {
-        _particles[i].update(modelUpdatePeriod);
+        _particles[i].update(getModelUpdatePeriod());
         if (_particles[i].getState() != FireworkParticle::STATE_IDLE)
         {
           mustLaunch = false;

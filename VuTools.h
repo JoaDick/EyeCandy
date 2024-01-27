@@ -196,7 +196,7 @@ namespace EC
         : AnimationBase(ledStrip, false, 50), _audioSource(audioSource), _drawingFct(drawingFct)
     {
       // Calculate the average value every 10ms, resulting in 100Hz refresh rate.
-      modelUpdatePeriod = 10;
+      setModelUpdatePeriod(10);
       // The LED strip is also updated every 10ms, resulting in 100 "FPS" for the VU.
       // -- Note: That's the default value; see AnimationBase::patternUpdatePeriod.
 

@@ -68,10 +68,7 @@ namespace EC
       vuPeakHandler.peakDecay = 0;
     }
 
-    VuSource &getVuSource()
-    {
-      return _vuSource;
-    }
+    VuSource &getVuSource() { return _vuSource; }
 
   private:
     /// @see Animation::processAnimation()

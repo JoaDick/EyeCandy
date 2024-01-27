@@ -61,7 +61,7 @@ namespace EC
       fadeLightBy(strip.ledArray(), strip.ledCount(), 25);
       for (uint8_t i = 0; i < DROPLET_COUNT; ++i)
       {
-        _droplets[i].update(patternUpdatePeriod);
+        _droplets[i].update(getPatternUpdatePeriod());
         _droplets[i].show(strip);
       }
     }

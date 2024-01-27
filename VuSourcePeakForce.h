@@ -53,10 +53,7 @@ namespace EC
     VuPeakForceHandler vuPeakHandler;
 
     /// Make this class usable as a VuSource.
-    operator VuSource &()
-    {
-      return vuPeakHandler;
-    }
+    operator VuSource &() { return vuPeakHandler; }
 
     /** Constructor.
      * @param vuSource  Input for calculating the VU peak level.
@@ -67,10 +64,7 @@ namespace EC
     }
 
     /// Get the VuSource that is used as input.
-    VuSource &getInputVuSource()
-    {
-      return _vuSource;
-    }
+    VuSource &getInputVuSource() { return _vuSource; }
 
   private:
     /// @see Animation::processAnimation()

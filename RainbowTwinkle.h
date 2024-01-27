@@ -58,7 +58,7 @@ namespace EC
     explicit RainbowTwinkle(FastLedStrip ledStrip)
         : AnimationBase(ledStrip, false, fadeRate_default())
     {
-      modelUpdatePeriod = modelUpdatePeriod_default();
+      setModelUpdatePeriod(modelUpdatePeriod_default());
       for (auto i = 0; i < strip.ledCount(); i++)
       {
         strip[i] = CHSV(redShift(_hue), random(0x2F) + 0xD0, random(0xEF) + 0x10);

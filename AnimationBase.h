@@ -54,32 +54,37 @@ namespace EC
   public:
     /** Fading speed.
      * Lower value = longer glowing; 0 = solid black background.
+     * This value is usually configured by the Animation implementation.
      * Change it only if the child class explicitly uses this as configuration option,
-     * i.e. when it also offers a static \c fadeRate_default() method. \n
+     * i.e. usually when it offers a static \c fadeRate_default() method. \n
      * Not relevant in Overlay mode.
      */
     uint8_t fadeRate;
 
-    /** Delay (in ms) before calling updateModel() the next time.
-     * This value is usually assigned by the Animation implementation.
+    /** Set the pause (in ms) between updates of the mathematical model.
+     * This value is usually configured by the Animation implementation.
      * Change it only if the child class explicitly uses this as configuration option,
      * i.e. when it also offers a static \c modelUpdatePeriod_default() method. \n
-     * 0 means don't call updateModel()
+     * It determines how frequent updateModel() is getting called; 0 (the default) means that
+     * updateModel() isn't called.
      */
-    uint16_t modelUpdatePeriod = 0;
+    void setModelUpdatePeriod(uint16_t period) { _modelUpdateTimer.updatePeriod = period; }
+
+    /** Get the pause (in ms) between updates of the mathematical model.
+     * @see setModelUpdatePeriod()
+     */
+    uint16_t getModelUpdatePeriod() { return _modelUpdateTimer.updatePeriod; }
+
+    /** Get the pause (in ms) between updates of the LED strip's Pattern.
+     * It reflects how frequent showPattern() is getting called. \n
+     * 0 means Overlay mode; Pattern updates are \e not triggered. \n
+     * @note By default, EC_DEFAULT_UPDATE_PERIOD is used - unless the Animation implementation
+     * configures a differnt value.
+     */
+    uint16_t getPatternUpdatePeriod() { return _patternUpdateTimer.updatePeriod; }
 
     /// Only for debugging.
-    FastLedStrip getStrip()
-    {
-      return strip;
-    }
-
-    /** Period (in ms) for updating the LED strip's Pattern.
-     * It reflects how frequent showPattern() is getting called. \n
-     * 0 means Overlay mode; Pattern updates are \e not triggered.
-     * @see EC_DEFAULT_UPDATE_PERIOD
-     */
-    const uint8_t patternUpdatePeriod;
+    FastLedStrip getStrip() { return strip; }
 
   protected:
     /** Constructor for Animations that can be used as both, Pattern or Overlay.
@@ -91,7 +96,7 @@ namespace EC
     AnimationBase(FastLedStrip strip,
                   bool overlayMode,
                   uint8_t fadeRate = 0)
-        : fadeRate(fadeRate), patternUpdatePeriod(overlayMode ? 0 : EC_DEFAULT_UPDATE_PERIOD), strip(strip)
+        : fadeRate(fadeRate), _patternUpdateTimer(overlayMode ? 0 : EC_DEFAULT_UPDATE_PERIOD), strip(strip)
     {
     }
 
@@ -99,19 +104,19 @@ namespace EC
      * @param strip  The LED strip.
      */
     explicit AnimationBase(FastLedStrip strip)
-        : fadeRate(0), patternUpdatePeriod(EC_DEFAULT_UPDATE_PERIOD), strip(strip)
+        : fadeRate(0), _patternUpdateTimer(EC_DEFAULT_UPDATE_PERIOD), strip(strip)
     {
     }
 
     /** Constructor for pure Patterns with custom update rate.
      * Use this only if you have an urgent reason for a different update rate
      * than EC_DEFAULT_UPDATE_PERIOD.
-     * @param patternUpdatePeriod  Delay (in ms) between updating the LED strip
+     * @param patternUpdatePeriod  Period (in ms) for calling showPattern().
      * @param strip  The LED strip.
      */
     AnimationBase(uint8_t patternUpdatePeriod,
                   FastLedStrip strip)
-        : fadeRate(0), patternUpdatePeriod(patternUpdatePeriod), strip(strip)
+        : fadeRate(0), _patternUpdateTimer(patternUpdatePeriod), strip(strip)
     {
     }
 
@@ -127,7 +132,7 @@ namespace EC
      */
     virtual void showPattern(uint32_t currentMillis)
     {
-      showDefaultPattern();
+      strip.showDefaultPattern(fadeRate);
     }
 
     /** Render the Animation's Overlay content.
@@ -145,49 +150,25 @@ namespace EC
      * Pattern's update rate).
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
      * @note This method must not manipulate the LED strip!
-     * @see patternUpdatePeriod
+     * @see setModelUpdatePeriod()
      */
     virtual void updateModel(uint32_t currentMillis)
     {
-    }
-
-    /** Default Pattern implementation.
-     * Makes a fading background or black background, depending on the setting of fadeRate.
-     * @see fadeRate
-     */
-    void showDefaultPattern()
-    {
-      if (fadeRate)
-      {
-        strip.fadeToBlackBy(fadeRate);
-      }
-      else
-      {
-        strip.fillSolid(CRGB::Black);
-      }
     }
 
   protected:
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      if (modelUpdatePeriod)
+      if (_modelUpdateTimer.process(currentMillis))
       {
-        if (currentMillis >= _nextUpdateModel)
-        {
-          updateModel(currentMillis);
-          _nextUpdateModel = currentMillis + modelUpdatePeriod;
-        }
+        updateModel(currentMillis);
       }
 
-      if (patternUpdatePeriod)
+      if (_patternUpdateTimer.process(currentMillis))
       {
-        if (currentMillis >= _nextShowPattern)
-        {
-          showPattern(currentMillis);
-          _nextShowPattern = currentMillis + patternUpdatePeriod;
-          wasModified = true;
-        }
+        wasModified = true;
+        showPattern(currentMillis);
       }
 
       if (wasModified)
@@ -197,8 +178,8 @@ namespace EC
     }
 
   private:
-    uint32_t _nextShowPattern = 0;
-    uint32_t _nextUpdateModel = 0;
+    AnimationTimer _patternUpdateTimer;
+    AnimationTimer _modelUpdateTimer;
   };
 
 } // namespace EC

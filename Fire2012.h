@@ -126,7 +126,7 @@ namespace EC
     explicit Fire2012(FastLedStrip ledStrip)
         : AnimationBase(1000 / FRAMES_PER_SECOND, ledStrip)
     {
-      modelUpdatePeriod = Fire2012_modelUpdatePeriod_default();
+      setModelUpdatePeriod(Fire2012_modelUpdatePeriod_default());
     }
 
   private:
@@ -211,17 +211,14 @@ namespace EC
     /// @see AnimationBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
-      if (modelUpdatePeriod)
-      {
-        // Fourth, the most sophisticated: this one sets up a new palette every
-        // time through the loop, based on a hue that changes every time.
-        // The palette is a gradient from black, to a dark color based on the hue,
-        // to a light color based on the hue, to white.
-        hue++;
-        CRGB darkcolor = CHSV(hue, 255, 192);  // pure hue, three-quarters brightness
-        CRGB lightcolor = CHSV(hue, 128, 255); // half 'whitened', full brightness
-        gPal = CRGBPalette16(CRGB::Black, darkcolor, lightcolor, CRGB::White);
-      }
+      // Fourth, the most sophisticated: this one sets up a new palette every
+      // time through the loop, based on a hue that changes every time.
+      // The palette is a gradient from black, to a dark color based on the hue,
+      // to a light color based on the hue, to white.
+      hue++;
+      CRGB darkcolor = CHSV(hue, 255, 192);  // pure hue, three-quarters brightness
+      CRGB lightcolor = CHSV(hue, 128, 255); // half 'whitened', full brightness
+      gPal = CRGBPalette16(CRGB::Black, darkcolor, lightcolor, CRGB::White);
     }
   };
 

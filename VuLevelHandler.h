@@ -71,10 +71,7 @@ namespace EC
      * return values greater than 1.0!
      * @see VuSource::getVU()
      */
-    float getVU() override
-    {
-      return _vuLevel;
-    }
+    float getVU() override { return _vuLevel; }
 
     /** Feed in normalized audio samples.
      * Call this method frequently in the background.

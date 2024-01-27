@@ -59,7 +59,7 @@ namespace EC
             bool overlayMode)
         : AnimationBase(ledStrip, overlayMode, fadeRate_default())
     {
-      modelUpdatePeriod = 10;
+      setModelUpdatePeriod(10);
     }
 
   private:
@@ -77,7 +77,7 @@ namespace EC
     {
       for (uint8_t i = 0; i < BUBBLES_COUNT; ++i)
       {
-        _bubbles[i].update(modelUpdatePeriod);
+        _bubbles[i].update(getModelUpdatePeriod());
       }
     }
 

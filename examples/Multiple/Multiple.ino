@@ -136,10 +136,10 @@ void updateSpeed()
         const uint8_t animationSpeed = analogValue;
         const uint8_t modelUpdatePeriod = animationSpeed ? 256 - animationSpeed : 0;
 
-        rainbow.modelUpdatePeriod = modelUpdatePeriod;
-        rgbBlocks.modelUpdatePeriod = 8 * modelUpdatePeriod;
+        rainbow.setModelUpdatePeriod(modelUpdatePeriod);
+        rgbBlocks.setModelUpdatePeriod(8 * modelUpdatePeriod);
 
-        movingDotOverlay.modelUpdatePeriod = 2 * modelUpdatePeriod;
+        movingDotOverlay.setModelUpdatePeriod(2 * modelUpdatePeriod);
     }
 }
 

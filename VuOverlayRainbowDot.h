@@ -94,7 +94,7 @@ namespace EC
     VuOverlayRainbowDot(FastLedStrip ledStrip, VuSource &vuLevelSource, VuSource &vuColorSource, float size = 0.0)
         : AnimationBase(ledStrip, true), size(size), _vuLevelSource(vuLevelSource), _vuCcolorSource(vuColorSource)
     {
-      modelUpdatePeriod = 10;
+      setModelUpdatePeriod(10);
     }
 
     /// Set the initial color of this VU.
@@ -104,16 +104,10 @@ namespace EC
     }
 
     /// Get the VuSource that is used for calculating the VU level.
-    VuSource &getLevelVuSource()
-    {
-      return _vuLevelSource;
-    }
+    VuSource &getLevelVuSource() { return _vuLevelSource; }
 
     /// Get the VuSource that is used for calculating the VU color.
-    VuSource &getColorVuSource()
-    {
-      return _vuCcolorSource;
-    }
+    VuSource &getColorVuSource() { return _vuCcolorSource; }
 
   private:
     /// @see AnimationBase::showOverlay()

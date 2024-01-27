@@ -38,9 +38,6 @@ namespace EC
   class MovingDot
       : public AnimationBase
   {
-    int16_t _position = 0;
-    bool _rising = false;
-
   public:
     /** Default fading speed.
      * Lower value = longer glowing; 0 = solid black background.
@@ -50,7 +47,7 @@ namespace EC
     /** Draw the dot with this color.
      * This setting can be adjusted at runtime.
      */
-    CRGB color = CRGB::Red;
+    CRGB color;
 
     /** Delay between moving the dot by 1 pixel (in ms).
      * 0 makes the dot disappear.
@@ -60,19 +57,6 @@ namespace EC
      */
     static uint16_t modelUpdatePeriod_default() { return 20; }
 
-#if (1)
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     */
-    MovingDot(FastLedStrip ledStrip,
-              bool overlayMode)
-        : AnimationBase(ledStrip, overlayMode, fadeRate_default())
-    {
-      modelUpdatePeriod = modelUpdatePeriod_default();
-    }
-
-#else // DRAFT
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
@@ -83,15 +67,14 @@ namespace EC
               CRGB color = CRGB::Red)
         : AnimationBase(ledStrip, overlayMode, fadeRate_default()), color(color)
     {
-      modelUpdatePeriod = modelUpdatePeriod_default();
+      setModelUpdatePeriod(modelUpdatePeriod_default());
     }
-#endif
 
   private:
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      if (modelUpdatePeriod)
+      if (getModelUpdatePeriod())
       {
         strip[_position] = color;
       }
@@ -115,6 +98,10 @@ namespace EC
           _rising = true;
       }
     }
+
+  private:
+    int16_t _position = 0;
+    bool _rising = false;
   };
 
 } // namespace EC

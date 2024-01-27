@@ -69,10 +69,7 @@ namespace EC
     }
 
     /// Get the VuSource that is used as input.
-    VuSource &getInputVuSource()
-    {
-      return _vuSource;
-    }
+    VuSource &getInputVuSource()    {      return _vuSource;    }
 
   private:
     /// @see Animation::processAnimation()

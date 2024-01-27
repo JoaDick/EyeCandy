@@ -29,6 +29,13 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
+#ifndef EC_ENABLE_VU_RANGE_EXTENDER_BYPASS
+// TODO: implement me
+#define EC_ENABLE_VU_RANGE_EXTENDER_BYPASS 0
+#endif
+
+//------------------------------------------------------------------------------
+
 namespace EC
 {
 
@@ -75,10 +82,7 @@ namespace EC
      * return values greater than 1.0!
      * @see VuSource::getVU()
      */
-    float getVU() override
-    {
-      return _newVuLevel;
-    }
+    float getVU() override { return _newVuLevel; }
 
     /** Process VU level adjustment on the given \a vuLevel.
      * Calculates an adjusted VU level which utilizes the entire LED strip.

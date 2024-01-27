@@ -61,7 +61,7 @@ void setup()
     Serial.println(F("Welcome to EyeCandy"));
 
     // set up Animations to run
-    fire2012.modelUpdatePeriod = 30;
+    fire2012.setModelUpdatePeriod(30);
     animationScene.append(fire2012);
 
     pride2015.moreRed = false;

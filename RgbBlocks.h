@@ -62,7 +62,7 @@ namespace EC
     explicit RgbBlocks(FastLedStrip ledStrip)
         : AnimationBase(ledStrip.getReversedStrip(), false)
     {
-      modelUpdatePeriod = modelUpdatePeriod_default();
+      setModelUpdatePeriod(modelUpdatePeriod_default());
     }
 
   private:

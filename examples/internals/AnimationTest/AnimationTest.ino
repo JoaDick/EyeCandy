@@ -153,7 +153,7 @@ void makeAnimation1(EC::AnimationRepo &repo)
 void makeAnimation2(EC::AnimationRepo &repo)
 {
     repo.add(rainbowTwinkle);
-    rainbowTwinkle.modelUpdatePeriod = 25;
+    rainbowTwinkle.setModelUpdatePeriod(25);
 }
 
 void makeAnimation3(EC::AnimationRepo &repo)
@@ -161,7 +161,7 @@ void makeAnimation3(EC::AnimationRepo &repo)
     repo.add(fire2012);
     fire2012.COOLING = 155;
     fire2012.SPARKING = 75;
-    fire2012.modelUpdatePeriod = 10;
+    fire2012.setModelUpdatePeriod(10);
     repo.add(bouncingBallsOverlay);
     bouncingBallsOverlay.mirrored = true;
 }
@@ -221,7 +221,7 @@ void makeFlare(EC::AnimationRepo &repo)
 
     auto fire = new EC::Fire2012<NUM_LEDS>(fireStrip);
     fire->SPARKING = 75;
-    fire->modelUpdatePeriod = 10;
+    fire->setModelUpdatePeriod(10);
 
     repo.add(fire);
     repo.add(new EC::Kaleidoscope(strip));
@@ -732,14 +732,14 @@ void updateSpeed()
 
 #if (EnableStaticPatterns)
         fire2012.SPARKING = animationSpeed;
-        movingDot.modelUpdatePeriod = modelUpdatePeriod;
-        rainbow.modelUpdatePeriod = modelUpdatePeriod;
-        // rainbowBuiltin.modelUpdatePeriod = modelUpdatePeriod;
-        rainbowTwinkle.modelUpdatePeriod = modelUpdatePeriod;
-        // rgbBlocks.modelUpdatePeriod = 8 * modelUpdatePeriod;
+        movingDot.setModelUpdatePeriod(modelUpdatePeriod);
+        rainbow.setModelUpdatePeriod(modelUpdatePeriod);
+        // rainbowBuiltin.setModelUpdatePeriod(modelUpdatePeriod);
+        rainbowTwinkle.setModelUpdatePeriod(modelUpdatePeriod);
+        // rgbBlocks.setModelUpdatePeriod(8 * modelUpdatePeriod);
         twinkles.fadeRate = animationSpeed;
 
-        movingDotOverlay.modelUpdatePeriod = 2 * modelUpdatePeriod;
+        movingDotOverlay.setModelUpdatePeriod(2 * modelUpdatePeriod);
 #endif
     }
 }
@@ -756,11 +756,11 @@ void updateFlip()
 
     if (flipped)
     {
-        fire2012.modelUpdatePeriod = 15;
+        fire2012.setModelUpdatePeriod(15);
     }
     else
     {
-        fire2012.modelUpdatePeriod = 0;
+        fire2012.setModelUpdatePeriod(0);
         fire2012.gPal = EC::Fire2012_gPal_default();
     }
 #endif

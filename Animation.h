@@ -387,4 +387,45 @@ namespace EC
   };
 #endif
 
+  //------------------------------------------------------------------------------
+
+  /// Helper class for triggering periodic actions.
+  class AnimationTimer
+  {
+  public:
+    /** Pause (in ms) between process() returning \c true
+     * 0 means suspended, i.e. process() will always return \c false
+     */
+    uint8_t updatePeriod;
+
+    /** Constructor.
+     * @param updatePeriod  Pause (in ms) between process() returning \c true \n
+     *                      0 means suspended, i.e. process() will always return \c false
+     */
+    explicit AnimationTimer(uint8_t updatePeriod = 0)
+        : updatePeriod(updatePeriod)
+    {
+    }
+
+    /** Call this method periodically.
+     * @retval \c true Timer triggered; caller shall execute its corresponding action.
+     * @retval \c false Nothing to do.
+     */
+    bool process(uint32_t currentMillis)
+    {
+      if (updatePeriod)
+      {
+        if (currentMillis >= _nextUpdate)
+        {
+          _nextUpdate = currentMillis + updatePeriod;
+          return true;
+        }
+      }
+      return false;
+    }
+
+  private:
+    uint32_t _nextUpdate = 0;
+  };
+
 } // namespace EC

@@ -117,13 +117,13 @@ void makeDoubleBouncingDotVU(EC::AnimationScene &scene)
     auto vuPeakSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
     vuPeakSource->vuPeakHandler.presetPunchedBall();
 
-    auto vu1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource));
+    auto vu1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource, 0.03));
     vu1->volume = 255;
     vu1->vuHueRange = 0.4;
     vu1->baseHueStep = -0.17;
     // vu1->vuLevelHandler.smoothingFactor = 6;
 
-    auto vu2 = scene.append(new EC::VuOverlayRainbowDot(strip.getReversedStrip(), *vuPeakSource));
+    auto vu2 = scene.append(new EC::VuOverlayRainbowDot(strip.getReversedStrip(), *vuPeakSource, 0.03));
     vu2->volume = 255;
     vu2->vuHueRange = 0.6;
     vu2->baseHueStep = 0.11;
@@ -187,7 +187,7 @@ void makeFlareVU(EC::FastLedStrip strip, EC::AnimationScene &scene)
     EC::FastLedStrip fireStrip = strip.getSubStrip(0, fireLedCount, true);
 
     auto fire = scene.append(new EC::Fire2012<NUM_LEDS>(fireStrip));
-    fire->modelUpdatePeriod = 10;
+    fire->setModelUpdatePeriod(10);
 
     auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
     scene.append(new EC::Fire2012VU<NUM_LEDS>(*fire, *vuSource));
@@ -215,13 +215,11 @@ void makeFlareInwardVU(EC::AnimationScene &scene)
 
     EC::FastLedStrip fireStrip1 = strip.getHalfStrip();
     auto fire1 = scene.append(new EC::Fire2012<NUM_LEDS>(fireStrip1));
-    fire1->modelUpdatePeriod = 11;
-    // scene.append(fire1);
+    fire1->setModelUpdatePeriod(11);
 
     EC::FastLedStrip fireStrip2 = strip.getSubStrip(fireStrip1.ledCount(), 0, true);
     auto fire2 = scene.append(new EC::Fire2012<NUM_LEDS>(fireStrip2));
-    fire2->modelUpdatePeriod = 13;
-    // scene.append(fire2);
+    fire2->setModelUpdatePeriod(13);
 
     auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
     scene.append(new EC::Fire2012VU<NUM_LEDS>(*fire1, *vuSource));

@@ -68,7 +68,7 @@ namespace EC
     explicit RainbowBuiltin(FastLedStrip ledStrip)
         : AnimationBase(ledStrip, false)
     {
-      modelUpdatePeriod = modelUpdatePeriod_default();
+      setModelUpdatePeriod(modelUpdatePeriod_default());
     }
 
   private:
