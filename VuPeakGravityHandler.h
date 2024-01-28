@@ -32,8 +32,6 @@ SOFTWARE.
 namespace EC
 {
 
-  //------------------------------------------------------------------------------
-
   /** Peak dot of a VU meter, influenced by gravity.
    * Set #a0 < 0.0 for the behaviour of a falling ball, that's bumped up by the VU bar.
    * Set #a0 > 0.0 for a bubble, floating off the peak.
@@ -51,8 +49,8 @@ namespace EC
     /// Configure a "Punched Ball" behaviour.
     void presetPunchedBall()
     {
-      a0 = -3.0; // Takeoff acceleration.
-      v0 = 0.5;  // Takeoff velocity.
+      a0 = -2.75; // Takeoff acceleration.
+      v0 = 0.75;  // Takeoff velocity.
     }
 
     /// Configure a "Floating Bubble" behaviour.
@@ -69,11 +67,19 @@ namespace EC
       v0 = 0.0;  // Takeoff velocity.
     }
 
-    /// Takeoff acceleration.
+    /// Takeoff acceleration. Value 0.0 is not allowed.
     float a0 = -0.4;
 
     /// Takeoff velocity.
     float v0 = 0.0;
+
+    /** Set to \c true for calculating the VU Dip instead of the VU Peak.
+     * The commonly known \e peak is following the \e highest VU values, and is \e decreasing
+     * during decay phase. \n
+     * A \e dip behaves just the the other way around: : it is following the \e lowest VU values,
+     * and is \e increasing during decay phase.
+     */
+    bool enableDipMode = false;
 
     /** Get the current VU level.
      * This means the curent position of the peak dot.
@@ -81,7 +87,7 @@ namespace EC
      * @note Be aware that the retured value may sometimes be greater than 1.0!
      * @see VuSource::getVU()
      */
-    float getVU() override { return pos; }
+    float getVU() override { return _peakLevelOutput; }
 
     /** Calculate the peak dot's position for the given \a vuLevel.
      * @param vuLevel  The current VU level.
@@ -95,83 +101,64 @@ namespace EC
     bool process(float vuLevel,
                  uint32_t currentMillis)
     {
-      bool peakDetected = false;
-      // VU rising?
-      if (vuLevel >= lastVuLevel)
+      if (enableDipMode)
       {
-        // falling "peak ball"?
-        if (a0 < 0.0)
+        calculatePeak(1.0 - vuLevel, currentMillis);
+        if (pos > 0.0)
         {
-          if (acc == 0.0)
-          {
-            pos = vuLevel;
-          }
-        }
-        // rising "peak bubble"
-        else
-        {
-          if (pos == 0.0)
-          {
-            acc = 0.0;
-          }
+          _peakLevelOutput = 1.0 - pos;
         }
       }
-      // VU falling
       else
       {
-        if (vuLevel > peakThreshold)
-        {
-          // ready for trigger?
-          if (acc == 0.0)
-          {
-            peakDetected = true;
-            acc = a0;
-            vel = v0;
-            pos = lastVuLevel;
-          }
-        }
+        calculatePeak(vuLevel, currentMillis);
+        _peakLevelOutput = pos;
       }
+      return _peakDetected;
+    }
 
-      const float delta_t = (currentMillis - lastMillis) / 1000.0;
-      vel += acc * delta_t;
-      pos += vel * delta_t;
-
-      // falling "peak ball"?
-      if (a0 < 0.0)
+  private:
+    void calculatePeak(float vuLevel,
+                       uint32_t currentMillis)
+    {
+      _peakDetected = false;
+      // level too low?
+      if (vuLevel <= peakThreshold)
       {
-        if (pos <= vuLevel)
-        {
-          acc = 0.0;
-          vel = 0.0;
-          pos = vuLevel >= peakThreshold ? vuLevel : 0.0;
-        }
+        // treat it as real silence
+        vuLevel = 0.0;
       }
-      // rising "peak bubble"?
-      else
+      // peak rising?
+      if (vuLevel >= pos)
       {
-        if (pos > 0.0 &&
-            pos <= vuLevel)
+        acc = 0.0;     // don't release peak yet
+        pos = vuLevel; // tie peak to VU level
+      }
+      // peak no more rising and not released yet?
+      else if (acc == 0.0)
+      {
+        // new peak detected!
+        _peakDetected = true;
+        acc = a0; // release peak
+        vel = v0;
+        // keep last pos
+      }
+
+      // peak is released?
+      if (acc != 0.0)
+      {
+        const float delta_t = (currentMillis - lastMillis) / 1000.0;
+        vel += acc * delta_t;
+        pos += vel * delta_t;
+
+        // floating cycle has finnished?
+        if (acc > 0.0 && pos > 1.1) // let it float 10% over the top
         {
-          vel = v0;
-          pos = vuLevel;
-        }
-        else if (pos < 0.0)
-        {
-          vel = 0.0;
-          pos = 0.0;
-        }
-        else if (pos > 1.05) // let it float a bit off the top
-        {
-          acc = -1.0;
-          vel = 0.0;
-          pos = 0.0;
+          pos = 0.0; // will be treated as "rising" in next call
         }
       }
 
-      lastVuLevel = vuLevel;
       lastMillis = currentMillis;
-
-      return peakDetected;
     }
 
   private:
@@ -179,8 +166,9 @@ namespace EC
     float vel = 0.0; // current velocity
     float pos = 0.0; // current position
 
-    float lastVuLevel = 0.0;
     uint32_t lastMillis = 0;
+    float _peakLevelOutput = 0.0;
+    bool _peakDetected = false;
   };
 
 }

@@ -32,8 +32,6 @@ SOFTWARE.
 namespace EC
 {
 
-  //------------------------------------------------------------------------------
-
   /** Peak dot of a VU meter, "loosely tied to the VU level".
    * Behaves as if the VU level and the peak dot are connected with a rubber band.
    */

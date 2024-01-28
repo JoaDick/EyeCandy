@@ -28,6 +28,7 @@ SOFTWARE.
 #include "Animation.h"
 #include "VuSource.h"
 #include "VuPeakHandler.h"
+#include "VuPeakGravityHandler.h"
 
 //------------------------------------------------------------------------------
 
@@ -94,19 +95,39 @@ namespace EC
      */
     CRGB peakDotMinColor = CRGB(0, 0, 255);
 
-    /** Configure the following properties according to your needs:
+#if (0)
+    /** Adjust the following properties according to your needs:
      * - VuPeakHandler::peakHold
      * - VuPeakHandler::peakDecay
-     * - Don't call any of its methods!
+     * - VuPeakHandler::enableDipMode
      */
     VuPeakHandler vuPeakHandler;
 
-    /** Configure the following properties according to your needs:
+    /** Adjust the following properties according to your needs:
      * - VuPeakHandlerInv::peakHold
      * - VuPeakHandlerInv::peakDecay
-     * - Don't call any of its methods!
+     * - VuPeakHandler::enableDipMode
      */
-    VuPeakHandlerInv vuPeakMinHandler;
+    VuPeakHandler vuDipHandler;
+#else
+    /** Adjust the following properties according to your needs:
+     * - Set VuPeakGravityHandler::a0 < 0.0 for the behaviour of a falling ball, that's bumped up by the VU bar.
+     * - Set VuPeakGravityHandler::a0 > 0.0 for a bubble, floating off the peak.
+     * - Or use a preset like VuPeakGravityHandler::presetPunchedBall() or
+     *   VuPeakGravityHandler::presetFloatingBubble()
+     * - VuPeakGravityHandler::enableDipMode
+     */
+    VuPeakGravityHandler vuPeakHandler;
+
+    /** Adjust the following properties according to your needs:
+     * - Set VuPeakGravityHandler::a0 < 0.0 for the behaviour of a falling ball, that's bumped up by the VU bar.
+     * - Set VuPeakGravityHandler::a0 > 0.0 for a bubble, floating off the peak.
+     * - Or use a preset like VuPeakGravityHandler::presetPunchedBall() or
+     *   VuPeakGravityHandler::presetFloatingBubble()
+     * - VuPeakGravityHandler::enableDipMode
+     */
+    VuPeakGravityHandler vuDipHandler;
+#endif
 
     /** Constructor.
      * @param ledStrip  The LED strip.
@@ -116,10 +137,21 @@ namespace EC
             VuSource &vuSource)
         : _strip(ledStrip), _vuSource(vuSource)
     {
+#if (0)
       vuPeakHandler.peakHold = 500;
       vuPeakHandler.peakDecay = 3000;
-      vuPeakMinHandler.peakHold = vuPeakHandler.peakHold;
-      vuPeakMinHandler.peakDecay = vuPeakHandler.peakDecay;
+      vuDipHandler.enableDipMode = true;
+      vuDipHandler.peakHold = vuPeakHandler.peakHold;
+      vuDipHandler.peakDecay = vuPeakHandler.peakDecay;
+#else
+      vuPeakHandler.a0 = -0.8;
+      vuPeakHandler.v0 = 0.3;
+      // vuPeakHandler.presetPunchedBall();
+      // vuPeakHandler.presetFloatingBubble();
+      vuDipHandler.enableDipMode = true;
+      vuDipHandler.a0 = vuPeakHandler.a0;
+      vuDipHandler.v0 = vuPeakHandler.v0;
+#endif
     }
 
   private:
@@ -130,7 +162,7 @@ namespace EC
       {
         const float vuLevel = _vuSource.getVU();
         vuPeakHandler.process(vuLevel, currentMillis);
-        vuPeakMinHandler.process(vuLevel, currentMillis);
+        vuDipHandler.process(vuLevel, currentMillis);
 
         if (enableVuBar)
         {
@@ -150,7 +182,7 @@ namespace EC
         }
         if (enablePeakDotMin)
         {
-          _strip.optPixel(vuPeakMinHandler.getVU()) = peakDotMinColor;
+          _strip.optPixel(vuDipHandler.getVU()) = peakDotMinColor;
         }
         _lastVuLevel = vuLevel;
 

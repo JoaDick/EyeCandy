@@ -32,8 +32,6 @@ SOFTWARE.
 namespace EC
 {
 
-  //------------------------------------------------------------------------------
-
   /** Helper class for calculating the peak dot position of a VU meter.
    * Just provide the output of a #VuLevelHandler instance, and get the position
    * of the corresponding peak dot via getVU().
@@ -56,6 +54,14 @@ namespace EC
      */
     float peakThreshold = 0.005;
 
+    /** Set to \c true for calculating the VU Dip instead of the VU Peak.
+     * The commonly known \e peak is following the \e highest VU values, and is \e decreasing
+     * during decay phase. \n
+     * A \e dip behaves just the the other way around: : it is following the \e lowest VU values,
+     * and is \e increasing during decay phase.
+     */
+    bool enableDipMode = false;
+
     /** Get the current VU level.
      * This means the curent position of the peak dot.
      * @return A normalized VU value between 0.0 ... 1.0, representing the dot's position.
@@ -63,7 +69,7 @@ namespace EC
      * return values greater than 1.0 or less than 0.0!
      * @see VuSource::getVU()
      */
-    float getVU() override { return _peakLevel; }
+    float getVU() override { return _peakLevelOutput; }
 
     /** Calculate the peak dot's position for the given \a vuLevel.
      * @param vuLevel  The current VU level.
@@ -77,120 +83,70 @@ namespace EC
     bool process(float vuLevel,
                  uint32_t currentMillis)
     {
-      bool peakDetected = false;
-      // rising?
-      if (vuLevel >= _peakLevel)
+      if (enableDipMode)
       {
-        _lastPeakTime = 0;
-        _maxPeakValue = vuLevel;
-        _peakLevel = vuLevel;
+        calculatePeak(1.0 - vuLevel, currentMillis);
+        _peakLevelOutput = 1.0 - _peakLevel;
       }
-      // falling
       else
       {
-        // new peak detected?
-        if (_lastPeakTime == 0)
-        {
-          peakDetected = true;
-          _lastPeakTime = currentMillis;
-        }
-        // peak hold?
-        else if (currentMillis <= _lastPeakTime + peakHold)
-        {
-          // nothing to do
-        }
-        // peak decay
-        else
-        {
-          const uint16_t decayTime = currentMillis - (_lastPeakTime + peakHold);
-          if (decayTime < peakDecay)
-          {
-            const float decayFactor = float(peakDecay - decayTime) / peakDecay;
-            _peakLevel = _maxPeakValue * decayFactor;
-          }
-          else
-          {
-            _peakLevel = 0.0;
-          }
-        }
+        calculatePeak(vuLevel, currentMillis);
+        _peakLevelOutput = _peakLevel;
       }
-
-      // peak too low?
-      if (_peakLevel <= peakThreshold)
-      {
-        _peakLevel = 0.0;
-        // peakDetected = false;
-        _lastPeakTime = 0;
-      }
-
-      return peakDetected;
+      return _peakDetected;
     }
 
   private:
+    void calculatePeak(float vuLevel,
+                       uint32_t currentMillis)
+    {
+      _peakDetected = false;
+      // peak rising?
+      if (vuLevel >= _peakLevel)
+      {
+        if (vuLevel > peakThreshold)
+        {
+          _lastPeakTime = 0;
+          _maxPeakValue = vuLevel;
+          _peakLevel = vuLevel;
+          return;
+        }
+      }
+      // else: peak hold or decay
+
+      // new peak detected?
+      if (_lastPeakTime == 0)
+      {
+        _peakDetected = true;
+        _lastPeakTime = currentMillis;
+      }
+      // peak hold?
+      else if (currentMillis <= _lastPeakTime + peakHold)
+      {
+        // nothing to do
+      }
+      // peak decay
+      else
+      {
+        const uint16_t decayTime = currentMillis - (_lastPeakTime + peakHold);
+        if (decayTime < peakDecay)
+        {
+          const float decayFactor = float(peakDecay - decayTime) / peakDecay;
+          _peakLevel = _maxPeakValue * decayFactor;
+        }
+        else
+        {
+          _peakLevel = 0.0;
+        }
+      }
+    }
+
+  private:
+    bool _peakDetected = false;
     uint32_t _lastPeakTime = 0;
     float _maxPeakValue = 0.0;
     float _peakLevel = 0.0;
+    float _peakLevelOutput = 0.0;
   };
-
-  //------------------------------------------------------------------------------
-
-  /** Helper class for calculating the inverse peak dot position of a VU meter.
-   * In essence the same as VuPeakHandler, but it is following the minimum VU
-   * level instead of the maximum VU level (as a "normal" VU does). \n
-   * This thing was born during development as a utility to track the dynamic
-   * range of an audio signal. But the effect is really interesting, so it can
-   * of course also be used for creating really exceptional VUs. \n
-   * Just give it a try!
-   */
-  class VuPeakHandlerInv
-      : public VuSource
-  {
-  public:
-    /// Delay (in ms) before the dot starts to fall down.
-    uint16_t &peakHold = _peakHandler.peakHold;
-
-    /** Falling speed equivalent.
-     * Time (in ms) the dot would need to fall down the entire strip.
-     */
-    uint16_t &peakDecay = _peakHandler.peakDecay;
-
-    /** VU levels below that level will set the dot's position to 0.
-     * Render the dot only when its position is greater than 0.0, so it will
-     * disappear during silence.
-     */
-    float &peakThreshold = _peakHandler.peakThreshold;
-
-    /** Get the current VU level.
-     * This means the curent position of the peak dot.
-     * @return A normalized VU value between 0.0 ... 1.0, representing the dot's position.
-     * @note Be aware that an overloaded / clipped / too loud audio signal may
-     * return values greater than 1.0 or less than 0.0!
-     * @see VuSource::getVU()
-     */
-    float getVU() override
-    {
-      return 1.0 - _peakHandler.getVU();
-    }
-
-    /** Calculate the peak dot's position.
-     * @param vuLevel  The current VU level.
-     * @param currentMillis  Current time, i.e. the returnvalue of millis().
-     * @retval true   A new peak has been detected.
-     * @retval false  No peak detected.
-     * Use getVU() to get the position of the peak dot.
-     * A new peak is reported, when the current \a vuLevel value is above the
-     * previous one for the first time.
-     */
-    bool process(float vuLevel,
-                 uint32_t currentMillis)
-    {
-      return _peakHandler.process(1.0 - vuLevel, currentMillis);
-    }
-
-  private:
-    VuPeakHandler _peakHandler;
-  };
-
-  //------------------------------------------------------------------------------
 
 }

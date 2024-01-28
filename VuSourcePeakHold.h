@@ -48,6 +48,7 @@ namespace EC
      * Adjust the following properties according to your needs:
      * - VuPeakHandler::peakHold
      * - VuPeakHandler::peakDecay
+     * - VuPeakHandler::enableDipMode
      */
     VuPeakHandler vuPeakHandler;
 

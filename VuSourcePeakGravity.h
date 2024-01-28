@@ -50,6 +50,7 @@ namespace EC
      * - Set VuPeakGravityHandler::a0 > 0.0 for a bubble, floating off the peak.
      * - Or use a preset like VuPeakGravityHandler::presetPunchedBall() or
      *   VuPeakGravityHandler::presetFloatingBubble()
+     * - VuPeakGravityHandler::enableDipMode
      */
     VuPeakGravityHandler vuPeakHandler;
 

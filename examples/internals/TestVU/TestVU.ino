@@ -161,6 +161,21 @@ EC::AnimationChangerSoft animationChanger(allAnimations);
 
 /*
 
+240128 New Dip mode for Peak handlers
+
+Sketch uses 16576 bytes (51%) of program storage space. Maximum is 32256 bytes.
+Global variables use 789 bytes (38%) of dynamic memory, leaving 1259 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 16804 bytes (52%) of program storage space. Maximum is 32256 bytes.
+Global variables use 789 bytes (38%) of dynamic memory, leaving 1259 bytes for local variables. Maximum is 2048 bytes.
+---
+Sketch uses 16644 bytes (51%) of program storage space. Maximum is 32256 bytes.
+Global variables use 789 bytes (38%) of dynamic memory, leaving 1259 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 16718 bytes (51%) of program storage space. Maximum is 32256 bytes.
+Global variables use 789 bytes (38%) of dynamic memory, leaving 1259 bytes for local variables. Maximum is 2048 bytes.
+
+
 240128 Eliminated VuBaseFL
 
 Sketch uses 16640 bytes (51%) of program storage space. Maximum is 32256 bytes.
