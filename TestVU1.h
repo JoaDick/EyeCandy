@@ -25,9 +25,9 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "VuBaseFL.h"
+#include "Animation.h"
+#include "VuSource.h"
 #include "VuPeakHandler.h"
-#include "VuRangeExtender.h"
 
 //------------------------------------------------------------------------------
 
@@ -39,61 +39,60 @@ namespace EC
 {
 
   /** A playground for VU testing during EyeCandy development.
-   * Initial revision is a clone of EssentialVU.
    */
   class TestVU1
-      : public VuBaseFL
+      : public Animation
   {
   public:
-    /** Default fading speed.
-     * Lower value = longer glowing; 0 = solid black background.
-     */
-    static uint8_t fadeRate_default() { return 20; }
-
-    /** Draw the VU bar with this color.
-     * This setting can be adjusted at runtime.
-     */
-    CRGB vuBarColor = CRGB(0, 64, 0);
-
-    /** Draw the VU dot with this color.
-     * This setting can be adjusted at runtime.
-     */
-    CRGB vuDotColor = CRGB(0, 255, 0);
-
-    /** Draw the peak dot with this color.
-     * This setting can be adjusted at runtime.
-     */
-    CRGB peakDotColor = CRGB(255, 0, 0);
-
-    /** Draw the inverse peak dot with this color.
-     * This setting can be adjusted at runtime.
-     */
-    CRGB peakInvDotColor = CRGB(0, 0, 255);
-
     /** Render the VU level as bar.
      * This setting can be adjusted at runtime.
      */
-    bool enableVuBar = false;
+    bool enableVuBar = true;
+
+    /** Render the VU level as stripe.
+     * This setting can be adjusted at runtime.
+     */
+    bool enableVuStripe = false;
 
     /** Render the VU level as dot.
      * This setting can be adjusted at runtime.
      */
-    bool enableVuDot = true;
+    bool enableVuDot = false;
 
     /** Render the peak dot.
      * This setting can be adjusted at runtime.
      */
     bool enablePeakDot = true;
 
-    /** Render the inverse peak dot.
+    /** Render the minimum peak dot.
      * This setting can be adjusted at runtime.
      */
-    bool enablePeakInvDot = true;
+    bool enablePeakDotMin = false;
 
-    /** Stretch the "interesting" part of the VU meter over the entire LED strip.
+    /** Draw the VU bar with this color.
      * This setting can be adjusted at runtime.
      */
-    bool enableRangeExtender = true;
+    CRGB vuBarColor = CRGB(0, 64, 0);
+
+    /** Draw the VU stripe with this color.
+     * This setting can be adjusted at runtime.
+     */
+    CRGB vuStripeColor = CRGB(16, 128, 0);
+
+    /** Draw the VU dot with this color.
+     * This setting can be adjusted at runtime.
+     */
+    CRGB vuDotColor = CRGB(0, 255, 32);
+
+    /** Draw the peak dot with this color.
+     * This setting can be adjusted at runtime.
+     */
+    CRGB peakDotColor = CRGB(255, 0, 0);
+
+    /** Draw the minimum peak dot with this color.
+     * This setting can be adjusted at runtime.
+     */
+    CRGB peakDotMinColor = CRGB(0, 0, 255);
 
     /** Configure the following properties according to your needs:
      * - VuPeakHandler::peakHold
@@ -107,78 +106,71 @@ namespace EC
      * - VuPeakHandlerInv::peakDecay
      * - Don't call any of its methods!
      */
-    VuPeakHandlerInv vuPeakHandlerInv;
+    VuPeakHandlerInv vuPeakMinHandler;
 
-    /// Usually there's nothing to configure here; only for debugging.
-    VuRangeExtender vuRangeExtender;
-
-    /** Constructor
-     * @param audioSource  Read the audio samples from there.
+    /** Constructor.
      * @param ledStrip  The LED strip.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
+     * @param vuSource  Input for calculating the VU Overlay.
      */
-    TestVU1(float &audioSource,
-            FastLedStrip ledStrip,
-            bool overlayMode)
-        : VuBaseFL(ledStrip, overlayMode, fadeRate_default(), audioSource)
+    TestVU1(FastLedStrip ledStrip,
+            VuSource &vuSource)
+        : _strip(ledStrip), _vuSource(vuSource)
     {
-      setModelUpdatePeriod(10);
       vuPeakHandler.peakHold = 500;
       vuPeakHandler.peakDecay = 3000;
-      vuPeakHandlerInv.peakHold = vuPeakHandler.peakHold;
-      vuPeakHandlerInv.peakDecay = vuPeakHandler.peakDecay;
+      vuPeakMinHandler.peakHold = vuPeakHandler.peakHold;
+      vuPeakMinHandler.peakDecay = vuPeakHandler.peakDecay;
     }
 
   private:
-    /// @see AnimationBase::showOverlay()
-    void showOverlay(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      if (enableVuBar)
+      if (wasModified)
       {
-        strip.normLineRel(0.0, _vuLevel, vuBarColor);
-      }
-      if (enableVuDot)
-      {
-        strip.normLineAbs(_vuLevel, _lastVuLevel, vuDotColor);
-        // strip.normPixel(_vuLevel) = vuDotColor;
-      }
-      if (enablePeakDot)
-      {
-        strip.optPixel(vuPeakHandler.getVU()) = peakDotColor;
-      }
-      if (enablePeakInvDot)
-      {
-        strip.optPixel(vuPeakHandlerInv.getVU()) = peakInvDotColor;
-      }
-      _lastVuLevel = _vuLevel;
+        const float vuLevel = _vuSource.getVU();
+        vuPeakHandler.process(vuLevel, currentMillis);
+        vuPeakMinHandler.process(vuLevel, currentMillis);
+
+        if (enableVuBar)
+        {
+          _strip.normLineRel(0.0, vuLevel, vuBarColor);
+        }
+        if (enableVuStripe)
+        {
+          _strip.normLineAbs(vuLevel, _lastVuLevel, vuStripeColor);
+        }
+        if (enableVuDot)
+        {
+          _strip.normPixel(vuLevel) = vuDotColor;
+        }
+        if (enablePeakDot)
+        {
+          _strip.optPixel(vuPeakHandler.getVU()) = peakDotColor;
+        }
+        if (enablePeakDotMin)
+        {
+          _strip.optPixel(vuPeakMinHandler.getVU()) = peakDotMinColor;
+        }
+        _lastVuLevel = vuLevel;
 
 #ifdef TESTVU1_DEBUG
-      // Teleplot: VU levels
-      Serial.print(">-:");
-      Serial.println(0.0);
-      Serial.print(">+:");
-      Serial.println(1.0);
-      Serial.print(">VU:");
-      Serial.println(_vuLevel);
-      Serial.print(">peak:");
-      Serial.println(vuPeakHandler.getVU());
+        // Teleplot: VU levels
+        Serial.print(">-:");
+        Serial.println(0.0);
+        Serial.print(">+:");
+        Serial.println(1.0);
+        Serial.print(">VU:");
+        Serial.println(vuLevel);
+        Serial.print(">peak:");
+        Serial.println(vuPeakHandler.getVU());
 #endif
-    }
-
-    /// @see AnimationBase::updateModel()
-    void updateModel(uint32_t currentMillis) override
-    {
-      _vuLevel = vuLevelHandler.capture();
-      if (enableRangeExtender)
-      {
-        _vuLevel = vuRangeExtender.process(_vuLevel);
       }
-      vuPeakHandler.process(_vuLevel, currentMillis);
-      vuPeakHandlerInv.process(_vuLevel, currentMillis);
     }
 
   private:
-    float _vuLevel = 0.0;
+    FastLedStrip _strip;
+    VuSource &_vuSource;
     float _lastVuLevel = 0.0;
   };
 

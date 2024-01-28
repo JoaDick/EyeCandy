@@ -25,10 +25,6 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "VuBaseFL.h"
-#include "VuPeakGravityHandler.h"
-#include "VuRangeExtender.h"
-
 #include "VuOverlayRainbowDot.h"
 #include "VuOverlayRainbowLine.h"
 #include "VuSourcePeakGravity.h"

@@ -131,7 +131,7 @@ namespace EC
       if (_patternUpdateTimer.process(currentMillis))
       {
         wasModified = true;
-        _strip.showDefaultPattern(fadeRate);
+        showDefaultPattern(_strip, fadeRate);
       }
 
       if (wasModified)

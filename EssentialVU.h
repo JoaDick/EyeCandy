@@ -25,10 +25,6 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "VuBaseFL.h"
-#include "VuPeakHandler.h"
-#include "VuRangeExtender.h"
-
 #include "VuOverlayDot.h"
 #include "VuOverlayLine.h"
 #include "VuSourcePeakHold.h"

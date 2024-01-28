@@ -132,7 +132,7 @@ namespace EC
      */
     virtual void showPattern(uint32_t currentMillis)
     {
-      strip.showDefaultPattern(fadeRate);
+      showDefaultPattern(strip, fadeRate);
     }
 
     /** Render the Animation's Overlay content.

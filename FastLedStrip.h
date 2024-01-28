@@ -225,23 +225,6 @@ namespace EC
       nscale8(m_ledArray, getSize(), 255 - fadeBy);
     }
 
-    /** Helper function for rendering an oftentimes used Pattern background.
-     * Depending on the setting of \a fadeRate, it makes either a fading background, or a solid
-     * black background.
-     * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
-     */
-    void showDefaultPattern(uint8_t fadeRate)
-    {
-      if (fadeRate)
-      {
-        fadeToBlackBy(fadeRate);
-      }
-      else
-      {
-        fillSolid(CRGB::Black);
-      }
-    }
-
     /// Get a new strip with the same underlying LED pixel array, but reversed drawing direction.
     FastLedStrip getReversedStrip() const
     {
@@ -477,6 +460,23 @@ namespace EC
     CRGB *m_ledArray;
     uint16_t m_sizeNrev;
   };
+
+  /** Helper function for rendering an oftentimes used Pattern background.
+   * Depending on the setting of \a fadeRate, it makes either a fading background, or a solid
+   * black background.
+   * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
+   */
+  inline void showDefaultPattern(FastLedStrip &strip, uint8_t fadeRate)
+  {
+    if (fadeRate)
+    {
+      strip.fadeToBlackBy(fadeRate);
+    }
+    else
+    {
+      strip.fillSolid(CRGB::Black);
+    }
+  }
 
   /// Put more emphasis on the red'ish colors.
   inline uint8_t redShift(uint8_t hue)
