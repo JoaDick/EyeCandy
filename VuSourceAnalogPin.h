@@ -66,7 +66,8 @@ namespace EC
     VuRangeExtender vuRangeExtender;
 
     /// Make this class usable as a VuSource.
-    operator VuSource &() { return vuRangeExtender; }
+    operator VuSource &() { return asVuSource(); }
+    VuSource &asVuSource() { return vuRangeExtender; }
 
     /** Constructor for Pattern mode.
      * @param audioSource  Read the audio samples from there.

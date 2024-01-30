@@ -32,6 +32,80 @@ SOFTWARE.
 namespace EC
 {
 
+  /** Helper class for detecting VU peaks.
+   * Activate peak detection via arm(). Then call process() periodically; when a peak is detected,
+   * it returns the peak's value and disarms. Call arm() again to prepare for detecting the next
+   * peak. When disarmed or no peak has been detected yet, 0 is returned. \n
+   * This detector checks if consecutive VU values are rising or falling. A transition from rising
+   * to falling is reported as peak.
+   */
+  class VuPeakDetector
+  {
+  public:
+    /** VU levels below that level will be set to 0.
+     * Render the peak only when its position is greater than 0, so it will disappear during
+     * silence.
+     */
+    float peakThreshold = 0.005;
+
+    /** Calculate the peak for the given \a vuLevel.
+     * After a peak was detected, it must be rearmed via arm().
+     * @return When armed, the peak VU value when detected. Otherwise 0
+     * @note \a vuLevel is set to 0 if it is below peakThreshold.
+     */
+    float process(float &vuLevel)
+    {
+      if (vuLevel <= peakThreshold)
+      {
+        vuLevel = 0.0;
+      }
+
+      float retval = 0.0;
+
+      if (_isRising)
+      {
+        if (vuLevel < _lastVuLevel)
+        {
+          _isRising = false;
+          if (_isArmed)
+          {
+            _isArmed = false;
+            retval = _lastVuLevel;
+          }
+        }
+      }
+      else
+      {
+        if (vuLevel > _lastVuLevel)
+        {
+          _isRising = true;
+        }
+      }
+
+      _lastVuLevel = vuLevel;
+      return retval;
+    }
+
+    /// Activate peak detection.
+    bool arm()
+    {
+      _isArmed = true;
+    }
+
+    /// Check if peak detection is activated.
+    bool isArmed()
+    {
+      return _isArmed;
+    }
+
+  private:
+    float _lastVuLevel = 0.0;
+    bool _isRising = false;
+    bool _isArmed = false;
+  };
+
+  //------------------------------------------------------------------------------
+
   /** Peak dot of a VU meter, influenced by gravity.
    * Set #a0 < 0.0 for the behaviour of a falling ball, that's bumped up by the VU bar.
    * Set #a0 > 0.0 for a bubble, floating off the peak.
@@ -40,12 +114,6 @@ namespace EC
       : public VuSource
   {
   public:
-    /** VU levels below that level will set the dot's position to 0.
-     * Render the dot only when its position is greater than 0.0, so it will
-     * disappear during silence.
-     */
-    float peakThreshold = 0.01;
-
     /// Configure a "Punched Ball" behaviour.
     void presetPunchedBall()
     {
@@ -117,44 +185,48 @@ namespace EC
       return _peakDetected;
     }
 
+    /// Usually there's nothing to configure here; mainly for debugging.
+    VuPeakDetector peakDetector;
+
   private:
     void calculatePeak(float vuLevel,
                        uint32_t currentMillis)
     {
-      _peakDetected = false;
-      // level too low?
-      if (vuLevel <= peakThreshold)
+      // VU level has overtaken current peak?
+      if (vuLevel > pos)
       {
-        // treat it as real silence
-        vuLevel = 0.0;
-      }
-      // peak rising?
-      if (vuLevel >= pos)
-      {
-        acc = 0.0;     // don't release peak yet
-        pos = vuLevel; // tie peak to VU level
-      }
-      // peak no more rising and not released yet?
-      else if (acc == 0.0)
-      {
-        // new peak detected!
-        _peakDetected = true;
-        acc = a0; // release peak
-        vel = v0;
-        // keep last pos
+        // abort and await next peak
+        peakDetector.arm();
       }
 
-      // peak is released?
-      if (acc != 0.0)
+      _peakDetected = false;
+      const float peakVuLevel = peakDetector.process(vuLevel);
+      // detected a new peak?
+      if (peakVuLevel)
+      {
+        _peakDetected = true;
+        acc = a0;
+        vel = v0;
+        pos = peakVuLevel;
+      }
+
+      // awaiting next peak?
+      if (peakDetector.isArmed())
+      {
+        pos = vuLevel;
+      }
+      // peak processing is active
+      else
       {
         const float delta_t = (currentMillis - lastMillis) / 1000.0;
         vel += acc * delta_t;
         pos += vel * delta_t;
 
-        // floating cycle has finnished?
-        if (acc > 0.0 && pos > 1.1) // let it float 10% over the top
+        // floating peak floated off the top?
+        if (acc > 0.0 && pos > 1.0)
         {
-          pos = 0.0; // will be treated as "rising" in next call
+          // await next peak
+          peakDetector.arm();
         }
       }
 

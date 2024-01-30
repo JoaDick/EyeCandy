@@ -28,6 +28,8 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
+// #define EC_ENABLE_VU_RANGE_EXTENDER_BYPASS 1
+
 #include <EyeCandy.h>
 // #define LED_COLOR_ORDER RGB
 // #define NUM_LEDS 50
@@ -98,6 +100,7 @@ void makeEssentialVU(EC::AnimationScene &scene)
     vu->vuPeakSource.vuPeakHandler.peakHold = 500;
 
     // animationDuration = 10;
+    // autoMode = false;
 }
 
 void makeTestVU1(EC::AnimationScene &scene)
@@ -145,12 +148,38 @@ void makeCompoundVu(EC::AnimationScene &scene)
     // autoMode = false;
 }
 
+void makeEjectingDotVu(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 25));
+    // vuLevelSource->vuRangeExtender.bypass = true;
+
+    auto vuPeakSource1 = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
+    vuPeakSource1->vuPeakHandler.a0 = -0.6;
+    vuPeakSource1->vuPeakHandler.v0 = 0.3;
+
+    auto vuPeakSource2 = scene.append(new EC::VuSourcePeakGravity(vuPeakSource1->asVuSource()));
+    vuPeakSource2->vuPeakHandler.a0 = 0.2;
+    vuPeakSource2->vuPeakHandler.v0 = 0.0;
+
+    auto vuLevelBar = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource));
+    auto vuPeakDot1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource1, *vuLevelSource));
+    auto vuPeakDot2 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource2, *vuLevelSource));
+
+    vuPeakDot1->vuHueRange = 1.0;
+    vuPeakDot2->vuHueRange = vuPeakDot1->vuHueRange;
+
+    autoMode = false;
+}
+
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
+    // &makeEjectingDotVu,
+    &makeEssentialVU,
     &makeTestVU1,
     &makeCompoundVu,
-    &makeEssentialVU,
 
     &makeRawAudioVU,
     nullptr};
@@ -161,18 +190,15 @@ EC::AnimationChangerSoft animationChanger(allAnimations);
 
 /*
 
+240130 Bugfix VuPeakGravityHandler
+
+Sketch uses 16722 bytes (51%) of program storage space. Maximum is 32256 bytes.
+Global variables use 789 bytes (38%) of dynamic memory, leaving 1259 bytes for local variables. Maximum is 2048 bytes.
+
+
 240128 New Dip mode for Peak handlers
 
 Sketch uses 16576 bytes (51%) of program storage space. Maximum is 32256 bytes.
-Global variables use 789 bytes (38%) of dynamic memory, leaving 1259 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 16804 bytes (52%) of program storage space. Maximum is 32256 bytes.
-Global variables use 789 bytes (38%) of dynamic memory, leaving 1259 bytes for local variables. Maximum is 2048 bytes.
----
-Sketch uses 16644 bytes (51%) of program storage space. Maximum is 32256 bytes.
-Global variables use 789 bytes (38%) of dynamic memory, leaving 1259 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 16718 bytes (51%) of program storage space. Maximum is 32256 bytes.
 Global variables use 789 bytes (38%) of dynamic memory, leaving 1259 bytes for local variables. Maximum is 2048 bytes.
 
 

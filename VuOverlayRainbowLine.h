@@ -119,7 +119,7 @@ namespace EC
   private:
     VuSource &_vuLevelSource;
     VuSource &_vuCcolorSource;
-    float _startHue = millis() % 0xFF;
+    float _startHue = millis() & 0xFF;
   };
 
 } // namespace EC

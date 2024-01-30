@@ -53,7 +53,8 @@ namespace EC
     VuPeakHandler vuPeakHandler;
 
     /// Make this class usable as a VuSource.
-    operator VuSource &() { return vuPeakHandler; }
+    operator VuSource &() { return asVuSource(); }
+    VuSource &asVuSource() { return vuPeakHandler; }
 
     /** Constructor.
      * @param vuSource  Input for calculating the VU peak level.
