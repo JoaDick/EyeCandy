@@ -58,6 +58,8 @@ SOFTWARE.
 #include "VuOverlayPeakGlitter.h"
 #include "VuOverlayRainbowDot.h"
 #include "VuOverlayRainbowLine.h"
+#include "VuOverlayRainbowStripe.h"
+#include "VuOverlayStripe.h"
 #include "VuSourceAnalogPin.h"
 #include "VuSourcePeakForce.h"
 #include "VuSourcePeakGravity.h"

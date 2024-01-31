@@ -170,13 +170,111 @@ void makeEjectingDotVu(EC::AnimationScene &scene)
     vuPeakDot1->vuHueRange = 1.0;
     vuPeakDot2->vuHueRange = vuPeakDot1->vuHueRange;
 
+    // autoMode = false;
+}
+
+void makeCrazyVu(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 45));
+
+    auto vuPeakSource1 = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
+    vuPeakSource1->vuPeakHandler.a0 = -0.6;
+    vuPeakSource1->vuPeakHandler.v0 = 0.3;
+
+    auto vuPeakSource2 = scene.append(new EC::VuSourcePeakGravity(vuPeakSource1->asVuSource()));
+    vuPeakSource2->vuPeakHandler.a0 = 0.2;
+    vuPeakSource2->vuPeakHandler.v0 = 0.0;
+
+    auto vuDipSource1 = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
+    vuDipSource1->vuPeakHandler = vuPeakSource1->vuPeakHandler;
+    vuDipSource1->vuPeakHandler.enableDipMode = true;
+
+    auto vuDipSource2 = scene.append(new EC::VuSourcePeakGravity(vuDipSource1->asVuSource()));
+    vuDipSource2->vuPeakHandler = vuPeakSource2->vuPeakHandler;
+    vuDipSource2->vuPeakHandler.enableDipMode = true;
+
+    auto vuLevelBar = scene.append(new EC::VuOverlayRainbowStripe(strip, *vuLevelSource));
+
+    auto vuPeakDot1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource1, *vuDipSource1));
+    auto vuPeakDot2 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource2, *vuDipSource1));
+
+    auto vuDipDot1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuDipSource1, *vuPeakSource1));
+    auto vuDipDot2 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuDipSource2, *vuPeakSource1));
+
+    vuLevelBar->baseHueStep = 0.25;
+    vuLevelBar->vuHueRange = 0.1;
+
+    const float dotVuHueRange = 1.5;
+    vuPeakDot1->vuHueRange = dotVuHueRange;
+    vuPeakDot2->vuHueRange = dotVuHueRange;
+    vuDipDot1->vuHueRange = dotVuHueRange;
+    vuDipDot2->vuHueRange = dotVuHueRange;
+
+    // autoMode = false;
+}
+
+void makeCrazierVu(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 45));
+
+    auto vuPeakSource1 = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
+    vuPeakSource1->vuPeakHandler.a0 = -0.6;
+    vuPeakSource1->vuPeakHandler.v0 = 0.3;
+
+    auto vuPeakSource2 = scene.append(new EC::VuSourcePeakGravity(vuPeakSource1->asVuSource()));
+    vuPeakSource2->vuPeakHandler.a0 = -0.25;
+    vuPeakSource2->vuPeakHandler.v0 = 0.05;
+
+    auto vuPeakSource3 = scene.append(new EC::VuSourcePeakGravity(vuPeakSource2->asVuSource()));
+    vuPeakSource3->vuPeakHandler.a0 = 0.2;
+    vuPeakSource3->vuPeakHandler.v0 = 0.0;
+
+    auto vuDipSource1 = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
+    vuDipSource1->vuPeakHandler = vuPeakSource1->vuPeakHandler;
+    vuDipSource1->vuPeakHandler.enableDipMode = true;
+
+    auto vuDipSource2 = scene.append(new EC::VuSourcePeakGravity(vuDipSource1->asVuSource()));
+    vuDipSource2->vuPeakHandler = vuPeakSource2->vuPeakHandler;
+    vuDipSource2->vuPeakHandler.enableDipMode = true;
+
+    auto vuDipSource3 = scene.append(new EC::VuSourcePeakGravity(vuDipSource2->asVuSource()));
+    vuDipSource3->vuPeakHandler = vuPeakSource3->vuPeakHandler;
+    vuDipSource3->vuPeakHandler.enableDipMode = true;
+
+    auto vuLevelBar = scene.append(new EC::VuOverlayRainbowStripe(strip, *vuLevelSource));
+
+    auto vuPeakDot1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource1, *vuDipSource1));
+    auto vuPeakDot2 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource2, *vuDipSource1));
+    auto vuPeakDot3 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource3, *vuDipSource1));
+
+    auto vuDipDot1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuDipSource1, *vuPeakSource1));
+    auto vuDipDot2 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuDipSource2, *vuPeakSource1));
+    auto vuDipDot3 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuDipSource3, *vuPeakSource1));
+
+    vuLevelBar->baseHueStep = 0.25;
+    vuLevelBar->vuHueRange = 0.1;
+
+    const float dotVuHueRange = 1.5;
+    vuPeakDot1->vuHueRange = dotVuHueRange;
+    vuPeakDot2->vuHueRange = dotVuHueRange;
+    vuPeakDot3->vuHueRange = dotVuHueRange;
+    vuDipDot1->vuHueRange = dotVuHueRange;
+    vuDipDot2->vuHueRange = dotVuHueRange;
+    vuDipDot3->vuHueRange = dotVuHueRange;
+
     autoMode = false;
 }
 
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
-    // &makeEjectingDotVu,
+    &makeEjectingDotVu,
+    &makeCrazyVu,
+    &makeCrazierVu,
     &makeEssentialVU,
     &makeTestVU1,
     &makeCompoundVu,
