@@ -32,7 +32,9 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-// #define TESTVU1_DEBUG
+#ifndef EC_TESTVU1_DEBUG
+#define EC_TESTVU1_DEBUG 0
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -186,7 +188,7 @@ namespace EC
         }
         _lastVuLevel = vuLevel;
 
-#ifdef TESTVU1_DEBUG
+#if (EC_TESTVU1_DEBUG)
         // Teleplot: VU levels
         Serial.print(">-:");
         Serial.println(0.0);

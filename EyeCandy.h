@@ -50,20 +50,9 @@ SOFTWARE.
 #include "Waterfall.h"
 
 // VU
-#include "EssentialVU.h"
 #include "Fire2012VU.h"
-#include "RainbowLevelVU.h"
-#include "VuOverlayDot.h"
-#include "VuOverlayLine.h"
-#include "VuOverlayPeakGlitter.h"
-#include "VuOverlayRainbowDot.h"
-#include "VuOverlayRainbowLine.h"
-#include "VuOverlayRainbowStripe.h"
-#include "VuOverlayStripe.h"
+#include "VuBlueprints.h"
 #include "VuSourceAnalogPin.h"
-#include "VuSourcePeakForce.h"
-#include "VuSourcePeakGravity.h"
-#include "VuSourcePeakHold.h"
 
 // Testing / Debugging
 #include "VuTools.h"

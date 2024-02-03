@@ -28,11 +28,15 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-// #define EC_ENABLE_VU_RANGE_EXTENDER_BYPASS 1
-
-#include <EyeCandy.h>
 // #define LED_COLOR_ORDER RGB
 // #define NUM_LEDS 50
+
+#define EC_ENABLE_VU_RANGE_EXTENDER_BYPASS 1
+// #define EC_TESTVU1_DEBUG 1
+
+//------------------------------------------------------------------------------
+
+#include <EyeCandy.h>
 #include <Animation_IO_config.h>
 #include <AudioNormalizer.h>
 #include <ButtonHandler.h>
@@ -75,11 +79,12 @@ void setup()
 
 //------------------------------------------------------------------------------
 
-const uint16_t defaultAnimationDuration = 10;
+const uint16_t defaultAnimationDuration = 15;
 uint16_t animationDuration = defaultAnimationDuration;
 
 //------------------------------------------------------------------------------
 
+/// Show the raw audio input as VU Anumation.
 void makeRawAudioVU(EC::AnimationScene &scene)
 {
     auto vu = scene.append(new EC::RawAudioVU(audioSample, {leds, NUM_LEDS}));
@@ -88,20 +93,171 @@ void makeRawAudioVU(EC::AnimationScene &scene)
     // animationDuration = 10;
 }
 
-/// An outlook what is possible.
-void makeEssentialVU(EC::AnimationScene &scene)
+/** Example to show the usage of VU Animations building blocks.
+ * - Input --> Line
+ * - Input --> PeakHold --> Dot
+ */
+void makeVuElements1(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 0));
-    auto vu = scene.append(new EC::EssentialVU(strip, *vuSource));
-    vu->vuLevelBar.color = CRGB(64, 0, 32);
-    vu->vuPeakDot.color = CRGB(64, 32, 0);
-    vu->vuPeakSource.vuPeakHandler.peakHold = 500;
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 0));
+    auto vuPeakSource = scene.append(new EC::VuSourcePeakHold(*vuLevelSource));
 
-    // animationDuration = 10;
+    auto levelVu = scene.append(new EC::VuOverlayLine(strip, *vuLevelSource));
+    auto peakVu = scene.append(new EC::VuOverlayDot(strip, *vuPeakSource));
+
     // autoMode = false;
 }
+
+/** Example to show the usage of VU Animations building blocks.
+ * - Input --> RainbowLine
+ * - Input --> PeakGravity / Ball --> RainbowDot / Input, 5%
+ */
+void makeVuElements2(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+
+    auto vuPeakSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
+    vuPeakSource->vuPeakHandler.presetPunchedBall();
+
+    auto levelVu = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource));
+    auto peakVu = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource, *vuLevelSource, 0.05));
+
+    // autoMode = false;
+}
+
+/** Example to show the usage of VU Animations building blocks.
+ * - Input --> Stripe / green
+ * - Input --> PeakHold1 --> Dot / red
+ * - Input --> PeakHold2 / Dip --> Dot / blue
+ */
+void makeVuElements3(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+
+    auto vuPeakSource = scene.append(new EC::VuSourcePeakHold(*vuLevelSource));
+    vuPeakSource->vuPeakHandler.peakHold = 500;
+    vuPeakSource->vuPeakHandler.peakDecay = 3000;
+
+    auto vuDipSource = scene.append(new EC::VuSourcePeakHold(*vuLevelSource));
+    vuDipSource->vuPeakHandler = vuPeakSource->vuPeakHandler;
+    vuDipSource->vuPeakHandler.enableDipMode = true;
+
+    auto levelVu = scene.append(new EC::VuOverlayStripe(strip, *vuLevelSource, CRGB(0, 128, 0)));
+    auto peakVu = scene.append(new EC::VuOverlayDot(strip, *vuPeakSource, CRGB(255, 0, 0)));
+    auto dipVu = scene.append(new EC::VuOverlayDot(strip, *vuDipSource, CRGB(0, 0, 255)));
+
+    // autoMode = false;
+}
+
+/** Example to show the usage of VU Animations building blocks.
+ * - Input --> RainbowStripe
+ * - Input --> PeakGravity1 / Bubble --> RainbowDot / Input
+ * - Input --> PeakGravity2 / Bubble, Dip --> RainbowDot / Input
+ */
+void makeVuElements4(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 20));
+
+    auto vuPeakSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
+    vuPeakSource->vuPeakHandler.presetFloatingBubble();
+
+    auto vuDipSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
+    vuDipSource->vuPeakHandler = vuPeakSource->vuPeakHandler;
+    vuDipSource->vuPeakHandler.enableDipMode = true;
+
+    auto levelVu = scene.append(new EC::VuOverlayRainbowStripe(strip, *vuLevelSource));
+    auto peakVu = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource, *vuLevelSource));
+    auto dipVu = scene.append(new EC::VuOverlayRainbowDot(strip, *vuDipSource, *vuLevelSource));
+
+    // autoMode = false;
+}
+
+/** Example to show the usage of VU Animations building blocks.
+ * - Input --> RainbowLine / PeakForce
+ * - Input --> PeakForce --> Dot / green, 5%
+ * - Input --> Glitter
+ */
+void makeVuElements5(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 100));
+
+    auto vuPeakSource = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
+
+    auto levelVu = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource, *vuPeakSource));
+    levelVu->volume = 64;
+    levelVu->vuHueRange = 0.75;
+    auto peakVu = scene.append(new EC::VuOverlayDot(strip, *vuPeakSource, CRGB(0, 64, 0), 0.05));
+
+    auto peakGlitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource));
+
+    // autoMode = false;
+}
+
+/** Example to show the usage of VU Animations building blocks.
+ * - Input --> PeakForce --> Stripe / light green
+ * - Input --> Glitter / red'ish
+ * - Input --> Glitter / blue'ish, Dip
+ */
+void makeVuElements6(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+
+    auto vuPeakSource = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
+
+    auto levelVu = scene.append(new EC::VuOverlayStripe(strip, *vuPeakSource, CRGB(0, 32, 0)));
+
+    auto peakGlitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource, CRGB(255, 64, 64)));
+    auto dipGlitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource, CRGB(64, 64, 255)));
+    dipGlitter->vuPeakHandler.enableDipMode = true;
+
+    // autoMode = false;
+}
+
+//------------------------------------------------------------------------------
+
+void makeEjectingDotVu(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, EC::BlueprintEjectingDotVu::fadeRate));
+    EC::BlueprintEjectingDotVu bp(strip, scene, *vuLevelSource);
+
+    // autoMode = false;
+}
+
+void makeCrazyVu(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, EC::BlueprintCrazyVu::fadeRate));
+    EC::BlueprintCrazyVu bp(strip, scene, *vuLevelSource);
+
+    // autoMode = false;
+}
+
+void makeCrazierVu(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, EC::BlueprintCrazierVu::fadeRate));
+    EC::BlueprintCrazierVu bp(strip, scene, *vuLevelSource);
+
+    // autoMode = false;
+}
+
+//------------------------------------------------------------------------------
 
 void makeTestVU1(EC::AnimationScene &scene)
 {
@@ -117,195 +273,33 @@ void makeTestVU1(EC::AnimationScene &scene)
     vu->enablePeakDotMin = true;
     // vu->vuPeakHandler.peakHold = 1000;
 
-    // animationDuration = 10;
     // autoMode = false;
-}
-
-void makeCompoundVu(EC::AnimationScene &scene)
-{
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
-#if (0)
-    auto vuPeakSource = scene.append(new EC::VuSourcePeakHold(*vuLevelSource));
-    // vuPeakSource->vuPeakHandler.peakHold = 1000;
-#endif
-#if (1)
-    auto vuPeakSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
-    // vuPeakSource->vuPeakHandler.presetPunchedBall();
-    // vuPeakSource->vuPeakHandler.presetFloatingBubble();
-#endif
-
-#if (1)
-    auto vuLevelBar = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource /*, *vuPeakSource*/));
-    auto vuPeakDot = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource, *vuLevelSource));
-#endif
-#if (0)
-    scene.append(new EC::VuOverlayLine(strip, *vuLevelSource));
-    scene.append(new EC::VuOverlayDot(strip, *vuPeakSource));
-#endif
-
-    // autoMode = false;
-}
-
-void makeEjectingDotVu(EC::AnimationScene &scene)
-{
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 25));
-    // vuLevelSource->vuRangeExtender.bypass = true;
-
-    auto vuPeakSource1 = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
-    vuPeakSource1->vuPeakHandler.a0 = -0.6;
-    vuPeakSource1->vuPeakHandler.v0 = 0.3;
-
-    auto vuPeakSource2 = scene.append(new EC::VuSourcePeakGravity(vuPeakSource1->asVuSource()));
-    vuPeakSource2->vuPeakHandler.a0 = 0.2;
-    vuPeakSource2->vuPeakHandler.v0 = 0.0;
-
-    auto vuLevelBar = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource));
-    auto vuPeakDot1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource1, *vuLevelSource));
-    auto vuPeakDot2 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource2, *vuLevelSource));
-
-    vuPeakDot1->vuHueRange = 1.0;
-    vuPeakDot2->vuHueRange = vuPeakDot1->vuHueRange;
-
-    // autoMode = false;
-}
-
-void makeCrazyVu(EC::AnimationScene &scene)
-{
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 45));
-
-    auto vuPeakSource1 = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
-    vuPeakSource1->vuPeakHandler.a0 = -0.6;
-    vuPeakSource1->vuPeakHandler.v0 = 0.3;
-
-    auto vuPeakSource2 = scene.append(new EC::VuSourcePeakGravity(vuPeakSource1->asVuSource()));
-    vuPeakSource2->vuPeakHandler.a0 = 0.2;
-    vuPeakSource2->vuPeakHandler.v0 = 0.0;
-
-    auto vuDipSource1 = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
-    vuDipSource1->vuPeakHandler = vuPeakSource1->vuPeakHandler;
-    vuDipSource1->vuPeakHandler.enableDipMode = true;
-
-    auto vuDipSource2 = scene.append(new EC::VuSourcePeakGravity(vuDipSource1->asVuSource()));
-    vuDipSource2->vuPeakHandler = vuPeakSource2->vuPeakHandler;
-    vuDipSource2->vuPeakHandler.enableDipMode = true;
-
-    auto vuLevelBar = scene.append(new EC::VuOverlayRainbowStripe(strip, *vuLevelSource));
-
-    auto vuPeakDot1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource1, *vuDipSource1));
-    auto vuPeakDot2 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource2, *vuDipSource1));
-
-    auto vuDipDot1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuDipSource1, *vuPeakSource1));
-    auto vuDipDot2 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuDipSource2, *vuPeakSource1));
-
-    vuLevelBar->baseHueStep = 0.25;
-    vuLevelBar->vuHueRange = 0.1;
-
-    const float dotVuHueRange = 1.5;
-    vuPeakDot1->vuHueRange = dotVuHueRange;
-    vuPeakDot2->vuHueRange = dotVuHueRange;
-    vuDipDot1->vuHueRange = dotVuHueRange;
-    vuDipDot2->vuHueRange = dotVuHueRange;
-
-    // autoMode = false;
-}
-
-void makeCrazierVu(EC::AnimationScene &scene)
-{
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 45));
-
-    auto vuPeakSource1 = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
-    vuPeakSource1->vuPeakHandler.a0 = -0.6;
-    vuPeakSource1->vuPeakHandler.v0 = 0.3;
-
-    auto vuPeakSource2 = scene.append(new EC::VuSourcePeakGravity(vuPeakSource1->asVuSource()));
-    vuPeakSource2->vuPeakHandler.a0 = -0.25;
-    vuPeakSource2->vuPeakHandler.v0 = 0.05;
-
-    auto vuPeakSource3 = scene.append(new EC::VuSourcePeakGravity(vuPeakSource2->asVuSource()));
-    vuPeakSource3->vuPeakHandler.a0 = 0.2;
-    vuPeakSource3->vuPeakHandler.v0 = 0.0;
-
-    auto vuDipSource1 = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
-    vuDipSource1->vuPeakHandler = vuPeakSource1->vuPeakHandler;
-    vuDipSource1->vuPeakHandler.enableDipMode = true;
-
-    auto vuDipSource2 = scene.append(new EC::VuSourcePeakGravity(vuDipSource1->asVuSource()));
-    vuDipSource2->vuPeakHandler = vuPeakSource2->vuPeakHandler;
-    vuDipSource2->vuPeakHandler.enableDipMode = true;
-
-    auto vuDipSource3 = scene.append(new EC::VuSourcePeakGravity(vuDipSource2->asVuSource()));
-    vuDipSource3->vuPeakHandler = vuPeakSource3->vuPeakHandler;
-    vuDipSource3->vuPeakHandler.enableDipMode = true;
-
-    auto vuLevelBar = scene.append(new EC::VuOverlayRainbowStripe(strip, *vuLevelSource));
-
-    auto vuPeakDot1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource1, *vuDipSource1));
-    auto vuPeakDot2 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource2, *vuDipSource1));
-    auto vuPeakDot3 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource3, *vuDipSource1));
-
-    auto vuDipDot1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuDipSource1, *vuPeakSource1));
-    auto vuDipDot2 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuDipSource2, *vuPeakSource1));
-    auto vuDipDot3 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuDipSource3, *vuPeakSource1));
-
-    vuLevelBar->baseHueStep = 0.25;
-    vuLevelBar->vuHueRange = 0.1;
-
-    const float dotVuHueRange = 1.5;
-    vuPeakDot1->vuHueRange = dotVuHueRange;
-    vuPeakDot2->vuHueRange = dotVuHueRange;
-    vuPeakDot3->vuHueRange = dotVuHueRange;
-    vuDipDot1->vuHueRange = dotVuHueRange;
-    vuDipDot2->vuHueRange = dotVuHueRange;
-    vuDipDot3->vuHueRange = dotVuHueRange;
-
-    autoMode = false;
 }
 
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
-    &makeEjectingDotVu,
-    &makeCrazyVu,
-    &makeCrazierVu,
-    &makeEssentialVU,
-    &makeTestVU1,
-    &makeCompoundVu,
+    // &makeTestVU1,
 
     &makeRawAudioVU,
+    &makeVuElements1,
+    &makeVuElements2,
+    &makeVuElements3,
+    &makeVuElements4,
+    &makeVuElements5,
+    &makeVuElements6,
+
+    // &makeEjectingDotVu,
+    // &makeCrazyVu,
+    // &makeCrazierVu,
+    &makeTestVU1,
+
     nullptr};
 
-EC::AnimationChangerSoft animationChanger(allAnimations);
+EC::AnimationChanger animationChanger(allAnimations);
+// EC::AnimationChangerSoft animationChanger(allAnimations);
 
 //------------------------------------------------------------------------------
-
-/*
-
-240130 Bugfix VuPeakGravityHandler
-
-Sketch uses 16722 bytes (51%) of program storage space. Maximum is 32256 bytes.
-Global variables use 789 bytes (38%) of dynamic memory, leaving 1259 bytes for local variables. Maximum is 2048 bytes.
-
-
-240128 New Dip mode for Peak handlers
-
-Sketch uses 16576 bytes (51%) of program storage space. Maximum is 32256 bytes.
-Global variables use 789 bytes (38%) of dynamic memory, leaving 1259 bytes for local variables. Maximum is 2048 bytes.
-
-
-240128 Eliminated VuBaseFL
-
-Sketch uses 16640 bytes (51%) of program storage space. Maximum is 32256 bytes.
-Global variables use 795 bytes (38%) of dynamic memory, leaving 1253 bytes for local variables. Maximum is 2048 bytes.
-
-*/
 
 void handleAnimationChange(uint32_t currentMillis = millis())
 {
@@ -405,7 +399,7 @@ void updateColor()
             lastHue = analogValue;
         }
 
-        animationChanger.maxBrightness = analogValue;
+        // animationChanger.maxBrightness = analogValue;
     }
 }
 
@@ -475,44 +469,44 @@ void printMemoryUsage()
     Serial.println(F(" LEDs:"));
     Serial.println(F("<*> is dependant on NUM_LEDS"));
 
-    Serial.print(F("EssentialVU = "));
-    Serial.println(sizeof(EC::EssentialVU));
-
-    Serial.print(F("RainbowLevelVU = "));
-    Serial.println(sizeof(EC::RainbowLevelVU));
-
-    Serial.print(F("VuOverlayDot = "));
-    Serial.println(sizeof(EC::VuOverlayDot));
-
-    Serial.print(F("VuOverlayLine = "));
-    Serial.println(sizeof(EC::VuOverlayLine));
-
-    Serial.print(F("VuOverlayPeakGlitter = "));
-    Serial.println(sizeof(EC::VuOverlayPeakGlitter));
-
-    Serial.print(F("VuOverlayRainbowDot = "));
-    Serial.println(sizeof(EC::VuOverlayRainbowDot));
-
-    Serial.print(F("VuOverlayRainbowLine = "));
-    Serial.println(sizeof(EC::VuOverlayRainbowLine));
-
     Serial.print(F("VuSourceAnalogPin = "));
     Serial.println(sizeof(EC::VuSourceAnalogPin));
-
-    Serial.print(F("VuSourcePeakForce = "));
-    Serial.println(sizeof(EC::VuSourcePeakForce));
-
-    Serial.print(F("VuSourcePeakGravity = "));
-    Serial.println(sizeof(EC::VuSourcePeakGravity));
 
     Serial.print(F("VuSourcePeakHold = "));
     Serial.println(sizeof(EC::VuSourcePeakHold));
 
+    Serial.print(F("VuSourcePeakGravity = "));
+    Serial.println(sizeof(EC::VuSourcePeakGravity));
+
+    Serial.print(F("VuSourcePeakForce = "));
+    Serial.println(sizeof(EC::VuSourcePeakForce));
+
+    Serial.print(F("VuOverlayLine = "));
+    Serial.println(sizeof(EC::VuOverlayLine));
+
+    Serial.print(F("VuOverlayStripe = "));
+    Serial.println(sizeof(EC::VuOverlayStripe));
+
+    Serial.print(F("VuOverlayDot = "));
+    Serial.println(sizeof(EC::VuOverlayDot));
+
+    Serial.print(F("VuOverlayRainbowLine = "));
+    Serial.println(sizeof(EC::VuOverlayRainbowLine));
+
+    Serial.print(F("VuOverlayRainbowStripe = "));
+    Serial.println(sizeof(EC::VuOverlayRainbowStripe));
+
+    Serial.print(F("VuOverlayRainbowDot = "));
+    Serial.println(sizeof(EC::VuOverlayRainbowDot));
+
+    Serial.print(F("VuOverlayPeakGlitter = "));
+    Serial.println(sizeof(EC::VuOverlayPeakGlitter));
+
+    Serial.print(F("Fire2012VU = "));
+    Serial.println(sizeof(EC::Fire2012VU<NUM_LEDS>));
+
     Serial.print(F("RawAudioVU = "));
     Serial.println(sizeof(EC::RawAudioVU));
-
-    Serial.print(F("TestVU1 = "));
-    Serial.println(sizeof(EC::TestVU1));
 }
 #endif
 

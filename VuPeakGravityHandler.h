@@ -131,15 +131,15 @@ namespace EC
     /// Configure a "Peak Hold" alike behaviour (the default).
     void presetPeakHold()
     {
-      a0 = -0.4; // Takeoff acceleration.
-      v0 = 0.0;  // Takeoff velocity.
+      a0 = -0.5; // Takeoff acceleration.
+      v0 = 0.05; // Takeoff velocity.
     }
 
     /// Takeoff acceleration. Value 0.0 is not allowed.
-    float a0 = -0.4;
+    float a0 = -0.5;
 
     /// Takeoff velocity.
-    float v0 = 0.0;
+    float v0 = 0.05;
 
     /** Set to \c true for calculating the VU Dip instead of the VU Peak.
      * The commonly known \e peak is following the \e highest VU values, and is \e decreasing

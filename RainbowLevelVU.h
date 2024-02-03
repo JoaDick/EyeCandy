@@ -34,6 +34,7 @@ SOFTWARE.
 namespace EC
 {
 
+#if (0)
   /// VU meter with its color depending on the current VU level.
   class RainbowLevelVU
 
@@ -55,10 +56,13 @@ namespace EC
      */
     bool enableVuPeakDot = true;
 
-    /** Access to VuPeakHandler configuration.
+    /** Access to VuPeakGravityHandler configuration.
      * Adjust the following properties according to your needs:
-     * - VuSourcePeakHold::VuPeakHandler::peakHold
-     * - VuSourcePeakHold::VuPeakHandler::peakDecay
+     * - Set VuSourcePeakGravity::VuPeakGravityHandler::a0 < 0.0 for the behaviour of a falling ball, that's bumped up by the VU bar.
+     * - Set VuSourcePeakGravity::VuPeakGravityHandler::a0 > 0.0 for a bubble, floating off the peak.
+     * - Or use a preset like VuPeakGravityHandler::presetPunchedBall() or
+     *   VuSourcePeakGravity::VuPeakGravityHandler::presetFloatingBubble()
+     * - VuSourcePeakGravity::VuPeakGravityHandler::enableDipMode
      */
     VuSourcePeakGravity vuPeakSource;
 
@@ -123,5 +127,6 @@ namespace EC
 #endif
     }
   };
+#endif
 
 } // namespace EC
