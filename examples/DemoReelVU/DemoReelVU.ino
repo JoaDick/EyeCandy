@@ -457,7 +457,7 @@ void makeVuIntro6(EC::AnimationScene &scene)
     auto vuPeakSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
     vuPeakSource->vuPeakHandler.presetPunchedBall();
 
-    auto vuPeak = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource));
+    auto vuPeak = scene.append(new EC::VuOverlayRainbowStripe(strip, *vuPeakSource));
     vuPeak->vuHueRange = 0.5;
 
     auto glitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource));

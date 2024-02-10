@@ -32,7 +32,6 @@ SOFTWARE.
 // #define NUM_LEDS 50
 
 #define EC_ENABLE_VU_RANGE_EXTENDER_BYPASS 1
-// #define EC_TESTVU1_DEBUG 1
 
 //------------------------------------------------------------------------------
 
@@ -93,6 +92,26 @@ void makeRawAudioVU(EC::AnimationScene &scene)
     // animationDuration = 10;
 }
 
+//------------------------------------------------------------------------------
+
+#define USE_GLOBAL_VU_LEVEL_SOURCE 0
+
+#if (USE_GLOBAL_VU_LEVEL_SOURCE)
+EC::VuSourceAnalogPin globalVuLevelSource(audioSample, {leds, NUM_LEDS}, 0);
+#endif
+
+inline EC::VuSourceAnalogPin *appendVuSourceAnalogPin(EC::AnimationScene &scene,
+                                                      uint8_t fadeRate)
+{
+#if (USE_GLOBAL_VU_LEVEL_SOURCE)
+    auto vuLevelSource = scene.append(globalVuLevelSource);
+    vuLevelSource->fadeRate = fadeRate;
+    return vuLevelSource;
+#else
+    return scene.append(new EC::VuSourceAnalogPin(audioSample, {leds, NUM_LEDS}, fadeRate));
+#endif
+}
+
 /** Example to show the usage of VU Animations building blocks.
  * - Input --> Line
  * - Input --> PeakHold --> Dot
@@ -101,7 +120,8 @@ void makeVuElements1(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 0));
+    auto vuLevelSource = appendVuSourceAnalogPin(scene, 0);
+
     auto vuPeakSource = scene.append(new EC::VuSourcePeakHold(*vuLevelSource));
 
     auto levelVu = scene.append(new EC::VuOverlayLine(strip, *vuLevelSource));
@@ -118,7 +138,7 @@ void makeVuElements2(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+    auto vuLevelSource = appendVuSourceAnalogPin(scene, 50);
 
     auto vuPeakSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
     vuPeakSource->vuPeakHandler.presetPunchedBall();
@@ -138,7 +158,7 @@ void makeVuElements3(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+    auto vuLevelSource = appendVuSourceAnalogPin(scene, 50);
 
     auto vuPeakSource = scene.append(new EC::VuSourcePeakHold(*vuLevelSource));
     vuPeakSource->vuPeakHandler.peakHold = 500;
@@ -164,7 +184,7 @@ void makeVuElements4(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 20));
+    auto vuLevelSource = appendVuSourceAnalogPin(scene, 20);
 
     auto vuPeakSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
     vuPeakSource->vuPeakHandler.presetFloatingBubble();
@@ -189,7 +209,7 @@ void makeVuElements5(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 100));
+    auto vuLevelSource = appendVuSourceAnalogPin(scene, 100);
 
     auto vuPeakSource = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
 
@@ -212,7 +232,7 @@ void makeVuElements6(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+    auto vuLevelSource = appendVuSourceAnalogPin(scene, 50);
 
     auto vuPeakSource = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
 
@@ -231,7 +251,8 @@ void makeEjectingDotVu(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, EC::BlueprintEjectingDotVu::fadeRate));
+    auto vuLevelSource = appendVuSourceAnalogPin(scene, EC::BlueprintEjectingDotVu::fadeRate);
+
     EC::BlueprintEjectingDotVu bp(strip, scene, *vuLevelSource);
 
     // autoMode = false;
@@ -241,7 +262,8 @@ void makeCrazyVu(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, EC::BlueprintCrazyVu::fadeRate));
+    auto vuLevelSource = appendVuSourceAnalogPin(scene, EC::BlueprintCrazyVu::fadeRate);
+
     EC::BlueprintCrazyVu bp(strip, scene, *vuLevelSource);
 
     // autoMode = false;
@@ -251,7 +273,8 @@ void makeCrazierVu(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, EC::BlueprintCrazierVu::fadeRate));
+    auto vuLevelSource = appendVuSourceAnalogPin(scene, EC::BlueprintCrazierVu::fadeRate);
+
     EC::BlueprintCrazierVu bp(strip, scene, *vuLevelSource);
 
     // autoMode = false;
@@ -259,19 +282,53 @@ void makeCrazierVu(EC::AnimationScene &scene)
 
 //------------------------------------------------------------------------------
 
+#define USE_GLOBAL_TEST_VU 1
+
+#if (USE_GLOBAL_TEST_VU)
+EC::TestVU1 globalTestVU(audioSample, {leds, NUM_LEDS}, nullptr);
+#endif
+
+EC::TestVU1 *appendTestVU1(EC::AnimationScene &scene,
+                           EC::TestVU1::DrawingFct drawingFct)
+{
+#if (USE_GLOBAL_TEST_VU)
+    auto testVU = scene.append(globalTestVU);
+    testVU->drawingFct = drawingFct;
+    return testVU;
+#else
+    return scene.append(new EC::TestVU1(audioSample, {leds, NUM_LEDS}, drawingFct));
+#endif
+}
+
 void makeTestVU1(EC::AnimationScene &scene)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
+    auto drawingFct = [](EC::FastLedStrip &strip, EC::TestVU1 &vu)
+    {
+        strip.normLineAbs(vu.vuLevel, vu.lastVuLevel, CRGB(0, 128, 0));
 
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+        strip.optPixel(vu.vuPeakHandler.getVU()) += CRGB(255, 0, 0);
+        strip.optPixel(vu.vuDipHandler.getVU()) += CRGB(0, 0, 255);
 
-    auto vu = scene.append(new EC::TestVU1(strip, *vuLevelSource));
-    vu->enableVuBar = false;
-    vu->enableVuStripe = true;
-    vu->enableVuDot = false;
-    vu->enablePeakDot = true;
-    vu->enablePeakDotMin = true;
-    // vu->vuPeakHandler.peakHold = 1000;
+        strip.optPixel(vu.vuPeakGravityHandler.getVU()) += CRGB(128, 0, 32);
+        strip.optPixel(vu.vuDipGravityHandler.getVU()) += CRGB(32, 0, 128);
+
+        strip.optPixel(vu.vuPeakForceHandler.getVU()) += CRGB(128, 64, 0);
+    };
+
+    auto testVU = appendTestVU1(scene, drawingFct);
+
+    // autoMode = false;
+}
+
+void makeRangeExtenderComparison(EC::AnimationScene &scene)
+{
+    auto drawingFct = [](EC::FastLedStrip &strip, EC::TestVU1 &vu)
+    {
+        strip.normLineAbs(0.0, vu.vuLevelHandler.getVU(), CRGB(0, 64, 0));
+        strip.optPixel(vu.vuRangeExtender.getVU()) += CRGB(255, 64, 0);
+    };
+
+    auto testVU = appendTestVU1(scene, drawingFct);
 
     // autoMode = false;
 }
@@ -279,9 +336,10 @@ void makeTestVU1(EC::AnimationScene &scene)
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
-    // &makeTestVU1,
+    &makeTestVU1,
+    &makeRangeExtenderComparison,
 
-    &makeRawAudioVU,
+    // &makeRawAudioVU,
     &makeVuElements1,
     &makeVuElements2,
     &makeVuElements3,
@@ -292,7 +350,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeEjectingDotVu,
     // &makeCrazyVu,
     // &makeCrazierVu,
-    &makeTestVU1,
+    // &makeTestVU1,
 
     nullptr};
 
@@ -507,6 +565,9 @@ void printMemoryUsage()
 
     Serial.print(F("RawAudioVU = "));
     Serial.println(sizeof(EC::RawAudioVU));
+
+    Serial.print(F("TestVU1 = "));
+    Serial.println(sizeof(EC::TestVU1));
 }
 #endif
 

@@ -25,16 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "Animation.h"
-#include "VuSource.h"
-#include "VuPeakHandler.h"
-#include "VuPeakGravityHandler.h"
-
-//------------------------------------------------------------------------------
-
-#ifndef EC_TESTVU1_DEBUG
-#define EC_TESTVU1_DEBUG 0
-#endif
+#include "VuBlueprints.h"
 
 //------------------------------------------------------------------------------
 
@@ -44,168 +35,76 @@ namespace EC
   /** A playground for VU testing during EyeCandy development.
    */
   class TestVU1
-      : public Animation
+      : public AnimationBase
   {
   public:
-    /** Render the VU level as bar.
-     * This setting can be adjusted at runtime.
-     */
-    bool enableVuBar = true;
+    /// Signature of the function for rendering the VU on the LED strip.
+    using DrawingFct = void (*)(FastLedStrip &strip, TestVU1 &vu);
 
-    /** Render the VU level as stripe.
-     * This setting can be adjusted at runtime.
-     */
-    bool enableVuStripe = false;
+    DrawingFct drawingFct;
 
-    /** Render the VU level as dot.
-     * This setting can be adjusted at runtime.
-     */
-    bool enableVuDot = false;
+    VuLevelHandler vuLevelHandler;
 
-    /** Render the peak dot.
-     * This setting can be adjusted at runtime.
-     */
-    bool enablePeakDot = true;
+    VuRangeExtender vuRangeExtender;
 
-    /** Render the minimum peak dot.
-     * This setting can be adjusted at runtime.
-     */
-    bool enablePeakDotMin = false;
-
-    /** Draw the VU bar with this color.
-     * This setting can be adjusted at runtime.
-     */
-    CRGB vuBarColor = CRGB(0, 64, 0);
-
-    /** Draw the VU stripe with this color.
-     * This setting can be adjusted at runtime.
-     */
-    CRGB vuStripeColor = CRGB(16, 128, 0);
-
-    /** Draw the VU dot with this color.
-     * This setting can be adjusted at runtime.
-     */
-    CRGB vuDotColor = CRGB(0, 255, 32);
-
-    /** Draw the peak dot with this color.
-     * This setting can be adjusted at runtime.
-     */
-    CRGB peakDotColor = CRGB(255, 0, 0);
-
-    /** Draw the minimum peak dot with this color.
-     * This setting can be adjusted at runtime.
-     */
-    CRGB peakDotMinColor = CRGB(0, 0, 255);
-
-#if (0)
-    /** Adjust the following properties according to your needs:
-     * - VuPeakHandler::peakHold
-     * - VuPeakHandler::peakDecay
-     * - VuPeakHandler::enableDipMode
-     */
     VuPeakHandler vuPeakHandler;
-
-    /** Adjust the following properties according to your needs:
-     * - VuPeakHandlerInv::peakHold
-     * - VuPeakHandlerInv::peakDecay
-     * - VuPeakHandler::enableDipMode
-     */
     VuPeakHandler vuDipHandler;
-#else
-    /** Adjust the following properties according to your needs:
-     * - Set VuPeakGravityHandler::a0 < 0.0 for the behaviour of a falling ball, that's bumped up by the VU bar.
-     * - Set VuPeakGravityHandler::a0 > 0.0 for a bubble, floating off the peak.
-     * - Or use a preset like VuPeakGravityHandler::presetPunchedBall() or
-     *   VuPeakGravityHandler::presetFloatingBubble()
-     * - VuPeakGravityHandler::enableDipMode
-     */
-    VuPeakGravityHandler vuPeakHandler;
 
-    /** Adjust the following properties according to your needs:
-     * - Set VuPeakGravityHandler::a0 < 0.0 for the behaviour of a falling ball, that's bumped up by the VU bar.
-     * - Set VuPeakGravityHandler::a0 > 0.0 for a bubble, floating off the peak.
-     * - Or use a preset like VuPeakGravityHandler::presetPunchedBall() or
-     *   VuPeakGravityHandler::presetFloatingBubble()
-     * - VuPeakGravityHandler::enableDipMode
-     */
-    VuPeakGravityHandler vuDipHandler;
-#endif
+    VuPeakGravityHandler vuPeakGravityHandler;
+    VuPeakGravityHandler vuDipGravityHandler;
 
-    /** Constructor.
+    VuPeakForceHandler vuPeakForceHandler;
+
+    float vuLevel = 0.0;
+    float lastVuLevel = 0.0;
+
+    /** Constructor
+     * @param audioSource  Read the audio samples from there.
      * @param ledStrip  The LED strip.
-     * @param vuSource  Input for calculating the VU Overlay.
+     * @param drawingFct  Pointer to a function for rendering the VU on the LED strip.
+     * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
      */
-    TestVU1(FastLedStrip ledStrip,
-            VuSource &vuSource)
-        : _strip(ledStrip), _vuSource(vuSource)
+    TestVU1(float &audioSource,
+            FastLedStrip ledStrip,
+            DrawingFct drawingFct,
+            uint8_t fadeRate = 0)
+        : AnimationBase(ledStrip, false, fadeRate), _audioSource(audioSource), drawingFct(drawingFct)
     {
-#if (0)
-      vuPeakHandler.peakHold = 500;
-      vuPeakHandler.peakDecay = 3000;
-      vuDipHandler.enableDipMode = true;
+      vuPeakHandler.peakHold = 600;
       vuDipHandler.peakHold = vuPeakHandler.peakHold;
-      vuDipHandler.peakDecay = vuPeakHandler.peakDecay;
-#else
-      vuPeakHandler.a0 = -0.8;
-      vuPeakHandler.v0 = 0.3;
-      // vuPeakHandler.presetPunchedBall();
-      // vuPeakHandler.presetFloatingBubble();
+
       vuDipHandler.enableDipMode = true;
-      vuDipHandler.a0 = vuPeakHandler.a0;
-      vuDipHandler.v0 = vuPeakHandler.v0;
-#endif
+      vuDipGravityHandler.enableDipMode = true;
     }
 
   private:
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      if (wasModified)
+      vuLevelHandler.addSample(_audioSource);
+      AnimationBase::processAnimation(currentMillis, wasModified);
+    }
+
+    /// @see AnimationBase::showOverlay()
+    void showOverlay(uint32_t currentMillis) override
+    {
+      vuLevel = vuRangeExtender.process(vuLevelHandler.capture());
+      vuPeakHandler.process(vuLevel, currentMillis);
+      vuDipHandler.process(vuLevel, currentMillis);
+      vuPeakGravityHandler.process(vuLevel, currentMillis);
+      vuDipGravityHandler.process(vuLevel, currentMillis);
+      vuPeakForceHandler.process(vuLevel, currentMillis);
+
+      if (drawingFct)
       {
-        const float vuLevel = _vuSource.getVU();
-        vuPeakHandler.process(vuLevel, currentMillis);
-        vuDipHandler.process(vuLevel, currentMillis);
-
-        if (enableVuBar)
-        {
-          _strip.normLineRel(0.0, vuLevel, vuBarColor);
-        }
-        if (enableVuStripe)
-        {
-          _strip.normLineAbs(vuLevel, _lastVuLevel, vuStripeColor);
-        }
-        if (enableVuDot)
-        {
-          _strip.normPixel(vuLevel) = vuDotColor;
-        }
-        if (enablePeakDot)
-        {
-          _strip.optPixel(vuPeakHandler.getVU()) = peakDotColor;
-        }
-        if (enablePeakDotMin)
-        {
-          _strip.optPixel(vuDipHandler.getVU()) = peakDotMinColor;
-        }
-        _lastVuLevel = vuLevel;
-
-#if (EC_TESTVU1_DEBUG)
-        // Teleplot: VU levels
-        Serial.print(">-:");
-        Serial.println(0.0);
-        Serial.print(">+:");
-        Serial.println(1.0);
-        Serial.print(">VU:");
-        Serial.println(vuLevel);
-        Serial.print(">peak:");
-        Serial.println(vuPeakHandler.getVU());
-#endif
+        drawingFct(strip, *this);
       }
+
+      lastVuLevel = vuLevel;
     }
 
   private:
-    FastLedStrip _strip;
-    VuSource &_vuSource;
-    float _lastVuLevel = 0.0;
+    float &_audioSource;
   };
 
 } // namespace EC

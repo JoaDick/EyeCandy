@@ -337,16 +337,6 @@ void makeRmsLogVU(EC::AnimationScene &scene)
     // animationDuration = 10;
 }
 
-/// And finally an outlook what is possible.
-void makeEssentialVU(EC::AnimationScene &scene)
-{
-    auto vu = scene.append(new EC::EssentialVU(audioSample, {leds, NUM_LEDS}, false));
-    vu->vuBarColor = CRGB(64, 0, 32);
-    vu->peakDotColor = CRGB(64, 32, 0);
-
-    // animationDuration = 10;
-}
-
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
@@ -363,7 +353,6 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeAvgVsAvgLog_smoothed,
     &makeAvgLogVsRmsLogVU,
     &makeRmsLogVU,
-    &makeEssentialVU,
 
     nullptr};
 

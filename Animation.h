@@ -36,10 +36,6 @@ SOFTWARE.
 #define EC_DEFAULT_UPDATE_PERIOD 10
 #endif
 
-#ifndef EC_ENABLE_ANIMATION_SCENE_MULTI
-#define EC_ENABLE_ANIMATION_SCENE_MULTI 0
-#endif
-
 //------------------------------------------------------------------------------
 
 namespace EC
@@ -130,10 +126,6 @@ namespace EC
     friend class AnimationScene;
     friend class AnimationSceneStatic;
     Animation *nextAnimation = nullptr;
-#if (EC_ENABLE_ANIMATION_SCENE_MULTI)
-    friend class AnimationSceneMulti;
-    Animation *nextToDelete = nullptr;
-#endif
   };
 
   //------------------------------------------------------------------------------
@@ -159,7 +151,7 @@ namespace EC
       reset();
     }
 
-    /** Append the given \a animation to the AnimationScene.
+    /** Append the given (allocated) \a animation to the AnimationScene (given as pointer).
      * @return The given \a animation (so the caller can apply further settings)
      * @note \a animation must be allocated on the heap. The AnimationScene takes
      * care of deleting it when no more needed.
@@ -169,6 +161,18 @@ namespace EC
     {
       storeAnimation(animation);
       return animation;
+    }
+
+    /** Append the given (static) \a animation to the AnimationScene (given as reference).
+     * @return Pointer to the given \a animation (so the caller can apply further settings)
+     * @note \a animation must have static lifetime (i.e. it is \e not allocated on the heap).
+     * It will not be deleted when no more needed.
+     */
+    template <class AnimationType>
+    AnimationType *append(AnimationType &animation)
+    {
+      storeAnimation(new Proxy(animation));
+      return &animation;
     }
 
     /** Remove (and delete) all previously added Animations.
@@ -184,6 +188,18 @@ namespace EC
         delete toDelete;
       }
     }
+
+    class Proxy : public Animation
+    {
+      Animation &_staticAnimation;
+      void processAnimation(uint32_t currentMillis, bool &wasModified) override
+      {
+        _staticAnimation.process(currentMillis, wasModified);
+      }
+
+    public:
+      explicit Proxy(Animation &staticAnimation) : _staticAnimation(staticAnimation) {}
+    };
 
   private:
     /// @see Animation::processAnimation()
@@ -280,112 +296,6 @@ namespace EC
   private:
     Animation *_animationListHead = nullptr;
   };
-
-  //------------------------------------------------------------------------------
-
-#if (EC_ENABLE_ANIMATION_SCENE_MULTI)
-  /** A combination of AnimationScene and AnimationSceneStatic.
-   * Meaning that the Animations can either be allocated on the heap, or have
-   * static lifetime. This AnimationScene can handle both appropriately. \n
-   * Unfortunately this flexibility comes with a cost - that's why this class is
-   * disabled by default. To enable it,
-   * @code
-   * #define EC_ENABLE_ANIMATION_SCENE_MULTI 1
-   * @endcode
-   * \e before including the EyeCandy headers.
-   */
-  class AnimationSceneMulti
-      : public Animation
-  {
-  public:
-    /** Destructor.
-     * Also destroys all previously added Animations on the heap.
-     * @see reset()
-     */
-    ~AnimationSceneMulti()
-    {
-      reset();
-    }
-
-    /** Append the given (allocated) \a animation to the AnimationScene (given as pointer).
-     * @return The given \a animation (so the caller can apply further settings)
-     * @note \a animation must be allocated on the heap. The AnimationScene takes
-     * care of deleting it when no more needed.
-     */
-    template <class AnimationType>
-    AnimationType *append(AnimationType *animation)
-    {
-      appendHeapAnimation(animation);
-      return animation;
-    }
-
-    /** Append the given (static) \a animation to the AnimationScene (given as reference).
-     * @return Pointer to the given \a animation (so the caller can apply further settings)
-     * @note \a animation must have static lifetime (i.e. it is \e not allocated on the heap).
-     * It will not be deleted when no more needed.
-     */
-    template <class AnimationType>
-    AnimationType *append(AnimationType &animation)
-    {
-      addToAnimationList(&animation);
-      return &animation;
-    }
-
-    /** Remove (and destroy if necessary) all previously added Animations.
-     * This AnimationScene is empty afterwards, and can be filled again with new animations.
-     * @see append()
-     */
-    void reset()
-    {
-      while (_animationListHead)
-      {
-        Animation *toClear = _animationListHead;
-        _animationListHead = _animationListHead->nextAnimation;
-        toClear->nextAnimation = nullptr;
-      }
-
-      while (_deleteListHead)
-      {
-        Animation *toDelete = _deleteListHead;
-        _deleteListHead = _deleteListHead->nextToDelete;
-        delete toDelete;
-      }
-    }
-
-  private:
-    /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
-    {
-      Animation *next = _animationListHead;
-      while (next)
-      {
-        next->process(currentMillis, wasModified);
-        next = next->nextAnimation;
-      }
-    }
-
-    void appendHeapAnimation(Animation *animation)
-    {
-      addToAnimationList(animation);
-      animation->nextToDelete = _deleteListHead;
-      _deleteListHead = animation;
-    }
-
-    void addToAnimationList(Animation *animation)
-    {
-      Animation **tailPtr = &_animationListHead;
-      while (*tailPtr)
-      {
-        tailPtr = &(*tailPtr)->nextAnimation;
-      }
-      *tailPtr = animation;
-    }
-
-  private:
-    Animation *_animationListHead = nullptr;
-    Animation *_deleteListHead = nullptr;
-  };
-#endif
 
   //------------------------------------------------------------------------------
 

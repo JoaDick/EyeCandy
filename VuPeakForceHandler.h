@@ -59,12 +59,19 @@ namespace EC
     void process(float vuLevel,
                  uint32_t currentMillis)
     {
-      const float delta_t = (currentMillis - lastMillis) / 1000.0;
-      const float force = (vuLevel - pos) * delta_t;
-      const float drag = vel * friction * delta_t;
-      const float acc = (force - drag) / (inertia / 1000.0);
-      vel += acc * delta_t;
-      pos += vel * delta_t;
+      if (lastMillis)
+      {
+        const float delta_t = (currentMillis - lastMillis) / 1000.0;
+        const float force = (vuLevel - pos) * delta_t;
+        const float drag = vel * friction * delta_t;
+        const float acc = (force - drag) / (inertia / 1000.0);
+        vel += acc * delta_t;
+        pos += vel * delta_t;
+      }
+      else
+      {
+        pos = vuLevel;
+      }
       lastMillis = currentMillis;
     }
 
