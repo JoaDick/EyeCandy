@@ -25,6 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
+#include "MovingAverage.h"
 #include "VuSource.h"
 
 //------------------------------------------------------------------------------
@@ -55,25 +56,9 @@ namespace EC
       : public VuSource
   {
   public:
-    /** Incorporate how many previous VU values for smoothing the output.
-     * 0 means no smoothing.
-     */
-    uint8_t smoothingFactor = 5;
-
-    /** Number of VU values to incorporate for average volume computation.
-     * Usually there's no need for changing this value.
-     */
-    uint16_t vuLevelAvgLen = 100;
-
-    /** Number of VU values to incorporate for dynamic range computation.
-     * Usually there's no need for changing this value.
-     */
-    uint16_t rangeAvgLen = 10;
-
     /** Minimum enforced dynamic range.
-     * Usually there's no need for changing this value.
      */
-    float dynamicRangeMin = 0.15;
+    static constexpr float dynamicRangeMin = 0.15;
 
 #if (EC_ENABLE_VU_RANGE_EXTENDER_BYPASS)
     /// Set to \c true for disabling the VU Range Extender functionality.
@@ -104,11 +89,11 @@ namespace EC
       }
 #endif
 
-      vuLevelAvg = (vuLevelAvg * (vuLevelAvgLen - 1) + vuLevel) / vuLevelAvgLen;
-      deltaAvg = (deltaAvg * (rangeAvgLen - 1) + abs(vuLevel - vuLevelAvg)) / rangeAvgLen;
+      const float thisVuLevelAvg = vuLevelAvg.process(vuLevel);
+      const float thisDeltaAvg = deltaAvg.process(abs(vuLevel - thisVuLevelAvg));
 
-      rangeMax = constrainVU(vuLevelAvg + 2.0 * deltaAvg);
-      rangeMin = constrainVU(vuLevelAvg - 2.0 * deltaAvg);
+      rangeMax = constrainVU(thisVuLevelAvg + 2.0 * thisDeltaAvg);
+      rangeMin = constrainVU(thisVuLevelAvg - 2.0 * thisDeltaAvg);
 
       dynamicRange = rangeMax - rangeMin;
       if (dynamicRange < dynamicRangeMin)
@@ -116,22 +101,21 @@ namespace EC
         dynamicRange = dynamicRangeMin;
       }
 
-      _newVuLevel *= smoothingFactor;
-      _newVuLevel += (vuLevel - rangeMin) / dynamicRange;
-      _newVuLevel /= smoothingFactor + 1;
+      float thisVuLevel = (vuLevel - rangeMin) / dynamicRange;
+      thisVuLevel = constrainVU(thisVuLevel);
 
-      _newVuLevel = constrainVU(_newVuLevel);
+      _newVuLevel = _outputAvg.process(thisVuLevel);
       return _newVuLevel;
     }
 
     /// Average input VU level. Only for debugging; don't modify!
-    float vuLevelAvg = 0.5;
+    MovingAverage vuLevelAvg{200};
+
+    /// Average deviation from average input VU level. Only for debugging; don't modify!
+    MovingAverage deltaAvg{50};
 
     /// Average dynamic range. Only for debugging; don't modify!
     float dynamicRange = 0.0;
-
-    /// Only for debugging; don't modify!
-    float deltaAvg = 0.0;
 
     /// Only for debugging; don't modify!
     float rangeMax = 0.0;
@@ -140,6 +124,7 @@ namespace EC
     float rangeMin = 0.0;
 
   private:
+    MovingAverage _outputAvg{3};
     float _newVuLevel = 0.0;
   };
 

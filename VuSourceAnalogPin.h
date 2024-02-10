@@ -75,19 +75,23 @@ namespace EC
      * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background. \n
      *                  If the following VU Overlay has a \c fadeRate_default() method, use that. \n
      *                  Not relevant in Overlay mode.
+     * @param sampleCount  Number of audio samples to integrate for calculating the VU level.
      */
     VuSourceAnalogPin(float &audioSource,
                       FastLedStrip ledStrip,
-                      uint8_t fadeRate)
-        : VuSourceAnalogPin(EC_DEFAULT_UPDATE_PERIOD, audioSource, ledStrip, fadeRate)
+                      uint8_t fadeRate,
+                      uint16_t sampleCount = 100)
+        : VuSourceAnalogPin(EC_DEFAULT_UPDATE_PERIOD, audioSource, ledStrip, fadeRate, sampleCount)
     {
     }
 
     /** Constructor for Overlay mode.
      * @param audioSource  Read the audio samples from there.
+     * @param sampleCount  Number of audio samples to integrate for calculating the VU level.
      */
-    explicit VuSourceAnalogPin(float &audioSource)
-        : VuSourceAnalogPin(0, audioSource, FastLedStrip::GetNULL(), 0)
+    explicit VuSourceAnalogPin(float &audioSource,
+                               uint16_t sampleCount = 100)
+        : VuSourceAnalogPin(0, audioSource, FastLedStrip::GetNULL(), 0, sampleCount)
     {
     }
 
@@ -100,12 +104,15 @@ namespace EC
      * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background. \n
      *                  If the following VU Overlay has a \c fadeRate_default() method, use that. \n
      *                  Not relevant in Overlay mode.
+     * @param sampleCount  Number of audio samples to integrate for calculating the VU level.
      */
     VuSourceAnalogPin(uint8_t patternUpdatePeriod,
                       float &audioSource,
                       FastLedStrip ledStrip,
-                      uint8_t fadeRate)
+                      uint8_t fadeRate,
+                      uint16_t sampleCount = 100)
         : fadeRate(fadeRate),
+          vuLevelHandler(sampleCount),
           _strip(ledStrip),
           _audioSource(audioSource),
           _patternUpdateTimer(patternUpdatePeriod)

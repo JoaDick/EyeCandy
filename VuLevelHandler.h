@@ -26,6 +26,7 @@ SOFTWARE.
 *******************************************************************************/
 
 #include <math.h>
+#include "MovingAverage.h"
 #include "VuSource.h"
 
 //------------------------------------------------------------------------------
@@ -49,6 +50,79 @@ namespace EC
    * @note Use #AudioNormalizer for pre-processing the raw ADC values.
    */
   class VuLevelHandler
+      : public VuSource
+  {
+  public:
+    /** Noise floor threshold (in dB_FS).
+     * Volume levels below that value are treated as silence - like a squelch.
+     * Change that value only with care; the default is fine for 10 bit ADCs
+     * like in the Arduino.
+     */
+    float noiseFloor_dB = -28.5;
+
+    /** Constructor.
+     * @param sampleCount  Number of audio samples to integrate for calculating the VU level.
+     */
+    explicit VuLevelHandler(uint16_t sampleCount = 100)
+        : _squareAvg(sampleCount)
+    {
+    }
+
+    /** Get the current VU level.
+     * This means the VU level of the last call to capture().
+     * @return A normalized VU value between 0.0 ... 1.0, representing the current volume.
+     * @note Be aware that an overloaded / clipped / too loud audio signal may
+     * return values greater than 1.0!
+     * @see VuSource::getVU()
+     */
+    float getVU() override { return _vuLevel; }
+
+    /** Feed in normalized audio samples.
+     * Call this method frequently in the background.
+     */
+    void addSample(float audioSample)
+    {
+      _squareAvg.process(square(audioSample));
+    }
+
+    /** Call this method to obtain the current VU level.
+     * Call it ONLY when the VU meter Animation shall be rendered.
+     * @return A normalized VU value between 0.0 ... 1.0, representing the current volume.
+     * @note Be aware that an overloaded / clipped / too loud audio signal may
+     * return values greater than 1.0!
+     */
+    float capture()
+    {
+      _vuLevel = 0.0;
+      volume_RMS = sqrt(_squareAvg.getValue());
+      if (volume_RMS > 0.0)
+      {
+        // https://en.wikipedia.org/wiki/DBFS#RMS_levels
+        const float volume_dB = 20.0 * log10(volume_RMS) + 3.0;
+        if (volume_dB > noiseFloor_dB)
+        {
+          _vuLevel = (noiseFloor_dB - volume_dB) / noiseFloor_dB;
+        }
+      }
+      return _vuLevel;
+    }
+
+    /// The intermediate RMS volume. Only for debugging; don't modify!
+    float volume_RMS = 0.0;
+
+  private:
+    MovingAverage _squareAvg;
+    float _vuLevel = 0.0;
+  };
+
+  //------------------------------------------------------------------------------
+
+#ifndef EC_ENABLE_VU_LEVEL_HANDLER_OLD
+#define EC_ENABLE_VU_LEVEL_HANDLER_OLD 0
+#endif
+
+#if (EC_ENABLE_VU_LEVEL_HANDLER_OLD)
+  class VuLevelHandler_old
       : public VuSource
   {
   public:
@@ -111,9 +185,13 @@ namespace EC
         }
       }
 
+#if (1)
       _vuLevel *= smoothingFactor;
       _vuLevel += (noiseFloor_dB - volume_dB) / noiseFloor_dB;
       _vuLevel /= smoothingFactor + 1;
+#else
+      _vuLevel = (noiseFloor_dB - volume_dB) / noiseFloor_dB;
+#endif
 
       return _vuLevel;
     }
@@ -126,5 +204,6 @@ namespace EC
     uint16_t _rmsCount = 0;
     float _vuLevel = 0.0;
   };
+#endif
 
 }

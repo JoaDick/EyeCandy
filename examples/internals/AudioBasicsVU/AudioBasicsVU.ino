@@ -45,7 +45,7 @@ ButtonHandler selectButton;
 bool autoMode = true;
 
 float audioSample = 0.0;
-AudioNormalizer normalizer;
+EC::AudioNormalizer normalizer;
 
 //------------------------------------------------------------------------------
 

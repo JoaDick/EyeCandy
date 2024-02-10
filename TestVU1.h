@@ -44,6 +44,9 @@ namespace EC
     DrawingFct drawingFct;
 
     VuLevelHandler vuLevelHandler;
+#if (EC_ENABLE_VU_LEVEL_HANDLER_OLD)
+    VuLevelHandler_old vuLevelHandler_old;
+#endif
 
     VuRangeExtender vuRangeExtender;
 
@@ -58,11 +61,11 @@ namespace EC
     float vuLevel = 0.0;
     float lastVuLevel = 0.0;
 
-    /** Constructor
+    /** Constructor.
      * @param audioSource  Read the audio samples from there.
-     * @param ledStrip  The LED strip.
-     * @param drawingFct  Pointer to a function for rendering the VU on the LED strip.
-     * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
+     * @param ledStrip     The LED strip.
+     * @param drawingFct   Pointer to a function for rendering the VU on the LED strip.
+     * @param fadeRate     Fading speed: Lower value = longer glowing; 0 = black background.
      */
     TestVU1(float &audioSource,
             FastLedStrip ledStrip,
@@ -81,6 +84,9 @@ namespace EC
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
+#if (EC_ENABLE_VU_LEVEL_HANDLER_OLD)
+      vuLevelHandler_old.addSample(_audioSource);
+#endif
       vuLevelHandler.addSample(_audioSource);
       AnimationBase::processAnimation(currentMillis, wasModified);
     }
@@ -88,6 +94,12 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
+#if (EC_ENABLE_VU_LEVEL_HANDLER_OLD)
+      vuLevelHandler_old.capture();
+#endif
+      const float rawVuLevel = vuLevelHandler.capture();
+      vuLevel = vuRangeExtender.process(rawVuLevel);
+
       vuLevel = vuRangeExtender.process(vuLevelHandler.capture());
       vuPeakHandler.process(vuLevel, currentMillis);
       vuDipHandler.process(vuLevel, currentMillis);

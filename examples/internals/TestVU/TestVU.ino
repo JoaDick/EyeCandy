@@ -31,7 +31,9 @@ SOFTWARE.
 // #define LED_COLOR_ORDER RGB
 // #define NUM_LEDS 50
 
+// #define EC_DEFAULT_UPDATE_PERIOD 20
 #define EC_ENABLE_VU_RANGE_EXTENDER_BYPASS 1
+#define EC_ENABLE_VU_LEVEL_HANDLER_OLD 1
 
 //------------------------------------------------------------------------------
 
@@ -50,9 +52,11 @@ ButtonHandler selectButton;
 bool autoMode = true;
 
 float audioSample = 0.0;
-AudioNormalizer normalizer;
+EC::AudioNormalizer normalizer;
 
 #define PRINT_MEMORY_USAGE 1
+#define PRINT_SAMPLE_RATE 0
+#define PRINT_PATTERN_RATE 0
 
 //------------------------------------------------------------------------------
 
@@ -320,6 +324,21 @@ void makeTestVU1(EC::AnimationScene &scene)
     // autoMode = false;
 }
 
+void makeLevelHandlerComparison(EC::AnimationScene &scene)
+{
+    auto drawingFct = [](EC::FastLedStrip &strip, EC::TestVU1 &vu)
+    {
+#if (EC_ENABLE_VU_LEVEL_HANDLER_OLD)
+        strip.normPixel(vu.vuLevelHandler_old.getVU()) = CRGB(0, 0, 128);
+#endif
+        strip.normPixel(vu.vuLevelHandler.getVU()) = CRGB(0, 128, 0);
+    };
+
+    auto testVU = appendTestVU1(scene, drawingFct);
+
+    autoMode = false;
+}
+
 void makeRangeExtenderComparison(EC::AnimationScene &scene)
 {
     auto drawingFct = [](EC::FastLedStrip &strip, EC::TestVU1 &vu)
@@ -336,7 +355,8 @@ void makeRangeExtenderComparison(EC::AnimationScene &scene)
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
-    &makeTestVU1,
+    // &makeTestVU1,
+    &makeLevelHandlerComparison,
     &makeRangeExtenderComparison,
 
     // &makeRawAudioVU,
@@ -411,22 +431,22 @@ void loop()
 
     // EC::logAudioSample(audioSample);
 
-    updateColor();
-    updateSpeed();
-    updateFlip();
-
     handleAnimationChange(currentMillis);
 
     if (animationChanger.process(currentMillis))
     {
-#if (0)
-        static bool toggleFlag = false;
-        toggleFlag ^= true;
-        leds[0] = toggleFlag ? CRGB(0, 10, 0) : CRGB::Black;
+        FastLED.show();
+#if (PRINT_PATTERN_RATE)
+        printPatternRate(currentMillis);
 #endif
+        updateColor();
+        updateSpeed();
+        updateFlip();
     }
-    FastLED.show();
-    // printSampleRate(currentMillis);
+
+#if (PRINT_SAMPLE_RATE)
+    printSampleRate(currentMillis);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -500,22 +520,43 @@ void updateFlip()
 
 //------------------------------------------------------------------------------
 
+#if (PRINT_SAMPLE_RATE)
 void printSampleRate(uint32_t currentMillis)
 {
-    static uint32_t nextSampleRateCheck = 1000;
-    static uint32_t sampleRateCounter = 0;
+    static uint32_t nextPrint = 1000;
+    static uint32_t counter = 0;
 
-    ++sampleRateCounter;
-    if (currentMillis >= nextSampleRateCheck)
+    ++counter;
+    if (currentMillis >= nextPrint)
     {
-        uint16_t sampleRate = sampleRateCounter;
-        sampleRateCounter = 0;
-        nextSampleRateCheck = currentMillis + 1000;
+        const uint32_t sampleRate = counter;
+        counter = 0;
+        nextPrint = currentMillis + 1000;
 
         Serial.print(sampleRate);
         Serial.println(F(" Hz sample rate"));
     }
 }
+#endif
+
+#if (PRINT_PATTERN_RATE)
+void printPatternRate(uint32_t currentMillis)
+{
+    static uint32_t nextPrint = 1000;
+    static uint32_t counter = 0;
+
+    ++counter;
+    if (currentMillis >= nextPrint)
+    {
+        const uint32_t patternRate = counter;
+        counter = 0;
+        nextPrint = currentMillis + 1000;
+
+        Serial.print(patternRate);
+        Serial.println(F(" Hz pattern rate"));
+    }
+}
+#endif
 
 //------------------------------------------------------------------------------
 

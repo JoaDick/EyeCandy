@@ -50,9 +50,7 @@ ButtonHandler selectButton;
 bool autoMode = true;
 
 float audioSample = 0.0;
-AudioNormalizer normalizer;
-
-#define PRINT_MEMORY_USAGE 1
+EC::AudioNormalizer normalizer;
 
 //------------------------------------------------------------------------------
 
@@ -70,9 +68,6 @@ void setup()
     Serial.begin(115200);
     Serial.println();
     Serial.println(F("Welcome to EyeCandy"));
-#if (PRINT_MEMORY_USAGE)
-    printMemoryUsage();
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -612,59 +607,10 @@ void loop()
     audioSample = normalizer.analogRead(PIN_MIC);
 
     handleAnimationChange(currentMillis);
-    animationChanger.process(currentMillis);
-    FastLED.show();
+    if (animationChanger.process(currentMillis))
+    {
+        FastLED.show();
+    }
 }
-
-//------------------------------------------------------------------------------
-
-#if (PRINT_MEMORY_USAGE)
-void printMemoryUsage()
-{
-    Serial.print(F("Memory usage for "));
-    Serial.print(NUM_LEDS);
-    Serial.println(F(" LEDs:"));
-    Serial.println(F("<*> is dependant on NUM_LEDS"));
-
-    Serial.print(F("VuSourceAnalogPin = "));
-    Serial.println(sizeof(EC::VuSourceAnalogPin));
-
-    Serial.print(F("VuSourcePeakHold = "));
-    Serial.println(sizeof(EC::VuSourcePeakHold));
-
-    Serial.print(F("VuSourcePeakGravity = "));
-    Serial.println(sizeof(EC::VuSourcePeakGravity));
-
-    Serial.print(F("VuSourcePeakForce = "));
-    Serial.println(sizeof(EC::VuSourcePeakForce));
-
-    Serial.print(F("VuOverlayLine = "));
-    Serial.println(sizeof(EC::VuOverlayLine));
-
-    Serial.print(F("VuOverlayStripe = "));
-    Serial.println(sizeof(EC::VuOverlayStripe));
-
-    Serial.print(F("VuOverlayDot = "));
-    Serial.println(sizeof(EC::VuOverlayDot));
-
-    Serial.print(F("VuOverlayRainbowLine = "));
-    Serial.println(sizeof(EC::VuOverlayRainbowLine));
-
-    Serial.print(F("VuOverlayRainbowStripe = "));
-    Serial.println(sizeof(EC::VuOverlayRainbowStripe));
-
-    Serial.print(F("VuOverlayRainbowDot = "));
-    Serial.println(sizeof(EC::VuOverlayRainbowDot));
-
-    Serial.print(F("VuOverlayPeakGlitter = "));
-    Serial.println(sizeof(EC::VuOverlayPeakGlitter));
-
-    Serial.print(F("Fire2012VU = "));
-    Serial.println(sizeof(EC::Fire2012VU<NUM_LEDS>));
-
-    Serial.print(F("RawAudioVU = "));
-    Serial.println(sizeof(EC::RawAudioVU));
-}
-#endif
 
 //------------------------------------------------------------------------------
