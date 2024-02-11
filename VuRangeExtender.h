@@ -56,10 +56,6 @@ namespace EC
       : public VuSource
   {
   public:
-    /** Minimum enforced dynamic range.
-     */
-    static constexpr float dynamicRangeMin = 0.15;
-
 #if (EC_ENABLE_VU_RANGE_EXTENDER_BYPASS)
     /// Set to \c true for disabling the VU Range Extender functionality.
     bool bypass = false;
@@ -90,32 +86,45 @@ namespace EC
 #endif
 
       const float thisVuLevelAvg = vuLevelAvg.process(vuLevel);
-      const float thisDeltaAvg = deltaAvg.process(abs(vuLevel - thisVuLevelAvg));
-
-      rangeMax = constrainVU(thisVuLevelAvg + 2.0 * thisDeltaAvg);
-      rangeMin = constrainVU(thisVuLevelAvg - 2.0 * thisDeltaAvg);
-
-      dynamicRange = rangeMax - rangeMin;
-      if (dynamicRange < dynamicRangeMin)
+      const float delta = vuLevel - thisVuLevelAvg;
+      if (delta > 0)
       {
-        dynamicRange = dynamicRangeMin;
+        posDeltaAvg.process(delta);
+      }
+      else
+      {
+        negDeltaAvg.process(delta);
       }
 
-      float thisVuLevel = (vuLevel - rangeMin) / dynamicRange;
-      thisVuLevel = constrainVU(thisVuLevel);
+      rangeMax = constrainVU(thisVuLevelAvg + 3.0 * posDeltaAvg.get());
+      if (vuLevel > rangeMax)
+      {
+        posDeltaAvg.override((vuLevel - thisVuLevelAvg) / 3.0);
+        rangeMax = vuLevel;
+      }
 
-      _newVuLevel = _outputAvg.process(thisVuLevel);
+      rangeMin = constrainVU(thisVuLevelAvg + 4.5 * negDeltaAvg.get());
+      if (vuLevel < rangeMin)
+      {
+        negDeltaAvg.override((vuLevel - thisVuLevelAvg) / 4.5);
+        rangeMin = vuLevel;
+      }
+
+      const float dynamicRange = rangeMax - rangeMin;
+      const float scaleFactor = 1.0 / dynamicRange;
+      const float offset = rangeMin;
+      _newVuLevel = (vuLevel - offset) * scaleFactor;
       return _newVuLevel;
     }
 
     /// Average input VU level. Only for debugging; don't modify!
-    MovingAverage vuLevelAvg{200};
+    MovingAverage vuLevelAvg{400, 0.33};
 
-    /// Average deviation from average input VU level. Only for debugging; don't modify!
-    MovingAverage deltaAvg{50};
+    /// Average positive deviation from average input VU level. Only for debugging; don't modify!
+    MovingAverage posDeltaAvg{200, 0.1};
 
-    /// Average dynamic range. Only for debugging; don't modify!
-    float dynamicRange = 0.0;
+    /// Average negativedeviation from average input VU level. Only for debugging; don't modify!
+    MovingAverage negDeltaAvg{posDeltaAvg.avgLength};
 
     /// Only for debugging; don't modify!
     float rangeMax = 0.0;
@@ -124,7 +133,6 @@ namespace EC
     float rangeMin = 0.0;
 
   private:
-    MovingAverage _outputAvg{3};
     float _newVuLevel = 0.0;
   };
 

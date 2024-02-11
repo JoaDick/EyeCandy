@@ -49,9 +49,15 @@ namespace EC
     }
 
     /// Get the current average value.
-    float getValue()
+    float get()
     {
       return avgValue;
+    }
+
+    /// Override the current average value with the given \a newAvgValue.
+    void override(float newAvgValue)
+    {
+      avgValue = newAvgValue;
     }
 
     /** Process the given \a newValue.

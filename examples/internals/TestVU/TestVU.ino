@@ -286,21 +286,23 @@ void makeCrazierVu(EC::AnimationScene &scene)
 
 //------------------------------------------------------------------------------
 
-#define USE_GLOBAL_TEST_VU 1
+#define USE_GLOBAL_TEST_VU 0
 
 #if (USE_GLOBAL_TEST_VU)
 EC::TestVU1 globalTestVU(audioSample, {leds, NUM_LEDS}, nullptr);
 #endif
 
 EC::TestVU1 *appendTestVU1(EC::AnimationScene &scene,
-                           EC::TestVU1::DrawingFct drawingFct)
+                           EC::TestVU1::DrawingFct drawingFct,
+                           uint8_t fadeRate = 0)
 {
 #if (USE_GLOBAL_TEST_VU)
     auto testVU = scene.append(globalTestVU);
     testVU->drawingFct = drawingFct;
+    testVU->fadeRate = fadeRate;
     return testVU;
 #else
-    return scene.append(new EC::TestVU1(audioSample, {leds, NUM_LEDS}, drawingFct));
+    return scene.append(new EC::TestVU1(audioSample, {leds, NUM_LEDS}, drawingFct, fadeRate));
 #endif
 }
 
@@ -312,18 +314,23 @@ void makeTestVU1(EC::AnimationScene &scene)
 
         strip.optPixel(vu.vuPeakHandler.getVU()) += CRGB(255, 0, 0);
         strip.optPixel(vu.vuDipHandler.getVU()) += CRGB(0, 0, 255);
-
+#if (0)
         strip.optPixel(vu.vuPeakGravityHandler.getVU()) += CRGB(128, 0, 32);
         strip.optPixel(vu.vuDipGravityHandler.getVU()) += CRGB(32, 0, 128);
 
         strip.optPixel(vu.vuPeakForceHandler.getVU()) += CRGB(128, 64, 0);
+#endif
     };
 
-    auto testVU = appendTestVU1(scene, drawingFct);
+#if (0)
+    auto testVU = appendTestVU1(scene, drawingFct, 0);
+#else
+    auto testVU = scene.append(new EC::TestVU1(audioSample, {leds, NUM_LEDS}, drawingFct, 0));
+    testVU->vuRangeExtender.bypass = true;
+#endif
 
     // autoMode = false;
 }
-
 void makeLevelHandlerComparison(EC::AnimationScene &scene)
 {
     auto drawingFct = [](EC::FastLedStrip &strip, EC::TestVU1 &vu)
@@ -336,7 +343,7 @@ void makeLevelHandlerComparison(EC::AnimationScene &scene)
 
     auto testVU = appendTestVU1(scene, drawingFct);
 
-    autoMode = false;
+    // autoMode = false;
 }
 
 void makeRangeExtenderComparison(EC::AnimationScene &scene)
@@ -352,20 +359,54 @@ void makeRangeExtenderComparison(EC::AnimationScene &scene)
     // autoMode = false;
 }
 
+void makeRangeExtenderInternals(EC::AnimationScene &scene)
+{
+    auto drawingFct = [](EC::FastLedStrip &strip, EC::TestVU1 &vu)
+    {
+        static float lastVuLevel = 0.0;
+        const float rawVuLevel = vu.vuLevelHandler.getVU();
+        // the dancing thing shows the current VU level
+        strip.normLineAbs(lastVuLevel, rawVuLevel, CRGB(16, 32, 8));
+        lastVuLevel = rawVuLevel;
+
+        // the green dot shows the average VU level
+        const float vuLevelAvg = vu.vuRangeExtender.vuLevelAvg.get();
+        strip.normPixel(vuLevelAvg) = CRGB(0, 128, 0);
+
+        const float posDeltaAvg = vu.vuRangeExtender.posDeltaAvg.get();
+        strip.normPixel(vuLevelAvg + posDeltaAvg) = CRGB(64, 8, 0);
+
+        const float negDeltaAvg = vu.vuRangeExtender.negDeltaAvg.get();
+        strip.normPixel(vuLevelAvg + negDeltaAvg) = CRGB(0, 8, 64);
+
+        // the VU level is scaled so that the red dot will be at the end of the strip
+        strip.normPixel(vu.vuRangeExtender.rangeMax) = CRGB(255, 0, 0);
+        // the VU level is scaled so that the blue dot will be at the start of the strip
+        strip.normPixel(vu.vuRangeExtender.rangeMin) = CRGB(0, 0, 255);
+    };
+
+    auto testVU = appendTestVU1(scene, drawingFct, 0);
+
+    // autoMode = false;
+}
+
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeTestVU1,
-    &makeLevelHandlerComparison,
+    &makeRangeExtenderInternals,
+    // &makeLevelHandlerComparison,
+    &makeTestVU1,
+    &makeVuElements1,
     &makeRangeExtenderComparison,
 
     // &makeRawAudioVU,
-    &makeVuElements1,
-    &makeVuElements2,
-    &makeVuElements3,
-    &makeVuElements4,
-    &makeVuElements5,
-    &makeVuElements6,
+    // &makeVuElements1,
+    // &makeVuElements2,
+    // &makeVuElements3,
+    // &makeVuElements4,
+    // &makeVuElements5,
+    // &makeVuElements6,
 
     // &makeEjectingDotVu,
     // &makeCrazyVu,

@@ -94,7 +94,7 @@ namespace EC
     float capture()
     {
       _vuLevel = 0.0;
-      volume_RMS = sqrt(_squareAvg.getValue());
+      volume_RMS = sqrt(_squareAvg.get());
       if (volume_RMS > 0.0)
       {
         // https://en.wikipedia.org/wiki/DBFS#RMS_levels

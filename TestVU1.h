@@ -74,9 +74,10 @@ namespace EC
         : AnimationBase(ledStrip, false, fadeRate), _audioSource(audioSource), drawingFct(drawingFct)
     {
       vuPeakHandler.peakHold = 600;
-      vuDipHandler.peakHold = vuPeakHandler.peakHold;
-
+      vuPeakHandler.peakDecay = 3000;
+      vuDipHandler = vuPeakHandler;
       vuDipHandler.enableDipMode = true;
+
       vuDipGravityHandler.enableDipMode = true;
     }
 
