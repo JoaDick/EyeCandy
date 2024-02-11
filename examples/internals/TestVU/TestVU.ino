@@ -33,7 +33,6 @@ SOFTWARE.
 
 // #define EC_DEFAULT_UPDATE_PERIOD 20
 #define EC_ENABLE_VU_RANGE_EXTENDER_BYPASS 1
-#define EC_ENABLE_VU_LEVEL_HANDLER_OLD 1
 
 //------------------------------------------------------------------------------
 
@@ -314,7 +313,7 @@ void makeTestVU1(EC::AnimationScene &scene)
 
         strip.optPixel(vu.vuPeakHandler.getVU()) += CRGB(255, 0, 0);
         strip.optPixel(vu.vuDipHandler.getVU()) += CRGB(0, 0, 255);
-#if (0)
+#if (1)
         strip.optPixel(vu.vuPeakGravityHandler.getVU()) += CRGB(128, 0, 32);
         strip.optPixel(vu.vuDipGravityHandler.getVU()) += CRGB(32, 0, 128);
 
@@ -322,26 +321,12 @@ void makeTestVU1(EC::AnimationScene &scene)
 #endif
     };
 
-#if (0)
+#if (1)
     auto testVU = appendTestVU1(scene, drawingFct, 0);
 #else
     auto testVU = scene.append(new EC::TestVU1(audioSample, {leds, NUM_LEDS}, drawingFct, 0));
     testVU->vuRangeExtender.bypass = true;
 #endif
-
-    // autoMode = false;
-}
-void makeLevelHandlerComparison(EC::AnimationScene &scene)
-{
-    auto drawingFct = [](EC::FastLedStrip &strip, EC::TestVU1 &vu)
-    {
-#if (EC_ENABLE_VU_LEVEL_HANDLER_OLD)
-        strip.normPixel(vu.vuLevelHandler_old.getVU()) = CRGB(0, 0, 128);
-#endif
-        strip.normPixel(vu.vuLevelHandler.getVU()) = CRGB(0, 128, 0);
-    };
-
-    auto testVU = appendTestVU1(scene, drawingFct);
 
     // autoMode = false;
 }
@@ -393,20 +378,17 @@ void makeRangeExtenderInternals(EC::AnimationScene &scene)
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
-    // &makeTestVU1,
-    &makeRangeExtenderInternals,
-    // &makeLevelHandlerComparison,
     &makeTestVU1,
-    &makeVuElements1,
-    &makeRangeExtenderComparison,
+    // &makeRangeExtenderInternals,
+    // &makeRangeExtenderComparison,
 
     // &makeRawAudioVU,
-    // &makeVuElements1,
-    // &makeVuElements2,
-    // &makeVuElements3,
-    // &makeVuElements4,
-    // &makeVuElements5,
-    // &makeVuElements6,
+    &makeVuElements1,
+    &makeVuElements2,
+    &makeVuElements3,
+    &makeVuElements4,
+    &makeVuElements5,
+    &makeVuElements6,
 
     // &makeEjectingDotVu,
     // &makeCrazyVu,
@@ -415,8 +397,11 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
 
     nullptr};
 
+#if (0)
 EC::AnimationChanger animationChanger(allAnimations);
-// EC::AnimationChangerSoft animationChanger(allAnimations);
+#else
+EC::AnimationChangerSoft animationChanger(allAnimations);
+#endif
 
 //------------------------------------------------------------------------------
 

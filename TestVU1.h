@@ -44,10 +44,6 @@ namespace EC
     DrawingFct drawingFct;
 
     VuLevelHandler vuLevelHandler;
-#if (EC_ENABLE_VU_LEVEL_HANDLER_OLD)
-    VuLevelHandler_old vuLevelHandler_old;
-#endif
-
     VuRangeExtender vuRangeExtender;
 
     VuPeakHandler vuPeakHandler;
@@ -85,9 +81,6 @@ namespace EC
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-#if (EC_ENABLE_VU_LEVEL_HANDLER_OLD)
-      vuLevelHandler_old.addSample(_audioSource);
-#endif
       vuLevelHandler.addSample(_audioSource);
       AnimationBase::processAnimation(currentMillis, wasModified);
     }
@@ -95,9 +88,6 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-#if (EC_ENABLE_VU_LEVEL_HANDLER_OLD)
-      vuLevelHandler_old.capture();
-#endif
       const float rawVuLevel = vuLevelHandler.capture();
       vuLevel = vuRangeExtender.process(rawVuLevel);
 
