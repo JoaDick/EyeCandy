@@ -39,9 +39,16 @@ namespace EC
       : public VuSource
   {
   public:
-    float inertia = 0.47;
+    /** Influences overshooting \e and following.
+     * Better start playing with \a friction and \a coupling to see the effects individually.
+     */
+    float mass = 1.0;
 
-    float friction = 0.125;
+    /// Less friction makes it overshoot more.
+    float friction = 10.0;
+
+    /// Higher coupling makes it follow the input faster, appearing more twitchy.
+    float coupling = 100.0;
 
     /** Get the current VU level.
      * This means the curent position of the peak dot.
@@ -62,9 +69,9 @@ namespace EC
       if (lastMillis)
       {
         const float delta_t = (currentMillis - lastMillis) / 1000.0;
-        const float force = (vuLevel - pos) * delta_t;
-        const float drag = vel * friction * delta_t;
-        const float acc = (force - drag) / (inertia / 1000.0);
+        const float force = (vuLevel - pos) * coupling;
+        const float drag = vel * friction * mass;
+        const float acc = (force - drag) / mass;
         vel += acc * delta_t;
         pos += vel * delta_t;
       }

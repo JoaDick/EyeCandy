@@ -41,7 +41,7 @@ SOFTWARE.
 namespace EC
 {
 
-//------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------
 
   struct BlueprintBasicVU
   {
@@ -237,11 +237,13 @@ namespace EC
 
   //------------------------------------------------------------------------------
 
-  struct BlueprintCrazierVu
+  struct BlueprintBeyondCrazyVu
   {
     /** Recommended fading speed for this Blueprint.
      */
     static constexpr uint8_t fadeRate = 45;
+
+    VuSourcePeakForce *vuLevelSource;
 
     VuSourcePeakGravity *vuPeakSource1;
     VuSourcePeakGravity *vuPeakSource2;
@@ -268,9 +270,11 @@ namespace EC
       vuDipDot3->vuHueRange = dotVuHueRange;
     }
 
-    BlueprintCrazierVu(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
+    BlueprintBeyondCrazyVu(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
     {
-      vuPeakSource1 = scene.append(new VuSourcePeakGravity(vuSource));
+      vuLevelSource = scene.append(new EC::VuSourcePeakForce(vuSource));
+
+      vuPeakSource1 = scene.append(new VuSourcePeakGravity(vuLevelSource->asVuSource()));
       vuPeakSource1->vuPeakHandler.a0 = -0.6;
       vuPeakSource1->vuPeakHandler.v0 = 0.3;
 
@@ -282,7 +286,7 @@ namespace EC
       vuPeakSource3->vuPeakHandler.a0 = 0.2;
       vuPeakSource3->vuPeakHandler.v0 = 0.0;
 
-      vuDipSource1 = scene.append(new VuSourcePeakGravity(vuSource));
+      vuDipSource1 = scene.append(new VuSourcePeakGravity(vuLevelSource->asVuSource()));
       vuDipSource1->vuPeakHandler = vuPeakSource1->vuPeakHandler;
       vuDipSource1->vuPeakHandler.enableDipMode = true;
 
@@ -294,7 +298,7 @@ namespace EC
       vuDipSource3->vuPeakHandler = vuPeakSource3->vuPeakHandler;
       vuDipSource3->vuPeakHandler.enableDipMode = true;
 
-      vuLevelStrip = scene.append(new VuOverlayRainbowStripe(strip, vuSource));
+      vuLevelStrip = scene.append(new VuOverlayRainbowStripe(strip, vuLevelSource->asVuSource()));
 
       vuPeakDot1 = scene.append(new VuOverlayRainbowDot(strip, *vuPeakSource1, *vuDipSource1));
       vuPeakDot2 = scene.append(new VuOverlayRainbowDot(strip, *vuPeakSource2, *vuDipSource1));

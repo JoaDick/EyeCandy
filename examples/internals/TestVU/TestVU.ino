@@ -272,13 +272,13 @@ void makeCrazyVu(EC::AnimationScene &scene)
     // autoMode = false;
 }
 
-void makeCrazierVu(EC::AnimationScene &scene)
+void makeBeyondCrazyVu(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto vuLevelSource = appendVuSourceAnalogPin(scene, EC::BlueprintCrazierVu::fadeRate);
+    auto vuLevelSource = appendVuSourceAnalogPin(scene, EC::BlueprintBeyondCrazyVu::fadeRate);
 
-    EC::BlueprintCrazierVu bp(strip, scene, *vuLevelSource);
+    EC::BlueprintBeyondCrazyVu bp(strip, scene, *vuLevelSource);
 
     // autoMode = false;
 }
@@ -392,7 +392,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
 
     // &makeEjectingDotVu,
     // &makeCrazyVu,
-    // &makeCrazierVu,
+    // &makeBeyondCrazyVu,
     // &makeTestVU1,
 
     nullptr};

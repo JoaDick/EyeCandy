@@ -62,7 +62,7 @@ namespace EC
     /** Brightness of the VU.
      * This setting can be adjusted at runtime.
      */
-    uint8_t volume = 128;
+    uint8_t volume = 192;
 
     /** Size of the dot (as fraction of the entire strip).
      * This setting can be adjusted at runtime. \n
