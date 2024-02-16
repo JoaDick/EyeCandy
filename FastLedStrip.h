@@ -218,10 +218,27 @@ namespace EC
       fillLedBlock(0, getSize() - 1, color);
     }
 
-    /// Wrapper for FastLed's fadeToBlackBy()
+    /** Wrapper for FastLed's fadeToBlackBy()
+     * Reduce the brightness of all pixels at once.
+     * This function will eventually fade all the way to black.
+     */
     void fadeToBlack(uint8_t fadeBy)
     {
       fadeToBlackBy(m_ledArray, getSize(), fadeBy);
+    }
+
+    /** Wrapper for FastLed's blur1d()
+     * Total light is NOT entirely conserved, so many repeated calls to 'blur' will also result in
+     * the light fading, eventually all the way to black; this is by design so that it can be used
+     * to (slowly) clear the LEDs to black.
+     * @param blurAmount  0 = no spread at all
+     *                   64 = moderate spreading
+     *                  172 = maximum smooth, even spreading
+     *             173..255 = wider spreading, but increasing flicker
+     */
+    void blur(uint8_t blurAmount)
+    {
+      blur1d(m_ledArray, getSize(), blurAmount);
     }
 
     /// Get a new strip with the same underlying LED pixel array, but reversed drawing direction.

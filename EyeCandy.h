@@ -29,6 +29,7 @@ SOFTWARE.
 #include "AnimationChanger.h"
 
 // Pattern
+#include "Blur.h"
 #include "BouncingBalls.h"
 #include "Bubbles.h"
 #include "FadeOut.h"

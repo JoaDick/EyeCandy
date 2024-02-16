@@ -78,6 +78,14 @@ void makeBalls(EC::AnimationScene &scene)
     scene.append(new EC::BouncingBalls<>(strip, false));
 }
 
+void makeBlur(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::Blur(strip));
+    // autoMode = false;
+}
+
 void makeFloatingBlobs(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -223,6 +231,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeFloatingBlobs,
     &makeGlitterDot,
     &makeRainbowTwinkle,
+    &makeBlur,
     &makePride,
     &makePrideMirror,
     &makePacifica,
@@ -306,6 +315,9 @@ void printMemoryUsage()
     Serial.print(NUM_LEDS);
     Serial.println(F(" LEDs:"));
     Serial.println(F("<*> is dependant on NUM_LEDS"));
+
+    Serial.print(F("Blur = "));
+    Serial.println(sizeof(EC::Blur));
 
     Serial.print(F("BouncingBalls<> = "));
     Serial.println(sizeof(EC::BouncingBalls<>));
