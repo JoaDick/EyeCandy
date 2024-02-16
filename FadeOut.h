@@ -87,7 +87,7 @@ namespace EC
     {
       if (wasModified)
       {
-        strip.fadeToBlackBy(fadeRate);
+        strip.fadeToBlack(fadeRate);
       }
     }
 

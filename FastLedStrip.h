@@ -213,16 +213,15 @@ namespace EC
     }
 
     /// Fill the entire strip with the given \a color.
-    void fillSolid(CRGB color)
+    void fill(CRGB color)
     {
       fillLedBlock(0, getSize() - 1, color);
     }
 
-    /// Same as FastLed's fadeToBlackBy()
-    void fadeToBlackBy(uint8_t fadeBy)
+    /// Wrapper for FastLed's fadeToBlackBy()
+    void fadeToBlack(uint8_t fadeBy)
     {
-      // copied implementation of FastLed's fadeToBlackBy()
-      nscale8(m_ledArray, getSize(), 255 - fadeBy);
+      fadeToBlackBy(m_ledArray, getSize(), fadeBy);
     }
 
     /// Get a new strip with the same underlying LED pixel array, but reversed drawing direction.
@@ -470,11 +469,11 @@ namespace EC
   {
     if (fadeRate)
     {
-      strip.fadeToBlackBy(fadeRate);
+      strip.fadeToBlack(fadeRate);
     }
     else
     {
-      strip.fillSolid(CRGB::Black);
+      strip.fill(CRGB::Black);
     }
   }
 

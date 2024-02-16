@@ -89,7 +89,7 @@ namespace EC
       }
       else
       {
-        strip.fillSolid(CRGB::Black);
+        strip.fill(CRGB::Black);
       }
     }
 

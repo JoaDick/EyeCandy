@@ -69,7 +69,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      strip.fadeToBlackBy(fadeRate);
+      strip.fadeToBlack(fadeRate);
 
       for (auto i = 0; i < strip.ledCount(); i++)
       {

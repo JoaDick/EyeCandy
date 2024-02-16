@@ -113,7 +113,7 @@ namespace EC
       sCIStart4 -= (deltams2 * beatsin88(257, 4, 6));
 
       // Clear out the LED array to a dim background blue-green
-      strip.fillSolid(CRGB(2, 6, 10));
+      strip.fill(CRGB(2, 6, 10));
 
       // Render each of four layers, with different scales and speeds, that vary over time
       pacifica_one_layer(pacifica_palette_1, sCIStart1, beatsin16(3, 11 * 256, 14 * 256), beatsin8(10, 70, 130), 0 - beat16(301));

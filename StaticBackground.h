@@ -58,7 +58,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      strip.fillSolid(color);
+      strip.fill(color);
     }
   };
 
