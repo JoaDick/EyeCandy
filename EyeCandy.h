@@ -44,6 +44,7 @@ SOFTWARE.
 #include "Pride2015.h"
 #include "Rainbow.h"
 #include "RainbowBuiltin.h"
+#include "RainbowDrips.h"
 #include "RainbowTwinkle.h"
 #include "RgbBlocks.h"
 #include "StaticBackground.h"

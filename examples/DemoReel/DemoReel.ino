@@ -86,14 +86,6 @@ void makeBlur(EC::AnimationScene &scene)
     // autoMode = false;
 }
 
-void makeFloatingBlobs(EC::AnimationScene &scene)
-{
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::FloatingBlobs(strip));
-    // autoMode = false;
-}
-
 void makeBubbles(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -109,14 +101,6 @@ void makeFire(EC::AnimationScene &scene)
 
     auto fire = scene.append(new EC::Fire2012<NUM_LEDS>(strip));
     scene.append(new EC::Fire2012Changer<NUM_LEDS>(*fire));
-}
-
-void makeGlitterDot(EC::AnimationScene &scene)
-{
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::Glitter(strip, false));
-    scene.append(new EC::MovingDot(strip, true /*, CRGB::Red*/));
 }
 
 void makeFireAndBalls(EC::AnimationScene &scene)
@@ -156,6 +140,22 @@ void makeFlare(EC::AnimationScene &scene)
     scene.append(new EC::Kaleidoscope(strip));
 }
 
+void makeFloatingBlobs(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::FloatingBlobs(strip));
+    // autoMode = false;
+}
+
+void makeGlitterDot(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::Glitter(strip, false));
+    scene.append(new EC::MovingDot(strip, true /*, CRGB::Red*/));
+}
+
 void makePacifica(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -192,11 +192,12 @@ void makeRainbowBuiltin(EC::AnimationScene &scene)
     scene.append(new EC::RainbowBuiltin(strip));
 }
 
-void makeRgbBlocks(EC::AnimationScene &scene)
+void makeRainbowDrips(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    scene.append(new EC::RgbBlocks(strip));
+    scene.append(new EC::RainbowDrips(strip));
+    // autoMode = false;
 }
 
 void makeRainbowTwinkle(EC::AnimationScene &scene)
@@ -205,6 +206,13 @@ void makeRainbowTwinkle(EC::AnimationScene &scene)
 
     auto rainbow = scene.append(new EC::RainbowTwinkle(strip));
     rainbow->setModelUpdatePeriod(25);
+}
+
+void makeRgbBlocks(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::RgbBlocks(strip));
 }
 
 void makeTwinkles(EC::AnimationScene &scene)
@@ -235,6 +243,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeBlur,
     &makePride,
     &makePrideMirror,
+    &makeRainbowDrips,
     &makePacifica,
     &makeBubbles,
     &makeWaterfall,
@@ -326,16 +335,11 @@ void printMemoryUsage()
     Serial.print(F("Bubbles = "));
     Serial.println(sizeof(EC::Bubbles));
 
-#if (1)
-    Serial.print(F("FadeOut = "));
-    Serial.println(sizeof(EC::FadeOutPattern));
-#else
     Serial.print(F("FadeOutOverlay = "));
     Serial.println(sizeof(EC::FadeOutOverlay));
 
     Serial.print(F("FadeOutPattern = "));
     Serial.println(sizeof(EC::FadeOutPattern));
-#endif
 
     Serial.print(F("Fire2012<*> = "));
     Serial.println(sizeof(EC::Fire2012<NUM_LEDS>));
@@ -370,6 +374,9 @@ void printMemoryUsage()
 
     Serial.print(F("RainbowBuiltin = "));
     Serial.println(sizeof(EC::RainbowBuiltin));
+
+    Serial.print(F("RainbowDrips = "));
+    Serial.println(sizeof(EC::RainbowDrips));
 
     Serial.print(F("RainbowTwinkle = "));
     Serial.println(sizeof(EC::RainbowTwinkle));
