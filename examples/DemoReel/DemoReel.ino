@@ -91,6 +91,7 @@ void makeFloatingBlobs(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     scene.append(new EC::FloatingBlobs(strip));
+    // autoMode = false;
 }
 
 void makeBubbles(EC::AnimationScene &scene)

@@ -54,6 +54,8 @@ namespace EC
     void showPattern(uint32_t currentMillis) override
     {
       blobs.process(strip);
+      strip.blur(75);
+      strip.blur(150);
     }
   };
 
