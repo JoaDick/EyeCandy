@@ -26,6 +26,13 @@ SOFTWARE.
 *******************************************************************************/
 
 #include "AnimationBase.h"
+#include "MathUtils.h"
+
+//------------------------------------------------------------------------------
+
+#ifndef EC_LAVALAMP_DEBUG
+#define EC_LAVALAMP_DEBUG 0
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -40,106 +47,348 @@ namespace EC
   {
   public:
     /// Determines how fast the color changes.
-    uint8_t hueSpeed;
-    static uint8_t hueSpeed_default() { return 20; }
+    uint8_t colorBPM;
+    static uint8_t colorBPM_default() { return 1; }
 
-    /// Animation speed.
-    float speed = 1.0;
+    /** Brightness of the Lavalamp.
+     * This setting can be adjusted at runtime.
+     */
+    uint8_t volume = 192;
+
+    // /// Animation speed.
+    // float speed = 4.0;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
-     * @param hueSpeed  How fast the color changes.
+     * @param colorBPM  How fast the color changes.
      * @param startHue  Initial color.
      */
     explicit Lavalamp(FastLedStrip ledStrip,
-                      uint8_t hueSpeed = hueSpeed_default(),
+                      uint8_t colorBPM = colorBPM_default(),
                       uint8_t startHue = random8())
-        : AnimationBase(ledStrip), hueSpeed(hueSpeed), _baseHue(startHue)
+        : AnimationBase(ledStrip), colorBPM(colorBPM), _startHue(startHue)
     {
-      _baseHue *= _hueScaleFactor;
-      // to avoid a boring startup
-      _blobs[0].isActive = true;
-      _blobs[1].isActive = true;
     }
 
   private:
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      updateBlobs();
+#if (EC_LAVALAMP_DEBUG)
       strip.fill(CRGB::Black);
+#else
+      strip.fadeToBlack(50);
+#endif
+      _ceiling.process();
+      _floor.process();
 
-      const CRGB color = CHSV(_baseHue / _hueScaleFactor, 255, 255);
-      strip.normLineAbs(0, _floor, color);
-      strip.normLineAbs(_ceiling, 1.0, color);
-
+      const uint8_t hue = _startHue + beat8(colorBPM);
+      const CRGB color = CHSV(hue, 255, volume);
       for (auto i = 0; i < _numBlobs; ++i)
       {
-        if (_blobs[i].isActive)
+        auto &theBlob = _blobs[i];
+        theBlob.process(_ceiling, _floor, i);
+        if (theBlob.isActive())
         {
-          strip.normLineRel(_blobs[i].pos, -_blobs[i].size, color);
+          strip.normLineAbs(theBlob.posMin(), theBlob.posMax(), color);
+        }
+      }
+
+#if (EC_LAVALAMP_DEBUG)
+      // strip.normLineAbs(0, _floor.pos(), color);
+      // strip.normLineAbs(1.0, _ceiling.pos(), color);
+      strip.normPixel(_ceiling.posMax()) = CRGB(64, 0, 0);
+      strip.normPixel(_ceiling.pos()) = CRGB(128, 0, 0);
+      strip.normPixel(_ceiling.posMin()) = CRGB(64, 0, 0);
+      strip.normPixel(_floor.posMax()) = CRGB(0, 0, 64);
+      strip.normPixel(_floor.pos()) = CRGB(0, 0, 128);
+      strip.normPixel(_floor.posMin()) = CRGB(0, 0, 64);
+      for (uint16_t i = 0; i < _numBlobs; ++i)
+      {
+        auto &theBlob = _blobs[i];
+        const uint8_t hue = i * 256 / _numBlobs;
+
+        CRGB color = CRGB(255, 0, 0);
+        switch (theBlob.mode())
+        {
+        case LavaBlob::ready:
+          color = CHSV(hue, 255, 128);
+          break;
+
+        case LavaBlob::active:
+          color = CHSV(hue, 255, 96);
+          break;
+
+        case LavaBlob::armedTop:
+          color = CRGB(64, 255, 0);
+          break;
+
+        case LavaBlob::armedBottom:
+          color = CRGB(0, 255, 64);
+          break;
+
+        case LavaBlob::blockedTop:
+          color = CRGB(255, 64, 0);
+          break;
+
+        case LavaBlob::blockedBottom:
+          color = CRGB(255, 0, 64);
+          break;
+
+        default:
+          break;
+        }
+        if (theBlob.stateUpdated)
+        {
+          color = CRGB(255, 255, 255);
+        }
+        strip.normPixel(theBlob.pos()) = color;
+      }
+#else
+      strip.normLineAbs(0, _floor.pos(), color);
+      strip.normLineAbs(1.0, _ceiling.pos(), color);
+      strip.blur(75);
+#endif
+    }
+
+  private:
+    class LavaReservoir
+    {
+    public:
+      const float offset;
+      const float maxSize;
+
+      void process()
+      {
+        const float balanceAmount = 0.00001;
+        if (fillLevel() <= 0.5)
+        {
+          _sizeSetpoint += balanceAmount;
         }
         else
         {
-          // strip.normPixel(_blobs[i].pos) = color / 16;
+          _sizeSetpoint -= balanceAmount;
         }
+        _sizeSetpoint = constrain(_sizeSetpoint, 0.0, maxSize);
+        _size.process(_sizeSetpoint);
       }
 
-      strip.blur(75);
-      strip.blur(150);
-    }
-
-    void updateBlobs()
-    {
-      _ceiling = 1.0 - (beatsin(1.37, 0.05) + 0.01);
-      _floor = beatsin(1.93, 0.1) + 0.05;
-
-      for (auto i = 0; i < _numBlobs; ++i)
+      void consume(float blobSize)
       {
-        const auto size = beatsin(0.97 + i * 2.43, 0.4 / _numBlobs) + 0.02 + i / 100.0;
-        const auto posBase = beatsin(2.71 - i / 15.7, 1.0 + size, i / float(_numBlobs));
-        const auto posStretch = beatsin(3.69 + i / 11.1, 0.8) + 0.4;
-        const auto pos = posBase * posStretch;
-
-        _blobs[i].size = size;
-        _blobs[i].pos = pos;
-        if (pos - size > _ceiling)
-        {
-          _blobs[i].isActive = random8() < 150;
-        }
-        if (pos < _floor)
-        {
-          _blobs[i].isActive = random8() < 150;
-        }
+        _sizeSetpoint += blobSize;
       }
 
-      _baseHue += hueSpeed;
-    }
+      bool release(float blobSize)
+      {
+        if (random8() & 0x01 || fillLevel() > 0.667)
+        {
+          _sizeSetpoint -= blobSize;
+          return true;
+        }
+        return false;
+      }
 
-  private:
-    struct Blob
-    {
-      float pos = 0.0;
-      float size = 0.0;
-      bool isActive = false;
+      float fillLevel()
+      {
+        return size() / maxSize;
+      }
+
+    protected:
+      LavaReservoir(float posMin,
+                    const float posMax)
+          : offset(posMin), maxSize(posMax - posMin)
+      {
+      }
+
+      float size() { return _size.get(); }
+
+    private:
+      float _sizeSetpoint = offset;
+      MovingAverage _size{150};
     };
 
-    float beatsin(float bpm, float maxVal, float phaseOffset = 0.0)
+    class LavaCeiling : public LavaReservoir
     {
-      float x = beatsin88(bpm * 256 * speed, 0, 0xFFFF, 0, phaseOffset * 0xFFFF);
-      x /= 0xFFFF;
-      x *= maxVal;
-      return x;
-    }
+    public:
+      LavaCeiling() : LavaReservoir(0.01, 0.15) {}
+      float posMax() { return 1.0 - offset; }
+      float pos() { return 1.0 - offset - size(); }
+      float posMin() { return 1.0 - offset - maxSize; }
+    };
+
+    class LavaFloor : public LavaReservoir
+    {
+    public:
+      LavaFloor() : LavaReservoir(0.05, 0.2) {}
+      float posMax() { return offset + maxSize; }
+      float pos() { return offset + size(); }
+      float posMin() { return offset; }
+    };
+
+    class LavaBlob
+    {
+    public:
+      enum State
+      {
+        ready,
+        armedTop,
+        armedBottom,
+        active,
+        blockedTop,
+        blockedBottom
+      };
+
+      /// Animation speed.
+      float speed = 0.8;
+
+      float pos() { return _pos; }
+      float posMin() { return _pos - _radius; }
+      float posMax() { return _pos + _radius; }
+      bool isActive() { return _state == active; }
+      State mode() { return _state; }
+
+      LavaBlob()
+      {
+#if (EC_LAVALAMP_DEBUG)
+        speed = 3.0;
+#endif
+      }
+
+      void process(LavaCeiling &ceiling, LavaFloor &floor, uint8_t blobNr)
+      {
+        const float blobMin = 0.025;
+        const float blobWobble = 0.125;
+        const auto s1 = beatsinAmp(11.0 - blobNr / 4.0, blobMin, blobWobble);
+        const auto s2 = beatsinAmp(13.0 + blobNr / 2.0, blobMin, blobWobble);
+        _radius = (s1 + s2) / 4.0;
+
+        const float maxPos = ceiling.pos() + _radius + 0.075;
+        const float minPos = floor.pos() - _radius - 0.05;
+        const float posAmp = beatsinRng(3.45 + blobNr / 5.0, minPos, maxPos);
+        const float posMod = beatsinRng(2.34 - blobNr / 7.0, 0.5, 1.0);
+        _pos = posAmp * posMod;
+
+#if (EC_LAVALAMP_DEBUG)
+        // _radius = 0.025;
+        // _pos = posAmp;
+
+        stateUpdated = false;
+#endif
+
+        switch (_state)
+        {
+        case ready:
+          if (posMin() > ceiling.pos())
+          {
+            setState(armedTop);
+          }
+          else if (posMax() < floor.pos())
+          {
+            setState(armedBottom);
+          }
+          break;
+
+        case armedTop:
+          if (posMin() <= ceiling.pos())
+          {
+            if (ceiling.release(_radius * _transferFactor))
+            {
+              setState(active);
+            }
+            else
+            {
+              setState(ready);
+            }
+          }
+          break;
+
+        case armedBottom:
+          if (posMax() >= floor.pos())
+          {
+            if (floor.release(_radius * _transferFactor))
+            {
+              setState(active);
+            }
+            else
+            {
+              setState(ready);
+            }
+          }
+          break;
+
+        case active:
+          if (posMin() >= ceiling.pos())
+          {
+            ceiling.consume(_radius * _transferFactor);
+            setState(blockedTop);
+          }
+          if (posMax() <= floor.pos())
+          {
+            floor.consume(_radius * _transferFactor);
+            setState(blockedBottom);
+          }
+          break;
+
+        case blockedTop:
+          if (posMax() < ceiling.pos())
+          {
+            setState(ready);
+          }
+          break;
+
+        case blockedBottom:
+          if (posMin() > floor.pos())
+          {
+            setState(ready);
+          }
+          break;
+
+        default:
+          // should never happen
+          setState(ready);
+          break;
+        }
+      }
+
+      void setState(State mode)
+      {
+        _state = mode;
+#if (EC_LAVALAMP_DEBUG)
+        stateUpdated = true;
+#endif
+      }
+
+#if (EC_LAVALAMP_DEBUG)
+      bool stateUpdated = false;
+#endif
+
+    private:
+      float beatsinAmp(float bpm, float lowest, float amplitute)
+      {
+        return beatsinRng(bpm, lowest, lowest + amplitute);
+      }
+
+      float beatsinRng(float bpm, float lowest, float highest)
+      {
+        return beatsinF(bpm * speed, lowest, highest, 0, 0.67);
+      }
+
+      State _state = ready;
+      float _pos = 0.0;
+      float _radius = 0.0;
+      static const float _transferFactor = 0.67;
+    };
 
   private:
+#if (EC_LAVALAMP_DEBUG)
     static const uint8_t _numBlobs = 5;
-    static const uint8_t _hueScaleFactor = 128;
-
-    Blob _blobs[_numBlobs];
-    float _ceiling;
-    float _floor;
-    uint16_t _baseHue;
+#else
+    static const uint8_t _numBlobs = 5;
+#endif
+    const uint8_t _startHue;
+    LavaBlob _blobs[_numBlobs];
+    LavaCeiling _ceiling;
+    LavaFloor _floor;
   };
 
 } // namespace EC

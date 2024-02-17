@@ -25,6 +25,10 @@ SOFTWARE.
 
 *******************************************************************************/
 
+#include <FastLED.h>
+
+//------------------------------------------------------------------------------
+
 namespace EC
 {
 
@@ -74,5 +78,16 @@ namespace EC
     /// Current average value.
     float avgValue;
   };
+
+  //------------------------------------------------------------------------------
+
+  float beatsinF(float bpm, float lowest, float highest, uint32_t timebase = 0, float phaseOffset = 0.0)
+  {
+    float x = beatsin88(bpm * 256, 0, 0xFFFF, timebase, phaseOffset * 0xFFFF);
+    x /= 0xFFFF;
+    x *= (highest - lowest);
+    x += lowest;
+    return x;
+  }
 
 }
