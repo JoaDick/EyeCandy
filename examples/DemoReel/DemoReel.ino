@@ -153,7 +153,15 @@ void makeGlitterDot(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     scene.append(new EC::Glitter(strip, false));
-    scene.append(new EC::MovingDot(strip, true /*, CRGB::Red*/));
+    scene.append(new EC::MovingDot(strip, true));
+}
+
+void makeLavalamp(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::Lavalamp(strip));
+    // autoMode = false;
 }
 
 void makePacifica(EC::AnimationScene &scene)
@@ -247,6 +255,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makePacifica,
     &makeBubbles,
     &makeWaterfall,
+    &makeLavalamp,
     &makeBalls,
     &makeFire,
     &makeFireAndBalls,
@@ -356,6 +365,9 @@ void printMemoryUsage()
 
     Serial.print(F("Glitter = "));
     Serial.println(sizeof(EC::Glitter));
+
+    Serial.print(F("Lavalamp = "));
+    Serial.println(sizeof(EC::Lavalamp));
 
     Serial.print(F("Kaleidoscope = "));
     Serial.println(sizeof(EC::Kaleidoscope));

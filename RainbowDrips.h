@@ -90,7 +90,7 @@ namespace EC
     static const uint8_t _effectRate = 10;
     static const uint8_t _numDrips = 4;
     static const uint8_t _hueScaleFactor = 16;
-    uint16_t _baseHue = 0;
+    uint16_t _baseHue;
     uint16_t _dripPos[_numDrips]{};
   };
 

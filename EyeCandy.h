@@ -39,6 +39,7 @@ SOFTWARE.
 #include "FloatingBlobs.h"
 #include "Glitter.h"
 #include "Kaleidoscope.h"
+#include "Lavalamp.h"
 #include "MovingDot.h"
 #include "Pacifica.h"
 #include "Pride2015.h"
