@@ -28,11 +28,12 @@ SOFTWARE.
 #include "Animation.h"
 #include "AnimationChanger.h"
 
+#include "Backgrounds.h"
+
 // Pattern
 #include "Blur.h"
 #include "BouncingBalls.h"
 #include "Bubbles.h"
-#include "FadeOut.h"
 #include "Fire2012.h"
 #include "Fire2012Changer.h"
 #include "Firework.h"
@@ -48,7 +49,6 @@ SOFTWARE.
 #include "RainbowDrips.h"
 #include "RainbowTwinkle.h"
 #include "RgbBlocks.h"
-#include "StaticBackground.h"
 #include "Twinkles.h"
 #include "Waterfall.h"
 

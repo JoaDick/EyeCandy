@@ -28,18 +28,24 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-// #define LED_COLOR_ORDER RGB
-// #define NUM_LEDS 50
+#define PRINT_MEMORY_USAGE 1
+#define PRINT_PATTERN_RATE 0
+#define PRINT_SAMPLE_RATE 0
+
+//------------------------------------------------------------------------------
 
 // #define EC_DEFAULT_UPDATE_PERIOD 20
 #define EC_ENABLE_VU_RANGE_EXTENDER_BYPASS 1
 
-//------------------------------------------------------------------------------
-
 #include <EyeCandy.h>
-#include <Animation_IO_config.h>
 #include <AudioNormalizer.h>
 #include <ButtonHandler.h>
+
+//------------------------------------------------------------------------------
+
+// #define LED_COLOR_ORDER RGB
+// #define NUM_LEDS 50
+#include <Animation_IO_config.h>
 
 //------------------------------------------------------------------------------
 
@@ -53,20 +59,21 @@ bool autoMode = true;
 float audioSample = 0.0;
 EC::AudioNormalizer normalizer;
 
-#define PRINT_MEMORY_USAGE 1
-#define PRINT_SAMPLE_RATE 0
-#define PRINT_PATTERN_RATE 0
-
 //------------------------------------------------------------------------------
 
 void setup()
 {
+    // random16_set_seed(analogRead(A3));
+    // randomSeed(random16_get_seed());
+
     pinMode(PIN_SELECT_BTN, INPUT_PULLUP);
     pinMode(PIN_FLIP_BTN, INPUT_PULLUP);
     pinMode(PIN_COLOR_POT, INPUT_PULLUP);
     pinMode(PIN_SPEED_POT, INPUT_PULLUP);
     pinMode(PIN_MIC, INPUT);
+#ifdef ARDUINO_ARCH_AVR // only with Arduino boards
     pinMode(LED_BUILTIN, OUTPUT);
+#endif
 
     analogReference(EXTERNAL);
 
@@ -81,7 +88,7 @@ void setup()
 
 //------------------------------------------------------------------------------
 
-const uint16_t defaultAnimationDuration = 15;
+const uint16_t defaultAnimationDuration = 20;
 uint16_t animationDuration = defaultAnimationDuration;
 
 //------------------------------------------------------------------------------
@@ -439,7 +446,9 @@ void handleAnimationChange(uint32_t currentMillis = millis())
         break;
     }
 
-    // digitalWrite(LED_BUILTIN, autoMode);
+#ifdef ARDUINO_ARCH_AVR // only with Arduino boards
+    digitalWrite(LED_BUILTIN, autoMode);
+#endif
     if (mustChange)
     {
         animationDuration = defaultAnimationDuration;
@@ -473,6 +482,11 @@ void loop()
 #if (PRINT_SAMPLE_RATE)
     printSampleRate(currentMillis);
 #endif
+
+    // // this avoids nasty flickering with ESP8266 - don't know why...?!?
+    // #ifdef ARDUINO_ARCH_ESP8266
+    //     delay(2);
+    // #endif
 }
 
 //------------------------------------------------------------------------------
@@ -595,46 +609,46 @@ void printMemoryUsage()
     Serial.println(F("<*> is dependant on NUM_LEDS"));
 
     Serial.print(F("VuSourceAnalogPin = "));
-    Serial.println(sizeof(EC::VuSourceAnalogPin));
+    Serial.println((int)sizeof(EC::VuSourceAnalogPin));
 
     Serial.print(F("VuSourcePeakHold = "));
-    Serial.println(sizeof(EC::VuSourcePeakHold));
+    Serial.println((int)sizeof(EC::VuSourcePeakHold));
 
     Serial.print(F("VuSourcePeakGravity = "));
-    Serial.println(sizeof(EC::VuSourcePeakGravity));
+    Serial.println((int)sizeof(EC::VuSourcePeakGravity));
 
     Serial.print(F("VuSourcePeakForce = "));
-    Serial.println(sizeof(EC::VuSourcePeakForce));
+    Serial.println((int)sizeof(EC::VuSourcePeakForce));
 
     Serial.print(F("VuOverlayLine = "));
-    Serial.println(sizeof(EC::VuOverlayLine));
+    Serial.println((int)sizeof(EC::VuOverlayLine));
 
     Serial.print(F("VuOverlayStripe = "));
-    Serial.println(sizeof(EC::VuOverlayStripe));
+    Serial.println((int)sizeof(EC::VuOverlayStripe));
 
     Serial.print(F("VuOverlayDot = "));
-    Serial.println(sizeof(EC::VuOverlayDot));
+    Serial.println((int)sizeof(EC::VuOverlayDot));
 
     Serial.print(F("VuOverlayRainbowLine = "));
-    Serial.println(sizeof(EC::VuOverlayRainbowLine));
+    Serial.println((int)sizeof(EC::VuOverlayRainbowLine));
 
     Serial.print(F("VuOverlayRainbowStripe = "));
-    Serial.println(sizeof(EC::VuOverlayRainbowStripe));
+    Serial.println((int)sizeof(EC::VuOverlayRainbowStripe));
 
     Serial.print(F("VuOverlayRainbowDot = "));
-    Serial.println(sizeof(EC::VuOverlayRainbowDot));
+    Serial.println((int)sizeof(EC::VuOverlayRainbowDot));
 
     Serial.print(F("VuOverlayPeakGlitter = "));
-    Serial.println(sizeof(EC::VuOverlayPeakGlitter));
+    Serial.println((int)sizeof(EC::VuOverlayPeakGlitter));
 
     Serial.print(F("Fire2012VU = "));
-    Serial.println(sizeof(EC::Fire2012VU<NUM_LEDS>));
+    Serial.println((int)sizeof(EC::Fire2012VU<NUM_LEDS>));
 
     Serial.print(F("RawAudioVU = "));
-    Serial.println(sizeof(EC::RawAudioVU));
+    Serial.println((int)sizeof(EC::RawAudioVU));
 
     Serial.print(F("TestVU1 = "));
-    Serial.println(sizeof(EC::TestVU1));
+    Serial.println((int)sizeof(EC::TestVU1));
 }
 #endif
 

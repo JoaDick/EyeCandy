@@ -3,7 +3,7 @@
 
 MIT License
 
-Copyright (c) 2020 Joachim Dick
+Copyright (c) 2024 Joachim Dick
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -32,10 +32,12 @@ SOFTWARE.
 namespace EC
 {
 
+  //------------------------------------------------------------------------------
+
   /** A Pattern that renders all LEDs with the same color.
    * Mainly intended as example, but can also be used in combination with Overlays.
    */
-  class StaticBackground
+  class BgFillColor
       : public AnimationBase
   {
   public:
@@ -48,8 +50,8 @@ namespace EC
      * @param ledStrip  The LED strip.
      * @param color  Fill LED strip with this color.
      */
-    StaticBackground(FastLedStrip ledStrip,
-                     CRGB color)
+    BgFillColor(FastLedStrip ledStrip,
+                CRGB color)
         : AnimationBase(ledStrip, false), color(color)
     {
     }
@@ -61,5 +63,45 @@ namespace EC
       strip.fill(color);
     }
   };
+
+  //------------------------------------------------------------------------------
+
+  /** An Effect that fades out the current content of the LED strip.
+   * Can be used as Overlay, or as base Pattern in combination with other Overlays.
+   * Useful e.g. for dimming the underlying Pattern in an AnimationScene.
+   */
+  class BgFadeToBlack
+      : public AnimationBase
+  {
+  public:
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to \c true when the Animation shall be an Overlay.
+     * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
+     */
+    BgFadeToBlack(FastLedStrip ledStrip,
+                  bool overlayMode,
+                  uint8_t fadeRate)
+        : AnimationBase(ledStrip, overlayMode, fadeRate)
+    {
+    }
+
+  private:
+    /// @see AnimationBase::showPattern()
+    void showPattern(uint32_t currentMillis) override
+    {
+      // must be empty
+    }
+
+    /// @see AnimationBase::showOverlay()
+    void showOverlay(uint32_t currentMillis) override
+    {
+      showDefaultPattern(strip, fadeRate);
+    }
+  };
+
+  //------------------------------------------------------------------------------
+
+  // TODO: BgBlur
 
 } // namespace EC

@@ -314,14 +314,14 @@ private:
     void initColorBlob(Blob &blob,
                        uint8_t hue)
     {
-        blob.reset(hue, randomF(0.5) + 0.5f, random16(0x100) + 0x40);
+        blob.reset(hue, EC::randomF(0.5) + 0.5f, random16(0x100) + 0x40);
     }
 
     void initBlackBlob(Blob &blob)
     {
-        // blob.reset(randomF(0.1f) + 0.1f, random16(0x200) + 0x80);
-        blob.reset(randomF(0.2f) + 0.3f, random16(0x200) + 0x80);
-        // blob.reset(randomF(0.5) + 0.5f, random16(0x100) + 0x40);
+        // blob.reset(EC::randomF(0.1f) + 0.1f, random16(0x200) + 0x80);
+        blob.reset(EC::randomF(0.2f) + 0.3f, random16(0x200) + 0x80);
+        // blob.reset(EC::randomF(0.5) + 0.5f, random16(0x100) + 0x40);
     }
 
     static uint8_t getHueBetween(uint8_t hue1,

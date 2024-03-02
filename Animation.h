@@ -306,13 +306,13 @@ namespace EC
     /** Pause (in ms) between process() returning \c true
      * 0 means suspended, i.e. process() will always return \c false
      */
-    uint8_t updatePeriod;
+    uint16_t updatePeriod;
 
     /** Constructor.
      * @param updatePeriod  Pause (in ms) between process() returning \c true \n
      *                      0 means suspended, i.e. process() will always return \c false
      */
-    explicit AnimationTimer(uint8_t updatePeriod = 0)
+    explicit AnimationTimer(uint16_t updatePeriod = 0)
         : updatePeriod(updatePeriod)
     {
     }

@@ -26,7 +26,7 @@ SOFTWARE.
 *******************************************************************************/
 
 #include <FastLED.h>
-#include "randomF.h"
+#include "MathUtils.h"
 
 //------------------------------------------------------------------------------
 
@@ -96,7 +96,7 @@ void initColor(Blob &blob,
 {
     if (maxWeight <= 0.0)
     {
-        maxWeight = randomF(0.5) + 0.5f;
+        maxWeight = EC::randomF(0.5) + 0.5f;
     }
     if (speed == 0)
     {
@@ -111,7 +111,7 @@ void initBlack(Blob &blob,
 {
     if (maxWeight == 0.0)
     {
-        maxWeight = randomF(0.25) + 0.25f;
+        maxWeight = EC::randomF(0.25) + 0.25f;
     }
     if (speed == 0)
     {

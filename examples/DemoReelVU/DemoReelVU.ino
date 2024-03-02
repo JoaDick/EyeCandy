@@ -30,15 +30,15 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-// #define LED_COLOR_ORDER RGB
-// #define NUM_LEDS 50
+#include <EyeCandy.h>
+#include <AudioNormalizer.h>
+#include <ButtonHandler.h>
 
 //------------------------------------------------------------------------------
 
-#include <EyeCandy.h>
+// #define LED_COLOR_ORDER RGB
+// #define NUM_LEDS 50
 #include <Animation_IO_config.h>
-#include <AudioNormalizer.h>
-#include <ButtonHandler.h>
 
 //------------------------------------------------------------------------------
 
@@ -56,6 +56,9 @@ EC::AudioNormalizer normalizer;
 
 void setup()
 {
+    random16_set_seed(analogRead(A3));
+    randomSeed(random16_get_seed());
+
     pinMode(PIN_SELECT_BTN, INPUT_PULLUP);
     pinMode(PIN_MIC, INPUT);
     pinMode(LED_BUILTIN, OUTPUT);
@@ -104,7 +107,7 @@ void makeDoubleDancingDotVU1(EC::AnimationScene &scene)
 
     scene.append(new EC::Pride2015(strip.getHalfStrip(/*true*/)));
     scene.append(new EC::Kaleidoscope(strip));
-    scene.append(new EC::FadeOutOverlay(strip, 150));
+    scene.append(new EC::BgFadeToBlack(strip, true, 150));
 
     auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
     auto vuPeakSource = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
@@ -121,7 +124,7 @@ void makeDoubleDancingDotVU2(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     scene.append(new EC::FloatingBlobs(strip));
-    scene.append(new EC::FadeOutOverlay(strip, 230));
+    scene.append(new EC::BgFadeToBlack(strip, true, 230));
 
     auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
     auto vuPeakSource1 = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));

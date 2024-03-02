@@ -47,7 +47,7 @@ namespace EC
     /** Draw the Glitter with this color.
      * This setting can be adjusted at runtime.
      */
-    CRGB color = CRGB::White;
+    CRGB color;
 
     /** Effect occurrence rate.
      * Higher value = more glitter.
@@ -57,19 +57,7 @@ namespace EC
     uint8_t effectRate = effectRate_default();
     static uint8_t effectRate_default() { return 20; }
 
-#if (1)
-    /** Constructor
-     * @param ledStrip  The LED strip.
-     * @param overlayMode  Set to true when Animation shall be an Overlay.
-     */
-    Glitter(FastLedStrip ledStrip,
-            bool overlayMode)
-        : AnimationBase(ledStrip, overlayMode, fadeRate_default())
-    {
-    }
-
-#else // DRAFT
-    /** Constructor
+    /** Constructor.
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      * @param color  Draw the glitter with this color.
@@ -80,7 +68,6 @@ namespace EC
         : AnimationBase(ledStrip, overlayMode, fadeRate_default()), color(color)
     {
     }
-#endif
 
   private:
     /// @see AnimationBase::showOverlay()

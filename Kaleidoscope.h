@@ -25,7 +25,8 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "AnimationBase.h"
+#include "Animation.h"
+#include "FastLedStrip.h"
 
 //------------------------------------------------------------------------------
 
@@ -38,7 +39,7 @@ namespace EC
    * @see FastLedStrip::getHalfStrip()
    */
   class Kaleidoscope
-      : public AnimationBase
+      : public Animation
   {
   public:
     /** Determine how the lower part of the strip is duplicated into the upper part.
@@ -53,16 +54,22 @@ namespace EC
      */
     explicit Kaleidoscope(FastLedStrip ledStrip,
                           bool mirrored = true)
-        : AnimationBase(ledStrip, true), mirrored(mirrored)
+        : mirrored(mirrored), _strip(ledStrip)
     {
     }
 
   private:
-    /// @see AnimationBase::showOverlay()
-    void showOverlay(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      strip.copyUp(mirrored);
+      if (wasModified)
+      {
+        _strip.copyUp(mirrored);
+      }
     }
+
+  private:
+    FastLedStrip _strip;
   };
 
 } // namespace EC
