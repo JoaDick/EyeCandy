@@ -41,9 +41,7 @@ namespace EC
       : public AnimationBase
   {
   public:
-    /** Fill LED strip with this color.
-     * This setting can be adjusted at runtime.
-     */
+    /// Fill LED strip with this color.
     CRGB color;
 
     /** Constructor
@@ -103,5 +101,50 @@ namespace EC
   //------------------------------------------------------------------------------
 
   // TODO: BgBlur
+
+  //------------------------------------------------------------------------------
+
+  /** An Effect that fades out the individual LEDs of the strip randomly (instead of all at once).
+   * Can be used as Overlay, or as base Pattern in combination with other Overlays.
+   */
+  class BgMeteorFadeToBlack
+      : public AnimationBase
+  {
+  public:
+    /// Fading speed: Lower value = longer glowing.
+    uint8_t fadeBy;
+
+    /// Chance of fading a LED (0 = never, 255 = always).
+    uint8_t fadeChance;
+
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to \c true when the Animation shall be an Overlay.
+     * @param fadeBy  Fading speed: Lower value = longer glowing.
+     * @param fadeChance  Chance of fading a LED (0 = never, 255 = always).
+     */
+    explicit BgMeteorFadeToBlack(FastLedStrip ledStrip,
+                                 bool overlayMode,
+                                 uint8_t fadeBy = 96,
+                                 uint8_t fadeChance = 32)
+        : AnimationBase(ledStrip, overlayMode, 0), fadeBy(fadeBy), fadeChance(fadeChance)
+    {
+    }
+
+  private:
+    /// @see AnimationBase::showPattern()
+    void showPattern(uint32_t currentMillis) override
+    {
+      // must be empty
+    }
+
+    /// @see AnimationBase::showOverlay()
+    void showOverlay(uint32_t currentMillis) override
+    {
+      meteorFadeToBlack(strip, fadeBy, fadeChance);
+    }
+  };
+
+  //------------------------------------------------------------------------------
 
 } // namespace EC

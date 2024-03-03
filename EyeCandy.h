@@ -41,7 +41,7 @@ SOFTWARE.
 #include "Glitter.h"
 #include "Kaleidoscope.h"
 #include "Lavalamp.h"
-#include "MovingDot.h"
+#include "Meteor.h"
 #include "Pacifica.h"
 #include "Pride2015.h"
 #include "Rainbow.h"

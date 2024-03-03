@@ -152,20 +152,20 @@ void makeFloatingBlobs(EC::AnimationScene &scene)
     // autoMode = false;
 }
 
-void makeGlitterDot(EC::AnimationScene &scene)
-{
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::Glitter(strip, false));
-    scene.append(new EC::MovingDot(strip, true));
-}
-
 void makeLavalamp(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     scene.append(new EC::Lavalamp(strip));
     // autoMode = false;
+}
+
+void makeMeteorGlitter(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::Meteor(strip, false));
+    scene.append(new EC::Glitter(strip, true, CRGB(255, 224, 80), 15));
 }
 
 void makePacifica(EC::AnimationScene &scene)
@@ -250,7 +250,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeRainbowBuiltin,
     &makeRainbow,
     &makeFloatingBlobs,
-    &makeGlitterDot,
+    &makeMeteorGlitter,
     &makeRainbowTwinkle,
     &makeBlur,
     &makePride,

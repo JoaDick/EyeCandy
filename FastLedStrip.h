@@ -236,6 +236,7 @@ namespace EC
      *                  172 = maximum smooth, even spreading
      *             173..255 = wider spreading, but increasing flicker
      */
+    // TODO: parameter uint8_t blurCycles = 1
     void blur(uint8_t blurAmount)
     {
       blur1d(m_ledArray, getSize(), blurAmount);
@@ -432,6 +433,11 @@ namespace EC
       return m_ledArray;
     }
 
+    // Enable iterating over all pixels of the strip via range-based for loop.
+    using iterator = CRGB *;
+    iterator begin() { return &m_ledArray[0]; }
+    iterator end() { return &m_ledArray[getSize()]; }
+
     static FastLedStrip GetNULL() { return FastLedStrip(); }
 
   private:
@@ -477,16 +483,37 @@ namespace EC
     uint16_t m_sizeNrev;
   };
 
-  /** Helper function for rendering an oftentimes used Pattern background.
-   * Depending on the setting of \a fadeRate, it makes either a fading background, or a solid
-   * black background.
-   * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
+  //------------------------------------------------------------------------------
+
+  /** Fading function for Meteor and BgMeteorFadeToBlack Animation.
+   * The individual LEDs of the strip are faded randomly (instead of all at once).
+   * @param ledStrip  The LED strip.
+   * @param fadeBy  Fading speed: Lower value = longer glowing.
+   * @param chance  Chance of fading a LED (0 = never, 255 = always).
    */
-  inline void showDefaultPattern(FastLedStrip &strip, uint8_t fadeRate)
+  inline void meteorFadeToBlack(FastLedStrip &strip, uint8_t fadeBy = 96, uint8_t chance = 32)
   {
-    if (fadeRate)
+    for (auto &pixel : strip)
     {
-      strip.fadeToBlack(fadeRate);
+      if (random8(1, 255) <= chance)
+      {
+        pixel.nscale8(255 - fadeBy);
+      }
+    }
+  }
+
+  //------------------------------------------------------------------------------
+
+  /** Helper function for rendering an oftentimes used Pattern background.
+   * Depending on the setting of \a fadeBy, it makes either a fading background, or a solid
+   * black background.
+   * @param fadeBy  Fading speed: Lower value = longer glowing; 0 = black background.
+   */
+  inline void showDefaultPattern(FastLedStrip &strip, uint8_t fadeBy)
+  {
+    if (fadeBy)
+    {
+      strip.fadeToBlack(fadeBy);
     }
     else
     {

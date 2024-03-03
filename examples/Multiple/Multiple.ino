@@ -38,6 +38,11 @@ SOFTWARE.
 *******************************************************************************/
 
 #include <EyeCandy.h>
+
+//------------------------------------------------------------------------------
+
+// #define LED_COLOR_ORDER RGB
+// #define NUM_LEDS 50
 #include <Animation_IO_config.h>
 
 //------------------------------------------------------------------------------
@@ -60,7 +65,7 @@ EC::Rainbow rainbow(rainbowStrip);
 EC::RgbBlocks rgbBlocks(rgbBlocksStrip);
 
 // Overlays
-EC::MovingDot movingDotOverlay(movingDotStrip, true /*, CRGB::SteelBlue*/);
+EC::Meteor movingDotOverlay(movingDotStrip, true);
 
 EC::AnimationSceneStatic animationScene;
 
@@ -79,6 +84,8 @@ void setup()
     // set up Animations
     rainbow.volume = 100;
     movingDotOverlay.color = CRGB::SteelBlue;
+    movingDotOverlay.bpm = 15;
+    movingDotOverlay.overshoot = 0.0;
 
     animationScene.append(rainbow);
     animationScene.append(rgbBlocks);

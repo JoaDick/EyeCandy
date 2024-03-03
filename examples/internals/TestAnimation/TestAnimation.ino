@@ -149,21 +149,20 @@ void makeFloatingBlobs(EC::AnimationScene &scene)
     // autoMode = false;
 }
 
-void makeGlitterDot(EC::AnimationScene &scene)
-{
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    const uint8_t hue = random8();
-    scene.append(new EC::BgFillColor(strip, CHSV(hue, 255, 32)));
-    scene.append(new EC::Glitter(strip, true));
-    scene.append(new EC::MovingDot(strip, true, CHSV(hue + 128, 255, 255)));
-}
-
 void makeLavalamp(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     scene.append(new EC::Lavalamp(strip));
+    // autoMode = false;
+}
+
+void makeMeteorGlitter(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::Meteor(strip, false));
+    scene.append(new EC::Glitter(strip, true, CRGB(255, 224, 80), 15));
     // autoMode = false;
 }
 
@@ -241,7 +240,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeRainbowBuiltin,
     &makeRainbow,
     &makeFloatingBlobs,
-    &makeGlitterDot,
+    &makeMeteorGlitter,
     &makeRainbowTwinkle,
     &makeBlur,
     &makePride,
@@ -439,6 +438,15 @@ void printMemoryUsage()
     Serial.println(F(" LEDs:"));
     Serial.println(F("<*> is dependant on NUM_LEDS"));
 
+    Serial.print(F("BgFadeToBlack = "));
+    Serial.println((int)sizeof(EC::BgFadeToBlack));
+
+    Serial.print(F("BgFillColor = "));
+    Serial.println((int)sizeof(EC::BgFillColor));
+
+    Serial.print(F("BgMeteorFadeToBlack = "));
+    Serial.println((int)sizeof(EC::BgMeteorFadeToBlack));
+
     Serial.print(F("Blur = "));
     Serial.println((int)sizeof(EC::Blur));
 
@@ -447,9 +455,6 @@ void printMemoryUsage()
 
     Serial.print(F("Bubbles = "));
     Serial.println((int)sizeof(EC::Bubbles));
-
-    Serial.print(F("BgFadeToBlack = "));
-    Serial.println((int)sizeof(EC::BgFadeToBlack));
 
     Serial.print(F("Fire2012<*> = "));
     Serial.println((int)sizeof(EC::Fire2012<NUM_LEDS>));
@@ -473,8 +478,8 @@ void printMemoryUsage()
     Serial.print(F("Kaleidoscope = "));
     Serial.println((int)sizeof(EC::Kaleidoscope));
 
-    Serial.print(F("MovingDot = "));
-    Serial.println((int)sizeof(EC::MovingDot));
+    Serial.print(F("Meteor = "));
+    Serial.println((int)sizeof(EC::Meteor));
 
     Serial.print(F("Pacifica = "));
     Serial.println((int)sizeof(EC::Pacifica));
@@ -496,9 +501,6 @@ void printMemoryUsage()
 
     Serial.print(F("RgbBlocks = "));
     Serial.println((int)sizeof(EC::RgbBlocks));
-
-    Serial.print(F("BgFillColor = "));
-    Serial.println((int)sizeof(EC::BgFillColor));
 
     Serial.print(F("Twinkles = "));
     Serial.println((int)sizeof(EC::Twinkles));

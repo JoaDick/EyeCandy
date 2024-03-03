@@ -59,9 +59,9 @@ namespace EC
         : AnimationBase(ledStrip, false, fadeRate_default())
     {
       setModelUpdatePeriod(modelUpdatePeriod_default());
-      for (auto i = 0; i < strip.ledCount(); i++)
+      for (auto &pixel : strip)
       {
-        strip[i] = CHSV(redShift(_hue), random(0x2F) + 0xD0, random(0xEF) + 0x10);
+        pixel = CHSV(redShift(_hue), random(0x2F) + 0xD0, random(0xEF) + 0x10);
       }
     }
 
@@ -71,9 +71,8 @@ namespace EC
     {
       strip.fadeToBlack(fadeRate);
 
-      for (auto i = 0; i < strip.ledCount(); i++)
+      for (auto &pixel : strip)
       {
-        auto &pixel = strip[i];
         if (pixel.getLuma() <= 6)
         {
           pixel = CHSV(redShift(_hue), 0xFF, random(0x30) + 0xCF);

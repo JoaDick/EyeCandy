@@ -29,6 +29,11 @@ SOFTWARE.
 *******************************************************************************/
 
 #include <EyeCandy.h>
+
+//------------------------------------------------------------------------------
+
+// #define LED_COLOR_ORDER RGB
+// #define NUM_LEDS 50
 #include <Animation_IO_config.h>
 
 //------------------------------------------------------------------------------
@@ -40,8 +45,10 @@ EC::FastLedStrip mainStrip(leds, NUM_LEDS);
 // because the content is duplicated, we draw only in the lower part of the strip
 EC::FastLedStrip workingStrip = mainStrip.getHalfStrip();
 
-// the main animation
-EC::MovingDot mainAnimation(workingStrip, false /*, CRGB::Red*/);
+// the background pattern (explicitly)
+EC::BgFadeToBlack background(workingStrip, false, 50);
+// the main animation (as overlay)
+EC::Meteor mainAnimation(workingStrip, true, CRGB::Red, 20, 0.05);
 // overlay for adding some glitter (in the lower part only)
 EC::Glitter glitterOverlay(workingStrip.getHalfStrip(), true);
 
@@ -64,7 +71,9 @@ void setup()
     glitterOverlay.color = CRGB(64, 64, 0);
     glitterOverlay.effectRate = 100;
 
-    // add the core Animation
+    // add the background pattern
+    animationScene.append(background);
+    // add the main animation
     animationScene.append(mainAnimation);
     // add the overlay
     animationScene.append(glitterOverlay);

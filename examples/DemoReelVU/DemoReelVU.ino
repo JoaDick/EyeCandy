@@ -256,6 +256,21 @@ void makeFlareInwardVU(EC::AnimationScene &scene)
 
 // ---
 
+void makeMeteorTrailVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::BgMeteorFadeToBlack(strip, false));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    auto levelVu = scene.append(new EC::VuOverlayRainbowStripe(strip, *vuLevelSource));
+    levelVu->vuHueRange = 0.67;
+    levelVu->volume = 255;
+
+    // autoMode = false;
+}
+
+// ---
+
 void makePeakGlitterVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -493,7 +508,12 @@ void makeVuIntro6(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
+#if (1)
     auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, 50));
+#else
+    scene.append(new EC::BgMeteorFadeToBlack(strip, false));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+#endif
     auto vuPeakSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
     vuPeakSource->vuPeakHandler.presetPunchedBall();
 
@@ -582,6 +602,8 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeRainbowBalllVU_outward,
     &makeRainbowBubbleVU_outward,
     &makeEjectingDotVu_outward,
+
+    &makeMeteorTrailVU,
 
     &makeFranticVu,
     &makeCrazyVu,

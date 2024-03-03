@@ -54,18 +54,20 @@ namespace EC
      * 0 means freeze (don't update the animation).
      * This setting can be adjusted at runtime.
      */
-    uint8_t effectRate = effectRate_default();
+    uint8_t effectRate;
     static uint8_t effectRate_default() { return 20; }
 
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
      * @param color  Draw the glitter with this color.
+     * @param effectRate   Effect occurrence rate: Higher value = more glitter.
      */
     Glitter(FastLedStrip ledStrip,
             bool overlayMode,
-            CRGB color = CRGB::White)
-        : AnimationBase(ledStrip, overlayMode, fadeRate_default()), color(color)
+            CRGB color = CRGB::White,
+            uint8_t effectRate = effectRate_default())
+        : AnimationBase(ledStrip, overlayMode, fadeRate_default()), color(color), effectRate(effectRate)
     {
     }
 
