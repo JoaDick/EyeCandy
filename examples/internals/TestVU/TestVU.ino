@@ -312,7 +312,7 @@ EC::TestVU1 *appendTestVU1(EC::AnimationScene &scene,
 #endif
 }
 
-void makeTestVU1(EC::AnimationScene &scene)
+void makeTestVU_1(EC::AnimationScene &scene)
 {
     auto drawingFct = [](EC::FastLedStrip &strip, EC::TestVU1 &vu)
     {
@@ -382,10 +382,65 @@ void makeRangeExtenderInternals(EC::AnimationScene &scene)
     // autoMode = false;
 }
 
+void makeRainingVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::BgFadeToBlack(20, strip, 20));
+    scene.append(new EC::BgRotate(strip, true));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+
+    auto levelVu = scene.append(new EC::VuOverlayRainbowDot(strip, *vuLevelSource));
+    levelVu->vuHueRange = 0.67;
+    levelVu->volume = 192;
+
+    auto peakGlitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource));
+    peakGlitter->vuPeakHandler.peakHold = 500;
+    peakGlitter->vuPeakHandler.peakDecay = 500;
+
+    // autoMode = false;
+}
+
+void makeDraftVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    // scene.append(new EC::TriggerPattern(20));
+    scene.append(new EC::BgFadeToBlack(20, strip, EC::VuOverlayShift::fadeRate_default()));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+
+    auto levelVu = scene.append(new EC::VuOverlayShift(strip, *vuLevelSource));
+
+    autoMode = false;
+}
+
+void makeDraftVU_1(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+    auto workStrip = strip.getHalfStrip(true);
+
+    // scene.append(new EC::TriggerPattern(20));
+    scene.append(new EC::BgFadeToBlack(20, workStrip, 40));
+    scene.append(new EC::BgRotate(workStrip, true));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+
+    // auto levelVu = scene.append(new EC::VuOverlayRainbowDot(workStrip, *vuLevelSource));
+    auto levelVu = scene.append(new EC::VuOverlayRainbowStripe(workStrip, *vuLevelSource));
+    // levelVu->vuHueRange = 0.5;
+    levelVu->volume = 255;
+
+    scene.append(new EC::Kaleidoscope(strip));
+
+    autoMode = false;
+}
+
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
-    &makeTestVU1,
+    &makeDraftVU,
+    &makeRainingVU,
+    // &makeDraftVU_1,
+    &makeTestVU_1,
     // &makeRangeExtenderInternals,
     // &makeRangeExtenderComparison,
 
@@ -400,7 +455,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeEjectingDotVu,
     // &makeCrazyVu,
     // &makeBeyondCrazyVu,
-    // &makeTestVU1,
+    // &makeTestVU_1,
 
     nullptr};
 

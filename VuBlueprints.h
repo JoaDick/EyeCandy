@@ -32,6 +32,7 @@ SOFTWARE.
 #include "VuOverlayRainbowStripe.h"
 #include "VuOverlayRainbowDot.h"
 #include "VuOverlayPeakGlitter.h"
+#include "VuOverlayShift.h"
 #include "VuSourcePeakHold.h"
 #include "VuSourcePeakGravity.h"
 #include "VuSourcePeakForce.h"

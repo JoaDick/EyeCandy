@@ -242,6 +242,24 @@ namespace EC
       blur1d(m_ledArray, getSize(), blurAmount);
     }
 
+    /// Shift the LED strip in the given direction, and set the remaining pixel to \a color.
+    void shift(bool upward, CRGB color = CRGB::Black) { upward ? shiftUp(color) : shiftDown(color); }
+
+    /// Shift the LED strip from begin to end, and set the first pixel to \a color.
+    void shiftUp(CRGB color = CRGB::Black) { shiftLeds(getFirstLedIndex(), getLastLedIndex(), color); }
+
+    /// Shift the LED strip from end to begin, and set the last pixel to \a color.
+    void shiftDown(CRGB color = CRGB::Black) { shiftLeds(getLastLedIndex(), getFirstLedIndex(), color); }
+
+    /// Rotate the LED strip in the given direction.
+    void rotate(bool upward) { upward ? rotateUp() : rotateDown(); }
+
+    /// Rotate the LED strip from begin to end (set the first pixel to last pixel's old content).
+    void rotateUp() { shiftUp(pixel(getLastLedIndex())); }
+
+    /// Rotate the LED strip from end to begin (set the last pixel to first pixel's old content).
+    void rotateDown() { shiftDown(pixel(getFirstLedIndex())); }
+
     /// Get a new strip with the same underlying LED pixel array, but reversed drawing direction.
     FastLedStrip getReversedStrip() const
     {
@@ -434,6 +452,7 @@ namespace EC
     }
 
     // Enable iterating over all pixels of the strip via range-based for loop.
+    // Use that only when the strip's direction (i.e. the "reversed" property) is not relevant.
     using iterator = CRGB *;
     iterator begin() { return &m_ledArray[0]; }
     iterator end() { return &m_ledArray[getSize()]; }
@@ -456,6 +475,16 @@ namespace EC
       return m_sizeNrev & 0x8000;
     }
 
+    int16_t getFirstLedIndex() const
+    {
+      return toLedIndex(0);
+    }
+
+    int16_t getLastLedIndex() const
+    {
+      return toLedIndex(getSize() - 1);
+    }
+
     int16_t toLedIndex(int16_t index) const
     {
       return getReversed() ? getSize() - 1 - index : index;
@@ -475,6 +504,28 @@ namespace EC
       {
         *(firstLed++) = color;
       }
+    }
+
+    /** Shift all LED pixels by one from \a firstLedIndex to \a lastLedIndex.
+     * After this operation, the old content of the LED at \a lastLedIndex will be gone,
+     * and the content of the LED at \a firstLedIndex will be \a newColor.
+     */
+    void shiftLeds(int16_t firstLedIndex, int16_t lastLedIndex, CRGB newColor)
+    {
+      CRGB *firstLed = &m_ledArray[firstLedIndex];
+      CRGB *lastLed = &m_ledArray[lastLedIndex];
+
+      while (firstLed < lastLed)
+      {
+        CRGB *previousLed = lastLed--;
+        *previousLed = *lastLed;
+      }
+      while (firstLed > lastLed)
+      {
+        CRGB *previousLed = lastLed++;
+        *previousLed = *lastLed;
+      }
+      *firstLed = newColor;
     }
 
   private:

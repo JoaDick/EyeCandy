@@ -44,13 +44,27 @@ namespace EC
     /// Fill LED strip with this color.
     CRGB color;
 
-    /** Constructor
+    /** Constructor.
      * @param ledStrip  The LED strip.
      * @param color  Fill LED strip with this color.
      */
     BgFillColor(FastLedStrip ledStrip,
                 CRGB color)
         : AnimationBase(ledStrip, false), color(color)
+    {
+    }
+
+    /** Constructor with a custom update rate.
+     * Use this only if you have an urgent reason for a different update rate
+     * than EC_DEFAULT_UPDATE_PERIOD.
+     * @param patternUpdatePeriod  Period (in ms) for calling showPattern().
+     * @param ledStrip  The LED strip.
+     * @param color  Fill LED strip with this color.
+     */
+    BgFillColor(uint8_t patternUpdatePeriod,
+                FastLedStrip ledStrip,
+                CRGB color)
+        : AnimationBase(patternUpdatePeriod, ledStrip), color(color)
     {
     }
 
@@ -81,6 +95,20 @@ namespace EC
                   bool overlayMode,
                   uint8_t fadeRate)
         : AnimationBase(ledStrip, overlayMode, fadeRate)
+    {
+    }
+
+    /** Constructor for Pattern with a custom update rate.
+     * Use this only if you have an urgent reason for a different update rate
+     * than EC_DEFAULT_UPDATE_PERIOD.
+     * @param patternUpdatePeriod  Period (in ms) for calling showPattern().
+     * @param ledStrip  The LED strip.
+     * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
+     */
+    BgFadeToBlack(uint8_t patternUpdatePeriod,
+                  FastLedStrip ledStrip,
+                  uint8_t fadeRate)
+        : AnimationBase(patternUpdatePeriod, ledStrip, fadeRate)
     {
     }
 
@@ -123,11 +151,27 @@ namespace EC
      * @param fadeBy  Fading speed: Lower value = longer glowing.
      * @param fadeChance  Chance of fading a LED (0 = never, 255 = always).
      */
-    explicit BgMeteorFadeToBlack(FastLedStrip ledStrip,
-                                 bool overlayMode,
-                                 uint8_t fadeBy = 96,
-                                 uint8_t fadeChance = 32)
+    BgMeteorFadeToBlack(FastLedStrip ledStrip,
+                        bool overlayMode,
+                        uint8_t fadeBy = 96,
+                        uint8_t fadeChance = 32)
         : AnimationBase(ledStrip, overlayMode, 0), fadeBy(fadeBy), fadeChance(fadeChance)
+    {
+    }
+
+    /** Constructor for Pattern with a custom update rate.
+     * Use this only if you have an urgent reason for a different update rate
+     * than EC_DEFAULT_UPDATE_PERIOD.
+     * @param patternUpdatePeriod  Period (in ms) for calling showPattern().
+     * @param ledStrip  The LED strip.
+     * @param fadeBy  Fading speed: Lower value = longer glowing.
+     * @param fadeChance  Chance of fading a LED (0 = never, 255 = always).
+     */
+    BgMeteorFadeToBlack(uint8_t patternUpdatePeriod,
+                        FastLedStrip ledStrip,
+                        uint8_t fadeBy = 96,
+                        uint8_t fadeChance = 32)
+        : AnimationBase(patternUpdatePeriod, ledStrip), fadeBy(fadeBy), fadeChance(fadeChance)
     {
     }
 
@@ -143,6 +187,93 @@ namespace EC
     {
       meteorFadeToBlack(strip, fadeBy, fadeChance);
     }
+  };
+
+  //------------------------------------------------------------------------------
+
+  /** An Effect that rotates the content of the LED strip up or down by one pixel.
+   * Can be used as Overlay, or as base Pattern in combination with other Overlays.
+   */
+  class BgRotate
+      : public AnimationBase
+  {
+  public:
+    /** Rotating direction.
+     * - \c true From begin to end
+     * - \c false From end to begin
+     */
+    bool rotateUp;
+
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to \c true when the Animation shall be an Overlay.
+     * @param rotateUp  Rotating direction:
+     *                  - \c true From begin to end
+     *                  - \c false From end to begin
+     */
+    BgRotate(FastLedStrip ledStrip,
+             bool overlayMode,
+             bool rotateUp = false)
+        : AnimationBase(ledStrip, overlayMode), rotateUp(rotateUp)
+    {
+    }
+
+    /** Constructor for Pattern with a custom update rate.
+     * Use this only if you have an urgent reason for a different update rate
+     * than EC_DEFAULT_UPDATE_PERIOD.
+     * @param patternUpdatePeriod  Period (in ms) for calling showPattern().
+     * @param ledStrip  The LED strip.
+     * @param rotateUp  Rotating direction:
+     *                  - \c true From begin to end
+     *                  - \c false From end to begin
+     */
+    BgRotate(uint8_t patternUpdatePeriod,
+             FastLedStrip ledStrip,
+             bool rotateUp = false)
+        : AnimationBase(patternUpdatePeriod, ledStrip), rotateUp(rotateUp)
+    {
+    }
+
+  private:
+    /// @see AnimationBase::showPattern()
+    void showPattern(uint32_t currentMillis) override
+    {
+      // must be empty
+    }
+
+    /// @see AnimationBase::showOverlay()
+    void showOverlay(uint32_t currentMillis) override
+    {
+      strip.shift(rotateUp);
+    }
+  };
+
+  //------------------------------------------------------------------------------
+
+  /** A pseudo-Pattern that just triggers subsequent Overlays.
+   * It does _not_ manipulate the LED strip.
+   */
+  class TriggerPattern
+      : public Animation
+  {
+  public:
+    /** Constructor.
+     * @param patternUpdatePeriod  Period (in ms) for triggering the Overlays.
+     * Change this only if you have an urgent reason for a different update rate.
+     */
+    explicit TriggerPattern(uint8_t patternUpdatePeriod = EC_DEFAULT_UPDATE_PERIOD)
+        : _patternUpdateTimer(patternUpdatePeriod)
+    {
+    }
+
+  private:
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      wasModified = _patternUpdateTimer.process(currentMillis);
+    }
+
+    AnimationTimer _patternUpdateTimer;
   };
 
   //------------------------------------------------------------------------------

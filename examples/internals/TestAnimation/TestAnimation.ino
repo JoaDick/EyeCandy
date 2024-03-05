@@ -447,6 +447,9 @@ void printMemoryUsage()
     Serial.print(F("BgMeteorFadeToBlack = "));
     Serial.println((int)sizeof(EC::BgMeteorFadeToBlack));
 
+    Serial.print(F("BgRotate = "));
+    Serial.println((int)sizeof(EC::BgRotate));
+
     Serial.print(F("Blur = "));
     Serial.println((int)sizeof(EC::Blur));
 

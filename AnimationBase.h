@@ -113,10 +113,13 @@ namespace EC
      * than EC_DEFAULT_UPDATE_PERIOD.
      * @param patternUpdatePeriod  Period (in ms) for calling showPattern().
      * @param strip  The LED strip.
+     * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
+     *                  Only relevant when the default implementation of showPattern() is used.
      */
     AnimationBase(uint8_t patternUpdatePeriod,
-                  FastLedStrip strip)
-        : fadeRate(0), _patternUpdateTimer(patternUpdatePeriod), strip(strip)
+                  FastLedStrip strip,
+                  uint8_t fadeRate = 0)
+        : fadeRate(fadeRate), _patternUpdateTimer(patternUpdatePeriod), strip(strip)
     {
     }
 
