@@ -79,7 +79,7 @@ namespace EC
     void showOverlay(uint32_t currentMillis) override
     {
       updateFireConfig(currentMillis);
-      strip.normPixel(vuPeakHandler.getVU()) = CRGB(0, 0, 255);
+      strip.n_pixel(vuPeakHandler.getVU()) = CRGB(0, 0, 255);
     }
 #endif
 

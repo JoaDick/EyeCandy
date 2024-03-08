@@ -71,7 +71,7 @@ namespace EC
         {
           _lastVuLevel = vuLevel;
         }
-        _strip.normLineRel(vuLevel, _lastVuLevel - vuLevel, color);
+        _strip.n_lineRel(vuLevel, _lastVuLevel - vuLevel, color);
         _lastVuLevel = vuLevel;
       }
     }

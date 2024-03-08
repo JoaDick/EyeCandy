@@ -108,8 +108,8 @@ namespace EC
         // strip.shiftUp(color);
         // strip.shiftUp(CRGB::Black);
         strip.shiftDown(CRGB::Black);
-        strip.normPixel(vuLevel) = color;
-        // strip.normLineAbs(0.0, vuLevel, color);
+        strip.n_pixel(vuLevel) = color;
+        // strip.n_lineAbs(0.0, vuLevel, color);
       }
     }
     /// @see AnimationBase::updateModel()

@@ -316,15 +316,15 @@ void makeTestVU_1(EC::AnimationScene &scene)
 {
     auto drawingFct = [](EC::FastLedStrip &strip, EC::TestVU1 &vu)
     {
-        strip.normLineAbs(vu.vuLevel, vu.lastVuLevel, CRGB(0, 128, 0));
+        strip.n_lineAbs(vu.vuLevel, vu.lastVuLevel, CRGB(0, 128, 0));
 
-        strip.optPixel(vu.vuPeakHandler.getVU()) += CRGB(255, 0, 0);
-        strip.optPixel(vu.vuDipHandler.getVU()) += CRGB(0, 0, 255);
+        strip.n_pixelOpt(vu.vuPeakHandler.getVU()) += CRGB(255, 0, 0);
+        strip.n_pixelOpt(vu.vuDipHandler.getVU()) += CRGB(0, 0, 255);
 #if (1)
-        strip.optPixel(vu.vuPeakGravityHandler.getVU()) += CRGB(128, 0, 32);
-        strip.optPixel(vu.vuDipGravityHandler.getVU()) += CRGB(32, 0, 128);
+        strip.n_pixelOpt(vu.vuPeakGravityHandler.getVU()) += CRGB(128, 0, 32);
+        strip.n_pixelOpt(vu.vuDipGravityHandler.getVU()) += CRGB(32, 0, 128);
 
-        strip.optPixel(vu.vuPeakForceHandler.getVU()) += CRGB(128, 64, 0);
+        strip.n_pixelOpt(vu.vuPeakForceHandler.getVU()) += CRGB(128, 64, 0);
 #endif
     };
 
@@ -342,8 +342,8 @@ void makeRangeExtenderComparison(EC::AnimationScene &scene)
 {
     auto drawingFct = [](EC::FastLedStrip &strip, EC::TestVU1 &vu)
     {
-        strip.normLineAbs(0.0, vu.vuLevelHandler.getVU(), CRGB(0, 64, 0));
-        strip.optPixel(vu.vuRangeExtender.getVU()) += CRGB(255, 64, 0);
+        strip.n_lineAbs(0.0, vu.vuLevelHandler.getVU(), CRGB(0, 64, 0));
+        strip.n_pixelOpt(vu.vuRangeExtender.getVU()) += CRGB(255, 64, 0);
     };
 
     auto testVU = appendTestVU1(scene, drawingFct);
@@ -358,23 +358,23 @@ void makeRangeExtenderInternals(EC::AnimationScene &scene)
         static float lastVuLevel = 0.0;
         const float rawVuLevel = vu.vuLevelHandler.getVU();
         // the dancing thing shows the current VU level
-        strip.normLineAbs(lastVuLevel, rawVuLevel, CRGB(16, 32, 8));
+        strip.n_lineAbs(lastVuLevel, rawVuLevel, CRGB(16, 32, 8));
         lastVuLevel = rawVuLevel;
 
         // the green dot shows the average VU level
         const float vuLevelAvg = vu.vuRangeExtender.vuLevelAvg.get();
-        strip.normPixel(vuLevelAvg) = CRGB(0, 128, 0);
+        strip.n_pixel(vuLevelAvg) = CRGB(0, 128, 0);
 
         const float posDeltaAvg = vu.vuRangeExtender.posDeltaAvg.get();
-        strip.normPixel(vuLevelAvg + posDeltaAvg) = CRGB(64, 8, 0);
+        strip.n_pixel(vuLevelAvg + posDeltaAvg) = CRGB(64, 8, 0);
 
         const float negDeltaAvg = vu.vuRangeExtender.negDeltaAvg.get();
-        strip.normPixel(vuLevelAvg + negDeltaAvg) = CRGB(0, 8, 64);
+        strip.n_pixel(vuLevelAvg + negDeltaAvg) = CRGB(0, 8, 64);
 
         // the VU level is scaled so that the red dot will be at the end of the strip
-        strip.normPixel(vu.vuRangeExtender.rangeMax) = CRGB(255, 0, 0);
+        strip.n_pixel(vu.vuRangeExtender.rangeMax) = CRGB(255, 0, 0);
         // the VU level is scaled so that the blue dot will be at the start of the strip
-        strip.normPixel(vu.vuRangeExtender.rangeMin) = CRGB(0, 0, 255);
+        strip.n_pixel(vu.vuRangeExtender.rangeMin) = CRGB(0, 0, 255);
     };
 
     auto testVU = appendTestVU1(scene, drawingFct, 0);

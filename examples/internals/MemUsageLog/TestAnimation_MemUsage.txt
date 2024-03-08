@@ -1,0 +1,48 @@
+TestAnimation Memory usage log
+==============================
+
+
+
+
+
+Sketch uses 31312 bytes (97%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1025 bytes (50%) of dynamic memory, leaving 1023 bytes for local variables. Maximum is 2048 bytes.
+
+
+Baseline:  6a37f25 WIP: shift + rotate
+---------
+* Arduino Uno
+
+Sketch uses 31300 bytes (97%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1025 bytes (50%) of dynamic memory, leaving 1023 bytes for local variables. Maximum is 2048 bytes.
+
+Memory usage for 90 LEDs:
+<*> is dependant on NUM_LEDS
+BgFadeToBlack = 21
+BgFillColor = 24
+BgMeteorFadeToBlack = 23
+BgRotate = 22
+Blur = 23
+BouncingBalls<> = 91
+Bubbles = 191
+Fire2012<*> = 162
+Fire2012Changer = 10
+Firework<> = 157
+FireworkParticle = 22
+FloatingBlobs = 226
+Glitter = 25
+Lavalamp = 130
+Kaleidoscope = 9
+Meteor = 34
+Pacifica = 165
+Pride2015 = 28
+Rainbow = 25
+RainbowBuiltin = 23
+RainbowDrips = 32
+RainbowTwinkle = 22
+RgbBlocks = 24
+Twinkles = 22
+Waterfall = 396
+WaterfallDroplet = 25
+
+****************************************************************************************************

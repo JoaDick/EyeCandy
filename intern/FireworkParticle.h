@@ -137,9 +137,9 @@ namespace EC
     void show(FastLedStrip &strip)
     {
 #ifdef FIREWORK_DEBUG
-      strip.optPixel(_debugPos_blow) = CRGB(128, 64, 0);
-      strip.optPixel(_apexPos) = CRGB(255, 0, 0);
-      strip.optPixel(_debugPos_gliding) = CRGB(64, 0, 32);
+      strip.n_pixelOpt(_debugPos_blow) = CRGB(128, 64, 0);
+      strip.n_pixelOpt(_apexPos) = CRGB(255, 0, 0);
+      strip.n_pixelOpt(_debugPos_gliding) = CRGB(64, 0, 32);
 #endif
 
       const int16_t pixelPos = _pos * strip.ledCount();
@@ -282,8 +282,8 @@ namespace EC
       const float fadingBeginPos = fadingEndPos + (_apexPos - fadingEndPos) * _config->fadingDuration;
 
 #ifdef FIREWORK_DEBUG
-      strip.optPixel(fadingBeginPos) = CRGB(0, 0, 16);
-      strip.optPixel(fadingEndPos) = CRGB(0, 0, 16);
+      strip.n_pixelOpt(fadingBeginPos) = CRGB(0, 0, 16);
+      strip.n_pixelOpt(fadingEndPos) = CRGB(0, 0, 16);
 #endif
 
       CRGB pixelColor = CRGB::Black;
@@ -329,7 +329,7 @@ namespace EC
         const float glitterEndPos = _apexPos * (1.0 - _config->glitterDuration);
 
 #ifdef FIREWORK_DEBUG
-        strip.optPixel(glitterEndPos) = CRGB(0, 16, 0);
+        strip.n_pixelOpt(glitterEndPos) = CRGB(0, 16, 0);
 #endif
 
         if (_pos >= glitterEndPos)
@@ -352,8 +352,8 @@ namespace EC
       const float glitterEndPos = glitterBeginPos - (glitterBeginPos * _config->glitterDuration);
 
 #ifdef FIREWORK_DEBUG
-      strip.optPixel(glitterBeginPos) = CRGB(0, 16, 0);
-      strip.optPixel(glitterEndPos) = CRGB(0, 16, 0);
+      strip.n_pixelOpt(glitterBeginPos) = CRGB(0, 16, 0);
+      strip.n_pixelOpt(glitterEndPos) = CRGB(0, 16, 0);
 #endif
 
       if (_pos <= glitterBeginPos &&

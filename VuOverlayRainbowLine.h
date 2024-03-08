@@ -99,7 +99,7 @@ namespace EC
       const uint8_t hue = _startHue + _vuCcolorSource.getVU() * vuHueRange * 255;
       const CRGB color = CHSV(redShift(hue), 255, volume);
 
-      strip.normLineRel(0.0, _vuLevelSource.getVU(), color);
+      strip.n_lineRel(0.0, _vuLevelSource.getVU(), color);
     }
 
     /// @see AnimationBase::updateModel()

@@ -69,7 +69,7 @@ namespace EC
     }
 
     /// Get the VuSource that is used as input.
-    VuSource &getInputVuSource()    {      return _vuSource;    }
+    VuSource &getInputVuSource() { return _vuSource; }
 
   private:
     /// @see Animation::processAnimation()
@@ -82,11 +82,11 @@ namespace EC
         {
           if (size > 0.0)
           {
-            _strip.normLineRel(vuLevel, -size, color);
+            _strip.n_lineRel(vuLevel, -size, color);
           }
           else
           {
-            _strip.normPixel(vuLevel) = color;
+            _strip.n_pixel(vuLevel) = color;
           }
         }
       }

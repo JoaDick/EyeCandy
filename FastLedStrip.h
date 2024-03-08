@@ -64,17 +64,7 @@ namespace EC
      * all of this strip's LEDs will turn red as error feedback.
      * Use pixel() when such "off-strip-pixel-access" is intended by the Animation.
      */
-    CRGB &operator[](int16_t index)
-    {
-      const auto size = getSize();
-      const auto ledIndex = toLedIndex(index);
-      if (ledIndex < 0 || ledIndex >= size)
-      {
-        fillLedBlock(0, size - 1, CRGB(64, 0, 0));
-        return s_trashPixel;
-      }
-      return m_ledArray[ledIndex];
-    }
+    CRGB &operator[](int16_t index);
 
     /** Access the pixel at position \a index ("off-strip-pixels" are allowed).
      * If \a index is not within the LED strip, a dummy-pixel is returned
@@ -82,54 +72,13 @@ namespace EC
      * This may be useful for Animations where something "drops off" the strip.
      * @note Don't abuse this feature to sweep programming errors under the rug!
      */
-    CRGB &pixel(int16_t index)
-    {
-      const auto size = getSize();
-      const auto ledIndex = toLedIndex(index);
-      if (ledIndex < 0 || ledIndex >= size)
-      {
-        return s_trashPixel;
-      }
-      return m_ledArray[ledIndex];
-    }
+    CRGB &pixel(int16_t index);
 
     /** Draw a line in the given \a color from \a firstIndex to \a lastIndex.
      * Strip boundaries are checked, so parts of the line may even be off the strip.
      * Both \a firstIndex and \a lastIndex are included in the line.
      */
-    void lineAbs(int16_t firstIndex, int16_t lastIndex, CRGB color)
-    {
-      const auto size = getSize();
-      auto firstLedIndex = toLedIndex(firstIndex);
-      auto lastLedIndex = toLedIndex(lastIndex);
-
-      if (firstLedIndex > lastLedIndex)
-      {
-        // std::swap(firstLedIndex, lastLedIndex);
-        auto temp = firstLedIndex;
-        firstLedIndex = lastLedIndex;
-        lastLedIndex = temp;
-      }
-      if (firstLedIndex < 0)
-      {
-        // start AND end off the strip?
-        if (lastLedIndex < 0)
-        {
-          return;
-        }
-        firstLedIndex = 0;
-      }
-      if (lastLedIndex >= size)
-      {
-        // start AND end off the strip?
-        if (firstLedIndex >= size)
-        {
-          return;
-        }
-        lastLedIndex = size - 1;
-      }
-      fillLedBlock(firstLedIndex, lastLedIndex, color);
-    }
+    void lineAbs(int16_t firstIndex, int16_t lastIndex, CRGB color);
 
     /** Draw a line in the given \a color with the given \a length, starting at \a startIndex.
      * Strip boundaries are checked, so parts of the line may even be off the strip.
@@ -144,13 +93,21 @@ namespace EC
       }
     }
 
+    /** Draw a line in the given \a color with the given \a length around \a centerIndex.
+     * Strip boundaries are checked, so parts of the line may even be off the strip.
+     */
+    void lineCentered(int16_t centerIndex, int16_t length, CRGB color)
+    {
+      lineRel(centerIndex - (length / 2), length, color);
+    }
+
     /** Convert the given normalized position \a pos to its corresponding pixel index.
      * \a pos = 0.0 corresponds to the first pixel; 1.0 corresponds to the last pixel.
      * @note \a pos < 0.0 or \a pos > 1.0 result in off-strip indices (plus giving half a pixel
      * safety margin at both ends).
      * However, all methods dealing with normalized positions can tolerate these :-)
      */
-    int16_t toPixelIndex(float pos) const
+    int16_t n_pixelIndex(float pos) const
     {
       // example with 5 pixel:
       // pos:    ... -0.25|-0.24  0.24|0.25   0.49|0.50   0.74|0.75   0.99|1.00   1.24|1.25 ...
@@ -159,40 +116,40 @@ namespace EC
       return round(pos * (getSize() - 1));
     }
 
-    /** Access the optional pixel at the normalized position \a pos.
-     * Same as normPixel(), but only positive values of \a pos are valid.
-     * This means that the (optional) pixel at exactly \a pos == 0.0 will \e not be drawn. \n
-     * This may be useful when the Animation wants to implement something like a simple
-     * "invalid" or "muted" state of a pixel algorithm.
-     * @param pos  Normalized pixel position.
-     * @see normPixel()
-     */
-    CRGB &optPixel(float pos)
-    {
-      return pos <= 0.0 ? s_trashPixel : normPixel(pos);
-    }
-
     /** Access the pixel at the normalized position \a pos ("off-strip-pixels" are allowed).
      * If \a pos is not within the LED strip, a dummy-pixel is returned
      * (i.e. the pixel's setting will be ignored). \n
      * This may be useful for Animations where something "drops off" the strip.
      * @param pos  Normalized pixel position.
      * @note \a pos = 0.0 corresponds to the first pixel; 1.0 corresponds to the last pixel.
-     * @see toPixelIndex()
+     * @see n_pixelIndex()
      */
-    CRGB &normPixel(float pos)
+    CRGB &n_pixel(float pos)
     {
-      return pixel(toPixelIndex(pos));
+      return pixel(n_pixelIndex(pos));
+    }
+
+    /** Access the optional pixel at the normalized position \a pos.
+     * Same as n_pixel(), but only positive values of \a pos are valid.
+     * This means that the (optional) pixel at exactly \a pos == 0.0 will \e not be drawn. \n
+     * This may be useful when the Animation wants to implement something like a simple
+     * "invalid" or "muted" state of a pixel algorithm.
+     * @param pos  Normalized pixel position.
+     * @see n_pixel()
+     */
+    CRGB &n_pixelOpt(float pos)
+    {
+      return pos <= 0.0 ? s_trashPixel : n_pixel(pos);
     }
 
     /** Draw a line in the given \a color from the normalized position \a firstPos to \a lastPos.
      * Strip boundaries are checked, so parts of the line may even be off the strip.
      * @note \a firstPos or \a lastPos = 0.0 corresponds to the first pixel; 1.0 corresponds to the last pixel.
-     * @see toPixelIndex()
+     * @see n_pixelIndex()
      */
-    void normLineAbs(float firstPos, float lastPos, CRGB color)
+    void n_lineAbs(float firstPos, float lastPos, CRGB color)
     {
-      lineAbs(toPixelIndex(firstPos), toPixelIndex(lastPos), color);
+      lineAbs(n_pixelIndex(firstPos), n_pixelIndex(lastPos), color);
     }
 
     /** Draw a line in the given \a color with the given \a length, starting at the normalized position \a startPos.
@@ -200,16 +157,27 @@ namespace EC
      * @note \a startPos = 0.0 corresponds to the first pixel; 1.0 corresponds to the last pixel. \n
      * \a length = 1.0 corresponds to the whole strip. \n
      * A negative value for \a length will draw in the opposite direction.
-     * @see toPixelIndex()
+     * @see n_pixelIndex()
      */
-    void normLineRel(float startPos, float length, CRGB color)
+    void n_lineRel(float startPos, float length, CRGB color)
     {
       if (length)
       {
-        const auto firstPixel = toPixelIndex(startPos);
-        const auto lastPixel = toPixelIndex(startPos + length);
+        const auto firstPixel = n_pixelIndex(startPos);
+        const auto lastPixel = n_pixelIndex(startPos + length);
         lineAbs(firstPixel, lastPixel, color);
       }
+    }
+
+    /** Draw a line in the given \a color with the given \a length around \a centerPos.
+     * Strip boundaries are checked, so parts of the line may even be off the strip.
+     * @note \a centerPos = 0.0 corresponds to the first pixel; 1.0 corresponds to the last pixel.
+     * \a length = 1.0 corresponds to the whole strip.
+     * @see n_pixelIndex()
+     */
+    void n_lineCentered(float centerPos, float length, CRGB color)
+    {
+      n_lineRel(centerPos - (length / 2), length, color);
     }
 
     /// Fill the entire strip with the given \a color.
@@ -242,23 +210,29 @@ namespace EC
       blur1d(m_ledArray, getSize(), blurAmount);
     }
 
-    /// Shift the LED strip in the given direction, and set the remaining pixel to \a color.
-    void shift(bool upward, CRGB color = CRGB::Black) { upward ? shiftUp(color) : shiftDown(color); }
-
     /// Shift the LED strip from begin to end, and set the first pixel to \a color.
     void shiftUp(CRGB color = CRGB::Black) { shiftLeds(getFirstLedIndex(), getLastLedIndex(), color); }
 
     /// Shift the LED strip from end to begin, and set the last pixel to \a color.
     void shiftDown(CRGB color = CRGB::Black) { shiftLeds(getLastLedIndex(), getFirstLedIndex(), color); }
 
-    /// Rotate the LED strip in the given direction.
-    void rotate(bool upward) { upward ? rotateUp() : rotateDown(); }
+    /** Shift the LED strip for the given \a distance, setting the inserted pixels to \a color.
+     * Posive values of \a distance shift upward (from begin to end), negative values shift
+     * downward (from end to begin).
+     */
+    void shift(int16_t distance, CRGB color = CRGB::Black);
 
     /// Rotate the LED strip from begin to end (set the first pixel to last pixel's old content).
     void rotateUp() { shiftUp(pixel(getLastLedIndex())); }
 
     /// Rotate the LED strip from end to begin (set the last pixel to first pixel's old content).
     void rotateDown() { shiftDown(pixel(getFirstLedIndex())); }
+
+    /** Rotate the LED strip for the given \a distance.
+     * Posive values of \a distance rotate upward (from begin to end), negative values rotate
+     * downward (from end to begin).
+     */
+    void rotate(int16_t distance);
 
     /// Get a new strip with the same underlying LED pixel array, but reversed drawing direction.
     FastLedStrip getReversedStrip() const
@@ -312,144 +286,23 @@ namespace EC
      *                 0 means all from \a offset up to the end of the strip.
      * @param reversed  Draw the new strip's content in reverse direction.
      */
-    FastLedStrip getSubStrip(int16_t offset, int16_t newSize, bool reversed = false) const
-    {
-      const auto size = getSize();
-      const bool revd = getReversed();
-
-      if (newSize == 0)
-      {
-        newSize = size; // will be limited below
-      }
-      if (convertToLedIndex(offset))
-      {
-        newSize = -newSize;
-      }
-      if (newSize < 0)
-      {
-        reversed ^= true;
-        newSize = -newSize;
-        offset -= newSize;
-      }
-      if (offset >= size)
-      {
-        newSize = 1;
-        offset = size - 1;
-      }
-      if (offset < 0)
-      {
-        newSize -= -offset;
-        offset = 0;
-      }
-      if (offset + newSize >= size)
-      {
-        newSize = size - offset;
-      }
-      return FastLedStrip(&m_ledArray[offset], newSize, revd ^ reversed);
-    }
+    FastLedStrip getSubStrip(int16_t offset, int16_t newSize, bool reversed = false) const;
 
     /** Copy (and optionally mirror) the lower half of this strip into its upper half.
      * Any existing content in the upper half is overwritten.
-     * @param mirrored  false = straight copying, true = mirror the content
+     * @param mirrored  \c false = straight copying, \c true = mirror the content
      * @see getHalfStrip()
      */
-    void copyUp(bool mirrored)
-    {
-      const auto size = getSize();
-      const bool revd = getReversed();
-
-      // copying and mirroring
-      if (mirrored)
-      {
-        // copy & mirror lower half up
-        if (!revd)
-        {
-          // pixels: | even |      |  odd  |
-          //  index: |0--->5|      |0---->6|
-          // size 6: [012xxx]   7: [0123xxx]
-          //            |d->e         | d->e
-          //          <-s           <-s
-          // result: [012210]      [0123210]
-          CRGB *dst = &m_ledArray[(size + 1) / 2];
-          CRGB *end = &m_ledArray[size];
-          CRGB *src = &m_ledArray[(size / 2) - 1];
-          while (dst < end)
-          {
-            *(dst++) = *(src--);
-          }
-        }
-        // copy & mirror upper half down
-        else
-        {
-          // pixels: | even |      |  odd  |
-          //  index: |5<---0|      |6<----0|
-          // size 6: [xxx345]   7: [xxx3456]
-          //          d->e |        d->e  |
-          //             <-s            <-s
-          // result: [543345]      [6543456]
-          CRGB *dst = &m_ledArray[0];
-          CRGB *end = &m_ledArray[size / 2];
-          CRGB *src = &m_ledArray[size - 1];
-          while (dst < end)
-          {
-            *(dst++) = *(src--);
-          }
-        }
-      }
-      // only copying without mirroring
-      else
-      {
-        // copy lower half up
-        if (!revd)
-        {
-          // pixels: | even |      |  odd  |
-          //  index: |0--->5|      |0---->6|
-          // size 6: [012xxx]   7: [0123xxx]
-          //          |  d->e       |   d->e
-          //          s->           s->
-          // result: [012012]      [0123012]
-          CRGB *dst = &m_ledArray[(size + 1) / 2];
-          CRGB *end = &m_ledArray[size];
-          CRGB *src = &m_ledArray[0];
-          while (dst < end)
-          {
-            *(dst++) = *(src++);
-          }
-        }
-        // copy upper half down
-        else
-        {
-          // pixels: | even |      |  odd  |
-          //  index: |5<---0|      |6<----0|
-          // size 6: [xxx345]   7: [xxx3456]
-          //          d->e          d->e|
-          //             s->            s->
-          // result: [345345]      [4563456]
-          CRGB *dst = &m_ledArray[0];
-          CRGB *end = &m_ledArray[size / 2];
-          CRGB *src = &m_ledArray[(size + 1) / 2];
-          while (dst < end)
-          {
-            *(dst++) = *(src++);
-          }
-        }
-      }
-    }
+    void copyUp(bool mirrored);
 
     /// This strip's number of LEDs.
-    int16_t ledCount() const
-    {
-      return getSize();
-    }
+    int16_t ledCount() const { return getSize(); }
 
     /** Get the strip's underlying LED array.
      * Use this method only when calling FastLed functions directly; mostly together with ledCount().
      * @note The strip's "reversed" property has no effect when this method is used!
      */
-    CRGB *ledArray()
-    {
-      return m_ledArray;
-    }
+    CRGB *ledArray() { return m_ledArray; }
 
     // Enable iterating over all pixels of the strip via range-based for loop.
     // Use that only when the strip's direction (i.e. the "reversed" property) is not relevant.
@@ -460,35 +313,11 @@ namespace EC
     static FastLedStrip GetNULL() { return FastLedStrip(); }
 
   private:
-    FastLedStrip()
-        : m_ledArray(&s_trashPixel), m_sizeNrev(0)
-    {
-    }
+    FastLedStrip() : m_ledArray(&s_trashPixel), m_sizeNrev(0) {}
 
-    int16_t getSize() const
-    {
-      return m_sizeNrev & 0x7FFF;
-    }
+    int16_t getSize() const { return m_sizeNrev & 0x7FFF; }
 
-    bool getReversed() const
-    {
-      return m_sizeNrev & 0x8000;
-    }
-
-    int16_t getFirstLedIndex() const
-    {
-      return toLedIndex(0);
-    }
-
-    int16_t getLastLedIndex() const
-    {
-      return toLedIndex(getSize() - 1);
-    }
-
-    int16_t toLedIndex(int16_t index) const
-    {
-      return getReversed() ? getSize() - 1 - index : index;
-    }
+    bool getReversed() const { return m_sizeNrev & 0x8000; }
 
     bool convertToLedIndex(int16_t &index) const
     {
@@ -496,37 +325,17 @@ namespace EC
       return getReversed();
     }
 
-    void fillLedBlock(int16_t firstLedIndex, int16_t lastLedIndex, CRGB color)
-    {
-      CRGB *firstLed = &m_ledArray[firstLedIndex];
-      CRGB *lastLed = &m_ledArray[lastLedIndex];
-      while (firstLed <= lastLed)
-      {
-        *(firstLed++) = color;
-      }
-    }
+    int16_t toLedIndex(int16_t index) const { return getReversed() ? getSize() - 1 - index : index; }
+    int16_t getFirstLedIndex() const { return toLedIndex(0); }
+    int16_t getLastLedIndex() const { return toLedIndex(getSize() - 1); }
+
+    void fillLedBlock(int16_t firstLedIndex, int16_t lastLedIndex, CRGB color);
 
     /** Shift all LED pixels by one from \a firstLedIndex to \a lastLedIndex.
      * After this operation, the old content of the LED at \a lastLedIndex will be gone,
      * and the content of the LED at \a firstLedIndex will be \a newColor.
      */
-    void shiftLeds(int16_t firstLedIndex, int16_t lastLedIndex, CRGB newColor)
-    {
-      CRGB *firstLed = &m_ledArray[firstLedIndex];
-      CRGB *lastLed = &m_ledArray[lastLedIndex];
-
-      while (firstLed < lastLed)
-      {
-        CRGB *previousLed = lastLed--;
-        *previousLed = *lastLed;
-      }
-      while (firstLed > lastLed)
-      {
-        CRGB *previousLed = lastLed++;
-        *previousLed = *lastLed;
-      }
-      *firstLed = newColor;
-    }
+    void shiftLeds(int16_t firstLedIndex, int16_t lastLedIndex, CRGB newColor);
 
   private:
     static CRGB s_trashPixel;

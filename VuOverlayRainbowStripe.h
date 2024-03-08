@@ -103,8 +103,7 @@ namespace EC
       {
         _lastVuLevel = vuLevel;
       }
-      strip.normLineRel(vuLevel, _lastVuLevel - vuLevel, color);
-      // strip.normLineAbs(_lastVuLevel, vuLevel, color);
+      strip.n_lineRel(vuLevel, _lastVuLevel - vuLevel, color);
       _lastVuLevel = vuLevel;
     }
 

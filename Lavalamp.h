@@ -90,19 +90,19 @@ namespace EC
         theBlob.process(_ceiling, _floor, i);
         if (theBlob.isActive())
         {
-          strip.normLineAbs(theBlob.posMin(), theBlob.posMax(), color);
+          strip.n_lineAbs(theBlob.posMin(), theBlob.posMax(), color);
         }
       }
 
 #if (EC_LAVALAMP_DEBUG)
-      // strip.normLineAbs(0, _floor.pos(), color);
-      // strip.normLineAbs(1.0, _ceiling.pos(), color);
-      strip.normPixel(_ceiling.posMax()) = CRGB(64, 0, 0);
-      strip.normPixel(_ceiling.pos()) = CRGB(128, 0, 0);
-      strip.normPixel(_ceiling.posMin()) = CRGB(64, 0, 0);
-      strip.normPixel(_floor.posMax()) = CRGB(0, 0, 64);
-      strip.normPixel(_floor.pos()) = CRGB(0, 0, 128);
-      strip.normPixel(_floor.posMin()) = CRGB(0, 0, 64);
+      // strip.n_lineAbs(0, _floor.pos(), color);
+      // strip.n_lineAbs(1.0, _ceiling.pos(), color);
+      strip.n_pixel(_ceiling.posMax()) = CRGB(64, 0, 0);
+      strip.n_pixel(_ceiling.pos()) = CRGB(128, 0, 0);
+      strip.n_pixel(_ceiling.posMin()) = CRGB(64, 0, 0);
+      strip.n_pixel(_floor.posMax()) = CRGB(0, 0, 64);
+      strip.n_pixel(_floor.pos()) = CRGB(0, 0, 128);
+      strip.n_pixel(_floor.posMin()) = CRGB(0, 0, 64);
       for (uint16_t i = 0; i < _numBlobs; ++i)
       {
         auto &theBlob = _blobs[i];
@@ -142,11 +142,11 @@ namespace EC
         {
           color = CRGB(255, 255, 255);
         }
-        strip.normPixel(theBlob.pos()) = color;
+        strip.n_pixel(theBlob.pos()) = color;
       }
 #else
-      strip.normLineAbs(0, _floor.pos(), color);
-      strip.normLineAbs(1.0, _ceiling.pos(), color);
+      strip.n_lineAbs(0, _floor.pos(), color);
+      strip.n_lineAbs(1.0, _ceiling.pos(), color);
       strip.blur(75);
 #endif
     }

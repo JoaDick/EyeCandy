@@ -3,6 +3,23 @@ DemoReel Memory usage log
 
 
 
+
+
+Sketch uses 30486 bytes (94%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1025 bytes (50%) of dynamic memory, leaving 1023 bytes for local variables. Maximum is 2048 bytes.
+
+
+Baseline:  6a37f25 WIP: shift + rotate
+---------
+* Arduino Uno
+
+Sketch uses 30474 bytes (94%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1025 bytes (50%) of dynamic memory, leaving 1023 bytes for local variables. Maximum is 2048 bytes.
+
+****************************************************************************************************
+
+
+
 240127 New helper class AnimationTimer
 
 Sketch uses 26574 bytes (82%) of program storage space. Maximum is 32256 bytes.

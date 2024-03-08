@@ -89,7 +89,7 @@ namespace EC
     void showOverlay(uint32_t currentMillis) override
     {
       const float pos = beatsinF(bpm, 0.0 - overshoot, 1.0 + overshoot);
-      strip.normPixel(pos) = color;
+      strip.n_pixel(pos) = color;
     }
   };
 

@@ -82,7 +82,7 @@ namespace EC
           // let it overshoot a little bit so that it doesn't mess up with a peak dot
           const float delta = (vuLevel - _lastVuLevel);
           const float vuOvershoot = delta / 8.0;
-          _strip.normPixel(vuLevel + vuOvershoot) = color;
+          _strip.n_pixel(vuLevel + vuOvershoot) = color;
           _lastVuLevel = vuLevel;
         }
       }

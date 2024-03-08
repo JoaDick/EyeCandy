@@ -121,11 +121,11 @@ namespace EC
       {
         if (size > 0.0)
         {
-          strip.normLineRel(vuLevel, -size, color);
+          strip.n_lineRel(vuLevel, -size, color);
         }
         else
         {
-          strip.normPixel(vuLevel) = color;
+          strip.n_pixel(vuLevel) = color;
         }
       }
     }

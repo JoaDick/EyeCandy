@@ -95,11 +95,11 @@ namespace EC
     {
       float sample = (_audioSource + 1.0) / 2.0;
 
-      strip.normPixel(1.0) = CRGB(64, 0, 0);
-      strip.normPixel(0.0) = CRGB(0, 0, 64);
+      strip.n_pixel(1.0) = CRGB(64, 0, 0);
+      strip.n_pixel(0.0) = CRGB(0, 0, 64);
 
-      strip.normLineAbs(_lastSample, sample, CRGB(0, 128, 0));
-      strip.normPixel(0.5) = CRGB(255, 255, 0);
+      strip.n_lineAbs(_lastSample, sample, CRGB(0, 128, 0));
+      strip.n_pixel(0.5) = CRGB(255, 255, 0);
 
       _lastSample = sample;
 

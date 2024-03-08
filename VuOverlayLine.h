@@ -58,7 +58,7 @@ namespace EC
     }
 
     /// Get the VuSource that is used as input.
-    VuSource &getInputVuSource()    {      return _vuSource;    }
+    VuSource &getInputVuSource() { return _vuSource; }
 
   private:
     /// @see Animation::processAnimation()
@@ -66,7 +66,7 @@ namespace EC
     {
       if (wasModified)
       {
-        _strip.normLineRel(0.0, _vuSource.getVU(), color);
+        _strip.n_lineRel(0.0, _vuSource.getVU(), color);
       }
     }
 

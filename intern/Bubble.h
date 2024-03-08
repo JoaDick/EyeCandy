@@ -50,7 +50,7 @@ namespace EC
 
       if (pixelVolume)
       {
-        strip.normPixel(_pos) = ColorFromPalette(OceanColors_p, paletteIndex, pixelVolume);
+        strip.n_pixel(_pos) = ColorFromPalette(OceanColors_p, paletteIndex, pixelVolume);
       }
 
 #ifdef BUBBLES_DEBUG

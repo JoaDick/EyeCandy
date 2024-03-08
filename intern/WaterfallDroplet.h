@@ -73,7 +73,7 @@ namespace EC
       if (volume > 0)
       {
         const CRGB color = ColorFromPalette(OceanColors_p, paletteIndex, volume);
-        strip.normPixel(_pos) = color;
+        strip.n_pixel(_pos) = color;
       }
 
 #ifdef WATERFALL_DEBUG
