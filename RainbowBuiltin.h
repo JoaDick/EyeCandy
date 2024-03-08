@@ -40,7 +40,7 @@ namespace EC
    * possibilities.
    */
   class RainbowBuiltin
-      : public AnimationBase
+      : public AnimationModelBase
   {
     uint8_t _hue = 0;
 
@@ -66,9 +66,8 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit RainbowBuiltin(FastLedStrip ledStrip)
-        : AnimationBase(ledStrip, false)
+        : AnimationModelBase(modelUpdatePeriod_default(), ledStrip, false)
     {
-      setModelUpdatePeriod(modelUpdatePeriod_default());
     }
 
   private:
@@ -78,7 +77,7 @@ namespace EC
       fill_rainbow(strip.ledArray(), strip.ledCount(), _hue, deltahue);
     }
 
-    /// @see AnimationBase::updateModel()
+    /// @see AnimationModelBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
       ++_hue;

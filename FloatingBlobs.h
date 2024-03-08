@@ -45,8 +45,9 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit FloatingBlobs(FastLedStrip ledStrip)
-        : AnimationBase(10, ledStrip)
+        : AnimationBase(ledStrip)
     {
+      setPatternUpdatePeriod(10);
     }
 
   private:

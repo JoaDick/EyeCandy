@@ -67,7 +67,8 @@ namespace EC
             bool overlayMode,
             CRGB color = CRGB::White,
             uint8_t effectRate = effectRate_default())
-        : AnimationBase(ledStrip, overlayMode, fadeRate_default()), color(color), effectRate(effectRate)
+        : AnimationBase(ledStrip, overlayMode, fadeRate_default()),
+          color(color), effectRate(effectRate)
     {
     }
 

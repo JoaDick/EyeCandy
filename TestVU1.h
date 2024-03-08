@@ -26,6 +26,8 @@ SOFTWARE.
 *******************************************************************************/
 
 #include "VuBlueprints.h"
+#include "VuLevelHandler.h"
+#include "VuRangeExtender.h"
 
 //------------------------------------------------------------------------------
 
@@ -67,7 +69,8 @@ namespace EC
             FastLedStrip ledStrip,
             DrawingFct drawingFct,
             uint8_t fadeRate = 0)
-        : AnimationBase(ledStrip, false, fadeRate), _audioSource(audioSource), drawingFct(drawingFct)
+        : AnimationBase(ledStrip, false, fadeRate),
+          _audioSource(audioSource), drawingFct(drawingFct)
     {
       vuPeakHandler.peakHold = 600;
       vuPeakHandler.peakDecay = 3000;

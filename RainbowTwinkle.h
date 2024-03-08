@@ -35,7 +35,7 @@ namespace EC
   /** A twinkling rainbow animation.
    */
   class RainbowTwinkle
-      : public AnimationBase
+      : public AnimationModelBase
   {
   public:
     /** Default fading speed.
@@ -56,9 +56,8 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit RainbowTwinkle(FastLedStrip ledStrip)
-        : AnimationBase(ledStrip, false, fadeRate_default())
+        : AnimationModelBase(modelUpdatePeriod_default(), ledStrip, false, fadeRate_default())
     {
-      setModelUpdatePeriod(modelUpdatePeriod_default());
       for (auto &pixel : strip)
       {
         pixel = CHSV(redShift(_hue), random(0x2F) + 0xD0, random(0xEF) + 0x10);
@@ -80,7 +79,7 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::updateModel()
+    /// @see AnimationModelBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
       ++_hue;

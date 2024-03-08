@@ -52,8 +52,11 @@ namespace EC
      * @param vuSource  Input for calculating the VU Overlay.
      * @param color  Draw the strip with this color.
      */
-    VuOverlayStripe(FastLedStrip ledStrip, VuSource &vuSource, CRGB color = CRGB(0, 64, 0))
-        : color(color), _strip(ledStrip), _vuSource(vuSource)
+    VuOverlayStripe(FastLedStrip ledStrip,
+                    VuSource &vuSource,
+                    CRGB color = CRGB(0, 64, 0))
+        : color(color), _strip(ledStrip),
+          _vuSource(vuSource)
     {
     }
 

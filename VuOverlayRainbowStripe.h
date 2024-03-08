@@ -39,7 +39,7 @@ namespace EC
    * the beginning of the LED strip, 1.0 represents the end.
    */
   class VuOverlayRainbowStripe
-      : public AnimationBase
+      : public AnimationModelBase
   {
   public:
     /** Default fading speed.
@@ -74,10 +74,12 @@ namespace EC
      * @param vuLevelSource  Input for calculating the VU level.
      * @param vuColorSource  Input for calculating the VU color.
      */
-    VuOverlayRainbowStripe(FastLedStrip ledStrip, VuSource &vuLevelSource, VuSource &vuColorSource)
-        : AnimationBase(ledStrip, true), _vuLevelSource(vuLevelSource), _vuCcolorSource(vuColorSource)
+    VuOverlayRainbowStripe(FastLedStrip ledStrip,
+                           VuSource &vuLevelSource,
+                           VuSource &vuColorSource)
+        : AnimationModelBase(10, ledStrip, true),
+          _vuLevelSource(vuLevelSource), _vuCcolorSource(vuColorSource)
     {
-      setModelUpdatePeriod(10);
     }
 
     /// Set the initial color of this VU.
@@ -107,7 +109,7 @@ namespace EC
       _lastVuLevel = vuLevel;
     }
 
-    /// @see AnimationBase::updateModel()
+    /// @see AnimationModelBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
       _startHue += baseHueStep;

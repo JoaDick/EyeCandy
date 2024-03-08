@@ -36,7 +36,7 @@ namespace EC
    * Best to be used standalone; probably not suitable together with overlays.
    */
   class RainbowDrips
-      : public AnimationBase
+      : public AnimationModelBase
   {
   public:
     /// Determines how fast the color changes.
@@ -51,9 +51,10 @@ namespace EC
     explicit RainbowDrips(FastLedStrip ledStrip,
                           uint8_t hueSpeed = hueSpeed_default(),
                           uint8_t startHue = random8())
-        : AnimationBase(40, ledStrip), hueSpeed(hueSpeed), _baseHue(startHue)
+        : AnimationModelBase(100, ledStrip),
+         hueSpeed(hueSpeed), _baseHue(startHue)
     {
-      setModelUpdatePeriod(100);
+      setPatternUpdatePeriod(40);
       _baseHue *= _hueScaleFactor;
     }
 
@@ -71,7 +72,7 @@ namespace EC
       strip.blur(beatsin8(11, 100, 172));
     }
 
-    /// @see AnimationBase::updateModel()
+    /// @see AnimationModelBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
       for (auto i = 0; i < _numDrips; ++i)

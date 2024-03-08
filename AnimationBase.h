@@ -38,8 +38,6 @@ namespace EC
    * - custom Patterns that update the entire LED strip at a fixed rate: showPattern()
    * - the oftentimes used default Patterns fading background and black background.
    * - Overlays, which are rendered on top of a Pattern: showOverlay()
-   * - Mathematical models, which are periodically calculated in the background, independently
-   *   from the Pattern's update rate - but without manipulating the LED strip: updateModel()
    *
    * Patterns render their content on the LED strip at a fixed frequency, and can be used either
    * standalone or as first Animation in an AnimationScene. As Pattern in an In an AnimationScene,
@@ -61,20 +59,6 @@ namespace EC
      */
     uint8_t fadeRate;
 
-    /** Set the pause (in ms) between updates of the mathematical model.
-     * This value is usually configured by the Animation implementation.
-     * Change it only if the child class explicitly uses this as configuration option,
-     * i.e. when it also offers a static \c modelUpdatePeriod_default() method. \n
-     * It determines how frequent updateModel() is getting called; 0 (the default) means that
-     * updateModel() isn't called.
-     */
-    void setModelUpdatePeriod(uint16_t period) { _modelUpdateTimer.updatePeriod = period; }
-
-    /** Get the pause (in ms) between updates of the mathematical model.
-     * @see setModelUpdatePeriod()
-     */
-    uint16_t getModelUpdatePeriod() { return _modelUpdateTimer.updatePeriod; }
-
     /** Get the pause (in ms) between updates of the LED strip's Pattern.
      * It reflects how frequent showPattern() is getting called. \n
      * 0 means Overlay mode; Pattern updates are \e not triggered. \n
@@ -88,38 +72,17 @@ namespace EC
 
   protected:
     /** Constructor for Animations that can be used as both, Pattern or Overlay.
-     * @param strip  The LED strip.
+     * @param ledStrip  The LED strip.
      * @param overlayMode  Set to \c true when the Animation shall be an Overlay.
      * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
      *                  Only relevant when the default implementation of showPattern() is used.
      */
-    AnimationBase(FastLedStrip strip,
-                  bool overlayMode,
-                  uint8_t fadeRate = 0)
-        : fadeRate(fadeRate), _patternUpdateTimer(overlayMode ? 0 : EC_DEFAULT_UPDATE_PERIOD), strip(strip)
-    {
-    }
-
-    /** Constructor for pure Patterns (without Overlay option).
-     * @param strip  The LED strip.
-     */
-    explicit AnimationBase(FastLedStrip strip)
-        : fadeRate(0), _patternUpdateTimer(EC_DEFAULT_UPDATE_PERIOD), strip(strip)
-    {
-    }
-
-    /** Constructor for pure Patterns with custom update rate.
-     * Use this only if you have an urgent reason for a different update rate
-     * than EC_DEFAULT_UPDATE_PERIOD.
-     * @param patternUpdatePeriod  Period (in ms) for calling showPattern().
-     * @param strip  The LED strip.
-     * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
-     *                  Only relevant when the default implementation of showPattern() is used.
-     */
-    AnimationBase(uint8_t patternUpdatePeriod,
-                  FastLedStrip strip,
-                  uint8_t fadeRate = 0)
-        : fadeRate(fadeRate), _patternUpdateTimer(patternUpdatePeriod), strip(strip)
+    explicit AnimationBase(FastLedStrip ledStrip,
+                           bool overlayMode = false,
+                           uint8_t fadeRate = 0)
+        : fadeRate(fadeRate),
+          _patternUpdateTimer(overlayMode ? 0 : EC_DEFAULT_UPDATE_PERIOD),
+          strip(ledStrip)
     {
     }
 
@@ -147,27 +110,18 @@ namespace EC
     {
     }
 
-    /** Update the Animation's mathematical model.
-     * This method can optionally be implemented by all child classes that have some internal
-     * state, which shall be updated periodically in the background (independently from the
-     * Pattern's update rate).
-     * @param currentMillis  Current time, i.e. the returnvalue of millis().
-     * @note This method must not manipulate the LED strip!
-     * @see setModelUpdatePeriod()
+    /** Adjust the Pattern's update rate.
+     * @param period  Period (in ms) for calling showPattern().
+     * @note Think twice if you really have an urgent reason for a different update rate than
+     * EC_DEFAULT_UPDATE_PERIOD. \n
+     * Consider using AnimationModelBase instead for manipulating the Animation's speed.
      */
-    virtual void updateModel(uint32_t currentMillis)
-    {
-    }
+    void setPatternUpdatePeriod(uint8_t period) { _patternUpdateTimer.updatePeriod = period; }
 
   protected:
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      if (_modelUpdateTimer.process(currentMillis))
-      {
-        updateModel(currentMillis);
-      }
-
       if (_patternUpdateTimer.process(currentMillis))
       {
         wasModified = true;
@@ -182,6 +136,74 @@ namespace EC
 
   private:
     AnimationTimer _patternUpdateTimer;
+  };
+
+  //------------------------------------------------------------------------------
+
+  /** Universal base class for Animations with custom background activities.
+   * This base class provides support for all features from AnimationBase.
+   * Additionally, a background activity can e.g. be a mathematical model, which is periodically
+   * calculated in the background, independently from the Pattern's update rate - but without
+   * manipulating the LED strip.
+   * @see updateModel()
+   */
+  class AnimationModelBase
+      : public AnimationBase
+  {
+  public:
+    /** Set the pause (in ms) between updates of the mathematical model.
+     * This value is usually configured by the Animation implementation.
+     * Change it only if the child class explicitly uses this as configuration option,
+     * i.e. when it also offers a static \c modelUpdatePeriod_default() method. \n
+     * It determines how frequent updateModel() is getting called; 0 (the default) means that
+     * updateModel() isn't called.
+     */
+    void setModelUpdatePeriod(uint16_t period) { _modelUpdateTimer.updatePeriod = period; }
+
+    /** Get the pause (in ms) between updates of the mathematical model.
+     * @see setModelUpdatePeriod()
+     */
+    uint16_t getModelUpdatePeriod() { return _modelUpdateTimer.updatePeriod; }
+
+  protected:
+    /** Constructor.
+     * @param modelUpdatePeriod  Period (in ms) for calling updateModel().
+     *                           0 means that updateModel() isn't called.
+     * @param ledStrip  The LED strip.
+     * @param overlayMode  Set to \c true when the Animation shall be an Overlay.
+     * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
+     *                  Only relevant when the default implementation of showPattern() is used.
+     */
+    explicit AnimationModelBase(uint16_t modelUpdatePeriod,
+                                FastLedStrip ledStrip,
+                                bool overlayMode = false,
+                                uint8_t fadeRate = 0)
+        : AnimationBase(ledStrip, overlayMode, fadeRate),
+          _modelUpdateTimer(modelUpdatePeriod)
+    {
+    }
+
+    /** Update the Animation's mathematical model.
+     * This method must be implemented by all child classes to update their internal state
+     * periodically in the background (independently from the Pattern's update rate).
+     * @param currentMillis  Current time, i.e. the returnvalue of millis().
+     * @note This method must not manipulate the LED strip!
+     * @see setModelUpdatePeriod()
+     */
+    virtual void updateModel(uint32_t currentMillis) = 0;
+
+  protected:
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      if (_modelUpdateTimer.process(currentMillis))
+      {
+        updateModel(currentMillis);
+      }
+      AnimationBase::processAnimation(currentMillis, wasModified);
+    }
+
+  private:
     AnimationTimer _modelUpdateTimer;
   };
 

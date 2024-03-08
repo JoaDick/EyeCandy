@@ -60,7 +60,8 @@ namespace EC
      * @param vuSource  Read the VU value from there.
      * @param color  Draw the glitter with this color.
      */
-    VuOverlayPeakGlitter(FastLedStrip ledStrip, VuSource &vuSource,
+    VuOverlayPeakGlitter(FastLedStrip ledStrip,
+                         VuSource &vuSource,
                          CRGB color = CRGB::White)
         : color(color), _strip(ledStrip), _vuSource(vuSource)
     {

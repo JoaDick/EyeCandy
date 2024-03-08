@@ -37,7 +37,7 @@ namespace EC
 
   /// Rising Bubbles.
   class Bubbles
-      : public AnimationBase
+      : public AnimationModelBase
   {
 #ifdef BUBBLES_DEBUG
     static const uint8_t BUBBLES_COUNT = 1;
@@ -57,9 +57,8 @@ namespace EC
      */
     Bubbles(FastLedStrip ledStrip,
             bool overlayMode)
-        : AnimationBase(ledStrip, overlayMode, fadeRate_default())
+        : AnimationModelBase(10, ledStrip, overlayMode, fadeRate_default())
     {
-      setModelUpdatePeriod(10);
     }
 
   private:
@@ -72,7 +71,7 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::updateModel()
+    /// @see AnimationModelBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
       for (uint8_t i = 0; i < BUBBLES_COUNT; ++i)

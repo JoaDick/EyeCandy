@@ -35,7 +35,7 @@ namespace EC
   /** Many many Rainbow variations.
    */
   class Rainbow
-      : public AnimationBase
+      : public AnimationModelBase
   {
     uint8_t _hue = 0;
 
@@ -73,9 +73,8 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit Rainbow(FastLedStrip ledStrip)
-        : AnimationBase(ledStrip.getReversedStrip(), false)
+        : AnimationModelBase(modelUpdatePeriod_default(), ledStrip.getReversedStrip(), false)
     {
-      setModelUpdatePeriod(modelUpdatePeriod_default());
     }
 
   private:
@@ -93,7 +92,7 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::updateModel()
+    /// @see AnimationModelBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
       ++_hue;

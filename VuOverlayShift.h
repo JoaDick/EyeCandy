@@ -38,7 +38,7 @@ namespace EC
    *
    */
   class VuOverlayShift
-      : public AnimationBase
+      : public AnimationModelBase
   {
   public:
     /** Default fading speed.
@@ -64,10 +64,11 @@ namespace EC
      * @param ledStrip  The LED strip.
      * @param vuSource  Read the VU value from there.
      */
-    VuOverlayShift(FastLedStrip ledStrip, VuSource &vuSource)
-        : AnimationBase(ledStrip, true), _vuSource(vuSource)
+    VuOverlayShift(FastLedStrip ledStrip,
+                   VuSource &vuSource)
+        : AnimationModelBase(10, ledStrip, true),
+          _vuSource(vuSource)
     {
-      setModelUpdatePeriod(10);
       vuPeakHandler.peakHold = 500;
       vuPeakHandler.peakDecay = 500;
     }
@@ -78,40 +79,38 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      // if (wasModified)
+      const float vuLevel = constrainVU(_vuSource.getVU());
+
+      const bool isPeak = vuPeakHandler.process(vuLevel, currentMillis);
+      const float vuPeakLevel = constrainVU(vuPeakHandler.getVU());
+
+      uint8_t hue = _startHue;
+      hue = _startHue + vuLevel * vuHueRange * 255;
+      // hue = _startHue + vuPeakLevel * vuHueRange * 255;
+
+      uint8_t sat = 255;
+      // sat = vuLevel * 255;
+
+      uint8_t vol = 128;
+      // vol = vuLevel * 255;
+      // vol = vuPeakLevel * 255;
+
+      CRGB color = CHSV(hue, sat, vol);
+      if (isPeak)
       {
-        const float vuLevel = constrainVU(_vuSource.getVU());
-
-        const bool isPeak = vuPeakHandler.process(vuLevel, currentMillis);
-        const float vuPeakLevel = constrainVU(vuPeakHandler.getVU());
-
-        uint8_t hue = _startHue;
-        hue = _startHue + vuLevel * vuHueRange * 255;
-        // hue = _startHue + vuPeakLevel * vuHueRange * 255;
-
-        uint8_t sat = 255;
-        // sat = vuLevel * 255;
-
-        uint8_t vol = 128;
-        // vol = vuLevel * 255;
-        // vol = vuPeakLevel * 255;
-
-        CRGB color = CHSV(hue, sat, vol);
-        if (isPeak)
-        {
-          color = CRGB(96, 96, 96);
-        }
-        else
-        {
-          // color = CRGB::Black;
-        }
-        // strip.shiftUp(color);
-        // strip.shiftUp(CRGB::Black);
-        strip.shiftDown(CRGB::Black);
-        strip.n_pixel(vuLevel) = color;
-        // strip.n_lineAbs(0.0, vuLevel, color);
+        color = CRGB(96, 96, 96);
       }
+      else
+      {
+        // color = CRGB::Black;
+      }
+      // strip.shiftUp(color);
+      // strip.shiftUp(CRGB::Black);
+      strip.shiftDown(CRGB::Black);
+      strip.n_pixel(vuLevel) = color;
+      // strip.n_lineAbs(0.0, vuLevel, color);
     }
+
     /// @see AnimationBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {

@@ -97,7 +97,7 @@ namespace EC
   in step 3 above).
   */
   template <uint16_t NUM_LEDS>
-  class Fire2012 : public AnimationBase
+  class Fire2012 : public AnimationModelBase
   {
     static const uint16_t FRAMES_PER_SECOND = 60;
 
@@ -124,9 +124,9 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit Fire2012(FastLedStrip ledStrip)
-        : AnimationBase(1000 / FRAMES_PER_SECOND, ledStrip)
+        : AnimationModelBase(Fire2012_modelUpdatePeriod_default(), ledStrip)
     {
-      setModelUpdatePeriod(Fire2012_modelUpdatePeriod_default());
+      setPatternUpdatePeriod(1000 / FRAMES_PER_SECOND);
     }
 
   private:
@@ -208,7 +208,7 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::updateModel()
+    /// @see AnimationModelBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
       // Fourth, the most sophisticated: this one sets up a new palette every

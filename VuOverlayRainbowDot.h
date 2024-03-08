@@ -40,7 +40,7 @@ namespace EC
    * the beginning of the LED strip, 1.0 represents the end.
    */
   class VuOverlayRainbowDot
-      : public AnimationBase
+      : public AnimationModelBase
   {
   public:
     /** Default fading speed.
@@ -91,10 +91,13 @@ namespace EC
      *              Choose small values, like e.g. 0.03 for 3% of the strip. \n
      *              0.0 means exactly 1 pixel.
      */
-    VuOverlayRainbowDot(FastLedStrip ledStrip, VuSource &vuLevelSource, VuSource &vuColorSource, float size = 0.0)
-        : AnimationBase(ledStrip, true), size(size), _vuLevelSource(vuLevelSource), _vuCcolorSource(vuColorSource)
+    VuOverlayRainbowDot(FastLedStrip ledStrip,
+                        VuSource &vuLevelSource,
+                        VuSource &vuColorSource,
+                        float size = 0.0)
+        : AnimationModelBase(10, ledStrip, true),
+          size(size), _vuLevelSource(vuLevelSource), _vuCcolorSource(vuColorSource)
     {
-      setModelUpdatePeriod(10);
     }
 
     /// Set the initial color of this VU.
@@ -130,7 +133,7 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::updateModel()
+    /// @see AnimationModelBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
       _startHue += baseHueStep;

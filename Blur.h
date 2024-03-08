@@ -47,7 +47,8 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     Blur(FastLedStrip ledStrip)
-        : AnimationBase(ledStrip), NUM_LEDS(strip.ledCount())
+        : AnimationBase(ledStrip),
+          NUM_LEDS(strip.ledCount())
     {
     }
 

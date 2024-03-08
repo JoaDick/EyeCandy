@@ -85,7 +85,8 @@ namespace EC
      */
     RawAudioVU(float &audioSource,
                FastLedStrip ledStrip)
-        : AnimationBase(ledStrip, false, 25), _audioSource(audioSource)
+        : AnimationBase(ledStrip, false, 25),
+          _audioSource(audioSource)
     {
     }
 
@@ -129,7 +130,7 @@ namespace EC
    * behind the scenes.
    */
   class LowLevelAudioPlaygroundVU
-      : public AnimationBase
+      : public AnimationModelBase
   {
   public:
     /// Signature of the function for rendering the VU on the LED strip.
@@ -193,10 +194,10 @@ namespace EC
     LowLevelAudioPlaygroundVU(float &audioSource,
                               FastLedStrip ledStrip,
                               DrawingFct drawingFct)
-        : AnimationBase(ledStrip, false, 50), _audioSource(audioSource), _drawingFct(drawingFct)
+        : AnimationModelBase(10, ledStrip, false, 50),
+          _audioSource(audioSource), _drawingFct(drawingFct)
     {
-      // Calculate the average value every 10ms, resulting in 100Hz refresh rate.
-      setModelUpdatePeriod(10);
+      // Calculating the average value every 10ms, resulting in 100Hz refresh rate.
       // The LED strip is also updated every 10ms, resulting in 100 "FPS" for the VU.
       // -- Note: That's the default value; see AnimationBase::patternUpdatePeriod.
 
@@ -219,10 +220,10 @@ namespace EC
       _sampleRmsSum += square(_audioSource);
       ++_sampleCount;
 
-      AnimationBase::processAnimation(currentMillis, wasModified);
+      AnimationModelBase::processAnimation(currentMillis, wasModified);
     }
 
-    /// @see AnimationBase::updateModel()
+    /// @see AnimationModelBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
       if (_sampleCount == 0)

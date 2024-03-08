@@ -44,7 +44,7 @@ namespace EC
    */
   template <uint8_t PARTICLE_COUNT = 5>
   class Firework
-      : public AnimationBase
+      : public AnimationModelBase
   {
   public:
     /// Delay (in ms) before relaunching the Particles.
@@ -58,12 +58,12 @@ namespace EC
     Firework(FastLedStrip ledStrip,
              bool overlayMode,
              uint16_t launchDelay = Firework_launchDelay_default())
-        : AnimationBase(ledStrip, overlayMode, Firework_fadeRate_default()), launchDelay(launchDelay)
+        : AnimationModelBase(10, ledStrip, overlayMode, Firework_fadeRate_default()),
+          launchDelay(launchDelay)
     {
 #ifdef FIREWORK_DEBUG
       // setPatternUpdatePeriod(20);
 #endif
-      setModelUpdatePeriod(10);
     }
 
   private:
@@ -85,7 +85,7 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::updateModel()
+    /// @see AnimationModelBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
       bool mustLaunch = true;

@@ -64,8 +64,9 @@ namespace EC
     BgFillColor(uint8_t patternUpdatePeriod,
                 FastLedStrip ledStrip,
                 CRGB color)
-        : AnimationBase(patternUpdatePeriod, ledStrip), color(color)
+        : AnimationBase(ledStrip), color(color)
     {
+      setPatternUpdatePeriod(patternUpdatePeriod);
     }
 
   private:
@@ -108,8 +109,9 @@ namespace EC
     BgFadeToBlack(uint8_t patternUpdatePeriod,
                   FastLedStrip ledStrip,
                   uint8_t fadeRate)
-        : AnimationBase(patternUpdatePeriod, ledStrip, fadeRate)
+        : AnimationBase(ledStrip, false, fadeRate)
     {
+      setPatternUpdatePeriod(patternUpdatePeriod);
     }
 
   private:
@@ -155,7 +157,8 @@ namespace EC
                         bool overlayMode,
                         uint8_t fadeBy = 96,
                         uint8_t fadeChance = 32)
-        : AnimationBase(ledStrip, overlayMode, 0), fadeBy(fadeBy), fadeChance(fadeChance)
+        : AnimationBase(ledStrip, overlayMode, 0),
+          fadeBy(fadeBy), fadeChance(fadeChance)
     {
     }
 
@@ -171,8 +174,10 @@ namespace EC
                         FastLedStrip ledStrip,
                         uint8_t fadeBy = 96,
                         uint8_t fadeChance = 32)
-        : AnimationBase(patternUpdatePeriod, ledStrip), fadeBy(fadeBy), fadeChance(fadeChance)
+        : AnimationBase(ledStrip), fadeBy(fadeBy),
+          fadeChance(fadeChance)
     {
+      setPatternUpdatePeriod(patternUpdatePeriod);
     }
 
   private:
@@ -214,7 +219,8 @@ namespace EC
     BgRotate(FastLedStrip ledStrip,
              bool overlayMode,
              bool rotateUp = false)
-        : AnimationBase(ledStrip, overlayMode), rotateUp(rotateUp)
+        : AnimationBase(ledStrip, overlayMode),
+          rotateUp(rotateUp)
     {
     }
 
@@ -230,8 +236,10 @@ namespace EC
     BgRotate(uint8_t patternUpdatePeriod,
              FastLedStrip ledStrip,
              bool rotateUp = false)
-        : AnimationBase(patternUpdatePeriod, ledStrip), rotateUp(rotateUp)
+        : AnimationBase(ledStrip),
+          rotateUp(rotateUp)
     {
+      setPatternUpdatePeriod(patternUpdatePeriod);
     }
 
   private:

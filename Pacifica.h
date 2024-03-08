@@ -47,8 +47,9 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit Pacifica(FastLedStrip ledStrip)
-        : AnimationBase(20, ledStrip)
+        : AnimationBase(ledStrip)
     {
+      setPatternUpdatePeriod(20);
     }
 
   private:

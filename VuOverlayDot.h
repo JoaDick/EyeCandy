@@ -63,7 +63,10 @@ namespace EC
      *              Choose small values, like e.g. 0.03 for 3% of the strip. \n
      *              0.0 means exactly 1 pixel.
      */
-    VuOverlayDot(FastLedStrip ledStrip, VuSource &vuSource, CRGB color = CRGB::Red, float size = 0.0)
+    VuOverlayDot(FastLedStrip ledStrip,
+                 VuSource &vuSource,
+                 CRGB color = CRGB::Red,
+                 float size = 0.0)
         : color(color), size(size), _strip(ledStrip), _vuSource(vuSource)
     {
     }

@@ -36,7 +36,7 @@ namespace EC
    * Mainly intended for testing LED strips.
    */
   class RgbBlocks
-      : public AnimationBase
+      : public AnimationModelBase
   {
     static const uint8_t _blockCount = 6;
     uint16_t _animationCounter = 0;
@@ -60,9 +60,8 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit RgbBlocks(FastLedStrip ledStrip)
-        : AnimationBase(ledStrip.getReversedStrip(), false)
+        : AnimationModelBase(modelUpdatePeriod_default(), ledStrip.getReversedStrip(), false)
     {
-      setModelUpdatePeriod(modelUpdatePeriod_default());
     }
 
   private:
@@ -93,7 +92,7 @@ namespace EC
       }
     }
 
-    /// @see AnimationBase::updateModel()
+    /// @see AnimationModelBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
       if (++_animationCounter >= _blockCount * blockSize)

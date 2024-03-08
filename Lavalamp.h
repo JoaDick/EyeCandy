@@ -66,7 +66,8 @@ namespace EC
     explicit Lavalamp(FastLedStrip ledStrip,
                       uint8_t colorBPM = colorBPM_default(),
                       uint8_t startHue = random8())
-        : AnimationBase(ledStrip), colorBPM(colorBPM), _startHue(startHue)
+        : AnimationBase(ledStrip),
+          colorBPM(colorBPM), _startHue(startHue)
     {
     }
 

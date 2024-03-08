@@ -74,7 +74,8 @@ namespace EC
                     CRGB color = CRGB::OrangeRed,
                     float bpm = 10.0,
                     float overshoot = 0.15)
-        : AnimationBase(ledStrip, overlayMode, 0), color(color), bpm(bpm), overshoot(overshoot)
+        : AnimationBase(ledStrip, overlayMode, 0),
+          color(color), bpm(bpm), overshoot(overshoot)
     {
     }
 
