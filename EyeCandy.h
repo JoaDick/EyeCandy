@@ -29,6 +29,7 @@ SOFTWARE.
 #include "AnimationChanger.h"
 
 #include "Backgrounds.h"
+#include "ColorChanger.h"
 
 // Pattern
 #include "Blur.h"

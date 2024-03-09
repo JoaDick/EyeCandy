@@ -165,7 +165,9 @@ void makeMeteorGlitter(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     scene.append(new EC::Meteor(strip, false));
-    scene.append(new EC::Glitter(strip, true, CRGB(255, 224, 80), 15));
+    auto glitter = scene.append(new EC::Glitter(strip, true));
+    glitter->effectRate = 10;
+    scene.append(new EC::ColorChangerRainbow(glitter->color, 2.0, 0, 112, 160));
     // autoMode = false;
 }
 
