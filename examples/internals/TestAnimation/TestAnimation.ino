@@ -84,6 +84,15 @@ uint16_t animationDuration = defaultAnimationDuration;
 
 // ---------- Animations ----------
 
+void makeBallLightning(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::BallLightning(strip));
+    scene.append(new EC::Glitter(strip, true, CRGB(224, 192, 112), 10));
+    // autoMode = false;
+}
+
 void makeBalls(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -235,22 +244,23 @@ void makeWaterfall(EC::AnimationScene &scene)
 EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeRgbBlocks,
 
-    &makeTwinkles,
-    &makeRainbowBuiltin,
-    &makeRainbow,
+    // &makeTwinkles,
+    // &makeRainbowBuiltin,
+    // &makeRainbow,
     &makeFloatingBlobs,
     &makeMeteorGlitter,
-    &makeRainbowTwinkle,
-    &makeBlur,
-    &makePride,
+    &makeBallLightning,
+    // &makeRainbowTwinkle,
+    // &makeBlur,
+    // &makePride,
     &makeRainbowDrips,
-    &makePacifica,
-    &makeBubbles,
+    // &makePacifica,
+    // &makeBubbles,
     &makeWaterfall,
     &makeLavalamp,
-    &makeBalls,
-    &makeFire,
-    &makeFlare,
+    // &makeBalls,
+    // &makeFire,
+    // &makeFlare,
     &makeFireworks,
     nullptr};
 
@@ -448,6 +458,9 @@ void printMemoryUsage()
 
     Serial.print(F("BgRotate = "));
     Serial.println((int)sizeof(EC::BgRotate));
+
+    Serial.print(F("BallLightning = "));
+    Serial.println((int)sizeof(EC::BallLightning));
 
     Serial.print(F("Blur = "));
     Serial.println((int)sizeof(EC::Blur));

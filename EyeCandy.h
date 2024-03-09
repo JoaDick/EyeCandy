@@ -32,6 +32,7 @@ SOFTWARE.
 #include "ColorChanger.h"
 
 // Pattern
+#include "BallLightning.h"
 #include "Blur.h"
 #include "BouncingBalls.h"
 #include "Bubbles.h"

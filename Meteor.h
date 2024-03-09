@@ -47,7 +47,7 @@ namespace EC
       : public AnimationBase
   {
   public:
-    /// Color source of the meteor.
+    /// Base color source of the meteor.
     ColorWheel color;
 
     /// Beats per minute of the meteor oscillation.
@@ -99,13 +99,15 @@ namespace EC
     {
       color.update();
       const float pos = beatsinF(bpm, 0.0 - overshoot, 1.0 + overshoot);
+      const float colorJitter = inoise8(currentMillis) / 384.0;
+      const CRGB col = color[colorJitter];
       if (size > 0.0)
       {
-        strip.n_lineCentered(pos, size, color);
+        strip.n_lineCentered(pos, size, col);
       }
       else
       {
-        strip.n_pixel(pos) = color;
+        strip.n_pixel(pos) = col;
       }
     }
   };

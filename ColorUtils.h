@@ -117,7 +117,7 @@ namespace EC
     CRGB operator[](float offset) { return getColor(offset); }
 
   private:
-    float _startHueF = 0;
+    float _startHueF = 0.0;
   };
 
   //------------------------------------------------------------------------------

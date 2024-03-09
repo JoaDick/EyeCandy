@@ -75,6 +75,15 @@ uint16_t animationDuration = defaultAnimationDuration;
 
 // ---------- Animations ----------
 
+void makeBallLightning(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::BallLightning(strip));
+    scene.append(new EC::Glitter(strip, true, CRGB(224, 192, 112), 10));
+    // autoMode = false;
+}
+
 void makeBalls(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -252,6 +261,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeRainbow,
     &makeFloatingBlobs,
     &makeMeteorGlitter,
+    &makeBallLightning,
     // &makeRainbowTwinkle,
     // &makeBlur,
     // &makePride,
