@@ -206,8 +206,7 @@ void makeRainbowTwinkle(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto rainbow = scene.append(new EC::RainbowTwinkle(strip));
-    rainbow->setModelUpdatePeriod(25);
+    scene.append(new EC::RainbowTwinkle(strip));
 }
 
 void makeRgbBlocks(EC::AnimationScene &scene)

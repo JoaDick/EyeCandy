@@ -51,7 +51,7 @@ namespace EC
      * This setting can be adjusted at runtime.
      */
     uint8_t effectRate = effectRate_default();
-    static uint8_t effectRate_default() { return 50; }
+    static uint8_t effectRate_default() { return 40; }
 
     /** Constructor.
      * @param ledStrip  The LED strip.
@@ -74,6 +74,7 @@ namespace EC
         if (pixel.getLuma() < 3)
         {
           pixel = CHSV(redShift(random(256)), 255, random(64) + 192);
+          // pixel = CHSV(redShift(random(256)), random(112) + 144, random(64) + 192);
         }
       }
     }

@@ -26,6 +26,7 @@ SOFTWARE.
 *******************************************************************************/
 
 #include <FastLED.h>
+#include "ColorUtils.h"
 
 //------------------------------------------------------------------------------
 
@@ -379,12 +380,6 @@ namespace EC
     {
       strip.fill(CRGB::Black);
     }
-  }
-
-  /// Put more emphasis on the red'ish colors.
-  inline uint8_t redShift(uint8_t hue)
-  {
-    return cos8(128 + hue / 2);
   }
 
 } // namespace EC

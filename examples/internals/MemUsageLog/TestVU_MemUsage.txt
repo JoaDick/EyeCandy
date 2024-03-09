@@ -2,7 +2,27 @@ TestVU Memory usage log
 =======================
 
 
+240309 New helper class ColorWheel
 
+Sketch uses 22008 bytes (68%) of program storage space. Maximum is 32256 bytes.
+Global variables use 869 bytes (42%) of dynamic memory, leaving 1179 bytes for local variables. Maximum is 2048 bytes.
+
+Memory usage for 90 LEDs:
+<*> is dependant on NUM_LEDS
+VuSourceAnalogPin = 70
+VuSourcePeakHold = 34
+VuSourcePeakGravity = 48
+VuSourcePeakForce = 32
+VuOverlayLine = 13
+VuOverlayStripe = 17
+VuOverlayDot = 17
+VuOverlayRainbowLine = 28
+VuOverlayRainbowStripe = 32
+VuOverlayRainbowDot = 32
+VuOverlayPeakGlitter = 45
+Fire2012VU = 36
+RawAudioVU = 22
+TestVU1 = 246
 
 Sketch uses 22508 bytes (69%) of program storage space. Maximum is 32256 bytes.
 Global variables use 887 bytes (43%) of dynamic memory, leaving 1161 bytes for local variables. Maximum is 2048 bytes.

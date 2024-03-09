@@ -40,7 +40,7 @@ namespace EC
    * the beginning of the LED strip, 1.0 represents the end.
    */
   class VuOverlayRainbowDot
-      : public AnimationModelBase
+      : public Animation
   {
   public:
     /** Default fading speed.
@@ -48,21 +48,8 @@ namespace EC
      */
     static uint8_t fadeRate_default() { return 50; }
 
-    /** How fast the initial hue changes over time.
-     * This setting can be adjusted at runtime.
-     */
-    float baseHueStep = -0.05;
-
-    /** How much the hue varies depending on the VU level.
-     * This setting can be adjusted at runtime. \n
-     * 1.0 means one full color wheel cycle between 0.0 ... 1.0 VU level.
-     */
-    float vuHueRange = 0.33;
-
-    /** Brightness of the VU.
-     * This setting can be adjusted at runtime.
-     */
-    uint8_t volume = 192;
+    /// Color source of the VU.
+    ColorWheel color;
 
     /** Size of the dot (as fraction of the entire strip).
      * This setting can be adjusted at runtime. \n
@@ -95,15 +82,11 @@ namespace EC
                         VuSource &vuLevelSource,
                         VuSource &vuColorSource,
                         float size = 0.0)
-        : AnimationModelBase(10, ledStrip, true),
-          size(size), _vuLevelSource(vuLevelSource), _vuCcolorSource(vuColorSource)
+        : color(1.0, 0.33), size(size), _strip(ledStrip),
+          _vuLevelSource(vuLevelSource), _vuCcolorSource(vuColorSource)
     {
-    }
-
-    /// Set the initial color of this VU.
-    void setStartHue(uint8_t startHue)
-    {
-      _startHue = startHue;
+      color.hueOffset = 128;
+      color.volume = 192;
     }
 
     /// Get the VuSource that is used for calculating the VU level.
@@ -113,44 +96,33 @@ namespace EC
     VuSource &getColorVuSource() { return _vuCcolorSource; }
 
   private:
-    /// @see AnimationBase::showOverlay()
-    void showOverlay(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
+      if (!wasModified)
+        return;
+
+      color.update();
       const float vuLevel = _vuLevelSource.getVU();
-      const uint8_t hue = _startHue + _vuCcolorSource.getVU() * vuHueRange * 255;
-      const CRGB color = CHSV(redShift(hue), 255, volume);
+      const float colorVuLevel = _vuCcolorSource.getVU();
 
       if (vuLevel > 0.0)
       {
         if (size > 0.0)
         {
-          strip.n_lineRel(vuLevel, -size, color);
+          _strip.n_lineRel(vuLevel, -size, color[colorVuLevel]);
         }
         else
         {
-          strip.n_pixel(vuLevel) = color;
+          _strip.n_pixel(vuLevel) = color[colorVuLevel];
         }
-      }
-    }
-
-    /// @see AnimationModelBase::updateModel()
-    void updateModel(uint32_t currentMillis) override
-    {
-      _startHue += baseHueStep;
-      while (_startHue > 255.0)
-      {
-        _startHue -= 255.0;
-      }
-      while (_startHue < 0.0)
-      {
-        _startHue += 255.0;
       }
     }
 
   private:
+    FastLedStrip _strip;
     VuSource &_vuLevelSource;
     VuSource &_vuCcolorSource;
-    float _startHue = (millis() + 128) & 0xFF;
   };
 
 } // namespace EC

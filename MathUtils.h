@@ -36,14 +36,14 @@ namespace EC
   //------------------------------------------------------------------------------
 
   /// Generate a random floating point number between 0.0 and \a max.
-  float randomF(float max = 1.0)
+  inline float randomF(float max = 1.0)
   {
     const int32_t prec = 0x08000000; // respect float's 23 bit precision
     return (float(random(prec)) * max) / prec;
   }
 
   /// Generate a random floating point number between \a min and \a max.
-  float randomF(float min, float max)
+  inline float randomF(float min, float max)
   {
     if (min > max)
     {
@@ -61,7 +61,7 @@ namespace EC
    * @param highest  Highest output value.
    * @param timebase   Time offset from the millis() timer.
    */
-  float beatF(float bpm, float lowest = 0.0, float highest = 1.0, uint32_t timebase = 0)
+  inline float beatF(float bpm, float lowest = 0.0, float highest = 1.0, uint32_t timebase = 0)
   {
     float x = beat88(bpm * 256, timebase);
     x /= 0xFFFF;
@@ -78,7 +78,7 @@ namespace EC
    * @param timebase   Time offset from the millis() timer.
    * @param phaseOffset  Phase offset from the current position.
    */
-  float beatsinF(float bpm, float lowest, float highest, uint32_t timebase = 0, float phaseOffset = 0.0)
+  inline float beatsinF(float bpm, float lowest, float highest, uint32_t timebase = 0, float phaseOffset = 0.0)
   {
     float x = beatsin88(bpm * 256, 0, 0xFFFF, timebase, phaseOffset * 0xFFFF);
     x /= 0xFFFF;

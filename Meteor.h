@@ -47,8 +47,8 @@ namespace EC
       : public AnimationBase
   {
   public:
-    /// Draw the meteor with this color.
-    CRGB color;
+    /// Color source of the meteor.
+    ColorWheel color;
 
     /// Beats per minute of the meteor oscillation.
     float bpm;
@@ -62,21 +62,30 @@ namespace EC
     /// Chance of fading: 0 = never, 255 = always.
     uint8_t fadeChance = 32;
 
+    // // TODO - see VuOverlayDot
+    // /** Size of the dot (as fraction of the entire strip).
+    //  * This setting can be adjusted at runtime.
+    //  * Choose small values, like e.g. 0.03 for 3% of the strip. \n
+    //  * 0.0 means exactly 1 pixel.
+    //  */
+    // float size;
+
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to \c true when the Animation shall be an Overlay.
-     * @param color  Draw the meteor with this color.
      * @param bpm  Beats per minute of the meteor oscillation.
      * @param overshoot  How far the meteor shoots off the LED strip (as fraction of the strip).
      */
     explicit Meteor(FastLedStrip ledStrip,
                     bool overlayMode,
-                    CRGB color = CRGB::OrangeRed,
                     float bpm = 10.0,
                     float overshoot = 0.15)
         : AnimationBase(ledStrip, overlayMode, 0),
-          color(color), bpm(bpm), overshoot(overshoot)
+          bpm(bpm), overshoot(overshoot)
     {
+      color.moreRed = true;
+      // Unicorn-Meteor :-)
+      // color.bpm = 90;
     }
 
   private:
@@ -89,6 +98,7 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
+      color.update();
       const float pos = beatsinF(bpm, 0.0 - overshoot, 1.0 + overshoot);
       strip.n_pixel(pos) = color;
     }

@@ -2,7 +2,10 @@ DemoReel Memory usage log
 =========================
 
 
+240309 New helper class ColorWheel
 
+Sketch uses 30590 bytes (94%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1001 bytes (48%) of dynamic memory, leaving 1047 bytes for local variables. Maximum is 2048 bytes.
 
 Sketch uses 30204 bytes (93%) of program storage space. Maximum is 32256 bytes.
 Global variables use 1005 bytes (49%) of dynamic memory, leaving 1043 bytes for local variables. Maximum is 2048 bytes.

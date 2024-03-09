@@ -76,22 +76,22 @@ namespace EC
     VuOverlayRainbowLine *levelOverlay;
     VuOverlayRainbowDot *peakOverlay;
 
-    void setBaseHueStep(float baseHueStep)
+    void setBPM(float bpm)
     {
-      levelOverlay->baseHueStep = baseHueStep;
-      peakOverlay->baseHueStep = baseHueStep;
+      levelOverlay->color.bpm = bpm;
+      peakOverlay->color.bpm = bpm;
     }
 
     void setVuRange(float vuHueRange)
     {
-      levelOverlay->vuHueRange = vuHueRange;
-      peakOverlay->vuHueRange = vuHueRange;
+      levelOverlay->color.hueRange = vuHueRange;
+      peakOverlay->color.hueRange = vuHueRange;
     }
 
     void setVolume(float volume)
     {
-      levelOverlay->volume = volume;
-      peakOverlay->volume = volume;
+      levelOverlay->color.volume = volume;
+      peakOverlay->color.volume = volume;
     }
 
     BlueprintRainbowVU(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
@@ -131,8 +131,8 @@ namespace EC
       vuPeakDot1 = scene.append(new VuOverlayRainbowDot(strip, *vuPeakSource1, vuSource));
       vuPeakDot2 = scene.append(new VuOverlayRainbowDot(strip, *vuPeakSource2, vuSource));
 
-      vuPeakDot1->vuHueRange = 1.0;
-      vuPeakDot2->vuHueRange = vuPeakDot1->vuHueRange;
+      vuPeakDot1->color.hueRange = 1.0;
+      vuPeakDot2->color.hueRange = vuPeakDot1->color.hueRange;
     }
   };
 
@@ -153,8 +153,8 @@ namespace EC
 
     void setdotVuHueRange(float dotVuHueRange)
     {
-      vuPeakDot1->vuHueRange = dotVuHueRange;
-      vuDipDot1->vuHueRange = dotVuHueRange;
+      vuPeakDot1->color.hueRange = dotVuHueRange;
+      vuDipDot1->color.hueRange = dotVuHueRange;
     }
 
     BlueprintFranticVu(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
@@ -171,8 +171,8 @@ namespace EC
       vuPeakDot1 = scene.append(new VuOverlayRainbowDot(strip, *vuPeakSource1, *vuDipSource1));
       vuDipDot1 = scene.append(new VuOverlayRainbowDot(strip, *vuDipSource1, *vuPeakSource1));
 
-      vuLevelStrip->baseHueStep = 0.25;
-      vuLevelStrip->vuHueRange = 0.1;
+      vuLevelStrip->color.bpm = 6.0;
+      vuLevelStrip->color.hueRange = 0.1;
       setdotVuHueRange(1.5);
     }
   };
@@ -198,10 +198,10 @@ namespace EC
 
     void setdotVuHueRange(float dotVuHueRange)
     {
-      vuPeakDot1->vuHueRange = dotVuHueRange;
-      vuPeakDot2->vuHueRange = dotVuHueRange;
-      vuDipDot1->vuHueRange = dotVuHueRange;
-      vuDipDot2->vuHueRange = dotVuHueRange;
+      vuPeakDot1->color.hueRange = dotVuHueRange;
+      vuPeakDot2->color.hueRange = dotVuHueRange;
+      vuDipDot1->color.hueRange = dotVuHueRange;
+      vuDipDot2->color.hueRange = dotVuHueRange;
     }
 
     BlueprintCrazyVu(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
@@ -230,8 +230,8 @@ namespace EC
       vuDipDot1 = scene.append(new VuOverlayRainbowDot(strip, *vuDipSource1, *vuPeakSource1));
       vuDipDot2 = scene.append(new VuOverlayRainbowDot(strip, *vuDipSource2, *vuPeakSource1));
 
-      vuLevelStrip->baseHueStep = 0.25;
-      vuLevelStrip->vuHueRange = 0.1;
+      vuLevelStrip->color.bpm = 6.0;
+      vuLevelStrip->color.hueRange = 0.1;
       setdotVuHueRange(1.5);
     }
   };
@@ -263,12 +263,12 @@ namespace EC
 
     void setdotVuHueRange(float dotVuHueRange)
     {
-      vuPeakDot1->vuHueRange = dotVuHueRange;
-      vuPeakDot2->vuHueRange = dotVuHueRange;
-      vuPeakDot3->vuHueRange = dotVuHueRange;
-      vuDipDot1->vuHueRange = dotVuHueRange;
-      vuDipDot2->vuHueRange = dotVuHueRange;
-      vuDipDot3->vuHueRange = dotVuHueRange;
+      vuPeakDot1->color.hueRange = dotVuHueRange;
+      vuPeakDot2->color.hueRange = dotVuHueRange;
+      vuPeakDot3->color.hueRange = dotVuHueRange;
+      vuDipDot1->color.hueRange = dotVuHueRange;
+      vuDipDot2->color.hueRange = dotVuHueRange;
+      vuDipDot3->color.hueRange = dotVuHueRange;
     }
 
     BlueprintBeyondCrazyVu(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
@@ -309,8 +309,8 @@ namespace EC
       vuDipDot2 = scene.append(new VuOverlayRainbowDot(strip, *vuDipSource2, *vuPeakSource1));
       vuDipDot3 = scene.append(new VuOverlayRainbowDot(strip, *vuDipSource3, *vuPeakSource1));
 
-      vuLevelStrip->baseHueStep = 0.25;
-      vuLevelStrip->vuHueRange = 0.1;
+      vuLevelStrip->color.bpm = 6.0;
+      vuLevelStrip->color.hueRange = 0.1;
       setdotVuHueRange(1.5);
     }
   };

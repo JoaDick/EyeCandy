@@ -96,7 +96,7 @@ void makeDancingDotVU(EC::AnimationScene &scene)
     auto vuPeakSource = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
 
     auto levelVu = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource));
-    levelVu->volume = 64;
+    levelVu->color.volume = 64;
 
     auto peakVu = scene.append(new EC::VuOverlayStripe(strip, *vuPeakSource));
 }
@@ -114,7 +114,7 @@ void makeDoubleDancingDotVU1(EC::AnimationScene &scene)
     vuPeakSource->vuPeakHandler.mass = 0.5;
 
     auto vu1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource, *vuLevelSource, 0.075));
-    vu1->baseHueStep = 0.03;
+    vu1->color.bpm = 0.7;
 
     auto vu2 = scene.append(new EC::VuOverlayRainbowDot(strip.getReversedStrip(), *vuPeakSource, *vuLevelSource, 0.075));
 }
@@ -133,7 +133,7 @@ void makeDoubleDancingDotVU2(EC::AnimationScene &scene)
     vuPeakSource2->vuPeakHandler.friction = 5.0;
 
     auto vu1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource1, 0.125));
-    vu1->baseHueStep = 0.03;
+    vu1->color.bpm = 0.7;
 
     auto vu2 = scene.append(new EC::VuOverlayRainbowDot(strip.getReversedStrip(), *vuPeakSource2, 0.125));
 }
@@ -156,7 +156,7 @@ void makeManyDancingDotVU(EC::AnimationScene &scene)
         bool flipped = i & 0x01;
         // flipped = false;
         auto peakVu = scene.append(new EC::VuOverlayRainbowStripe(strip.getSubStrip(0, 0, flipped), *vuPeakSource));
-        peakVu->vuHueRange = 0.75;
+        peakVu->color.hueRange = 0.75;
 
         // mass += i * 0.25;
         friction += i * 3.5;
@@ -173,11 +173,11 @@ void makePeakMothsVU(EC::AnimationScene &scene)
     auto vuLevelSource1 = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
 
     auto levelVu = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource1));
-    levelVu->volume = 64;
+    levelVu->color.volume = 64;
 
     auto peakVu1 = scene.append(new EC::VuOverlayRainbowDot(strip, *vuLevelSource1));
-    peakVu1->vuHueRange = 0.75;
-    peakVu1->volume = 255;
+    peakVu1->color.hueRange = 0.75;
+    peakVu1->color.volume = 255;
 
     EC::VuSource *vuSource = &vuLevelSource1->asVuSource();
     for (uint8_t i = 1; i <= 4; ++i)
@@ -188,8 +188,7 @@ void makePeakMothsVU(EC::AnimationScene &scene)
         // vuPeakSource->vuPeakHandler.coupling = 100.0;
 
         auto peakVu = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource));
-        peakVu->vuHueRange = peakVu1->vuHueRange;
-        peakVu->volume = peakVu1->volume;
+        peakVu->color = peakVu1->color;
 
         vuSource = &vuPeakSource->asVuSource();
     }
@@ -263,8 +262,8 @@ void makeMeteorTrailVU(EC::AnimationScene &scene)
     scene.append(new EC::BgMeteorFadeToBlack(strip, false));
     auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
     auto levelVu = scene.append(new EC::VuOverlayRainbowStripe(strip, *vuLevelSource));
-    levelVu->vuHueRange = 0.67;
-    levelVu->volume = 255;
+    levelVu->color.hueRange = 0.67;
+    levelVu->color.volume = 255;
 
     // autoMode = false;
 }
@@ -518,7 +517,7 @@ void makeVuIntro6(EC::AnimationScene &scene)
     vuPeakSource->vuPeakHandler.presetPunchedBall();
 
     auto vuPeak = scene.append(new EC::VuOverlayRainbowStripe(strip, *vuPeakSource));
-    vuPeak->vuHueRange = 0.5;
+    vuPeak->color.hueRange = 0.5;
 
     auto glitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource));
 

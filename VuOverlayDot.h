@@ -25,8 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "Animation.h"
-#include "FastLedStrip.h"
+#include "AnimationBase.h"
 #include "VuSource.h"
 
 //------------------------------------------------------------------------------
@@ -78,19 +77,19 @@ namespace EC
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      if (wasModified)
+      if (!wasModified)
+        return;
+
+      const float vuLevel = _vuSource.getVU();
+      if (vuLevel > 0.0)
       {
-        const float vuLevel = _vuSource.getVU();
-        if (vuLevel > 0.0)
+        if (size > 0.0)
         {
-          if (size > 0.0)
-          {
-            _strip.n_lineRel(vuLevel, -size, color);
-          }
-          else
-          {
-            _strip.n_pixel(vuLevel) = color;
-          }
+          _strip.n_lineRel(vuLevel, -size, color);
+        }
+        else
+        {
+          _strip.n_pixel(vuLevel) = color;
         }
       }
     }

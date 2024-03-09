@@ -35,57 +35,52 @@ namespace EC
   /** A twinkling rainbow animation.
    */
   class RainbowTwinkle
-      : public AnimationModelBase
+      : public PatternBase
   {
   public:
-    /** Default fading speed.
-     * Lower value = longer glowing; 0 = solid black background (not
-     * recommended).
+    /** Fading speed.
+     * Lower value = longer glowing; 0 = not working.
      */
+    uint8_t fadeRate;
     static uint8_t fadeRate_default() { return 5; }
 
-    /** Delay between updating the Animation (in ms).
-     * 0 means freeze (don't update the animation).
-     * This setting can be adjusted at runtime.
-     * @note This delay influences the "Animation speed", but not the LED
-     * refresh rate.
-     */
-    static uint16_t modelUpdatePeriod_default() { return 100; }
+    /// Color source of the Animation.
+    ColorWheel color;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
+     * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = not working.
      */
-    explicit RainbowTwinkle(FastLedStrip ledStrip)
-        : AnimationModelBase(modelUpdatePeriod_default(), ledStrip, false, fadeRate_default())
+    explicit RainbowTwinkle(FastLedStrip ledStrip,
+                            uint8_t fadeRate = fadeRate_default())
+        : PatternBase(ledStrip),
+          fadeRate(fadeRate), color(4.0)
     {
+      color.update();
       for (auto &pixel : strip)
       {
-        pixel = CHSV(redShift(_hue), random(0x2F) + 0xD0, random(0xEF) + 0x10);
+        color.volume = random(0xEF) + 0x10;
+        // color.saturation = random(0x2F) + 0xD0;
+        pixel = color;
       }
     }
 
   private:
-    /// @see AnimationBase::showPattern()
+    /// @see PatternBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
+      color.update();
       strip.fadeToBlack(fadeRate);
-
       for (auto &pixel : strip)
       {
         if (pixel.getLuma() <= 6)
         {
-          pixel = CHSV(redShift(_hue), 0xFF, random(0x30) + 0xCF);
+          color.volume = random(0x30) + 0xCF;
+          // color.saturation = random(0x2F) + 0xD0;
+          pixel = color;
         }
       }
     }
-
-    /// @see AnimationModelBase::updateModel()
-    void updateModel(uint32_t currentMillis) override
-    {
-      ++_hue;
-    }
-
-    uint8_t _hue = random(0xFF);
   };
 
 } // namespace EC

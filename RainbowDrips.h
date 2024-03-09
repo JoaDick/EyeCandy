@@ -39,35 +39,31 @@ namespace EC
       : public AnimationModelBase
   {
   public:
-    /// Determines how fast the color changes.
-    uint8_t hueSpeed;
-    static uint8_t hueSpeed_default() { return 35; }
+    /// Color source of the Animation.
+    ColorWheel color;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
-     * @param hueSpeed  How fast the color changes.
-     * @param startHue  Initial color.
      */
-    explicit RainbowDrips(FastLedStrip ledStrip,
-                          uint8_t hueSpeed = hueSpeed_default(),
-                          uint8_t startHue = random8())
+    explicit RainbowDrips(FastLedStrip ledStrip)
         : AnimationModelBase(100, ledStrip),
-         hueSpeed(hueSpeed), _baseHue(startHue)
+          color(1.0)
     {
       setPatternUpdatePeriod(40);
-      _baseHue *= _hueScaleFactor;
+      color.moreRed = false;
     }
 
   private:
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
+      color.update();
       strip.fadeToBlack(1);
       for (auto i = 0; i < _numDrips; ++i)
       {
         const int8_t jitter = beatsin8(5, 0, 16, 0, _dripPos[i]) - 8;
         const int16_t ledPos = _dripPos[i] + jitter;
-        strip.pixel(ledPos) = CHSV(_baseHue / _hueScaleFactor, 255, 255);
+        strip.pixel(ledPos) = color /*[float(ledPos) / strip.ledCount()]*/;
       }
       strip.blur(beatsin8(11, 100, 172));
     }
@@ -84,14 +80,11 @@ namespace EC
           _dripPos[i] = (p1 + p2) / 2;
         }
       }
-      _baseHue += hueSpeed;
     }
 
   private:
     static const uint8_t _effectRate = 10;
     static const uint8_t _numDrips = 4;
-    static const uint8_t _hueScaleFactor = 16;
-    uint16_t _baseHue;
     uint16_t _dripPos[_numDrips]{};
   };
 

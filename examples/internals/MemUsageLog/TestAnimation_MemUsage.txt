@@ -2,6 +2,39 @@ TestAnimation Memory usage log
 ==============================
 
 
+240309 New helper class ColorWheel
+
+Sketch uses 31438 bytes (97%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1001 bytes (48%) of dynamic memory, leaving 1047 bytes for local variables. Maximum is 2048 bytes.
+
+Memory usage for 90 LEDs:
+<*> is dependant on NUM_LEDS
+BgFadeToBlack = 15
+BgFillColor = 18
+BgMeteorFadeToBlack = 17
+BgRotate = 17
+Blur = 16
+BouncingBalls<> = 85
+Bubbles = 191
+Fire2012<*> = 162
+Fire2012Changer = 10
+Firework<> = 157
+FireworkParticle = 22
+FloatingBlobs = 219
+Glitter = 19
+Lavalamp = 136
+Kaleidoscope = 9
+Meteor = 41
+Pacifica = 158
+Pride2015 = 21
+Rainbow = 25
+RainbowBuiltin = 23
+RainbowDrips = 45
+RainbowTwinkle = 31
+RgbBlocks = 24
+Twinkles = 16
+Waterfall = 389
+WaterfallDroplet = 25
 
 
 Sketch uses 31070 bytes (96%) of program storage space. Maximum is 32256 bytes.

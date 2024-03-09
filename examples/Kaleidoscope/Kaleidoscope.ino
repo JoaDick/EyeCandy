@@ -48,7 +48,7 @@ EC::FastLedStrip workingStrip = mainStrip.getHalfStrip();
 // the background pattern (explicitly)
 EC::BgFadeToBlack background(workingStrip, false, 50);
 // the main animation (as overlay)
-EC::Meteor mainAnimation(workingStrip, true, CRGB::Red, 20, 0.05);
+EC::Meteor mainAnimation(workingStrip, true, 20, 0.05);
 // overlay for adding some glitter (in the lower part only)
 EC::Glitter glitterOverlay(workingStrip.getHalfStrip(), true);
 

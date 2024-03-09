@@ -25,8 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "Animation.h"
-#include "FastLedStrip.h"
+#include "AnimationBase.h"
 #include "VuPeakHandler.h"
 #include "VuSource.h"
 
@@ -75,17 +74,17 @@ namespace EC
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      if (wasModified)
+      if (!wasModified)
+        return;
+
+      if (vuPeakHandler.process(_vuSource.getVU(), currentMillis))
       {
-        if (vuPeakHandler.process(_vuSource.getVU(), currentMillis))
-        {
-          const float vuLevel = vuPeakHandler.getVU();
-          // let it overshoot a little bit so that it doesn't mess up with a peak dot
-          const float delta = (vuLevel - _lastVuLevel);
-          const float vuOvershoot = delta / 8.0;
-          _strip.n_pixel(vuLevel + vuOvershoot) = color;
-          _lastVuLevel = vuLevel;
-        }
+        const float vuLevel = vuPeakHandler.getVU();
+        // let it overshoot a little bit so that it doesn't mess up with a peak dot
+        const float delta = (vuLevel - _lastVuLevel);
+        const float vuOvershoot = delta / 8.0;
+        _strip.n_pixel(vuLevel + vuOvershoot) = color;
+        _lastVuLevel = vuLevel;
       }
     }
 

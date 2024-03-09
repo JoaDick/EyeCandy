@@ -224,8 +224,8 @@ void makeVuElements5(EC::AnimationScene &scene)
     auto vuPeakSource = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
 
     auto levelVu = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource, *vuPeakSource));
-    levelVu->volume = 64;
-    levelVu->vuHueRange = 0.75;
+    levelVu->color.volume = 64;
+    levelVu->color.hueRange = 0.75;
     auto peakVu = scene.append(new EC::VuOverlayDot(strip, *vuPeakSource, CRGB(0, 64, 0), 0.05));
 
     auto peakGlitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource));
@@ -391,8 +391,8 @@ void makeRainingVU(EC::AnimationScene &scene)
     auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
 
     auto levelVu = scene.append(new EC::VuOverlayRainbowDot(strip, *vuLevelSource));
-    levelVu->vuHueRange = 0.67;
-    levelVu->volume = 192;
+    levelVu->color.hueRange = 0.67;
+    levelVu->color.volume = 192;
 
     auto peakGlitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource));
     peakGlitter->vuPeakHandler.peakHold = 500;
@@ -426,8 +426,8 @@ void makeDraftVU_1(EC::AnimationScene &scene)
 
     // auto levelVu = scene.append(new EC::VuOverlayRainbowDot(workStrip, *vuLevelSource));
     auto levelVu = scene.append(new EC::VuOverlayRainbowStripe(workStrip, *vuLevelSource));
-    // levelVu->vuHueRange = 0.5;
-    levelVu->volume = 255;
+    // levelVu->color.hueRange = 0.5;
+    levelVu->color.volume = 255;
 
     scene.append(new EC::Kaleidoscope(strip));
 

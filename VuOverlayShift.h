@@ -46,16 +46,8 @@ namespace EC
      */
     static uint8_t fadeRate_default() { return 5; }
 
-    /** How fast the initial hue changes over time.
-     * This setting can be adjusted at runtime.
-     */
-    float baseHueStep = -0.05;
-
-    /** How much the hue varies depending on the VU level.
-     * This setting can be adjusted at runtime. \n
-     * 1.0 means one full color wheel cycle between 0.0 ... 1.0 VU level.
-     */
-    float vuHueRange = 0.67;
+    /// Color source of the VU.
+    ColorWheel color;
 
     /// Usually there's nothing to configure here; mainly for debugging.
     VuPeakHandler vuPeakHandler;
@@ -67,10 +59,11 @@ namespace EC
     VuOverlayShift(FastLedStrip ledStrip,
                    VuSource &vuSource)
         : AnimationModelBase(10, ledStrip, true),
-          _vuSource(vuSource)
+          color(1.0, 0.67), _vuSource(vuSource)
     {
       vuPeakHandler.peakHold = 500;
       vuPeakHandler.peakDecay = 500;
+      color.volume = 128;
     }
 
     VuSource &getVuSource() { return _vuSource; }
@@ -79,56 +72,44 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
+      color.update();
+
       const float vuLevel = constrainVU(_vuSource.getVU());
 
       const bool isPeak = vuPeakHandler.process(vuLevel, currentMillis);
       const float vuPeakLevel = constrainVU(vuPeakHandler.getVU());
 
-      uint8_t hue = _startHue;
-      hue = _startHue + vuLevel * vuHueRange * 255;
-      // hue = _startHue + vuPeakLevel * vuHueRange * 255;
+      color.saturation = 255;
+      // color.saturation = vuLevel * 255;
 
-      uint8_t sat = 255;
-      // sat = vuLevel * 255;
+      color.volume = 128;
+      // color.volume = vuLevel * 255;
+      // color.volume = vuPeakLevel * 255;
 
-      uint8_t vol = 128;
-      // vol = vuLevel * 255;
-      // vol = vuPeakLevel * 255;
-
-      CRGB color = CHSV(hue, sat, vol);
+      CRGB col = color;
       if (isPeak)
       {
-        color = CRGB(96, 96, 96);
+        col = CRGB(96, 96, 96);
       }
       else
       {
-        // color = CRGB::Black;
+        // col = CRGB::Black;
       }
-      // strip.shiftUp(color);
+      // strip.shiftUp(col);
       // strip.shiftUp(CRGB::Black);
       strip.shiftDown(CRGB::Black);
-      strip.n_pixel(vuLevel) = color;
-      // strip.n_lineAbs(0.0, vuLevel, color);
+      strip.n_pixel(vuLevel) = col;
+      // strip.n_lineAbs(0.0, vuLevel, col);
     }
 
     /// @see AnimationBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
-      _startHue += baseHueStep;
-      while (_startHue > 255.0)
-      {
-        _startHue -= 255.0;
-      }
-      while (_startHue < 0.0)
-      {
-        _startHue += 255.0;
-      }
     }
 
   private:
     VuSource &_vuSource;
     // float _lastVuLevel = 0.0;
-    float _startHue = (millis() + 128) & 0xFF;
   };
 
 } // namespace EC

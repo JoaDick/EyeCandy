@@ -83,7 +83,7 @@ void setup()
 
     // set up Animations
     rainbow.volume = 100;
-    movingDotOverlay.color = CRGB::SteelBlue;
+    // movingDotOverlay.color = CRGB::SteelBlue;
     movingDotOverlay.bpm = 15;
     movingDotOverlay.overshoot = 0.0;
 
@@ -127,8 +127,6 @@ void updateColor()
 
         rainbow.volume = hue;
         rgbBlocks.blockSize = hue / 10;
-
-        movingDotOverlay.color = CHSV(hue + 64, 255, 255);
     }
 }
 
@@ -146,7 +144,7 @@ void updateSpeed()
         rainbow.setModelUpdatePeriod(modelUpdatePeriod);
         rgbBlocks.setModelUpdatePeriod(8 * modelUpdatePeriod);
 
-        movingDotOverlay.setModelUpdatePeriod(2 * modelUpdatePeriod);
+        // movingDotOverlay.setModelUpdatePeriod(2 * modelUpdatePeriod);
     }
 }
 

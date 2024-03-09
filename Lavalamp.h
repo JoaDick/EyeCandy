@@ -47,28 +47,25 @@ namespace EC
   {
   public:
     /// Determines how fast the color changes.
-    uint8_t colorBPM;
-    static uint8_t colorBPM_default() { return 1; }
-
-    /** Brightness of the Lavalamp.
-     * This setting can be adjusted at runtime.
-     */
-    uint8_t volume = 192;
+    static float colorBPM_default() { return 0.5; }
 
     // /// Animation speed.
     // float speed = 4.0;
 
+    /// Color source of the Animation.
+    ColorWheel color;
+
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param colorBPM  How fast the color changes.
-     * @param startHue  Initial color.
      */
     explicit Lavalamp(FastLedStrip ledStrip,
-                      uint8_t colorBPM = colorBPM_default(),
-                      uint8_t startHue = random8())
+                      float colorBPM = colorBPM_default())
         : PatternBase(ledStrip),
-          colorBPM(colorBPM), _startHue(startHue)
+          color(colorBPM)
     {
+      color.moreRed = false;
+      color.volume = 192;
     }
 
   private:
@@ -80,11 +77,10 @@ namespace EC
 #else
       strip.fadeToBlack(50);
 #endif
+      color.update();
       _ceiling.process();
       _floor.process();
 
-      const uint8_t hue = _startHue + beat8(colorBPM);
-      const CRGB color = CHSV(hue, 255, volume);
       for (auto i = 0; i < _numBlobs; ++i)
       {
         auto &theBlob = _blobs[i];
@@ -386,7 +382,6 @@ namespace EC
 #else
     static const uint8_t _numBlobs = 5;
 #endif
-    const uint8_t _startHue;
     LavaBlob _blobs[_numBlobs];
     LavaCeiling _ceiling;
     LavaFloor _floor;

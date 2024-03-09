@@ -25,8 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "Animation.h"
-#include "FastLedStrip.h"
+#include "AnimationBase.h"
 #include "VuLevelHandler.h"
 #include "VuRangeExtender.h"
 #include "VuSource.h"
