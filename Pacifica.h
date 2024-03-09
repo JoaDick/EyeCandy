@@ -40,20 +40,19 @@ namespace EC
    * https://github.com/FastLED/FastLED/blob/master/examples/Pacifica/Pacifica.ino
    */
   class Pacifica
-      : public AnimationBase
+      : public PatternBase
   {
   public:
     /** Constructor
      * @param ledStrip  The LED strip.
      */
     explicit Pacifica(FastLedStrip ledStrip)
-        : AnimationBase(ledStrip)
+        : PatternBase(ledStrip, 20)
     {
-      setPatternUpdatePeriod(20);
     }
 
   private:
-    /// @see AnimationBase::showPattern()
+    /// @see PatternBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
       pacifica_loop(currentMillis);

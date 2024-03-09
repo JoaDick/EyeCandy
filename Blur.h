@@ -40,20 +40,20 @@ namespace EC
    * https://github.com/atuline/FastLED-Demos/blob/master/blur/blur.ino
    */
   class Blur
-      : public AnimationBase
+      : public PatternBase
   {
   public:
     /** Constructor
      * @param ledStrip  The LED strip.
      */
     Blur(FastLedStrip ledStrip)
-        : AnimationBase(ledStrip),
+        : PatternBase(ledStrip),
           NUM_LEDS(strip.ledCount())
     {
     }
 
   private:
-    /// @see AnimationBase::showPattern()
+    /// @see PatternBase::showPattern()
     void showPattern(uint32_t ms) override
     {
       uint8_t blurAmount = dim8_raw(beatsin8(3, 64, 192)); // A sinewave at 3 BPS with values ranging from 64 to 192.

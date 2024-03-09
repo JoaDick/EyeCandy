@@ -41,7 +41,7 @@ namespace EC
    * https://github.com/FastLED/FastLED/blob/master/examples/Pride2015/Pride2015.ino
    */
   class Pride2015
-      : public AnimationBase
+      : public PatternBase
   {
     uint16_t sPseudotime = 0;
     uint16_t sLastMillis = 0;
@@ -57,12 +57,12 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit Pride2015(FastLedStrip ledStrip)
-        : AnimationBase(ledStrip)
+        : PatternBase(ledStrip)
     {
     }
 
   private:
-    /// @see AnimationBase::showPattern()
+    /// @see PatternBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
       uint8_t sat8 = beatsin88(87, 220, 250);

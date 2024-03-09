@@ -36,7 +36,7 @@ namespace EC
   /** Coloured Blobs floating around.
    */
   class FloatingBlobs
-      : public AnimationBase
+      : public PatternBase
   {
     FloatingBlobController<5> blobs;
 
@@ -45,13 +45,12 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit FloatingBlobs(FastLedStrip ledStrip)
-        : AnimationBase(ledStrip)
+        : PatternBase(ledStrip, 10)
     {
-      setPatternUpdatePeriod(10);
     }
 
   private:
-    /// @see AnimationBase::showPattern()
+    /// @see PatternBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
       blobs.process(strip);

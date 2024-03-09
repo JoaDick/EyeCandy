@@ -33,6 +33,71 @@ SOFTWARE.
 namespace EC
 {
 
+  //------------------------------------------------------------------------------
+
+  /// Generic base class for simple Patterns.
+  class PatternBase
+      : public Animation
+  {
+  public:
+    /** Get the pause (in ms) between updates of the LED strip's Pattern.
+     * It reflects how frequent showPattern() is getting called. \n
+     * 0 means Overlay mode; Pattern updates are \e not triggered. \n
+     * @note By default, EC_DEFAULT_UPDATE_PERIOD is used - unless the Animation implementation
+     * configures a differnt value.
+     */
+    uint16_t getPatternUpdatePeriod() { return _patternUpdateTimer.updatePeriod; }
+
+    /// Only for debugging.
+    FastLedStrip getStrip() { return strip; }
+
+  protected:
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     * @param patternUpdatePeriod  Period (in ms) for calling showPattern().
+     *                             Change this only if you have an urgent reason for a different
+     *                             update rate than EC_DEFAULT_UPDATE_PERIOD.
+     */
+    explicit PatternBase(FastLedStrip ledStrip,
+                         uint8_t patternUpdatePeriod = EC_DEFAULT_UPDATE_PERIOD)
+        : _patternUpdateTimer(patternUpdatePeriod), strip(ledStrip)
+    {
+    }
+
+    /// The LED strip for child classes to draw their Animation.
+    FastLedStrip strip;
+
+    /** Render the Animation's Pattern content.
+     * This method must be implemented by all child classes.
+     * @param currentMillis  Current time, i.e. the returnvalue of millis().
+     */
+    virtual void showPattern(uint32_t currentMillis) = 0;
+
+    /** Adjust the Pattern's update rate.
+     * @param period  Period (in ms) for calling showPattern().
+     * @note Think twice if you really have an urgent reason for a different update rate than
+     * EC_DEFAULT_UPDATE_PERIOD. \n
+     * Consider using AnimationModelBase instead for manipulating the Animation's speed.
+     */
+    void setPatternUpdatePeriod(uint8_t period) { _patternUpdateTimer.updatePeriod = period; }
+
+  protected:
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      if (_patternUpdateTimer.process(currentMillis))
+      {
+        wasModified = true;
+        showPattern(currentMillis);
+      }
+    }
+
+  private:
+    AnimationTimer _patternUpdateTimer;
+  };
+
+  //------------------------------------------------------------------------------
+
   /** Universal base class for most Animations.
    * This base class provides support for...
    * - custom Patterns that update the entire LED strip at a fixed rate: showPattern()
@@ -47,7 +112,7 @@ namespace EC
    * the strip, and not only selected ones like most Overlays do.
    */
   class AnimationBase
-      : public Animation
+      : public PatternBase
   {
   public:
     /** Fading speed.
@@ -59,17 +124,6 @@ namespace EC
      */
     uint8_t fadeRate;
 
-    /** Get the pause (in ms) between updates of the LED strip's Pattern.
-     * It reflects how frequent showPattern() is getting called. \n
-     * 0 means Overlay mode; Pattern updates are \e not triggered. \n
-     * @note By default, EC_DEFAULT_UPDATE_PERIOD is used - unless the Animation implementation
-     * configures a differnt value.
-     */
-    uint16_t getPatternUpdatePeriod() { return _patternUpdateTimer.updatePeriod; }
-
-    /// Only for debugging.
-    FastLedStrip getStrip() { return strip; }
-
   protected:
     /** Constructor for Animations that can be used as both, Pattern or Overlay.
      * @param ledStrip  The LED strip.
@@ -80,14 +134,10 @@ namespace EC
     explicit AnimationBase(FastLedStrip ledStrip,
                            bool overlayMode = false,
                            uint8_t fadeRate = 0)
-        : fadeRate(fadeRate),
-          _patternUpdateTimer(overlayMode ? 0 : EC_DEFAULT_UPDATE_PERIOD),
-          strip(ledStrip)
+        : PatternBase(ledStrip, overlayMode ? 0 : EC_DEFAULT_UPDATE_PERIOD),
+          fadeRate(fadeRate)
     {
     }
-
-    /// The LED strip for child classes to draw their Animation.
-    FastLedStrip strip;
 
     /** Render the Animation's Pattern content.
      * This method must only be implemented by child classes that provide a custom Pattern
@@ -110,32 +160,16 @@ namespace EC
     {
     }
 
-    /** Adjust the Pattern's update rate.
-     * @param period  Period (in ms) for calling showPattern().
-     * @note Think twice if you really have an urgent reason for a different update rate than
-     * EC_DEFAULT_UPDATE_PERIOD. \n
-     * Consider using AnimationModelBase instead for manipulating the Animation's speed.
-     */
-    void setPatternUpdatePeriod(uint8_t period) { _patternUpdateTimer.updatePeriod = period; }
-
   protected:
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      if (_patternUpdateTimer.process(currentMillis))
-      {
-        wasModified = true;
-        showPattern(currentMillis);
-      }
-
+      PatternBase::processAnimation(currentMillis, wasModified);
       if (wasModified)
       {
         showOverlay(currentMillis);
       }
     }
-
-  private:
-    AnimationTimer _patternUpdateTimer;
   };
 
   //------------------------------------------------------------------------------

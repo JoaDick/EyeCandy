@@ -43,7 +43,7 @@ namespace EC
    * With Bubbles moving calmingly up and down the LED strip.
    */
   class Lavalamp
-      : public AnimationBase
+      : public PatternBase
   {
   public:
     /// Determines how fast the color changes.
@@ -66,13 +66,13 @@ namespace EC
     explicit Lavalamp(FastLedStrip ledStrip,
                       uint8_t colorBPM = colorBPM_default(),
                       uint8_t startHue = random8())
-        : AnimationBase(ledStrip),
+        : PatternBase(ledStrip),
           colorBPM(colorBPM), _startHue(startHue)
     {
     }
 
   private:
-    /// @see AnimationBase::showPattern()
+    /// @see PatternBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
 #if (EC_LAVALAMP_DEBUG)

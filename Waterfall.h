@@ -37,7 +37,7 @@ namespace EC
 
   /// A Waterfall Animation.
   class Waterfall
-      : public AnimationBase
+      : public PatternBase
   {
 #ifdef WATERFALL_DEBUG
     static const uint8_t DROPLET_COUNT = 1;
@@ -50,12 +50,12 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit Waterfall(FastLedStrip ledStrip)
-        : AnimationBase(ledStrip)
+        : PatternBase(ledStrip)
     {
     }
 
   private:
-    /// @see AnimationBase::showPattern()
+    /// @see PatternBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
       fadeLightBy(strip.ledArray(), strip.ledCount(), 25);

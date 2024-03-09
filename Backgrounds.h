@@ -203,24 +203,23 @@ namespace EC
       : public AnimationBase
   {
   public:
-    /** Rotating direction.
-     * - \c true From begin to end
-     * - \c false From end to begin
+    /** Rotating distance & direction.
+     * Posive values of \a distance rotate upward (from begin to end), negative values rotate
+     * downward (from end to begin).
      */
-    bool rotateUp;
+    int16_t distance;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to \c true when the Animation shall be an Overlay.
-     * @param rotateUp  Rotating direction:
-     *                  - \c true From begin to end
-     *                  - \c false From end to begin
+     * @param distance  Rotating distance & direction: posive values rotate upward (from begin to
+     *                  end), negative values rotate downward (from end to begin).
      */
     BgRotate(FastLedStrip ledStrip,
              bool overlayMode,
-             bool rotateUp = false)
+             int16_t distance = -1)
         : AnimationBase(ledStrip, overlayMode),
-          rotateUp(rotateUp)
+          distance(distance)
     {
     }
 
@@ -229,15 +228,14 @@ namespace EC
      * than EC_DEFAULT_UPDATE_PERIOD.
      * @param patternUpdatePeriod  Period (in ms) for calling showPattern().
      * @param ledStrip  The LED strip.
-     * @param rotateUp  Rotating direction:
-     *                  - \c true From begin to end
-     *                  - \c false From end to begin
+     * @param distance  Rotating distance & direction: posive values rotate upward (from begin to
+     *                  end), negative values rotate downward (from end to begin).
      */
     BgRotate(uint8_t patternUpdatePeriod,
              FastLedStrip ledStrip,
-             bool rotateUp = false)
+             int16_t distance = -1)
         : AnimationBase(ledStrip),
-          rotateUp(rotateUp)
+          distance(distance)
     {
       setPatternUpdatePeriod(patternUpdatePeriod);
     }
@@ -252,7 +250,7 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      strip.shift(rotateUp);
+      strip.shift(distance);
     }
   };
 
