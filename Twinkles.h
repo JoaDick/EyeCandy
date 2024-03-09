@@ -73,8 +73,8 @@ namespace EC
         auto &pixel = strip[i];
         if (pixel.getLuma() < 3)
         {
-          pixel = CHSV(redShift(random(256)), 255, random(64) + 192);
-          // pixel = CHSV(redShift(random(256)), random(112) + 144, random(64) + 192);
+          // pixel = CHSV(redShift(random(256)), 255, random(64) + 192);
+          pixel = CHSV(redShift(random(256)), random(112) + 144, random(64) + 192);
         }
       }
     }

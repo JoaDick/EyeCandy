@@ -6,7 +6,7 @@ Many many Animations!
 
 MIT License
 
-Copyright (c) 2020 Joachim Dick
+Copyright (c) 2024 Joachim Dick
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -245,26 +245,26 @@ void makeWaterfall(EC::AnimationScene &scene)
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
-    // &makeTwinkles,
-    // &makeRainbowBuiltin,
-    // &makeRainbow,
-    &makeFloatingBlobs,
-    &makeMeteorGlitter,
-    // &makeRainbowTwinkle,
-    // &makeBlur,
-    // &makePride,
-    // &makePrideMirror,
-    &makeRainbowDrips,
-    // &makePacifica,
-    // &makeBubbles,
-    &makeWaterfall,
-    &makeLavalamp,
-    // &makeBalls,
-    // &makeFire,
-    // &makeFireAndBalls,
-    // &makeFlare,
-    &makeFireworks,
-    // &makeRgbBlocks,
+    &makeTwinkles,
+    &makeRainbowBuiltin,
+    &makeRainbow,
+    // &makeFloatingBlobs,
+    // &makeMeteorGlitter,
+    &makeRainbowTwinkle,
+    &makeBlur,
+    &makePride,
+    &makePrideMirror,
+    // &makeRainbowDrips,
+    &makePacifica,
+    &makeBubbles,
+    // &makeWaterfall,
+    // &makeLavalamp,
+    &makeBalls,
+    &makeFire,
+    &makeFireAndBalls,
+    &makeFlare,
+    // &makeFireworks,
+    &makeRgbBlocks,
     nullptr};
 
 #if (0)

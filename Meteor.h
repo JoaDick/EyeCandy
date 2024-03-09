@@ -60,15 +60,14 @@ namespace EC
     uint8_t fadeBy = 96;
 
     /// Chance of fading: 0 = never, 255 = always.
-    uint8_t fadeChance = 32;
+    uint8_t fadeChance = 24;
 
-    // // TODO - see VuOverlayDot
-    // /** Size of the dot (as fraction of the entire strip).
-    //  * This setting can be adjusted at runtime.
-    //  * Choose small values, like e.g. 0.03 for 3% of the strip. \n
-    //  * 0.0 means exactly 1 pixel.
-    //  */
-    // float size;
+    /** Size of the meteor (as fraction of the entire strip).
+     * This setting can be adjusted at runtime.
+     * Choose small values, like e.g. 0.03 for 3% of the strip. \n
+     * 0.0 means exactly 1 pixel.
+     */
+    float size = 0.05;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
@@ -78,8 +77,8 @@ namespace EC
      */
     explicit Meteor(FastLedStrip ledStrip,
                     bool overlayMode,
-                    float bpm = 10.0,
-                    float overshoot = 0.15)
+                    float bpm = 8.0,
+                    float overshoot = 0.2)
         : AnimationBase(ledStrip, overlayMode, 0),
           bpm(bpm), overshoot(overshoot)
     {
@@ -100,7 +99,14 @@ namespace EC
     {
       color.update();
       const float pos = beatsinF(bpm, 0.0 - overshoot, 1.0 + overshoot);
-      strip.n_pixel(pos) = color;
+      if (size > 0.0)
+      {
+        strip.n_lineCentered(pos, size, color);
+      }
+      else
+      {
+        strip.n_pixel(pos) = color;
+      }
     }
   };
 
