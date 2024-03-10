@@ -241,8 +241,19 @@ void makeWaterfall(EC::AnimationScene &scene)
 
 //------------------------------------------------------------------------------
 
+void makeTestAnimation(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::AnimationTemplate(strip, false));
+    // autoMode = false;
+}
+
+//------------------------------------------------------------------------------
+
 EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeRgbBlocks,
+    &makeTestAnimation,
 
     // &makeTwinkles,
     // &makeRainbowBuiltin,

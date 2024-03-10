@@ -31,6 +31,8 @@ SOFTWARE.
 #include "Backgrounds.h"
 #include "ColorChanger.h"
 
+//------------------------------------------------------------------------------
+
 // Pattern
 #include "BallLightning.h"
 #include "Blur.h"
@@ -54,11 +56,16 @@ SOFTWARE.
 #include "Twinkles.h"
 #include "Waterfall.h"
 
+//------------------------------------------------------------------------------
+
 // VU
 #include "Fire2012VU.h"
 #include "VuBlueprints.h"
 #include "VuSourceAnalogPin.h"
 
-// Testing / Debugging
-#include "VuTools.h"
-#include "TestVU1.h"
+//------------------------------------------------------------------------------
+
+// Experimental / debugging / testing stuff
+#include "experimental/experimental.h"
+
+//------------------------------------------------------------------------------
