@@ -42,7 +42,7 @@ namespace EC
    * - extract class: BallLightningEngine{strip} -> showAnimation(millis, color)
    */
   class BallLightning
-      : public AnimationBase
+      : public PatternBase
   {
   public:
     /// Draw the lightning ball with this color.
@@ -72,12 +72,12 @@ namespace EC
     explicit BallLightning(FastLedStrip ledStrip,
                            CRGB color = CRGB::MediumVioletRed,
                            float bpm = 12.0)
-        : AnimationBase(ledStrip, false), color(color), bpm(bpm)
+        : PatternBase(ledStrip), color(color), bpm(bpm)
     {
     }
 
   private:
-    /// @see AnimationBase::showPattern()
+    /// @see PatternBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
       // randomly dim current strip content

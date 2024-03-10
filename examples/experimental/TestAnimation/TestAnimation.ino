@@ -88,7 +88,10 @@ void makeBallLightning(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    scene.append(new EC::BallLightning(strip));
+    auto animation = scene.append(new EC::BallLightning(strip));
+    auto colorChanger = scene.append(new EC::ColorChangerNoiseRGB(animation->color));
+    colorChanger->colorSource.presetTwitchy();
+    // colorChanger->colorSource.presetSmooth();
     scene.append(new EC::Glitter(strip, true, CRGB(224, 192, 112), 10));
     // autoMode = false;
 }
@@ -171,7 +174,9 @@ void makeMeteorGlitter(EC::AnimationScene &scene)
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
     scene.append(new EC::Meteor(strip, false));
-    scene.append(new EC::Glitter(strip, true, CRGB(255, 224, 80), 15));
+    auto glitter = scene.append(new EC::Glitter(strip, true, CRGB(255, 224, 80), 15));
+    // glitter->effectRate = 10;
+    // scene.append(new EC::ColorChangerRainbow(glitter->color, 2.0, 0, 112, 160));
     // autoMode = false;
 }
 
@@ -215,7 +220,8 @@ void makeRainbowTwinkle(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    scene.append(new EC::RainbowTwinkle(strip));
+    auto rainbow = scene.append(new EC::RainbowTwinkle(strip));
+    // rainbow->color.bpm = 10.0;
 }
 
 void makeRgbBlocks(EC::AnimationScene &scene)
@@ -241,19 +247,48 @@ void makeWaterfall(EC::AnimationScene &scene)
 
 //------------------------------------------------------------------------------
 
+void makeVisualizeRainbow(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto animation = scene.append(new EC::VisualizeRGB(strip, false));
+    auto changer = scene.append(new EC::ColorChangerRainbow(animation->color, 6.0));
+    changer->colorSource.moreRed = false;
+    // autoMode = false;
+}
+
+//------------------------------------------------------------------------------
+
+void makeAnimationTemplate(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto animation = scene.append(new EC::AnimationTemplate(strip, false));
+    // autoMode = false;
+}
+
+//------------------------------------------------------------------------------
+
 void makeTestAnimation(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    scene.append(new EC::AnimationTemplate(strip, false));
+    auto animation = scene.append(new EC::VisualizeRGB(strip, false));
+    // auto colorChanger = scene.append(new EC::ColorChangerRainbow(animation->color, 6.0));
+    // auto colorChanger = scene.append(new EC::ColorChangerSineRGB(animation->color, true));
+    auto colorChanger = scene.append(new EC::ColorChangerNoiseRGB(animation->color));
+    // colorChanger->colorSource.presetSmooth();
+    // colorChanger->colorSource.presetTwitchy();
+
     // autoMode = false;
 }
 
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
-    // &makeRgbBlocks,
-    &makeTestAnimation,
+    // &makeVisualizeRainbow,
+    // &makeAnimationTemplate,
+    // &makeTestAnimation,
 
     // &makeTwinkles,
     // &makeRainbowBuiltin,
@@ -273,6 +308,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeFire,
     // &makeFlare,
     &makeFireworks,
+    // &makeRgbBlocks,
     nullptr};
 
 #if (0)

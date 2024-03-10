@@ -382,4 +382,11 @@ namespace EC
     }
   }
 
+  //------------------------------------------------------------------------------
+
+  /** Visualize the RGB portions of the given \a color at the beginning of the strip.
+   * Only for debugging / experimenting.
+   */
+  void dumpRGB(FastLedStrip &strip, CRGB color, uint8_t size = 2, int16_t startIndex = -1);
+
 } // namespace EC

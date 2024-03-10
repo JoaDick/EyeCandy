@@ -266,4 +266,19 @@ namespace EC
     *firstLed = newColor;
   }
 
+  //------------------------------------------------------------------------------
+
+  void dumpRGB(FastLedStrip &strip, CRGB color, uint8_t size, int16_t startIndex)
+  {
+    strip.lineRel(startIndex, 1 + 4 * (size + 1), CRGB::Black);
+    startIndex++;
+    strip.lineRel(startIndex, size, color);
+    startIndex += (size + 1);
+    strip.lineRel(startIndex, size, CRGB(color.r, 0, 0));
+    startIndex += (size + 1);
+    strip.lineRel(startIndex, size, CRGB(0, color.g, 0));
+    startIndex += (size + 1);
+    strip.lineRel(startIndex, size, CRGB(0, 0, color.b));
+  }
+
 } // namespace EC
