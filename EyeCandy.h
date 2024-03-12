@@ -38,6 +38,7 @@ SOFTWARE.
 #include "Blur.h"
 #include "BouncingBalls.h"
 #include "Bubbles.h"
+#include "ColorClouds.h"
 #include "Fire2012.h"
 #include "Fire2012Changer.h"
 #include "Firework.h"

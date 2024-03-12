@@ -120,6 +120,14 @@ void makeBubbles(EC::AnimationScene &scene)
     scene.append(new EC::Bubbles(strip, true));
 }
 
+void makeColorClouds(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto animation = scene.append(new EC::ColorClouds(strip));
+    // autoMode = false;
+}
+
 void makeFire(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -273,14 +281,9 @@ void makeTestAnimation(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto animation = scene.append(new EC::VisualizeRGB(strip, false));
-    // auto colorChanger = scene.append(new EC::ColorChangerRainbow(animation->color, 6.0));
-    // auto colorChanger = scene.append(new EC::ColorChangerSineRGB(animation->color, true));
-    auto colorChanger = scene.append(new EC::ColorChangerNoiseRGB(animation->color));
-    // colorChanger->colorSource.presetSmooth();
-    // colorChanger->colorSource.presetTwitchy();
+    auto animation = scene.append(new EC::ColorClouds(strip));
 
-    // autoMode = false;
+    autoMode = false;
 }
 
 //------------------------------------------------------------------------------
@@ -290,6 +293,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeAnimationTemplate,
     // &makeTestAnimation,
 
+    &makeColorClouds,
     // &makeTwinkles,
     // &makeRainbowBuiltin,
     // &makeRainbow,

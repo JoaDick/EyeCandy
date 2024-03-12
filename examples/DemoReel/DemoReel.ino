@@ -111,6 +111,14 @@ void makeBubbles(EC::AnimationScene &scene)
     scene.append(new EC::Bubbles(strip, true));
 }
 
+void makeColorClouds(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto animation = scene.append(new EC::ColorClouds(strip));
+    // autoMode = false;
+}
+
 void makeFire(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -262,6 +270,7 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeTwinkles,
     // &makeRainbowBuiltin,
     // &makeRainbow,
+    &makeColorClouds,
     &makeFloatingBlobs,
     &makeMeteorGlitter,
     &makeBallLightning,
