@@ -169,6 +169,14 @@ void makeFloatingBlobs(EC::AnimationScene &scene)
     // autoMode = false;
 }
 
+void makeKITT(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto animation = scene.append(new EC::KITT(strip));
+    // autoMode = false;
+}
+
 void makeLavalamp(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -281,7 +289,7 @@ void makeTestAnimation(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto animation = scene.append(new EC::ColorClouds(strip));
+    auto animation = scene.append(new EC::LightbulbTest(strip));
 
     autoMode = false;
 }
@@ -291,7 +299,8 @@ void makeTestAnimation(EC::AnimationScene &scene)
 EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeVisualizeRainbow,
     // &makeAnimationTemplate,
-    // &makeTestAnimation,
+    &makeTestAnimation,
+    &makeKITT,
 
     &makeColorClouds,
     // &makeTwinkles,

@@ -181,6 +181,12 @@ namespace EC
       n_lineRel(centerPos - (length / 2), length, color);
     }
 
+    /// Make the entire strip black.
+    void clear()
+    {
+      fill(CRGB::Black);
+    }
+
     /// Fill the entire strip with the given \a color.
     void fill(CRGB color)
     {
@@ -204,11 +210,14 @@ namespace EC
      *                   64 = moderate spreading
      *                  172 = maximum smooth, even spreading
      *             173..255 = wider spreading, but increasing flicker
+     * @param blurCycles  How often to apply blur effect.
      */
-    // TODO: parameter uint8_t blurCycles = 1
-    void blur(uint8_t blurAmount)
+    void blur(uint8_t blurAmount, uint8_t blurCycles = 1)
     {
-      blur1d(m_ledArray, getSize(), blurAmount);
+      while (blurCycles--)
+      {
+        blur1d(m_ledArray, getSize(), blurAmount);
+      }
     }
 
     /// Shift the LED strip from begin to end, and set the first pixel to \a color.

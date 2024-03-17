@@ -434,9 +434,22 @@ void makeDraftVU_1(EC::AnimationScene &scene)
     autoMode = false;
 }
 
+void makeLightbulbVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::TriggerPattern());
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    auto levelVu = scene.append(new EC::LightbulbVU(strip, *vuLevelSource));
+
+    autoMode = false;
+}
+
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
+    // &makeRawAudioVU,
+    &makeLightbulbVU,
     &makeDraftVU,
     &makeRainingVU,
     // &makeDraftVU_1,
@@ -444,7 +457,6 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeRangeExtenderInternals,
     // &makeRangeExtenderComparison,
 
-    // &makeRawAudioVU,
     &makeVuElements1,
     &makeVuElements2,
     &makeVuElements3,
