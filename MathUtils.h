@@ -132,6 +132,17 @@ namespace EC
       return avgValue;
     }
 
+    /// Enable implicit conversion to float.
+    operator float() { return get(); }
+
+    /// Enable assignment for overriding.
+    MovingAverage &operator=(float newAvgValue)
+    {
+      override(newAvgValue);
+      return *this;
+    }
+
+  private:
     /// Current average value.
     float avgValue;
   };

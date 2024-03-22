@@ -58,12 +58,12 @@ namespace EC
      * Change that value only with care; the default is fine for 10 bit ADCs
      * like in the Arduino.
      */
-    float noiseFloor_dB = -28.5;
+    float noiseFloor_dB = -30.0;
 
     /** Constructor.
      * @param sampleCount  Number of audio samples to integrate for calculating the VU level.
      */
-    explicit VuLevelHandler(uint16_t sampleCount = 100)
+    explicit VuLevelHandler(uint16_t sampleCount = 50)
         : _squareAvg(sampleCount)
     {
     }

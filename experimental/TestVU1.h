@@ -92,9 +92,10 @@ namespace EC
     void showOverlay(uint32_t currentMillis) override
     {
       const float rawVuLevel = vuLevelHandler.capture();
-      vuLevel = vuRangeExtender.process(rawVuLevel);
+      const float extVuLevel = vuRangeExtender.process(rawVuLevel);
 
-      vuLevel = vuRangeExtender.process(vuLevelHandler.capture());
+      vuLevel = extVuLevel;
+
       vuPeakHandler.process(vuLevel, currentMillis);
       vuDipHandler.process(vuLevel, currentMillis);
       vuPeakGravityHandler.process(vuLevel, currentMillis);

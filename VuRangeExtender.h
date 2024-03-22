@@ -68,7 +68,7 @@ namespace EC
      * return values greater than 1.0!
      * @see VuSource::getVU()
      */
-    float getVU() override { return _newVuLevel; }
+    float getVU() override { return _scaledVuLevel; }
 
     /** Process VU level adjustment on the given \a vuLevel.
      * Calculates an adjusted VU level which utilizes the entire LED strip.
@@ -80,12 +80,14 @@ namespace EC
 #if (EC_ENABLE_VU_RANGE_EXTENDER_BYPASS)
       if (bypass)
       {
-        _newVuLevel = vuLevel;
-        return _newVuLevel;
+        _scaledVuLevel = vuLevel;
+        return _scaledVuLevel;
       }
 #endif
 
+      // get average VU level
       const float thisVuLevelAvg = vuLevelAvg.process(vuLevel);
+      // calculate positive + negative deviation from average VU level
       const float delta = vuLevel - thisVuLevelAvg;
       if (delta > 0)
       {
@@ -96,44 +98,60 @@ namespace EC
         negDeltaAvg.process(delta);
       }
 
-      rangeMax = constrainVU(thisVuLevelAvg + 3.0 * posDeltaAvg.get());
+      // extrapolate dynamic range from average deviation
+      rangeMax.process(thisVuLevelAvg + posScaleFactor * posDeltaAvg);
+      rangeMin.process(thisVuLevelAvg + negScaleFactor * negDeltaAvg);
+
+      // override calculated dynamic range if real VU level is larger
       if (vuLevel > rangeMax)
       {
-        posDeltaAvg.override((vuLevel - thisVuLevelAvg) / 3.0);
         rangeMax = vuLevel;
       }
-
-      rangeMin = constrainVU(thisVuLevelAvg + 4.5 * negDeltaAvg.get());
       if (vuLevel < rangeMin)
       {
-        negDeltaAvg.override((vuLevel - thisVuLevelAvg) / 4.5);
         rangeMin = vuLevel;
+      }
+
+      // constrain dynamic range
+      if (rangeMax > 1.0)
+      {
+        rangeMax = 1.0;
+      }
+      if (rangeMin < 0.0)
+      {
+        rangeMin = 0.0;
       }
 
       const float dynamicRange = rangeMax - rangeMin;
       const float scaleFactor = 1.0 / dynamicRange;
       const float offset = rangeMin;
-      _newVuLevel = (vuLevel - offset) * scaleFactor;
-      return _newVuLevel;
+      _scaledVuLevel = (vuLevel - offset) * scaleFactor;
+      return _scaledVuLevel;
     }
 
-    /// Average input VU level. Only for debugging; don't modify!
-    MovingAverage vuLevelAvg{400, 0.33};
+    /// Maximum VU value of the dynamic range. Only for debugging; don't modify.
+    MovingAverage rangeMax{300, 0.8};
 
-    /// Average positive deviation from average input VU level. Only for debugging; don't modify!
-    MovingAverage posDeltaAvg{200, 0.1};
+    /// Scale factor from posDeltaAvg to rangeMax. Only for debugging; don't modify.
+    float posScaleFactor = 2.5;
 
-    /// Average negativedeviation from average input VU level. Only for debugging; don't modify!
+    /// Average positive deviation from average input VU level. Only for debugging; don't modify.
+    MovingAverage posDeltaAvg{100};
+
+    /// Average input VU level. Only for debugging; don't modify.
+    MovingAverage vuLevelAvg{200, 0.4};
+
+    /// Average negative deviation from average input VU level. Only for debugging; don't modify
     MovingAverage negDeltaAvg{posDeltaAvg.avgLength};
 
-    /// Only for debugging; don't modify!
-    float rangeMax = 0.0;
+    /// Scale factor from negDeltaAvg to rangeMin. Only for debugging; don't modify.
+    float negScaleFactor = 3.5;
 
-    /// Only for debugging; don't modify!
-    float rangeMin = 0.0;
+    /// Minimum VU value of the dynamic range. Only for debugging; don't modify.
+    MovingAverage rangeMin{300};
 
   private:
-    float _newVuLevel = 0.0;
+    float _scaledVuLevel = 0.0;
   };
 
 }
