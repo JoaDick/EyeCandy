@@ -33,41 +33,50 @@ SOFTWARE.
 namespace EC
 {
 
-  /** TBD
+  /** Emulation of a retro-style running light with colorful Lightbulbs.
    */
-  class LightbulbTest
+  class RetroPartyLight
       : public AnimationModelBase
   {
   public:
-    LightbulbArray lightbulbArray;
-
+    /** Pattern sequence for the Lightbulbs.
+     * Adjustable e.g. via presetXXX() functions.
+     */
     BitPatternSequencer sequencer;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param shiftPeriod  Delay between shifting the dot (in ms).
-     * @param color  Draw the dot with this color.
+     * @param bulbs  Number of Lightbulbs (max 8).
      */
-    explicit LightbulbTest(FastLedStrip ledStrip)
-        : AnimationModelBase(250, ledStrip, false),
-          lightbulbArray(ledStrip)
-    // lightbulbArray(ledStrip, 8)
+    explicit RetroPartyLight(FastLedStrip ledStrip,
+                             uint16_t shiftPeriod = 500,
+                             uint8_t bulbs = 6)
+        : AnimationModelBase(shiftPeriod, ledStrip, false),
+          lightbulbArray(ledStrip, bulbs)
     {
-      // presetRunningLight(sequencer, lightbulbArray.numBulbs);
+      presetRunningLight(sequencer, lightbulbArray.numBulbs);
       // presetScanner(sequencer, lightbulbArray.numBulbs);
       // presetToggle(sequencer);
       // presetToggle2(sequencer);
-      presetMarquee12(sequencer);
+      // presetMarquee12(sequencer);
       // presetMarquee13(sequencer);
       // presetMarquee21(sequencer);
       // presetMarquee22(sequencer);
       // presetMarquee23(sequencer);
       // presetMarquee24(sequencer);
+      // presetAlternating6(sequencer);
+      // presetAlternating8(sequencer);
       // presetExpand6(sequencer);
       // presetExpand6a(sequencer);
       // presetExpand8(sequencer);
       // presetExpand8a(sequencer);
     }
+
+    /** Helper for drawing the Lightbulb patterns.
+     * Usually there's nothing to configure here; mainly for debugging.
+     */
+    LightbulbArray lightbulbArray;
 
   private:
     /// @see AnimationBase::showPattern()

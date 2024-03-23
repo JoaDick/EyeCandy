@@ -40,8 +40,9 @@ namespace EC
       : public AnimationModelBase
   {
   public:
-    LightbulbArray lightbulbArray;
-
+    /** Pattern sequence for the scanner's running light.
+     * Adjustable e.g. via presetXXX() functions.
+     */
     BitPatternSequencer sequencer;
 
     /** Constructor.
@@ -49,12 +50,19 @@ namespace EC
      * @param shiftPeriod  Delay between shifting the dot (in ms).
      * @param color  Draw K.I.T.T.'s scanner with this color.
      */
-    explicit KITT(FastLedStrip ledStrip)
-        : AnimationModelBase(250, ledStrip, false),
-          lightbulbArray(ledStrip, 8, CRGB(255, 0, 0))
+    explicit KITT(FastLedStrip ledStrip,
+                  uint16_t shiftPeriod = 250,
+                  CRGB color = CRGB(255, 8, 0))
+        : AnimationModelBase(shiftPeriod, ledStrip, false),
+          lightbulbArray(ledStrip, 8, color)
     {
       presetScanner(sequencer, lightbulbArray.numBulbs);
     }
+
+    /** Helper for drawing the Lightbulb patterns.
+     * Usually there's nothing to configure here; mainly for debugging.
+     */
+    LightbulbArray lightbulbArray;
 
   private:
     /// @see AnimationBase::showPattern()

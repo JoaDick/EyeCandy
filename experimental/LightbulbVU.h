@@ -39,23 +39,26 @@ namespace EC
       : public Animation
   {
   public:
-    LightbulbArray lightbulbArray;
-
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param vuSource  Input for calculating the VU.
      */
     LightbulbVU(FastLedStrip ledStrip,
                 VuSource &vuSource)
-        : lightbulbArray(ledStrip, 8, CRGB::Green), _vuSource(vuSource)
+        : lightbulbArray(ledStrip, 8, CRGB::Lime), _vuSource(vuSource)
     {
-      lightbulbArray.setColor(7, CRGB(255, 0, 0));
-      lightbulbArray.setColor(6, CRGB(255, 255, 0));
-      lightbulbArray.setColor(5, CRGB(255, 255, 0));
+      lightbulbArray.setColor(7, CRGB::Red);
+      lightbulbArray.setColor(6, CRGB::OrangeRed);
+      lightbulbArray.setColor(5, CRGB::Yellow);
     }
 
     /// Get the VuSource that is used as input.
     VuSource &getInputVuSource() { return _vuSource; }
+
+    /** Helper for drawing the Lightbulb patterns.
+     * Usually there's nothing to configure here; mainly for debugging.
+     */
+    LightbulbArray lightbulbArray;
 
   private:
     /// @see Animation::processAnimation()

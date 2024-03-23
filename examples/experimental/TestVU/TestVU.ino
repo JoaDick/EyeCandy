@@ -264,7 +264,6 @@ void makeEjectingDotVu(EC::AnimationScene &scene)
     auto vuLevelSource = appendVuSourceAnalogPin(scene, EC::BlueprintEjectingDotVu::fadeRate);
 
     EC::BlueprintEjectingDotVu bp(strip, scene, *vuLevelSource);
-
     // autoMode = false;
 }
 
@@ -275,7 +274,6 @@ void makeCrazyVu(EC::AnimationScene &scene)
     auto vuLevelSource = appendVuSourceAnalogPin(scene, EC::BlueprintCrazyVu::fadeRate);
 
     EC::BlueprintCrazyVu bp(strip, scene, *vuLevelSource);
-
     // autoMode = false;
 }
 
@@ -286,7 +284,26 @@ void makeBeyondCrazyVu(EC::AnimationScene &scene)
     auto vuLevelSource = appendVuSourceAnalogPin(scene, EC::BlueprintBeyondCrazyVu::fadeRate);
 
     EC::BlueprintBeyondCrazyVu bp(strip, scene, *vuLevelSource);
+    // autoMode = false;
+}
 
+void makeLightbulbVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::TriggerPattern());
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    auto levelVu = scene.append(new EC::LightbulbVU(strip, *vuLevelSource));
+    // autoMode = false;
+}
+
+void makeRetroPartyVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::TriggerPattern());
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    auto levelVu = scene.append(new EC::RetroPartyVU(strip, *vuLevelSource));
     // autoMode = false;
 }
 
@@ -347,7 +364,6 @@ void makeRangeExtenderComparison(EC::AnimationScene &scene)
     };
 
     auto testVU = appendTestVU1(scene, drawingFct);
-
     // autoMode = false;
 }
 
@@ -362,13 +378,13 @@ void makeRangeExtenderInternals(EC::AnimationScene &scene)
         lastVuLevel = rawVuLevel;
 
         // the green dot shows the average VU level
-        const float vuLevelAvg = vu.vuRangeExtender.vuLevelAvg.get();
+        const float vuLevelAvg = vu.vuRangeExtender.vuLevelAvg;
         strip.n_pixel(vuLevelAvg) = CRGB(0, 128, 0);
 
-        const float posDeltaAvg = vu.vuRangeExtender.posDeltaAvg.get();
+        const float posDeltaAvg = vu.vuRangeExtender.posDeltaAvg;
         strip.n_pixel(vuLevelAvg + posDeltaAvg) = CRGB(64, 8, 0);
 
-        const float negDeltaAvg = vu.vuRangeExtender.negDeltaAvg.get();
+        const float negDeltaAvg = vu.vuRangeExtender.negDeltaAvg;
         strip.n_pixel(vuLevelAvg + negDeltaAvg) = CRGB(0, 8, 64);
 
         // the VU level is scaled so that the red dot will be at the end of the strip
@@ -378,8 +394,7 @@ void makeRangeExtenderInternals(EC::AnimationScene &scene)
     };
 
     auto testVU = appendTestVU1(scene, drawingFct, 0);
-
-    // autoMode = false;
+    autoMode = false;
 }
 
 void makeRainingVU(EC::AnimationScene &scene)
@@ -434,26 +449,16 @@ void makeDraftVU_1(EC::AnimationScene &scene)
     autoMode = false;
 }
 
-void makeLightbulbVU(EC::AnimationScene &scene)
-{
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::TriggerPattern());
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
-    auto levelVu = scene.append(new EC::LightbulbVU(strip, *vuLevelSource));
-
-    autoMode = false;
-}
-
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeRawAudioVU,
+    &makeRetroPartyVU,
     &makeLightbulbVU,
-    &makeDraftVU,
-    &makeRainingVU,
+    // &makeDraftVU,
+    // &makeRainingVU,
     // &makeDraftVU_1,
-    &makeTestVU_1,
+    // &makeTestVU_1,
     // &makeRangeExtenderInternals,
     // &makeRangeExtenderComparison,
 

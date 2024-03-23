@@ -338,6 +338,30 @@ namespace EC
     seq.add(0b01100001);
   }
 
+  inline void presetAlternating6(BitPatternSequencer &seq)
+  {
+    seq.reset();
+    seq.add(0b00000001);
+    seq.add(0b00001000);
+    seq.add(0b00000010);
+    seq.add(0b00010000);
+    seq.add(0b00000100);
+    seq.add(0b00100000);
+  }
+
+  inline void presetAlternating8(BitPatternSequencer &seq)
+  {
+    seq.reset();
+    seq.add(0b00000001);
+    seq.add(0b00010000);
+    seq.add(0b00000010);
+    seq.add(0b00100000);
+    seq.add(0b00000100);
+    seq.add(0b01000000);
+    seq.add(0b00001000);
+    seq.add(0b10000000);
+  }
+
   inline void presetExpand6(BitPatternSequencer &seq)
   {
     seq.reset();

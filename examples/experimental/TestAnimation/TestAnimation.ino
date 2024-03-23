@@ -240,6 +240,14 @@ void makeRainbowTwinkle(EC::AnimationScene &scene)
     // rainbow->color.bpm = 10.0;
 }
 
+void makeRetroPartyLight(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto animation = scene.append(new EC::RetroPartyLight(strip));
+    // autoMode = false;
+}
+
 void makeRgbBlocks(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -289,7 +297,7 @@ void makeTestAnimation(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    auto animation = scene.append(new EC::LightbulbTest(strip));
+    auto animation = scene.append(new EC::RetroPartyLight(strip));
 
     autoMode = false;
 }
@@ -299,7 +307,8 @@ void makeTestAnimation(EC::AnimationScene &scene)
 EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeVisualizeRainbow,
     // &makeAnimationTemplate,
-    &makeTestAnimation,
+    // &makeTestAnimation,
+    &makeRetroPartyLight,
     &makeKITT,
 
     &makeColorClouds,
