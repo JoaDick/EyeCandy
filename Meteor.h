@@ -56,11 +56,11 @@ namespace EC
     /// How far the meteor shoots off the LED strip (as fraction of the strip).
     float overshoot;
 
-    /// Fading speed: Lower value = longer glowing.
-    uint8_t fadeBy = 96;
-
     /// Chance of fading: 0 = never, 255 = always.
     uint8_t fadeChance = 24;
+
+    /// Fading speed: Lower value = longer glowing.
+    uint8_t fadeBy = 96;
 
     /** Size of the meteor (as fraction of the entire strip).
      * This setting can be adjusted at runtime.
@@ -91,7 +91,7 @@ namespace EC
     /// @see AnimationBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      meteorFadeToBlack(strip, fadeBy, fadeChance);
+      meteorFadeToBlack(strip, fadeChance, fadeBy);
     }
 
     /// @see AnimationBase::showOverlay()

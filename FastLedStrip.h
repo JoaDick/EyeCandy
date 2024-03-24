@@ -358,10 +358,10 @@ namespace EC
   /** Fading function for Meteor and BgMeteorFadeToBlack Animation.
    * The individual LEDs of the strip are faded randomly (instead of all at once).
    * @param ledStrip  The LED strip.
-   * @param fadeBy  Fading speed: Lower value = longer glowing.
    * @param chance  Chance of fading a LED (0 = never, 255 = always).
+   * @param fadeBy  Fading speed: Lower value = longer glowing.
    */
-  inline void meteorFadeToBlack(FastLedStrip &strip, uint8_t fadeBy = 96, uint8_t chance = 32)
+  inline void meteorFadeToBlack(FastLedStrip &strip, uint8_t chance = 32, uint8_t fadeBy = 96)
   {
     for (auto &pixel : strip)
     {

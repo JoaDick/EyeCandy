@@ -141,24 +141,25 @@ namespace EC
       : public AnimationBase
   {
   public:
-    /// Fading speed: Lower value = longer glowing.
-    uint8_t fadeBy;
-
     /// Chance of fading a LED (0 = never, 255 = always).
     uint8_t fadeChance;
+
+    /// Fading speed: Lower value = longer glowing.
+    uint8_t fadeBy;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to \c true when the Animation shall be an Overlay.
-     * @param fadeBy  Fading speed: Lower value = longer glowing.
      * @param fadeChance  Chance of fading a LED (0 = never, 255 = always).
+     * @param fadeBy  Fading speed: Lower value = longer glowing.
      */
     BgMeteorFadeToBlack(FastLedStrip ledStrip,
                         bool overlayMode,
-                        uint8_t fadeBy = 96,
-                        uint8_t fadeChance = 32)
+                        uint8_t fadeChance = 32,
+                        uint8_t fadeBy = 96)
         : AnimationBase(ledStrip, overlayMode, 0),
-          fadeBy(fadeBy), fadeChance(fadeChance)
+          fadeChance(fadeChance),
+          fadeBy(fadeBy)
     {
     }
 
@@ -167,15 +168,16 @@ namespace EC
      * than EC_DEFAULT_UPDATE_PERIOD.
      * @param patternUpdatePeriod  Period (in ms) for calling showPattern().
      * @param ledStrip  The LED strip.
-     * @param fadeBy  Fading speed: Lower value = longer glowing.
      * @param fadeChance  Chance of fading a LED (0 = never, 255 = always).
+     * @param fadeBy  Fading speed: Lower value = longer glowing.
      */
     BgMeteorFadeToBlack(uint8_t patternUpdatePeriod,
                         FastLedStrip ledStrip,
-                        uint8_t fadeBy = 96,
-                        uint8_t fadeChance = 32)
-        : AnimationBase(ledStrip), fadeBy(fadeBy),
-          fadeChance(fadeChance)
+                        uint8_t fadeChance = 32,
+                        uint8_t fadeBy = 96)
+        : AnimationBase(ledStrip),
+          fadeChance(fadeChance),
+          fadeBy(fadeBy)
     {
       setPatternUpdatePeriod(patternUpdatePeriod);
     }
@@ -190,7 +192,7 @@ namespace EC
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      meteorFadeToBlack(strip, fadeBy, fadeChance);
+      meteorFadeToBlack(strip, fadeChance, fadeBy);
     }
   };
 

@@ -58,11 +58,11 @@ namespace EC
     /// Beats per minute of the lightning ball's essential oscillation.
     float bpm;
 
-    /// Flare's fading speed: Lower value = longer glowing.
-    uint8_t fadeBy = 108;
-
     /// Chance of fading: 0 = never, 255 = always.
     uint8_t fadeChance = 96;
+
+    /// Flare's fading speed: Lower value = longer glowing.
+    uint8_t fadeBy = 108;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
@@ -81,7 +81,7 @@ namespace EC
     void showPattern(uint32_t currentMillis) override
     {
       // randomly dim current strip content
-      meteorFadeToBlack(strip, fadeBy, fadeChance);
+      meteorFadeToBlack(strip, fadeChance, fadeBy);
 
       // let the ball overshoot a bit to compensate for inoise8()'s limited output range
       const float overshoot = 0.1;
