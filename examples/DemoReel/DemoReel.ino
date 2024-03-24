@@ -172,6 +172,14 @@ void makeFloatingBlobs(EC::AnimationScene &scene)
     // autoMode = false;
 }
 
+void makeKITT(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto animation = scene.append(new EC::KITT(strip));
+    // autoMode = false;
+}
+
 void makeLavalamp(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -243,6 +251,14 @@ void makeRainbowTwinkle(EC::AnimationScene &scene)
     rainbow->color.bpm = 10.0;
 }
 
+void makeRetroPartyLight(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto animation = scene.append(new EC::RetroPartyLight(strip));
+    // autoMode = false;
+}
+
 void makeRgbBlocks(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -272,7 +288,9 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeRainbow,
     &makeColorClouds,
     &makeFloatingBlobs,
+    &makeKITT,
     &makeMeteorGlitter,
+    &makeRetroPartyLight,
     &makeBallLightning,
     // &makeRainbowTwinkle,
     // &makeBlur,

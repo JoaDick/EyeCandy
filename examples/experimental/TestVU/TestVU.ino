@@ -453,11 +453,9 @@ void makeDraftVU_1(EC::AnimationScene &scene)
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeRawAudioVU,
-    &makeRetroPartyVU,
-    &makeLightbulbVU,
-    // &makeDraftVU,
-    // &makeRainingVU,
-    // &makeDraftVU_1,
+    &makeDraftVU,
+    &makeRainingVU,
+    &makeDraftVU_1,
     // &makeTestVU_1,
     // &makeRangeExtenderInternals,
     // &makeRangeExtenderComparison,
@@ -473,6 +471,9 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeCrazyVu,
     // &makeBeyondCrazyVu,
     // &makeTestVU_1,
+
+    // &makeRetroPartyVU,
+    // &makeLightbulbVU,
 
     nullptr};
 

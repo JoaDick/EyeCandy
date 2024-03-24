@@ -45,6 +45,7 @@ SOFTWARE.
 #include "FloatingBlobs.h"
 #include "Glitter.h"
 #include "Kaleidoscope.h"
+#include "KITT.h"
 #include "Lavalamp.h"
 #include "Meteor.h"
 #include "Pacifica.h"
@@ -53,6 +54,7 @@ SOFTWARE.
 #include "RainbowBuiltin.h"
 #include "RainbowDrips.h"
 #include "RainbowTwinkle.h"
+#include "RetroPartyLight.h"
 #include "RgbBlocks.h"
 #include "Twinkles.h"
 #include "Waterfall.h"
@@ -61,6 +63,8 @@ SOFTWARE.
 
 // VU
 #include "Fire2012VU.h"
+#include "LightbulbVU.h"
+#include "RetroPartyVU.h"
 #include "VuBlueprints.h"
 #include "VuSourceAnalogPin.h"
 

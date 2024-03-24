@@ -255,6 +255,18 @@ void makeFlareInwardVU(EC::AnimationScene &scene)
 
 // ---
 
+void makeLightbulbVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::TriggerPattern());
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    auto levelVu = scene.append(new EC::LightbulbVU(strip, *vuLevelSource));
+    // autoMode = false;
+}
+
+// ---
+
 void makeMeteorTrailVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -264,7 +276,6 @@ void makeMeteorTrailVU(EC::AnimationScene &scene)
     auto levelVu = scene.append(new EC::VuOverlayRainbowStripe(strip, *vuLevelSource));
     levelVu->color.hueRange = 0.67;
     levelVu->color.volume = 255;
-
     // autoMode = false;
 }
 
@@ -276,6 +287,18 @@ void makePeakGlitterVU(EC::AnimationScene &scene)
 
     auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, EC::VuOverlayPeakGlitter::fadeRate_default()));
     scene.append(new EC::VuOverlayPeakGlitter(strip, *vuSource));
+}
+
+// ---
+
+void makeRetroPartyVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::TriggerPattern());
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    auto levelVu = scene.append(new EC::RetroPartyVU(strip, *vuLevelSource));
+    // autoMode = false;
 }
 
 // ---
@@ -608,9 +631,9 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeCrazyVu,
     &makeBeyondCrazyVu,
 
-    &makeFranticVu_inward,
-    &makeCrazyVu_inward,
-    &makeBeyondCrazyVu_inward,
+    // &makeFranticVu_inward,
+    // &makeCrazyVu_inward,
+    // &makeBeyondCrazyVu_inward,
 
     &makeFranticVu_outward,
     &makeCrazyVu_outward,
@@ -622,10 +645,13 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeVuSequence16,
     // &makeVuSequence16a,
 
+    &makeRetroPartyVU,
+    &makeLightbulbVU,
+
     &makeVuSequence17,
-    &makeVuSequence18,
+    // &makeVuSequence18,
     &makeVuSequence19,
-    &makeVuSequence20,
+    // &makeVuSequence20,
     nullptr};
 
 // EC::AnimationChanger animationChanger(allAnimations);
