@@ -57,6 +57,7 @@ ButtonHandler selectButton;
 bool autoMode = true;
 
 float audioSample = 0.0;
+EC::AdcSampleNormalizer adcNormalizer;
 EC::AudioNormalizer normalizer;
 
 //------------------------------------------------------------------------------
@@ -481,7 +482,7 @@ void makeDraftVU(EC::AnimationScene &scene)
 
 EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeRawAudioVU,
-    &makeDraftVU,
+    // &makeDraftVU,
     // &makeRangeExtenderInternals,
     // &makeRangeExtenderComparison,
 
@@ -562,12 +563,28 @@ void handleAnimationChange(uint32_t currentMillis = millis())
 
 //------------------------------------------------------------------------------
 
+/*
+
+AdcSampleNormalizer:
+Sketch uses 22756 bytes (70%) of program storage space. Maximum is 32256 bytes.
+Global variables use 883 bytes (43%) of dynamic memory, leaving 1165 bytes for local variables. Maximum is 2048 bytes.
+
+Baseline (AudioNormalizer):
+Sketch uses 22730 bytes (70%) of program storage space. Maximum is 32256 bytes.
+Global variables use 881 bytes (43%) of dynamic memory, leaving 1167 bytes for local variables. Maximum is 2048 bytes.
+
+*/
+
 void loop()
 {
     const uint32_t currentMillis = millis();
-    audioSample = normalizer.analogRead(PIN_MIC);
-
+#if (1)
+    audioSample = adcNormalizer.process(analogRead(PIN_MIC));
+    // audioSample = normalizer.analogRead(PIN_MIC);
     // EC::logAudioSample(audioSample);
+#else
+    audioSample = adcNormalizer.process(inoise8(currentMillis, currentMillis));
+#endif
 
     handleAnimationChange(currentMillis);
 

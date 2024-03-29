@@ -74,4 +74,43 @@ namespace EC
     MovingAverage _sampleAvg;
   };
 
+  //------------------------------------------------------------------------------
+
+  /** Helper class for normalizing raw ADC values from an analog input pin.
+   * Normalizing means eliminating the DC offset, and scaling each sample to the defined range
+   * between -1.0 ... +1.0 (lowest / highest regular value).
+   */
+  class AdcSampleNormalizer
+  {
+  public:
+    /** Constructor.
+     * @param maxRawValue  Maximum possible value from the ADC.
+     *                     Example: Arduino's 10 bit ADC --> 1023
+     * @param avgLength  Number of samples to incorporate for DC offset calculation.
+     */
+    explicit AdcSampleNormalizer(uint16_t maxRawValue = 1023,
+                                 uint16_t avgLength = 5000)
+        : _maxRawValue(maxRawValue), _sampleAvg(avgLength, 0.5)
+    {
+    }
+
+    /** Process the given raw value from ADC, and return it as normalized sample.
+     * @param rawSample  Analog value from ADC.
+     * @return The normalized audio sample, without DC offset, and in the range -1.0 ... +1.0
+     * @note Be aware that an overloaded / clipped / too loud audio signal may momentarily exceed
+     * these limits!
+     */
+    float process(uint16_t rawSample)
+    {
+      const float dcSample = rawSample / float(_maxRawValue); // range  0.0 ... 1.0
+      const float dcOffset = _sampleAvg.process(dcSample);    // about  0.5
+      const float acSample = dcSample - dcOffset;             // range -0.5 ... +0.5
+      return 2.0 * acSample;                                  // range -1.0 ... +1.0
+    }
+
+  private:
+    const uint16_t _maxRawValue;
+    MovingAverage _sampleAvg;
+  };
+
 }
