@@ -77,7 +77,7 @@ namespace EC
      */
     explicit Meteor(FastLedStrip ledStrip,
                     bool overlayMode,
-                    float bpm = 8.0,
+                    float bpm = 7.0,
                     float overshoot = 0.2)
         : AnimationBase(ledStrip, overlayMode, 0),
           bpm(bpm), overshoot(overshoot)
@@ -98,7 +98,8 @@ namespace EC
     void showOverlay(uint32_t currentMillis) override
     {
       color.update();
-      const float pos = beatsinF(bpm, 0.0 - overshoot, 1.0 + overshoot);
+      const float phaseOffset = beatsinF(4.7, 0.0, 0.35);
+      const float pos = beatsinF(bpm, 0.0 - overshoot, 1.0 + overshoot, 0, phaseOffset);
       const float colorJitter = inoise8(currentMillis) / 384.0;
       const CRGB col = color[colorJitter];
       if (size > 0.0)

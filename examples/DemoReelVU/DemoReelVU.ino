@@ -255,6 +255,60 @@ void makeFlareInwardVU(EC::AnimationScene &scene)
 
 // ---
 
+void makeBallLightningVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::TriggerPattern());
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    auto levelVu = scene.append(new EC::BallLightningVU(strip, *vuLevelSource));
+    // autoMode = false;
+}
+
+// ---
+
+void makeBlackHoleVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+    auto workStrip = strip.getHalfStrip(true);
+
+    scene.append(new EC::BgFadeToBlack(20, workStrip, 40));
+    scene.append(new EC::BgRotate(workStrip, true));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+
+    auto levelVu = scene.append(new EC::VuOverlayRainbowStripe(workStrip, *vuLevelSource));
+    levelVu->color.hueRange = 0.5;
+    levelVu->color.volume = 255;
+
+    scene.append(new EC::Kaleidoscope(strip));
+    // autoMode = false;
+}
+
+// ---
+
+void makeDancingJellyfishVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, EC::DancingJellyfishVU::fadeRate));
+    auto levelVu = scene.append(new EC::DancingJellyfishVU(strip, *vuLevelSource));
+    // autoMode = false;
+}
+
+// ---
+
+void makeFlowingBeatVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::TriggerPattern(EC::FlowingBeatVU::patternUpdatePeriod));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    auto levelVu = scene.append(new EC::FlowingBeatVU(strip, *vuLevelSource));
+    // autoMode = false;
+}
+
+// ---
+
 void makeLightbulbVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -287,6 +341,26 @@ void makePeakGlitterVU(EC::AnimationScene &scene)
 
     auto vuSource = scene.append(new EC::VuSourceAnalogPin(audioSample, strip, EC::VuOverlayPeakGlitter::fadeRate_default()));
     scene.append(new EC::VuOverlayPeakGlitter(strip, *vuSource));
+}
+
+// ---
+
+void makeRainingVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::BgFadeToBlack(20, strip, 20));
+    scene.append(new EC::BgRotate(strip, true));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+
+    auto levelVu = scene.append(new EC::VuOverlayRainbowDot(strip, *vuLevelSource));
+    levelVu->color.hueRange = 0.67;
+    levelVu->color.volume = 192;
+
+    auto peakGlitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource));
+    peakGlitter->vuPeakHandler.peakHold = 500;
+    peakGlitter->vuPeakHandler.peakDecay = 500;
+    // autoMode = false;
 }
 
 // ---
@@ -621,9 +695,9 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     &makeRainbowBubbleVU_inward,
     &makeEjectingDotVu_inward,
 
-    &makeRainbowBalllVU_outward,
-    &makeRainbowBubbleVU_outward,
-    &makeEjectingDotVu_outward,
+    // &makeRainbowBalllVU_outward,
+    // &makeRainbowBubbleVU_outward,
+    // &makeEjectingDotVu_outward,
 
     &makeMeteorTrailVU,
 
@@ -635,18 +709,23 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeCrazyVu_inward,
     // &makeBeyondCrazyVu_inward,
 
-    &makeFranticVu_outward,
-    &makeCrazyVu_outward,
+    // &makeFranticVu_outward,
+    // &makeCrazyVu_outward,
     &makeBeyondCrazyVu_outward,
 
     &makeVuSequence13,
     &makeVuSequence14,
-    &makeVuSequence15,
+    // &makeVuSequence15,
     &makeVuSequence16,
     // &makeVuSequence16a,
 
     &makeRetroPartyVU,
     &makeLightbulbVU,
+    &makeRainingVU,
+    // &makeBlackHoleVU,
+    &makeDancingJellyfishVU,
+    &makeFlowingBeatVU,
+    // &makeBallLightningVU,
 
     &makeVuSequence17,
     // &makeVuSequence18,

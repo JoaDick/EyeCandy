@@ -26,6 +26,7 @@ SOFTWARE.
 *******************************************************************************/
 
 #include "AnimationBase.h"
+#include "ColorUtils.h"
 #include "MathUtils.h"
 #include "VuPeakForceHandler.h"
 
@@ -34,12 +35,55 @@ SOFTWARE.
 namespace EC
 {
 
+  //------------------------------------------------------------------------------
+
+  /// Rendering algorithm for the BallLightning Animation and VU.
+  class LightningBallEngine
+  {
+  public:
+    /// Chance of fading: 0 = never, 255 = always.
+    uint8_t fadeChance = 96;
+
+    /// Flare's fading speed: Lower value = longer glowing.
+    uint8_t fadeBy = 108;
+
+    /** Render the lightning ball.
+     * @param strip  The LED strip.
+     * @param pos  Normalized position of the ball.
+     * @param size  Size of the ball's core (as fraction of the strip).
+     * @param color  Draw the ball with this color.
+     */
+    void show(FastLedStrip &strip, float pos, float size, const CRGB &color)
+    {
+      // randomly dim current strip content
+      meteorFadeToBlack(strip, fadeChance, fadeBy);
+
+      // shift the whole strip content to the new position
+      const int16_t pixelPos = strip.n_pixelIndex(pos);
+      strip.shift(pixelPos - _lastPixelPos);
+      _lastPixelPos = pixelPos;
+
+      // shift emitted flares every 2nd time (i.e. every 20ms)
+      if (_shiftFlares)
+      {
+        strip.getSubStrip(0, pixelPos).shiftDown();
+        strip.getSubStrip(pixelPos, 0).shiftUp();
+      }
+      _shiftFlares ^= true;
+
+      // draw the ball itself
+      strip.n_lineCentered(pos, size, color);
+    }
+
+  private:
+    int16_t _lastPixelPos = 0;
+    bool _shiftFlares = true;
+  };
+
+  //------------------------------------------------------------------------------
+
   /** A ball that is emitting sparkling flares while moving randomly up and down the strip.
    * Best used as standalone Pattern; doesn't work well with overlays.
-   *
-   * ToDo:
-   * - make this also a VU?
-   * - extract class: BallLightningEngine{strip} -> showAnimation(millis, color)
    */
   class BallLightning
       : public PatternBase
@@ -51,18 +95,12 @@ namespace EC
     /** Size of the lightning ball (as fraction of the entire strip), without the flares.
      * This setting can be adjusted at runtime.
      * Choose small values, like e.g. 0.03 for 3% of the strip. \n
-     * 0.0 means exactly 1 pixel.
+     * 0.0 means hiding the ball.
      */
     float size = 0.05;
 
     /// Beats per minute of the lightning ball's essential oscillation.
     float bpm;
-
-    /// Chance of fading: 0 = never, 255 = always.
-    uint8_t fadeChance = 96;
-
-    /// Flare's fading speed: Lower value = longer glowing.
-    uint8_t fadeBy = 108;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
@@ -80,9 +118,6 @@ namespace EC
     /// @see PatternBase::showPattern()
     void showPattern(uint32_t currentMillis) override
     {
-      // randomly dim current strip content
-      meteorFadeToBlack(strip, fadeChance, fadeBy);
-
       // let the ball overshoot a bit to compensate for inoise8()'s limited output range
       const float overshoot = 0.1;
       float pos = inoise8(currentMillis / 4) / 255.0;
@@ -92,35 +127,70 @@ namespace EC
       // smoothing the ball's position
       _vuPeakHandler.process(pos, currentMillis);
       const float smoothedPos = _vuPeakHandler.getVU();
-      const int16_t pixelPos = strip.n_pixelIndex(smoothedPos);
 
-      // shift the whole strip content to the new position
-      strip.shift(pixelPos - _lastPixelPos);
-      _lastPixelPos = pixelPos;
-
-      // emit the flares every 2nd time (i.e. every 20ms)
-      if (_shiftFlares)
-      {
-        strip.getSubStrip(0, pixelPos).shiftDown(color);
-        strip.getSubStrip(pixelPos, 0).shiftUp(color);
-      }
-      _shiftFlares ^= true;
-
-      // draw the ball itself
-      if (size > 0.0)
-      {
-        strip.n_lineCentered(pos, size, color);
-      }
-      else
-      {
-        strip.n_pixel(pos) = color;
-      }
+      // render the ball
+      _ball.show(strip, smoothedPos, size, color);
     }
 
   private:
+    LightningBallEngine _ball;
     VuPeakForceHandler _vuPeakHandler;
-    bool _shiftFlares = true;
-    int16_t _lastPixelPos = 0;
   };
+
+  //------------------------------------------------------------------------------
+
+  /** A ball that is emitting sparkling flares while dancing to the music.
+   * Best used as standalone VU; doesn't work well with overlays.
+   */
+  class BallLightningVU
+      : public Animation
+  {
+  public:
+    /// Color source of the VU.
+    ColorWheel color{-2.5, -0.33};
+
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     * @param vuSource  Read the VU value from there.
+     */
+    BallLightningVU(FastLedStrip ledStrip,
+                    VuSource &vuSource)
+        : _strip(ledStrip), _vuSource(vuSource)
+    {
+    }
+
+    VuSource &getVuSource() { return _vuSource; }
+
+  private:
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    {
+      if (!wasModified)
+        return;
+
+      color.update();
+
+      const float vuLevel = _vuSource.getVU();
+      const float vuLevelAvg = _vuLevelAvg.process(vuLevel);
+
+      const float vuDelta = vuLevel - vuLevelAvg;
+      const float vuDeltaAvg = _vuDeltaAvg.process(abs(vuDelta));
+
+      const float colorVolume = constrainVU(0.45 + 1.8 * vuDelta);
+      color.volume = colorVolume * 255;
+      const float colorOffset = vuLevelAvg - vuDeltaAvg;
+
+      _ball.show(_strip, vuLevelAvg, 0.9 * vuDeltaAvg, color[colorOffset]);
+    }
+
+  private:
+    FastLedStrip _strip;
+    VuSource &_vuSource;
+    LightningBallEngine _ball;
+    MovingAverage _vuLevelAvg{12};
+    MovingAverage _vuDeltaAvg{4};
+  };
+
+  //------------------------------------------------------------------------------
 
 } // namespace EC

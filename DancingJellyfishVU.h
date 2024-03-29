@@ -26,90 +26,91 @@ SOFTWARE.
 *******************************************************************************/
 
 #include "AnimationBase.h"
-#include "VuPeakHandler.h"
+#include "ColorUtils.h"
+#include "MathUtils.h"
 #include "VuSource.h"
+
+//------------------------------------------------------------------------------
+
+#ifndef EC_JELLYFISH_VU_DEBUG
+#define EC_JELLYFISH_VU_DEBUG 0
+#endif
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
 
-  /** TBD - WIP
-   *
+  /** A squishy colorful thingy that is dancing to the music.
+   * Best used as standalone VU without other overlays.
    */
-  class VuOverlayShift
-      : public AnimationModelBase
+  class DancingJellyfishVU
+      : public Animation
   {
   public:
     /** Default fading speed.
      * Lower value = longer glowing; 0 = solid black background.
      */
-    static uint8_t fadeRate_default() { return 5; }
+    static constexpr uint8_t fadeRate = 20;
 
     /// Color source of the VU.
-    ColorWheel color;
-
-    /// Usually there's nothing to configure here; mainly for debugging.
-    VuPeakHandler vuPeakHandler;
+    ColorWheel color{1.0, -0.67};
 
     /** Constructor.
      * @param ledStrip  The LED strip.
      * @param vuSource  Read the VU value from there.
      */
-    VuOverlayShift(FastLedStrip ledStrip,
-                   VuSource &vuSource)
-        : AnimationModelBase(10, ledStrip, true),
-          color(1.0, 0.67), _vuSource(vuSource)
+    DancingJellyfishVU(FastLedStrip ledStrip,
+                       VuSource &vuSource)
+#if (EC_JELLYFISH_VU_DEBUG)
+        : _strip(ledStrip.getSubStrip(ledStrip.ledCount() / 2, 0)),
+          _debugStrip(ledStrip.getSubStrip(0, ledStrip.ledCount() / 2)),
+#else
+        : _strip(ledStrip),
+#endif
+          _vuSource(vuSource)
     {
-      vuPeakHandler.peakHold = 500;
-      vuPeakHandler.peakDecay = 500;
-      color.volume = 128;
+      // color.volume = 192;
     }
 
     VuSource &getVuSource() { return _vuSource; }
 
   private:
-    /// @see AnimationBase::showOverlay()
-    void showOverlay(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
+      if (!wasModified)
+        return;
+
       color.update();
 
-      const float vuLevel = constrainVU(_vuSource.getVU());
+      const float vuLevel = _vuSource.getVU();
+      const float vuLevelAvg = _vuLevelAvg.process(vuLevel);
 
-      const bool isPeak = vuPeakHandler.process(vuLevel, currentMillis);
-      const float vuPeakLevel = constrainVU(vuPeakHandler.getVU());
+      const float vuDelta = vuLevel - vuLevelAvg;
+      const float vuDeltaAvg = _vuDeltaAvg.process(abs(vuDelta));
+      const float colorOffset = vuLevelAvg - vuDeltaAvg;
 
-      color.saturation = 255;
-      // color.saturation = vuLevel * 255;
+      _strip.n_lineCentered(vuLevelAvg, 1.25 * vuDeltaAvg, color[colorOffset]);
 
-      color.volume = 128;
-      // color.volume = vuLevel * 255;
-      // color.volume = vuPeakLevel * 255;
+#if (EC_JELLYFISH_VU_DEBUG)
+      _debugStrip.clear();
 
-      CRGB col = color;
-      if (isPeak)
-      {
-        col = CRGB(96, 96, 96);
-      }
-      else
-      {
-        // col = CRGB::Black;
-      }
-      // strip.shiftUp(col);
-      // strip.shiftUp(CRGB::Black);
-      strip.shiftDown(CRGB::Black);
-      strip.n_pixel(vuLevel) = col;
-      // strip.n_lineAbs(0.0, vuLevel, col);
-    }
-
-    /// @see AnimationBase::updateModel()
-    void updateModel(uint32_t currentMillis) override
-    {
+      _debugStrip.n_pixel(vuLevel) = CRGB(0, 0, 128);
+      _debugStrip.n_pixel(vuLevelAvg) = CRGB(0, 128, 0);
+      // _debugStrip.n_pixel(colorVolume) = CRGB(32, 32, 32);
+      _debugStrip.n_pixel(colorOffset) = CRGB(64, 64, 0);
+#endif
     }
 
   private:
+#if (EC_JELLYFISH_VU_DEBUG)
+    FastLedStrip _debugStrip;
+#endif
+    FastLedStrip _strip;
     VuSource &_vuSource;
-    // float _lastVuLevel = 0.0;
+    MovingAverage _vuLevelAvg{25};
+    MovingAverage _vuDeltaAvg{3};
   };
 
 } // namespace EC

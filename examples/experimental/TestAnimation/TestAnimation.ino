@@ -540,6 +540,9 @@ void printMemoryUsage()
     Serial.print(F("Bubbles = "));
     Serial.println((int)sizeof(EC::Bubbles));
 
+    Serial.print(F("ColorClouds = "));
+    Serial.println((int)sizeof(EC::ColorClouds));
+
     Serial.print(F("Fire2012<*> = "));
     Serial.println((int)sizeof(EC::Fire2012<NUM_LEDS>));
     Serial.print(F("Fire2012Changer = "));
@@ -556,11 +559,14 @@ void printMemoryUsage()
     Serial.print(F("Glitter = "));
     Serial.println((int)sizeof(EC::Glitter));
 
-    Serial.print(F("Lavalamp = "));
-    Serial.println((int)sizeof(EC::Lavalamp));
-
     Serial.print(F("Kaleidoscope = "));
     Serial.println((int)sizeof(EC::Kaleidoscope));
+
+    Serial.print(F("KITT = "));
+    Serial.println((int)sizeof(EC::KITT));
+
+    Serial.print(F("Lavalamp = "));
+    Serial.println((int)sizeof(EC::Lavalamp));
 
     Serial.print(F("Meteor = "));
     Serial.println((int)sizeof(EC::Meteor));
@@ -582,6 +588,9 @@ void printMemoryUsage()
 
     Serial.print(F("RainbowTwinkle = "));
     Serial.println((int)sizeof(EC::RainbowTwinkle));
+
+    Serial.print(F("RetroPartyLight = "));
+    Serial.println((int)sizeof(EC::RetroPartyLight));
 
     Serial.print(F("RgbBlocks = "));
     Serial.println((int)sizeof(EC::RgbBlocks));

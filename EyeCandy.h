@@ -62,7 +62,9 @@ SOFTWARE.
 //------------------------------------------------------------------------------
 
 // VU
+#include "DancingJellyfishVU.h"
 #include "Fire2012VU.h"
+#include "FlowingBeatVU.h"
 #include "LightbulbVU.h"
 #include "RetroPartyVU.h"
 #include "VuBlueprints.h"

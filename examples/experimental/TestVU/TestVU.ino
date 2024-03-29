@@ -287,6 +287,52 @@ void makeBeyondCrazyVu(EC::AnimationScene &scene)
     // autoMode = false;
 }
 
+void makeBallLightningVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::TriggerPattern());
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    auto levelVu = scene.append(new EC::BallLightningVU(strip, *vuLevelSource));
+    // autoMode = false;
+}
+
+void makeBlackHoleVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+    auto workStrip = strip.getHalfStrip(true);
+
+    scene.append(new EC::BgFadeToBlack(20, workStrip, 40));
+    scene.append(new EC::BgRotate(workStrip, true));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+
+    auto levelVu = scene.append(new EC::VuOverlayRainbowStripe(workStrip, *vuLevelSource));
+    levelVu->color.hueRange = 0.5;
+    levelVu->color.volume = 255;
+
+    scene.append(new EC::Kaleidoscope(strip));
+    // autoMode = false;
+}
+
+void makeDancingJellyfishVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    auto vuLevelSource = appendVuSourceAnalogPin(scene, EC::DancingJellyfishVU::fadeRate);
+    auto levelVu = scene.append(new EC::DancingJellyfishVU(strip, *vuLevelSource));
+    // autoMode = false;
+}
+
+void makeFlowingBeatVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::TriggerPattern(EC::FlowingBeatVU::patternUpdatePeriod));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    auto levelVu = scene.append(new EC::FlowingBeatVU(strip, *vuLevelSource));
+    // autoMode = false;
+}
+
 void makeLightbulbVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
@@ -294,6 +340,24 @@ void makeLightbulbVU(EC::AnimationScene &scene)
     scene.append(new EC::TriggerPattern());
     auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
     auto levelVu = scene.append(new EC::LightbulbVU(strip, *vuLevelSource));
+    // autoMode = false;
+}
+
+void makeRainingVU(EC::AnimationScene &scene)
+{
+    EC::FastLedStrip strip(leds, NUM_LEDS);
+
+    scene.append(new EC::BgFadeToBlack(20, strip, 20));
+    scene.append(new EC::BgRotate(strip, true));
+    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+
+    auto levelVu = scene.append(new EC::VuOverlayRainbowDot(strip, *vuLevelSource));
+    levelVu->color.hueRange = 0.67;
+    levelVu->color.volume = 192;
+
+    auto peakGlitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource));
+    peakGlitter->vuPeakHandler.peakHold = 500;
+    peakGlitter->vuPeakHandler.peakDecay = 500;
     // autoMode = false;
 }
 
@@ -397,56 +461,20 @@ void makeRangeExtenderInternals(EC::AnimationScene &scene)
     autoMode = false;
 }
 
-void makeRainingVU(EC::AnimationScene &scene)
-{
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::BgFadeToBlack(20, strip, 20));
-    scene.append(new EC::BgRotate(strip, true));
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
-
-    auto levelVu = scene.append(new EC::VuOverlayRainbowDot(strip, *vuLevelSource));
-    levelVu->color.hueRange = 0.67;
-    levelVu->color.volume = 192;
-
-    auto peakGlitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource));
-    peakGlitter->vuPeakHandler.peakHold = 500;
-    peakGlitter->vuPeakHandler.peakDecay = 500;
-
-    // autoMode = false;
-}
-
 void makeDraftVU(EC::AnimationScene &scene)
 {
     EC::FastLedStrip strip(leds, NUM_LEDS);
 
-    // scene.append(new EC::TriggerPattern(20));
-    scene.append(new EC::BgFadeToBlack(20, strip, EC::VuOverlayShift::fadeRate_default()));
+    scene.append(new EC::TriggerPattern(EC::FlowingBeatVU::patternUpdatePeriod));
     auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
 
-    auto levelVu = scene.append(new EC::VuOverlayShift(strip, *vuLevelSource));
-
-    autoMode = false;
-}
-
-void makeDraftVU_1(EC::AnimationScene &scene)
-{
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-    auto workStrip = strip.getHalfStrip(true);
-
-    // scene.append(new EC::TriggerPattern(20));
-    scene.append(new EC::BgFadeToBlack(20, workStrip, 40));
-    scene.append(new EC::BgRotate(workStrip, true));
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
-
-    // auto levelVu = scene.append(new EC::VuOverlayRainbowDot(workStrip, *vuLevelSource));
-    auto levelVu = scene.append(new EC::VuOverlayRainbowStripe(workStrip, *vuLevelSource));
-    // levelVu->color.hueRange = 0.5;
-    levelVu->color.volume = 255;
-
+#if (0)
+    auto levelVu = scene.append(new EC::FlowingBeatVU(strip, *vuLevelSource));
+#else
+    auto levelVu = scene.append(new EC::FlowingBeatVU(strip.getHalfStrip(), *vuLevelSource));
     scene.append(new EC::Kaleidoscope(strip));
-
-    autoMode = false;
+#endif
+    // autoMode = false;
 }
 
 //------------------------------------------------------------------------------
@@ -454,9 +482,6 @@ void makeDraftVU_1(EC::AnimationScene &scene)
 EC::AnimationSceneBuilderFct allAnimations[] = {
     // &makeRawAudioVU,
     &makeDraftVU,
-    &makeRainingVU,
-    &makeDraftVU_1,
-    // &makeTestVU_1,
     // &makeRangeExtenderInternals,
     // &makeRangeExtenderComparison,
 
@@ -474,6 +499,11 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
 
     // &makeRetroPartyVU,
     // &makeLightbulbVU,
+    &makeRainingVU,
+    &makeBlackHoleVU,
+    &makeDancingJellyfishVU,
+    &makeFlowingBeatVU,
+    &makeBallLightningVU,
 
     nullptr};
 
@@ -714,8 +744,17 @@ void printMemoryUsage()
     Serial.print(F("VuOverlayPeakGlitter = "));
     Serial.println((int)sizeof(EC::VuOverlayPeakGlitter));
 
+    Serial.print(F("BallLightningVU = "));
+    Serial.println((int)sizeof(EC::BallLightningVU));
+
+    Serial.print(F("DancingJellyfishVU = "));
+    Serial.println((int)sizeof(EC::DancingJellyfishVU));
+
     Serial.print(F("Fire2012VU = "));
     Serial.println((int)sizeof(EC::Fire2012VU<NUM_LEDS>));
+
+    Serial.print(F("FlowingBeatVU = "));
+    Serial.println((int)sizeof(EC::FlowingBeatVU));
 
     Serial.print(F("RawAudioVU = "));
     Serial.println((int)sizeof(EC::RawAudioVU));

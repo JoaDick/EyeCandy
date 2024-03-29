@@ -103,7 +103,7 @@ namespace EC
                  uint8_t bulbs = 6)
 #if (EC_RETRO_PARTY_VU_DEBUG)
         : lightbulbArray(ledStrip.getSubStrip(0, ledStrip.ledCount() / 2), bulbs),
-          _strip(ledStrip.getSubStrip(ledStrip.ledCount() / 2, 0)),
+          _debugStrip(ledStrip.getSubStrip(ledStrip.ledCount() / 2, 0)),
 #else
         : lightbulbArray(ledStrip, bulbs),
 #endif
@@ -139,14 +139,14 @@ namespace EC
       lightbulbArray.show(sequencer.get());
 
 #if (EC_RETRO_PARTY_VU_DEBUG)
-      _strip.clear();
-      // _strip.n_pixel(vuLevelRaw) = CRGB(0, 0, 64);
-      // _strip.n_pixel(_levelAvg.process(vuLevelRaw)) = CRGB(0, 66, 64);
-      _strip.n_pixel(_beatDetector.smoothedVuLevel) = CRGB(0, 64, 0);
-      _strip.n_pixel(_beatDetector.vuPeakGravityHandler.getVU()) = CRGB(255, 0, 0);
+      _debugStrip.clear();
+      // _debugStrip.n_pixel(vuLevelRaw) = CRGB(0, 0, 64);
+      // _debugStrip.n_pixel(_levelAvg.process(vuLevelRaw)) = CRGB(0, 66, 64);
+      _debugStrip.n_pixel(_beatDetector.smoothedVuLevel) = CRGB(0, 64, 0);
+      _debugStrip.n_pixel(_beatDetector.vuPeakGravityHandler.getVU()) = CRGB(255, 0, 0);
       if (vuLevelBeat > 0.0)
       {
-        _strip.n_lineRel(0.0, 0.05, CRGB::Yellow);
+        _debugStrip.n_lineRel(0.0, 0.05, CRGB::Yellow);
       }
 
 #endif
@@ -154,7 +154,7 @@ namespace EC
 
   private:
 #if (EC_RETRO_PARTY_VU_DEBUG)
-    FastLedStrip _strip;
+    FastLedStrip _debugStrip;
     // MovingAverage _levelAvg{100};
 #endif
     VuSource &_vuSource;
