@@ -25,6 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
+#include "AudioNormalizer.h"
 #include "VuBlueprints.h"
 #include "VuLevelHandler.h"
 #include "VuRangeExtender.h"
@@ -60,17 +61,17 @@ namespace EC
     float lastVuLevel = 0.0;
 
     /** Constructor.
-     * @param audioSource  Read the audio samples from there.
+     * @param analogPin    Pin for reading the audio signal.
      * @param ledStrip     The LED strip.
      * @param drawingFct   Pointer to a function for rendering the VU on the LED strip.
      * @param fadeRate     Fading speed: Lower value = longer glowing; 0 = black background.
      */
-    TestVU1(float &audioSource,
+    TestVU1(uint8_t analogPin,
             FastLedStrip ledStrip,
             DrawingFct drawingFct,
             uint8_t fadeRate = 0)
         : AnimationBase(ledStrip, false, fadeRate),
-          _audioSource(audioSource), drawingFct(drawingFct)
+          _analogPin(analogPin), drawingFct(drawingFct)
     {
       vuPeakHandler.peakHold = 600;
       vuPeakHandler.peakDecay = 3000;
@@ -84,7 +85,8 @@ namespace EC
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      vuLevelHandler.addSample(_audioSource);
+      const float audioSample = _adcNormalizer.process(analogRead(_analogPin));
+      vuLevelHandler.addSample(audioSample);
       AnimationBase::processAnimation(currentMillis, wasModified);
     }
 
@@ -111,7 +113,8 @@ namespace EC
     }
 
   private:
-    float &_audioSource;
+    const uint8_t _analogPin;
+    AdcSampleNormalizer _adcNormalizer;
   };
 
 } // namespace EC

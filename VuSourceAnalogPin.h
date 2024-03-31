@@ -70,7 +70,7 @@ namespace EC
 
     /** Constructor for Pattern mode.
      * @param audioSource  Read the audio samples from there.
-     * @param strip  The LED strip.
+     * @param ledStrip  The LED strip.
      * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background. \n
      *                  If the following VU Overlay has a \c fadeRate_default() method, use that. \n
      *                  Not relevant in Overlay mode.
@@ -99,7 +99,7 @@ namespace EC
      * than EC_DEFAULT_UPDATE_PERIOD.
      * @param patternUpdatePeriod  Period (in ms) for updating the LED strip's Pattern.
      * @param audioSource  Read the audio samples from there.
-     * @param strip  The LED strip.
+     * @param ledStrip  The LED strip.
      * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background. \n
      *                  If the following VU Overlay has a \c fadeRate_default() method, use that. \n
      *                  Not relevant in Overlay mode.

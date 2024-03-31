@@ -38,7 +38,6 @@ SOFTWARE.
 #define EC_ENABLE_VU_RANGE_EXTENDER_BYPASS 1
 
 #include <EyeCandy.h>
-#include <AudioNormalizer.h>
 #include <ButtonHandler.h>
 
 //------------------------------------------------------------------------------
@@ -55,10 +54,6 @@ CRGB leds[NUM_LEDS];
 ButtonHandler selectButton;
 
 bool autoMode = true;
-
-float audioSample = 0.0;
-EC::AdcSampleNormalizer adcNormalizer;
-EC::AudioNormalizer normalizer;
 
 //------------------------------------------------------------------------------
 
@@ -95,48 +90,28 @@ uint16_t animationDuration = defaultAnimationDuration;
 //------------------------------------------------------------------------------
 
 /// Show the raw audio input as VU Anumation.
-void makeRawAudioVU(EC::AnimationScene &scene)
+void makeRawAudioVU(EC::SetupEnv &env)
 {
-    auto vu = scene.append(new EC::RawAudioVU(audioSample, {leds, NUM_LEDS}));
-    // vu->enableTeleplot = true;
+    auto &vu = env.add(new EC::RawAudioVU(PIN_MIC, {leds, NUM_LEDS}));
+    // vu.enableTeleplot = true;
 
     // animationDuration = 10;
 }
 
 //------------------------------------------------------------------------------
 
-#define USE_GLOBAL_VU_LEVEL_SOURCE 0
-
-#if (USE_GLOBAL_VU_LEVEL_SOURCE)
-EC::VuSourceAnalogPin globalVuLevelSource(audioSample, {leds, NUM_LEDS}, 0);
-#endif
-
-inline EC::VuSourceAnalogPin *appendVuSourceAnalogPin(EC::AnimationScene &scene,
-                                                      uint8_t fadeRate)
-{
-#if (USE_GLOBAL_VU_LEVEL_SOURCE)
-    auto vuLevelSource = scene.append(globalVuLevelSource);
-    vuLevelSource->fadeRate = fadeRate;
-    return vuLevelSource;
-#else
-    return scene.append(new EC::VuSourceAnalogPin(audioSample, {leds, NUM_LEDS}, fadeRate));
-#endif
-}
-
 /** Example to show the usage of VU Animations building blocks.
  * - Input --> Line
  * - Input --> PeakHold --> Dot
  */
-void makeVuElements1(EC::AnimationScene &scene)
+void makeVuElements1(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
+    auto &vuLevelSource = env.addVuBackground(0);
 
-    auto vuLevelSource = appendVuSourceAnalogPin(scene, 0);
+    auto &vuPeakSource = env.add(new EC::VuSourcePeakHold(vuLevelSource));
 
-    auto vuPeakSource = scene.append(new EC::VuSourcePeakHold(*vuLevelSource));
-
-    auto levelVu = scene.append(new EC::VuOverlayLine(strip, *vuLevelSource));
-    auto peakVu = scene.append(new EC::VuOverlayDot(strip, *vuPeakSource));
+    auto &levelVu = env.add(new EC::VuOverlayLine(env.strip(), vuLevelSource));
+    auto &peakVu = env.add(new EC::VuOverlayDot(env.strip(), vuPeakSource));
 
     // autoMode = false;
 }
@@ -145,17 +120,15 @@ void makeVuElements1(EC::AnimationScene &scene)
  * - Input --> RainbowLine
  * - Input --> PeakGravity / Ball --> RainbowDot / Input, 5%
  */
-void makeVuElements2(EC::AnimationScene &scene)
+void makeVuElements2(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
+    auto &vuLevelSource = env.addVuBackground(50);
 
-    auto vuLevelSource = appendVuSourceAnalogPin(scene, 50);
+    auto &vuPeakSource = env.add(new EC::VuSourcePeakGravity(vuLevelSource));
+    vuPeakSource.vuPeakHandler.presetPunchedBall();
 
-    auto vuPeakSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
-    vuPeakSource->vuPeakHandler.presetPunchedBall();
-
-    auto levelVu = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource));
-    auto peakVu = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource, *vuLevelSource, 0.05));
+    auto &levelVu = env.add(new EC::VuOverlayRainbowLine(env.strip(), vuLevelSource));
+    auto &peakVu = env.add(new EC::VuOverlayRainbowDot(env.strip(), vuPeakSource, vuLevelSource, 0.05));
 
     // autoMode = false;
 }
@@ -165,23 +138,21 @@ void makeVuElements2(EC::AnimationScene &scene)
  * - Input --> PeakHold1 --> Dot / red
  * - Input --> PeakHold2 / Dip --> Dot / blue
  */
-void makeVuElements3(EC::AnimationScene &scene)
+void makeVuElements3(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
+    auto &vuLevelSource = env.addVuBackground(50);
 
-    auto vuLevelSource = appendVuSourceAnalogPin(scene, 50);
+    auto &vuPeakSource = env.add(new EC::VuSourcePeakHold(vuLevelSource));
+    vuPeakSource.vuPeakHandler.peakHold = 500;
+    vuPeakSource.vuPeakHandler.peakDecay = 3000;
 
-    auto vuPeakSource = scene.append(new EC::VuSourcePeakHold(*vuLevelSource));
-    vuPeakSource->vuPeakHandler.peakHold = 500;
-    vuPeakSource->vuPeakHandler.peakDecay = 3000;
+    auto &vuDipSource = env.add(new EC::VuSourcePeakHold(vuLevelSource));
+    vuDipSource.vuPeakHandler = vuPeakSource.vuPeakHandler;
+    vuDipSource.vuPeakHandler.enableDipMode = true;
 
-    auto vuDipSource = scene.append(new EC::VuSourcePeakHold(*vuLevelSource));
-    vuDipSource->vuPeakHandler = vuPeakSource->vuPeakHandler;
-    vuDipSource->vuPeakHandler.enableDipMode = true;
-
-    auto levelVu = scene.append(new EC::VuOverlayStripe(strip, *vuLevelSource, CRGB(0, 128, 0)));
-    auto peakVu = scene.append(new EC::VuOverlayDot(strip, *vuPeakSource, CRGB(255, 0, 0)));
-    auto dipVu = scene.append(new EC::VuOverlayDot(strip, *vuDipSource, CRGB(0, 0, 255)));
+    auto &levelVu = env.add(new EC::VuOverlayStripe(env.strip(), vuLevelSource, CRGB(0, 128, 0)));
+    auto &peakVu = env.add(new EC::VuOverlayDot(env.strip(), vuPeakSource, CRGB(255, 0, 0)));
+    auto &dipVu = env.add(new EC::VuOverlayDot(env.strip(), vuDipSource, CRGB(0, 0, 255)));
 
     // autoMode = false;
 }
@@ -191,22 +162,20 @@ void makeVuElements3(EC::AnimationScene &scene)
  * - Input --> PeakGravity1 / Bubble --> RainbowDot / Input
  * - Input --> PeakGravity2 / Bubble, Dip --> RainbowDot / Input
  */
-void makeVuElements4(EC::AnimationScene &scene)
+void makeVuElements4(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
+    auto &vuLevelSource = env.addVuBackground(20);
 
-    auto vuLevelSource = appendVuSourceAnalogPin(scene, 20);
+    auto &vuPeakSource = env.add(new EC::VuSourcePeakGravity(vuLevelSource));
+    vuPeakSource.vuPeakHandler.presetFloatingBubble();
 
-    auto vuPeakSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
-    vuPeakSource->vuPeakHandler.presetFloatingBubble();
+    auto &vuDipSource = env.add(new EC::VuSourcePeakGravity(vuLevelSource));
+    vuDipSource.vuPeakHandler = vuPeakSource.vuPeakHandler;
+    vuDipSource.vuPeakHandler.enableDipMode = true;
 
-    auto vuDipSource = scene.append(new EC::VuSourcePeakGravity(*vuLevelSource));
-    vuDipSource->vuPeakHandler = vuPeakSource->vuPeakHandler;
-    vuDipSource->vuPeakHandler.enableDipMode = true;
-
-    auto levelVu = scene.append(new EC::VuOverlayRainbowStripe(strip, *vuLevelSource));
-    auto peakVu = scene.append(new EC::VuOverlayRainbowDot(strip, *vuPeakSource, *vuLevelSource));
-    auto dipVu = scene.append(new EC::VuOverlayRainbowDot(strip, *vuDipSource, *vuLevelSource));
+    auto &levelVu = env.add(new EC::VuOverlayRainbowStripe(env.strip(), vuLevelSource));
+    auto &peakVu = env.add(new EC::VuOverlayRainbowDot(env.strip(), vuPeakSource, vuLevelSource));
+    auto &dipVu = env.add(new EC::VuOverlayRainbowDot(env.strip(), vuDipSource, vuLevelSource));
 
     // autoMode = false;
 }
@@ -216,20 +185,18 @@ void makeVuElements4(EC::AnimationScene &scene)
  * - Input --> PeakForce --> Dot / green, 5%
  * - Input --> Glitter
  */
-void makeVuElements5(EC::AnimationScene &scene)
+void makeVuElements5(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
+    auto &vuLevelSource = env.addVuBackground(100);
 
-    auto vuLevelSource = appendVuSourceAnalogPin(scene, 100);
+    auto &vuPeakSource = env.add(new EC::VuSourcePeakForce(vuLevelSource));
 
-    auto vuPeakSource = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
+    auto &levelVu = env.add(new EC::VuOverlayRainbowLine(env.strip(), vuLevelSource, vuPeakSource));
+    levelVu.color.volume = 64;
+    levelVu.color.hueRange = 0.75;
+    auto &peakVu = env.add(new EC::VuOverlayDot(env.strip(), vuPeakSource, CRGB(0, 64, 0), 0.05));
 
-    auto levelVu = scene.append(new EC::VuOverlayRainbowLine(strip, *vuLevelSource, *vuPeakSource));
-    levelVu->color.volume = 64;
-    levelVu->color.hueRange = 0.75;
-    auto peakVu = scene.append(new EC::VuOverlayDot(strip, *vuPeakSource, CRGB(0, 64, 0), 0.05));
-
-    auto peakGlitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource));
+    auto &peakGlitter = env.add(new EC::VuOverlayPeakGlitter(env.strip(), vuLevelSource));
 
     // autoMode = false;
 }
@@ -239,162 +206,118 @@ void makeVuElements5(EC::AnimationScene &scene)
  * - Input --> Glitter / red'ish
  * - Input --> Glitter / blue'ish, Dip
  */
-void makeVuElements6(EC::AnimationScene &scene)
+void makeVuElements6(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
+    auto &vuLevelSource = env.addVuBackground(50);
 
-    auto vuLevelSource = appendVuSourceAnalogPin(scene, 50);
+    auto &vuPeakSource = env.add(new EC::VuSourcePeakForce(vuLevelSource));
 
-    auto vuPeakSource = scene.append(new EC::VuSourcePeakForce(*vuLevelSource));
+    auto &levelVu = env.add(new EC::VuOverlayStripe(env.strip(), vuPeakSource, CRGB(0, 32, 0)));
 
-    auto levelVu = scene.append(new EC::VuOverlayStripe(strip, *vuPeakSource, CRGB(0, 32, 0)));
-
-    auto peakGlitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource, CRGB(255, 64, 64)));
-    auto dipGlitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource, CRGB(64, 64, 255)));
-    dipGlitter->vuPeakHandler.enableDipMode = true;
+    auto &peakGlitter = env.add(new EC::VuOverlayPeakGlitter(env.strip(), vuLevelSource, CRGB(255, 64, 64)));
+    auto &dipGlitter = env.add(new EC::VuOverlayPeakGlitter(env.strip(), vuLevelSource, CRGB(64, 64, 255)));
+    dipGlitter.vuPeakHandler.enableDipMode = true;
 
     // autoMode = false;
 }
 
 //------------------------------------------------------------------------------
 
-void makeEjectingDotVu(EC::AnimationScene &scene)
+void makeEjectingDotVu(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    auto vuLevelSource = appendVuSourceAnalogPin(scene, EC::BlueprintEjectingDotVu::fadeRate);
-
-    EC::BlueprintEjectingDotVu bp(strip, scene, *vuLevelSource);
+    auto &vuLevelSource = env.addVuBackground(EC::BlueprintEjectingDotVu::fadeRate);
+    EC::BlueprintEjectingDotVu bp(env.strip(), env.scene(), vuLevelSource);
     // autoMode = false;
 }
 
-void makeCrazyVu(EC::AnimationScene &scene)
+void makeCrazyVu(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    auto vuLevelSource = appendVuSourceAnalogPin(scene, EC::BlueprintCrazyVu::fadeRate);
-
-    EC::BlueprintCrazyVu bp(strip, scene, *vuLevelSource);
+    auto &vuLevelSource = env.addVuBackground(EC::BlueprintCrazyVu::fadeRate);
+    EC::BlueprintCrazyVu bp(env.strip(), env.scene(), vuLevelSource);
     // autoMode = false;
 }
 
-void makeBeyondCrazyVu(EC::AnimationScene &scene)
+void makeBeyondCrazyVu(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    auto vuLevelSource = appendVuSourceAnalogPin(scene, EC::BlueprintBeyondCrazyVu::fadeRate);
-
-    EC::BlueprintBeyondCrazyVu bp(strip, scene, *vuLevelSource);
+    auto &vuLevelSource = env.addVuBackground(EC::BlueprintBeyondCrazyVu::fadeRate);
+    EC::BlueprintBeyondCrazyVu bp(env.strip(), env.scene(), vuLevelSource);
     // autoMode = false;
 }
 
-void makeBallLightningVU(EC::AnimationScene &scene)
+void makeBallLightningVU(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::TriggerPattern());
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
-    auto levelVu = scene.append(new EC::BallLightningVU(strip, *vuLevelSource));
+    env.add(new EC::TriggerPattern());
+    auto &vuLevelSource = env.addVuSource();
+    env.add(new EC::BallLightningVU(env.strip(), vuLevelSource));
     // autoMode = false;
 }
 
-void makeBlackHoleVU(EC::AnimationScene &scene)
+void makeBlackHoleVU(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-    auto workStrip = strip.getHalfStrip(true);
+    auto workStrip = env.strip().getHalfStrip(true);
 
-    scene.append(new EC::BgFadeToBlack(20, workStrip, 40));
-    scene.append(new EC::BgRotate(workStrip, true));
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    env.add(new EC::BgFadeToBlack(20, workStrip, 40));
+    env.add(new EC::BgRotate(workStrip, true));
+    auto &vuLevelSource = env.addVuSource();
 
-    auto levelVu = scene.append(new EC::VuOverlayRainbowStripe(workStrip, *vuLevelSource));
-    levelVu->color.hueRange = 0.5;
-    levelVu->color.volume = 255;
+    auto &levelVu = env.add(new EC::VuOverlayRainbowStripe(workStrip, vuLevelSource));
+    levelVu.color.hueRange = 0.5;
+    levelVu.color.volume = 255;
 
-    scene.append(new EC::Kaleidoscope(strip));
+    env.add(new EC::Kaleidoscope(env.strip()));
     // autoMode = false;
 }
 
-void makeDancingJellyfishVU(EC::AnimationScene &scene)
+void makeDancingJellyfishVU(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    auto vuLevelSource = appendVuSourceAnalogPin(scene, EC::DancingJellyfishVU::fadeRate);
-    auto levelVu = scene.append(new EC::DancingJellyfishVU(strip, *vuLevelSource));
+    auto &vuLevelSource = env.addVuBackground(EC::DancingJellyfishVU::fadeRate);
+    env.add(new EC::DancingJellyfishVU(env.strip(), vuLevelSource));
     // autoMode = false;
 }
 
-void makeFlowingBeatVU(EC::AnimationScene &scene)
+void makeFlowingBeatVU(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::TriggerPattern(EC::FlowingBeatVU::patternUpdatePeriod));
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
-    auto levelVu = scene.append(new EC::FlowingBeatVU(strip, *vuLevelSource));
+    env.add(new EC::TriggerPattern(EC::FlowingBeatVU::patternUpdatePeriod));
+    auto &vuLevelSource = env.addVuSource();
+    env.add(new EC::FlowingBeatVU(env.strip(), vuLevelSource));
     // autoMode = false;
 }
 
-void makeLightbulbVU(EC::AnimationScene &scene)
+void makeLightbulbVU(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::TriggerPattern());
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
-    auto levelVu = scene.append(new EC::LightbulbVU(strip, *vuLevelSource));
+    env.add(new EC::TriggerPattern());
+    auto &vuLevelSource = env.addVuSource();
+    env.add(new EC::LightbulbVU(env.strip(), vuLevelSource));
     // autoMode = false;
 }
 
-void makeRainingVU(EC::AnimationScene &scene)
+void makeRainingVU(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
+    env.add(new EC::BgFadeToBlack(20, env.strip(), 20));
+    env.add(new EC::BgRotate(env.strip(), true));
+    auto &vuLevelSource = env.addVuSource();
 
-    scene.append(new EC::BgFadeToBlack(20, strip, 20));
-    scene.append(new EC::BgRotate(strip, true));
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    auto &levelVu = env.add(new EC::VuOverlayRainbowDot(env.strip(), vuLevelSource));
+    levelVu.color.hueRange = 0.67;
+    levelVu.color.volume = 192;
 
-    auto levelVu = scene.append(new EC::VuOverlayRainbowDot(strip, *vuLevelSource));
-    levelVu->color.hueRange = 0.67;
-    levelVu->color.volume = 192;
-
-    auto peakGlitter = scene.append(new EC::VuOverlayPeakGlitter(strip, *vuLevelSource));
-    peakGlitter->vuPeakHandler.peakHold = 500;
-    peakGlitter->vuPeakHandler.peakDecay = 500;
+    auto &peakGlitter = env.add(new EC::VuOverlayPeakGlitter(env.strip(), vuLevelSource));
+    peakGlitter.vuPeakHandler.peakHold = 500;
+    peakGlitter.vuPeakHandler.peakDecay = 500;
     // autoMode = false;
 }
 
-void makeRetroPartyVU(EC::AnimationScene &scene)
+void makeRetroPartyVU(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::TriggerPattern());
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
-    auto levelVu = scene.append(new EC::RetroPartyVU(strip, *vuLevelSource));
+    env.add(new EC::TriggerPattern());
+    auto &vuLevelSource = env.addVuSource();
+    env.add(new EC::RetroPartyVU(env.strip(), vuLevelSource));
     // autoMode = false;
 }
 
 //------------------------------------------------------------------------------
 
-#define USE_GLOBAL_TEST_VU 0
-
-#if (USE_GLOBAL_TEST_VU)
-EC::TestVU1 globalTestVU(audioSample, {leds, NUM_LEDS}, nullptr);
-#endif
-
-EC::TestVU1 *appendTestVU1(EC::AnimationScene &scene,
-                           EC::TestVU1::DrawingFct drawingFct,
-                           uint8_t fadeRate = 0)
-{
-#if (USE_GLOBAL_TEST_VU)
-    auto testVU = scene.append(globalTestVU);
-    testVU->drawingFct = drawingFct;
-    testVU->fadeRate = fadeRate;
-    return testVU;
-#else
-    return scene.append(new EC::TestVU1(audioSample, {leds, NUM_LEDS}, drawingFct, fadeRate));
-#endif
-}
-
-void makeTestVU_1(EC::AnimationScene &scene)
+void makeTestVU_1(EC::SetupEnv &env)
 {
     auto drawingFct = [](EC::FastLedStrip &strip, EC::TestVU1 &vu)
     {
@@ -410,17 +333,13 @@ void makeTestVU_1(EC::AnimationScene &scene)
 #endif
     };
 
-#if (1)
-    auto testVU = appendTestVU1(scene, drawingFct, 0);
-#else
-    auto testVU = scene.append(new EC::TestVU1(audioSample, {leds, NUM_LEDS}, drawingFct, 0));
-    testVU->vuRangeExtender.bypass = true;
-#endif
+    auto &testVU = env.add(new EC::TestVU1(PIN_MIC, env.strip(), drawingFct));
+    // testVU.vuRangeExtender.bypass = true;
 
     // autoMode = false;
 }
 
-void makeRangeExtenderComparison(EC::AnimationScene &scene)
+void makeRangeExtenderComparison(EC::SetupEnv &env)
 {
     auto drawingFct = [](EC::FastLedStrip &strip, EC::TestVU1 &vu)
     {
@@ -428,11 +347,11 @@ void makeRangeExtenderComparison(EC::AnimationScene &scene)
         strip.n_pixelOpt(vu.vuRangeExtender.getVU()) += CRGB(255, 64, 0);
     };
 
-    auto testVU = appendTestVU1(scene, drawingFct);
+    auto &testVU = env.add(new EC::TestVU1(PIN_MIC, env.strip(), drawingFct));
     // autoMode = false;
 }
 
-void makeRangeExtenderInternals(EC::AnimationScene &scene)
+void makeRangeExtenderInternals(EC::SetupEnv &env)
 {
     auto drawingFct = [](EC::FastLedStrip &strip, EC::TestVU1 &vu)
     {
@@ -458,29 +377,27 @@ void makeRangeExtenderInternals(EC::AnimationScene &scene)
         strip.n_pixel(vu.vuRangeExtender.rangeMin) = CRGB(0, 0, 255);
     };
 
-    auto testVU = appendTestVU1(scene, drawingFct, 0);
+    auto &testVU = env.add(new EC::TestVU1(PIN_MIC, env.strip(), drawingFct));
     autoMode = false;
 }
 
-void makeDraftVU(EC::AnimationScene &scene)
+void makeDraftVU(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::TriggerPattern(EC::FlowingBeatVU::patternUpdatePeriod));
-    auto vuLevelSource = scene.append(new EC::VuSourceAnalogPin(audioSample));
+    env.add(new EC::TriggerPattern(EC::FlowingBeatVU::patternUpdatePeriod));
+    auto &vuLevelSource = env.addVuSource();
 
 #if (0)
-    auto levelVu = scene.append(new EC::FlowingBeatVU(strip, *vuLevelSource));
+    auto &levelVu = env.add(new EC::FlowingBeatVU(env.strip(), vuLevelSource));
 #else
-    auto levelVu = scene.append(new EC::FlowingBeatVU(strip.getHalfStrip(), *vuLevelSource));
-    scene.append(new EC::Kaleidoscope(strip));
+    auto &levelVu = env.add(new EC::FlowingBeatVU(env.strip().getHalfStrip(), vuLevelSource));
+    env.add(new EC::Kaleidoscope(env.strip()));
 #endif
     // autoMode = false;
 }
 
 //------------------------------------------------------------------------------
 
-EC::AnimationSceneBuilderFct allAnimations[] = {
+EC::AnimationSceneMakerFct allAnimations[] = {
     // &makeRawAudioVU,
     // &makeDraftVU,
     // &makeRangeExtenderInternals,
@@ -508,10 +425,13 @@ EC::AnimationSceneBuilderFct allAnimations[] = {
 
     nullptr};
 
+//------------------------------------------------------------------------------
+
+EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, PIN_MIC);
 #if (0)
-EC::AnimationChanger animationChanger(allAnimations);
+EC::AnimationChanger2 animationChanger(animationSetupEnv, allAnimations);
 #else
-EC::AnimationChangerSoft animationChanger(allAnimations);
+EC::AnimationChangerSoft2 animationChanger(animationSetupEnv, allAnimations);
 #endif
 
 //------------------------------------------------------------------------------
@@ -565,6 +485,49 @@ void handleAnimationChange(uint32_t currentMillis = millis())
 
 /*
 
+AnimationChangerSoft2:
+Sketch uses 22736 bytes (70%) of program storage space. Maximum is 32256 bytes.
+Global variables use 878 bytes (42%) of dynamic memory, leaving 1170 bytes for local variables. Maximum is 2048 bytes.
+---
+Sketch uses 22464 bytes (69%) of program storage space. Maximum is 32256 bytes.
+Global variables use 869 bytes (42%) of dynamic memory, leaving 1179 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 22440 bytes (69%) of program storage space. Maximum is 32256 bytes.
+Global variables use 867 bytes (42%) of dynamic memory, leaving 1181 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 22612 bytes (70%) of program storage space. Maximum is 32256 bytes.
+Global variables use 867 bytes (42%) of dynamic memory, leaving 1181 bytes for local variables. Maximum is 2048 bytes.
+
+AnimationChanger2:
+Sketch uses 22442 bytes (69%) of program storage space. Maximum is 32256 bytes.
+Global variables use 869 bytes (42%) of dynamic memory, leaving 1179 bytes for local variables. Maximum is 2048 bytes.
+---
+Sketch uses 22734 bytes (70%) of program storage space. Maximum is 32256 bytes.
+Global variables use 878 bytes (42%) of dynamic memory, leaving 1170 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 22744 bytes (70%) of program storage space. Maximum is 32256 bytes.
+Global variables use 890 bytes (43%) of dynamic memory, leaving 1158 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 22762 bytes (70%) of program storage space. Maximum is 32256 bytes.
+Global variables use 890 bytes (43%) of dynamic memory, leaving 1158 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 22474 bytes (69%) of program storage space. Maximum is 32256 bytes.
+Global variables use 890 bytes (43%) of dynamic memory, leaving 1158 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 22372 bytes (69%) of program storage space. Maximum is 32256 bytes.
+Global variables use 890 bytes (43%) of dynamic memory, leaving 1158 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 22948 bytes (71%) of program storage space. Maximum is 32256 bytes.
+Global variables use 900 bytes (43%) of dynamic memory, leaving 1148 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 23078 bytes (71%) of program storage space. Maximum is 32256 bytes.
+Global variables use 900 bytes (43%) of dynamic memory, leaving 1148 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 22740 bytes (70%) of program storage space. Maximum is 32256 bytes.
+Global variables use 883 bytes (43%) of dynamic memory, leaving 1165 bytes for local variables. Maximum is 2048 bytes.
+
+---
+
 AdcSampleNormalizer:
 Sketch uses 22756 bytes (70%) of program storage space. Maximum is 32256 bytes.
 Global variables use 883 bytes (43%) of dynamic memory, leaving 1165 bytes for local variables. Maximum is 2048 bytes.
@@ -578,13 +541,6 @@ Global variables use 881 bytes (43%) of dynamic memory, leaving 1167 bytes for l
 void loop()
 {
     const uint32_t currentMillis = millis();
-#if (1)
-    audioSample = adcNormalizer.process(analogRead(PIN_MIC));
-    // audioSample = normalizer.analogRead(PIN_MIC);
-    // EC::logAudioSample(audioSample);
-#else
-    audioSample = adcNormalizer.process(inoise8(currentMillis, currentMillis));
-#endif
 
     handleAnimationChange(currentMillis);
 

@@ -28,6 +28,7 @@ SOFTWARE.
 #include <Arduino.h>
 #include <math.h>
 #include "AnimationBase.h"
+#include "AudioNormalizer.h"
 #include "VuPeakHandler.h"
 
 //------------------------------------------------------------------------------
@@ -80,13 +81,13 @@ namespace EC
     bool enableTeleplot = false;
 
     /** Constructor
-     * @param audioSource  Read the audio samples from there.
+     * @param analogPin  Pin for reading the audio signal.
      * @param ledStrip  The LED strip.
      */
-    RawAudioVU(float &audioSource,
+    RawAudioVU(uint8_t analogPin,
                FastLedStrip ledStrip)
         : AnimationBase(ledStrip, false, 25),
-          _audioSource(audioSource)
+          _analogPin(analogPin)
     {
     }
 
@@ -94,7 +95,8 @@ namespace EC
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      float sample = (_audioSource + 1.0) / 2.0;
+      const float audioSample = _adcNormalizer.process(analogRead(_analogPin));
+      float sample = (audioSample + 1.0) / 2.0;
 
       strip.n_pixel(1.0) = CRGB(64, 0, 0);
       strip.n_pixel(0.0) = CRGB(0, 0, 64);
@@ -115,8 +117,8 @@ namespace EC
     }
 
   private:
-    float &_audioSource;
-
+    const uint8_t _analogPin;
+    AdcSampleNormalizer _adcNormalizer;
     float _lastSample = 0.5;
   };
 
