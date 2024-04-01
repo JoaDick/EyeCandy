@@ -43,11 +43,6 @@ namespace EC
       : public Animation
   {
   public:
-    /** Default fading speed.
-     * Lower value = longer glowing; 0 = solid black background.
-     */
-    static uint8_t fadeRate_default() { return 50; }
-
     /// Color source of the VU.
     ColorWheel color;
 

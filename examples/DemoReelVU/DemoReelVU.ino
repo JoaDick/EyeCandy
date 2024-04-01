@@ -193,28 +193,24 @@ void make_FireVU(EC::SetupEnv &env)
 
 // ---
 
-void make_FlareVU(EC::SetupEnv &env, EC::FastLedStrip subStrip)
+void make_FlareVU(EC::SetupEnv &env)
 {
-    const int16_t ledCount = subStrip.ledCount();
+    const int16_t ledCount = env.strip().ledCount();
     const int16_t fireLedCount = ledCount / 2 + ledCount / 10;
-    EC::FastLedStrip fireStrip = subStrip.getSubStrip(0, fireLedCount, true);
+    EC::FastLedStrip fireStrip = env.strip().getSubStrip(0, fireLedCount, true);
 
     auto &fire = env.add(new EC::Fire2012<NUM_LEDS>(fireStrip));
     fire.setModelUpdatePeriod(10);
 
     auto &vuSource = env.addVuSource();
     env.add(new EC::Fire2012VU<NUM_LEDS>(fire, vuSource));
-    env.add(new EC::Kaleidoscope(subStrip));
-}
-
-void make_FlareVU(EC::SetupEnv &env)
-{
-    make_FlareVU(env, env.strip());
+    env.add(new EC::Kaleidoscope(env.strip()));
 }
 
 void make_FlareDoubleVU(EC::SetupEnv &env)
 {
-    make_FlareVU(env, env.strip().getHalfStrip());
+    auto subEnv = env.clone_halfStrip();
+    make_FlareVU(subEnv);
     env.add(new EC::Kaleidoscope(env.strip()));
 }
 
@@ -263,7 +259,7 @@ void make_BlackHoleVU(EC::SetupEnv &env)
 
 void make_DancingJellyfishVU(EC::SetupEnv &env)
 {
-    auto &vuLevelSource = env.addVuBackground(EC::DancingJellyfishVU::fadeRate);
+    auto &vuLevelSource = env.addVuBackground(EC::DancingJellyfishVU::fadeRate_default);
     env.add(new EC::DancingJellyfishVU(env.strip(), vuLevelSource));
 }
 
@@ -300,7 +296,7 @@ void make_MeteorTrailVU(EC::SetupEnv &env)
 
 void make_PeakGlitterVU(EC::SetupEnv &env)
 {
-    auto &vuSource = env.addVuBackground(EC::VuOverlayPeakGlitter::fadeRate_default());
+    auto &vuSource = env.addVuBackground(EC::VuOverlayPeakGlitter::fadeRate_default);
     env.add(new EC::VuOverlayPeakGlitter(env.strip(), vuSource));
 }
 
@@ -332,157 +328,131 @@ void make_RetroPartyVU(EC::SetupEnv &env)
 
 // ---
 
-void make_RainbowBallVU(EC::SetupEnv &env, EC::FastLedStrip subStrip)
+void make_RainbowBallVU(EC::SetupEnv &env)
 {
-    auto &vuLevelSource = env.addVuBackground(EC::BlueprintRainbowVU::fadeRate);
-
-    EC::BlueprintRainbowVU bp(subStrip, env.scene(), vuLevelSource);
+    EC::BlueprintRainbowVU bp(env);
     bp.peakSource->vuPeakHandler.presetPunchedBall();
     // bp.setVuRange(0.67);
 }
 
-void make_RainbowBallVU(EC::SetupEnv &env)
-{
-    make_RainbowBallVU(env, env.strip());
-}
-
 void make_RainbowBalllVU_inward(EC::SetupEnv &env)
 {
-    make_RainbowBallVU(env, env.strip().getHalfStrip());
+    auto subEnv = env.clone_halfStrip();
+    make_RainbowBallVU(subEnv);
     env.add(new EC::Kaleidoscope(env.strip()));
 }
 
 void make_RainbowBalllVU_outward(EC::SetupEnv &env)
 {
-    make_RainbowBallVU(env, env.strip().getHalfStrip(true));
+    auto subEnv = env.clone_halfStrip(true);
+    make_RainbowBallVU(subEnv);
     env.add(new EC::Kaleidoscope(env.strip()));
 }
 
 // ---
 
-void make_RainbowBubbleVU(EC::SetupEnv &env, EC::FastLedStrip subStrip)
+void make_RainbowBubbleVU(EC::SetupEnv &env)
 {
-    auto &vuLevelSource = env.addVuBackground(EC::BlueprintRainbowVU::fadeRate);
-
-    EC::BlueprintRainbowVU bp(subStrip, env.scene(), vuLevelSource);
+    EC::BlueprintRainbowVU bp(env);
     bp.peakSource->vuPeakHandler.presetFloatingBubble();
     bp.setVuRange(0.67);
 }
 
-void make_RainbowBubbleVU(EC::SetupEnv &env)
-{
-    make_RainbowBubbleVU(env, env.strip());
-}
-
 void make_RainbowBubbleVU_inward(EC::SetupEnv &env)
 {
-    make_RainbowBubbleVU(env, env.strip().getHalfStrip());
+    auto subEnv = env.clone_halfStrip();
+    make_RainbowBubbleVU(subEnv);
     env.add(new EC::Kaleidoscope(env.strip()));
 }
 
 void make_RainbowBubbleVU_outward(EC::SetupEnv &env)
 {
-    make_RainbowBubbleVU(env, env.strip().getHalfStrip(true));
+    auto subEnv = env.clone_halfStrip(true);
+    make_RainbowBubbleVU(subEnv);
     env.add(new EC::Kaleidoscope(env.strip()));
 }
 
 // ---
 
-void make_EjectingDotVu(EC::SetupEnv &env, EC::FastLedStrip subStrip)
-{
-    auto &vuLevelSource = env.addVuBackground(EC::BlueprintEjectingDotVu::fadeRate);
-    EC::BlueprintEjectingDotVu bp(subStrip, env.scene(), vuLevelSource);
-}
-
 void make_EjectingDotVu(EC::SetupEnv &env)
 {
-    make_EjectingDotVu(env, env.strip());
+    EC::BlueprintEjectingDotVu bp(env);
 }
 
 void make_EjectingDotVu_inward(EC::SetupEnv &env)
 {
-    make_EjectingDotVu(env, env.strip().getHalfStrip());
+    auto subEnv = env.clone_halfStrip();
+    make_EjectingDotVu(subEnv);
     env.add(new EC::Kaleidoscope(env.strip()));
 }
 
 void make_EjectingDotVu_outward(EC::SetupEnv &env)
 {
-    make_EjectingDotVu(env, env.strip().getHalfStrip(true));
+    auto subEnv = env.clone_halfStrip(true);
+    make_EjectingDotVu(subEnv);
     env.add(new EC::Kaleidoscope(env.strip()));
 }
 
 // ---
 
-void make_FranticVu(EC::SetupEnv &env, EC::FastLedStrip subStrip)
-{
-    auto &vuLevelSource = env.addVuBackground(EC::BlueprintFranticVu::fadeRate);
-    EC::BlueprintFranticVu bp(subStrip, env.scene(), vuLevelSource);
-}
-
 void make_FranticVu(EC::SetupEnv &env)
 {
-    make_FranticVu(env, env.strip());
+    EC::BlueprintFranticVu bp(env);
 }
 
 void make_FranticVu_inward(EC::SetupEnv &env)
 {
-    make_FranticVu(env, env.strip().getHalfStrip());
+    auto subEnv = env.clone_halfStrip();
+    make_FranticVu(subEnv);
     env.add(new EC::Kaleidoscope(env.strip()));
 }
 
 void make_FranticVu_outward(EC::SetupEnv &env)
 {
-    make_FranticVu(env, env.strip().getHalfStrip(true));
+    auto subEnv = env.clone_halfStrip(true);
+    make_FranticVu(subEnv);
     env.add(new EC::Kaleidoscope(env.strip()));
 }
 
 // ---
 
-void make_CrazyVu(EC::SetupEnv &env, EC::FastLedStrip subStrip)
-{
-    auto &vuLevelSource = env.addVuBackground(EC::BlueprintCrazyVu::fadeRate);
-    EC::BlueprintCrazyVu bp(subStrip, env.scene(), vuLevelSource);
-}
-
 void make_CrazyVu(EC::SetupEnv &env)
 {
-    make_CrazyVu(env, env.strip());
+    EC::BlueprintCrazyVu bp(env);
 }
 
 void make_CrazyVu_inward(EC::SetupEnv &env)
 {
-    make_CrazyVu(env, env.strip().getHalfStrip());
+    auto subEnv = env.clone_halfStrip();
+    make_CrazyVu(subEnv);
     env.add(new EC::Kaleidoscope(env.strip()));
 }
 
 void make_CrazyVu_outward(EC::SetupEnv &env)
 {
-    make_CrazyVu(env, env.strip().getHalfStrip(true));
+    auto subEnv = env.clone_halfStrip(true);
+    make_CrazyVu(subEnv);
     env.add(new EC::Kaleidoscope(env.strip()));
 }
 
 // ---
 
-void make_BeyondCrazyVu(EC::SetupEnv &env, EC::FastLedStrip subStrip)
-{
-    auto &vuLevelSource = env.addVuBackground(EC::BlueprintBeyondCrazyVu::fadeRate);
-    EC::BlueprintBeyondCrazyVu bp(subStrip, env.scene(), vuLevelSource);
-}
-
 void make_BeyondCrazyVu(EC::SetupEnv &env)
 {
-    make_BeyondCrazyVu(env, env.strip());
+    EC::BlueprintBeyondCrazyVu bp(env);
 }
 
 void make_BeyondCrazyVu_inward(EC::SetupEnv &env)
 {
-    make_BeyondCrazyVu(env, env.strip().getHalfStrip());
+    auto subEnv = env.clone_halfStrip();
+    make_BeyondCrazyVu(subEnv);
     env.add(new EC::Kaleidoscope(env.strip()));
 }
 
 void make_BeyondCrazyVu_outward(EC::SetupEnv &env)
 {
-    make_BeyondCrazyVu(env, env.strip().getHalfStrip(true));
+    auto subEnv = env.clone_halfStrip(true);
+    make_BeyondCrazyVu(subEnv);
     env.add(new EC::Kaleidoscope(env.strip()));
 }
 
@@ -505,27 +475,23 @@ void make_VuIntro2(EC::SetupEnv &env)
 
 void make_VuIntro3(EC::SetupEnv &env)
 {
-    auto &vuLevelSource = env.addVuBackground(0);
-    EC::BlueprintBasicVU bp(env.strip(), env.scene(), vuLevelSource);
+    EC::BlueprintBasicVU bp(env, 0);
     animationDuration = 16;
 }
 
 void make_VuIntro4(EC::SetupEnv &env)
 {
-    auto &vuLevelSource = env.addVuBackground(EC::BlueprintBasicVU::fadeRate);
-    EC::BlueprintBasicVU bp(env.strip(), env.scene(), vuLevelSource);
-    env.add(new EC::VuOverlayPeakGlitter(env.strip(), vuLevelSource));
+    EC::BlueprintBasicVU bp(env);
+    env.add(new EC::VuOverlayPeakGlitter(env.strip(), bp.getVuSource()));
     animationDuration = 10;
 }
 
 void make_VuIntro5(EC::SetupEnv &env)
 {
-    auto &vuLevelSource = env.addVuBackground(0);
-
-    EC::BlueprintRainbowVU bp(env.strip(), env.scene(), vuLevelSource);
+    EC::BlueprintRainbowVU bp(env, 0);
     bp.setVuRange(0.15);
 
-    env.add(new EC::VuOverlayPeakGlitter(env.strip(), vuLevelSource));
+    env.add(new EC::VuOverlayPeakGlitter(env.strip(), bp.getVuSource()));
     animationDuration = 10;
 }
 
@@ -660,12 +626,35 @@ EC::AnimationSceneMakerFct allAnimations[] = {
 //------------------------------------------------------------------------------
 
 EC::VuSource &makeVuSource(EC::SetupEnv &env) { return env.add(new EC::VuAnalogInputPin(PIN_MIC)); }
-EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, &makeVuSource);
+EC::AnimationScene mainScene;
+EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, mainScene, &makeVuSource);
 EC::AnimationChangerSoft2 animationChanger(animationSetupEnv, allAnimations);
 
 //------------------------------------------------------------------------------
 
 /*
+
+improved BlueprintBeyondCrazyVu
+Sketch uses 31420 bytes (97%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1035 bytes (50%) of dynamic memory, leaving 1013 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 31404 bytes (97%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1035 bytes (50%) of dynamic memory, leaving 1013 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 31468 bytes (97%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1035 bytes (50%) of dynamic memory, leaving 1013 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 31462 bytes (97%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1035 bytes (50%) of dynamic memory, leaving 1013 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 31444 bytes (97%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1035 bytes (50%) of dynamic memory, leaving 1013 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 31462 bytes (97%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1035 bytes (50%) of dynamic memory, leaving 1013 bytes for local variables. Maximum is 2048 bytes.
+
+Sketch uses 31746 bytes (98%) of program storage space. Maximum is 32256 bytes.
+Global variables use 1035 bytes (50%) of dynamic memory, leaving 1013 bytes for local variables. Maximum is 2048 bytes.
 
 Sketch uses 31780 bytes (98%) of program storage space. Maximum is 32256 bytes.
 Global variables use 1033 bytes (50%) of dynamic memory, leaving 1015 bytes for local variables. Maximum is 2048 bytes.

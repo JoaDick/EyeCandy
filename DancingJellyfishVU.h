@@ -51,7 +51,7 @@ namespace EC
     /** Default fading speed.
      * Lower value = longer glowing; 0 = solid black background.
      */
-    static constexpr uint8_t fadeRate = 20;
+    static constexpr uint8_t fadeRate_default = 20;
 
     /// Color source of the VU.
     ColorWheel color{1.0, -0.67};

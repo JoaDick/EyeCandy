@@ -224,20 +224,17 @@ void make_VuElements6(EC::SetupEnv &env)
 
 void make_EjectingDotVu(EC::SetupEnv &env)
 {
-    auto &vuLevelSource = env.addVuBackground(EC::BlueprintEjectingDotVu::fadeRate);
-    EC::BlueprintEjectingDotVu bp(env.strip(), env.scene(), vuLevelSource);
+    EC::BlueprintEjectingDotVu bp(env);
 }
 
 void make_CrazyVu(EC::SetupEnv &env)
 {
-    auto &vuLevelSource = env.addVuBackground(EC::BlueprintCrazyVu::fadeRate);
-    EC::BlueprintCrazyVu bp(env.strip(), env.scene(), vuLevelSource);
+    EC::BlueprintCrazyVu bp(env);
 }
 
 void make_BeyondCrazyVu(EC::SetupEnv &env)
 {
-    auto &vuLevelSource = env.addVuBackground(EC::BlueprintBeyondCrazyVu::fadeRate);
-    EC::BlueprintBeyondCrazyVu bp(env.strip(), env.scene(), vuLevelSource);
+    EC::BlueprintBeyondCrazyVu bp(env);
 }
 
 void make_BallLightningVU(EC::SetupEnv &env)
@@ -264,7 +261,7 @@ void make_BlackHoleVU(EC::SetupEnv &env)
 
 void make_DancingJellyfishVU(EC::SetupEnv &env)
 {
-    auto &vuLevelSource = env.addVuBackground(EC::DancingJellyfishVU::fadeRate);
+    auto &vuLevelSource = env.addVuBackground(EC::DancingJellyfishVU::fadeRate_default);
     env.add(new EC::DancingJellyfishVU(env.strip(), vuLevelSource));
 }
 
@@ -423,7 +420,8 @@ EC::VuSource &make_VuSource(EC::SetupEnv &env) { return env.add(globalVuSource);
 EC::VuSource &make_VuSource(EC::SetupEnv &env) { return env.add(new EC::VuAnalogInputPin(PIN_MIC)); }
 #endif
 
-EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, &make_VuSource);
+EC::AnimationScene mainScene;
+EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, mainScene, &make_VuSource);
 
 #if (0)
 EC::AnimationChanger2 animationChanger(animationSetupEnv, allAnimations);
@@ -481,6 +479,9 @@ void handleAnimationChange(uint32_t currentMillis = millis())
 //------------------------------------------------------------------------------
 
 /*
+
+Sketch uses 22618 bytes (70%) of program storage space. Maximum is 32256 bytes.
+Global variables use 889 bytes (43%) of dynamic memory, leaving 1159 bytes for local variables. Maximum is 2048 bytes.
 
 Sketch uses 22700 bytes (70%) of program storage space. Maximum is 32256 bytes.
 Global variables use 887 bytes (43%) of dynamic memory, leaving 1161 bytes for local variables. Maximum is 2048 bytes.

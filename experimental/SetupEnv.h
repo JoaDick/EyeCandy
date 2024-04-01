@@ -49,11 +49,13 @@ namespace EC
 
     /** Constructor.
      * @param ledStrip  The LED strip.
+     * @param scene  Operate on that AnimationScene.
      * @param vuSourceMakerFct  Callback function for creating the AnimationScene's VuSource.
      */
-    explicit SetupEnv(FastLedStrip ledStrip,
-                      VuSourceMakerFct vuSourceMakerFct = nullptr)
-        : _strip(ledStrip), _makeVuSource(vuSourceMakerFct)
+    SetupEnv(FastLedStrip ledStrip,
+             AnimationScene &scene,
+             VuSourceMakerFct vuSourceMakerFct = nullptr)
+        : _strip(ledStrip), _scene(scene), _makeVuSource(vuSourceMakerFct)
     {
     }
 
@@ -114,6 +116,41 @@ namespace EC
       // _strip.clear();
     }
 
+    /** Clone this SetupEnv but with a reversed LED strip.
+     * @see FastLedStrip::getReversedStrip()
+     */
+    SetupEnv clone_reversedStrip() const
+    {
+      SetupEnv retval(*this);
+      retval._strip = _strip.getReversedStrip();
+      return retval;
+    }
+
+    /** Clone this SetupEnv but with a LED strip that has only half of the original strip's size.
+     * @param reversed  Draw the new strip's content in reverse direction.
+     * @see FastLedStrip::getHalfStrip()
+     */
+    SetupEnv clone_halfStrip(bool reversed = false) const
+    {
+      SetupEnv retval(*this);
+      retval._strip = _strip.getHalfStrip(reversed);
+      return retval;
+    }
+
+    /** Clone this SetupEnv but with a sub-strip of the original LED strip.
+     * @param offset  New strip starts at this LED.
+     * @param newSize  Number of LEDs in the new strip.
+     *                 0 means all from \a offset up to the end of the strip.
+     * @param reversed  Draw the new strip's content in reverse direction.
+     * @see FastLedStrip::getSubStrip()
+     */
+    SetupEnv clone_subStrip(int16_t offset, int16_t newSize, bool reversed = false) const
+    {
+      SetupEnv retval(*this);
+      retval._strip = _strip.getSubStrip(offset, newSize, reversed);
+      return retval;
+    }
+
 #ifdef EC_SETUP_ENV_USER_DATA_TYPE
     using UserDataType = EC_SETUP_ENV_USER_DATA_TYPE;
     UserDataType *userData = nullptr;
@@ -121,8 +158,8 @@ namespace EC
 
   private:
     FastLedStrip _strip;
+    AnimationScene &_scene;
     VuSourceMakerFct _makeVuSource;
-    AnimationScene _scene;
   };
 
   //------------------------------------------------------------------------------

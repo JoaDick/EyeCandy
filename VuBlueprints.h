@@ -25,6 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
+#include "experimental/SetupEnv.h"
 #include "VuOverlayLine.h"
 #include "VuOverlayStripe.h"
 #include "VuOverlayDot.h"
@@ -45,20 +46,30 @@ namespace EC
 
   struct BlueprintBasicVU
   {
-    /** Recommended fading speed for this Blueprint.
-     */
-    static constexpr uint8_t fadeRate = 50;
+    /// Recommended fading speed for this Blueprint.
+    static constexpr uint8_t fadeRate_default = 50;
 
     VuSourcePeakHold *peakSource;
 
-    VuOverlayLine *levelOverlay;
-    VuOverlayDot *peakOverlay;
+    VuOverlayLine *vuLevelBar;
+    VuOverlayDot *vuPeakDot;
+
+    explicit BlueprintBasicVU(SetupEnv &env,
+                              uint8_t fadeRate = fadeRate_default)
+        : BlueprintBasicVU(env.strip(), env.scene(), env.addVuBackground(fadeRate))
+    {
+    }
 
     BlueprintBasicVU(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
     {
       peakSource = scene.append(new VuSourcePeakHold(vuSource));
-      levelOverlay = scene.append(new VuOverlayLine(strip, vuSource));
-      peakOverlay = scene.append(new VuOverlayDot(strip, *peakSource));
+      vuLevelBar = scene.append(new VuOverlayLine(strip, vuSource));
+      vuPeakDot = scene.append(new VuOverlayDot(strip, *peakSource));
+    }
+
+    VuSource &getVuSource()
+    {
+      return vuLevelBar->getInputVuSource();
     }
   };
 
@@ -66,38 +77,48 @@ namespace EC
 
   struct BlueprintRainbowVU
   {
-    /** Recommended fading speed for this Blueprint.
-     */
-    static constexpr uint8_t fadeRate = 50;
+    /// Recommended fading speed for this Blueprint.
+    static constexpr uint8_t fadeRate_default = 50;
 
     VuSourcePeakGravity *peakSource;
 
-    VuOverlayRainbowLine *levelOverlay;
-    VuOverlayRainbowDot *peakOverlay;
+    VuOverlayRainbowLine *vuLevelBar;
+    VuOverlayRainbowDot *vuPeakDot;
 
     void setBPM(float bpm)
     {
-      levelOverlay->color.bpm = bpm;
-      peakOverlay->color.bpm = bpm;
+      vuLevelBar->color.bpm = bpm;
+      vuPeakDot->color.bpm = bpm;
     }
 
     void setVuRange(float vuHueRange)
     {
-      levelOverlay->color.hueRange = vuHueRange;
-      peakOverlay->color.hueRange = vuHueRange;
+      vuLevelBar->color.hueRange = vuHueRange;
+      vuPeakDot->color.hueRange = vuHueRange;
     }
 
     void setVolume(float volume)
     {
-      levelOverlay->color.volume = volume;
-      peakOverlay->color.volume = volume;
+      vuLevelBar->color.volume = volume;
+      vuPeakDot->color.volume = volume;
+    }
+
+    explicit BlueprintRainbowVU(SetupEnv &env,
+                                uint8_t fadeRate = fadeRate_default)
+        : BlueprintRainbowVU(env.strip(), env.scene(), env.addVuBackground(fadeRate))
+    {
     }
 
     BlueprintRainbowVU(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
     {
       peakSource = scene.append(new VuSourcePeakGravity(vuSource));
-      levelOverlay = scene.append(new VuOverlayRainbowLine(strip, vuSource));
-      peakOverlay = scene.append(new VuOverlayRainbowDot(strip, *peakSource, vuSource));
+      vuLevelBar = scene.append(new VuOverlayRainbowLine(strip, vuSource));
+      vuPeakDot = scene.append(new VuOverlayRainbowDot(strip, *peakSource, vuSource));
+    }
+
+    VuSource &getVuSource()
+    {
+      return vuLevelBar->getLevelVuSource();
     }
   };
 
@@ -105,9 +126,8 @@ namespace EC
 
   struct BlueprintEjectingDotVu
   {
-    /** Recommended fading speed for this Blueprint.
-     */
-    static constexpr uint8_t fadeRate = 25;
+    /// Recommended fading speed for this Blueprint.
+    static constexpr uint8_t fadeRate_default = 25;
 
     VuSourcePeakGravity *vuPeakSource1;
     VuSourcePeakGravity *vuPeakSource2;
@@ -115,6 +135,12 @@ namespace EC
     VuOverlayRainbowLine *vuLevelBar;
     VuOverlayRainbowDot *vuPeakDot1;
     VuOverlayRainbowDot *vuPeakDot2;
+
+    explicit BlueprintEjectingDotVu(SetupEnv &env,
+                                    uint8_t fadeRate = fadeRate_default)
+        : BlueprintEjectingDotVu(env.strip(), env.scene(), env.addVuBackground(fadeRate))
+    {
+    }
 
     BlueprintEjectingDotVu(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
     {
@@ -133,15 +159,19 @@ namespace EC
       vuPeakDot1->color.hueRange = 1.0;
       vuPeakDot2->color.hueRange = vuPeakDot1->color.hueRange;
     }
+
+    VuSource &getVuSource()
+    {
+      return vuLevelBar->getLevelVuSource();
+    }
   };
 
   //------------------------------------------------------------------------------
 
   struct BlueprintFranticVu
   {
-    /** Recommended fading speed for this Blueprint.
-     */
-    static constexpr uint8_t fadeRate = 45;
+    /// Recommended fading speed for this Blueprint.
+    static constexpr uint8_t fadeRate_default = 45;
 
     VuSourcePeakGravity *vuPeakSource1;
     VuSourcePeakGravity *vuDipSource1;
@@ -154,6 +184,12 @@ namespace EC
     {
       vuPeakDot1->color.hueRange = dotVuHueRange;
       vuDipDot1->color.hueRange = dotVuHueRange;
+    }
+
+    explicit BlueprintFranticVu(SetupEnv &env,
+                                uint8_t fadeRate = fadeRate_default)
+        : BlueprintFranticVu(env.strip(), env.scene(), env.addVuBackground(fadeRate))
+    {
     }
 
     BlueprintFranticVu(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
@@ -174,15 +210,19 @@ namespace EC
       vuLevelStrip->color.hueRange = 0.1;
       setdotVuHueRange(1.5);
     }
+
+    VuSource &getVuSource()
+    {
+      return vuLevelStrip->getLevelVuSource();
+    }
   };
 
   //------------------------------------------------------------------------------
 
   struct BlueprintCrazyVu
   {
-    /** Recommended fading speed for this Blueprint.
-     */
-    static constexpr uint8_t fadeRate = 45;
+    /// Recommended fading speed for this Blueprint.
+    static constexpr uint8_t fadeRate_default = 45;
 
     VuSourcePeakGravity *vuPeakSource1;
     VuSourcePeakGravity *vuPeakSource2;
@@ -201,6 +241,12 @@ namespace EC
       vuPeakDot2->color.hueRange = dotVuHueRange;
       vuDipDot1->color.hueRange = dotVuHueRange;
       vuDipDot2->color.hueRange = dotVuHueRange;
+    }
+
+    explicit BlueprintCrazyVu(SetupEnv &env,
+                              uint8_t fadeRate = fadeRate_default)
+        : BlueprintCrazyVu(env.strip(), env.scene(), env.addVuBackground(fadeRate))
+    {
     }
 
     BlueprintCrazyVu(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
@@ -233,15 +279,19 @@ namespace EC
       vuLevelStrip->color.hueRange = 0.1;
       setdotVuHueRange(1.5);
     }
+
+    VuSource &getVuSource()
+    {
+      return vuLevelStrip->getLevelVuSource();
+    }
   };
 
   //------------------------------------------------------------------------------
 
   struct BlueprintBeyondCrazyVu
   {
-    /** Recommended fading speed for this Blueprint.
-     */
-    static constexpr uint8_t fadeRate = 45;
+    /// Recommended fading speed for this Blueprint.
+    static constexpr uint8_t fadeRate_default = 45;
 
     VuSourcePeakForce *vuLevelSource;
 
@@ -270,9 +320,16 @@ namespace EC
       vuDipDot3->color.hueRange = dotVuHueRange;
     }
 
+    explicit BlueprintBeyondCrazyVu(SetupEnv &env,
+                                    uint8_t fadeRate = fadeRate_default)
+        : BlueprintBeyondCrazyVu(env.strip(), env.scene(), env.addVuBackground(fadeRate))
+    {
+    }
+
     BlueprintBeyondCrazyVu(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
     {
       vuLevelSource = scene.append(new EC::VuSourcePeakForce(vuSource));
+      vuLevelSource->vuPeakHandler.mass = 0.75;
 
       vuPeakSource1 = scene.append(new VuSourcePeakGravity(vuLevelSource->asVuSource()));
       vuPeakSource1->vuPeakHandler.a0 = -0.6;
@@ -311,6 +368,11 @@ namespace EC
       vuLevelStrip->color.bpm = 6.0;
       vuLevelStrip->color.hueRange = 0.1;
       setdotVuHueRange(1.5);
+    }
+
+    VuSource &getVuSource()
+    {
+      return vuLevelSource->getInputVuSource();
     }
   };
 

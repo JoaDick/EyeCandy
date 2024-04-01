@@ -44,7 +44,7 @@ namespace EC
     /** Default fading speed.
      * Lower value = longer glowing; 0 = solid black background.
      */
-    static uint8_t fadeRate_default() { return 50; }
+    static constexpr uint8_t fadeRate_default = 50;
 
     /** Draw the glitter with this color.
      * This setting can be adjusted at runtime.

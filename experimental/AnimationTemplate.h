@@ -42,7 +42,7 @@ namespace EC
     /** Default fading speed.
      * Lower value = longer glowing; 0 = solid black background.
      */
-    static uint8_t fadeRate_default() { return 50; }
+    static constexpr uint8_t fadeRate_default = 50;
 
     /// Color of the Animation.
     CRGB color;
@@ -56,7 +56,7 @@ namespace EC
     AnimationTemplate(FastLedStrip ledStrip,
                       bool overlayMode,
                       CRGB color = CRGB(64, 64, 64),
-                      uint8_t fadeRate = fadeRate_default())
+                      uint8_t fadeRate = fadeRate_default)
         : AnimationModelBase(3000, ledStrip, overlayMode, fadeRate),
           color(color)
     {
