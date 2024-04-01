@@ -427,7 +427,7 @@ EC::AnimationSceneMakerFct allAnimations[] = {
 
 //------------------------------------------------------------------------------
 
-EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, PIN_MIC);
+EC::SetupEnvAnalogPin animationSetupEnv({leds, NUM_LEDS}, PIN_MIC);
 #if (0)
 EC::AnimationChanger2 animationChanger(animationSetupEnv, allAnimations);
 #else
@@ -484,6 +484,10 @@ void handleAnimationChange(uint32_t currentMillis = millis())
 //------------------------------------------------------------------------------
 
 /*
+
+SetupEnvAnalogPin:
+Sketch uses 22824 bytes (70%) of program storage space. Maximum is 32256 bytes.
+Global variables use 894 bytes (43%) of dynamic memory, leaving 1154 bytes for local variables. Maximum is 2048 bytes.
 
 AnimationChangerSoft2:
 Sketch uses 22736 bytes (70%) of program storage space. Maximum is 32256 bytes.

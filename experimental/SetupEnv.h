@@ -42,16 +42,6 @@ namespace EC
   class SetupEnv
   {
   public:
-    /** Constructor for Pattern mode.
-     * @param ledStrip  The LED strip.
-     * @param analogPin  Pin for reading the audio signal.
-     */
-    SetupEnv(FastLedStrip ledStrip,
-             uint8_t analogPin)
-        : _analogPin(analogPin), _strip(ledStrip)
-    {
-    }
-
     /// Get the AnimationScene to set up.
     AnimationScene &scene() { return _scene; }
 
@@ -88,7 +78,11 @@ namespace EC
      */
     VuSource &addVuSource()
     {
-      return *_scene.append(new EC::VuAnalogInputPin(_analogPin));
+      if (!_vuSource)
+      {
+        _vuSource = &makeVuSource();
+      }
+      return *_vuSource;
     }
 
     /** Add a VuSource and (fading) background to the AnimationScene.
@@ -114,10 +108,26 @@ namespace EC
     UserDataType *userData = nullptr;
 #endif
 
+  protected:
+    ~SetupEnv() = default;
+
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     */
+    explicit SetupEnv(FastLedStrip ledStrip)
+        : _strip(ledStrip)
+    {
+    }
+
+    /** Create a VuSource for the Animation.
+     * Must be implemented by child classes.
+     */
+    virtual VuSource &makeVuSource() = 0;
+
   private:
-    const uint8_t _analogPin;
     FastLedStrip _strip;
     AnimationScene _scene;
+    VuSource *_vuSource = nullptr;
   };
 
   //------------------------------------------------------------------------------
@@ -126,6 +136,35 @@ namespace EC
    * @param env  Environment for setting up the AnimationScene.
    */
   using AnimationSceneMakerFct = void (*)(SetupEnv &env);
+
+  //------------------------------------------------------------------------------
+
+  /** Environment for setting up Animation Scenes.
+   */
+  class SetupEnvAnalogPin
+      : public SetupEnv
+  {
+  public:
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     * @param analogPin  Pin for reading the audio signal.
+     */
+    SetupEnvAnalogPin(FastLedStrip ledStrip,
+                      uint8_t analogPin)
+        : SetupEnv(ledStrip),
+          _analogPin(analogPin)
+    {
+    }
+
+  private:
+    VuSource &makeVuSource() override
+    {
+      return add(new EC::VuAnalogInputPin(_analogPin));
+    }
+
+  private:
+    const uint8_t _analogPin;
+  };
 
   //------------------------------------------------------------------------------
 
