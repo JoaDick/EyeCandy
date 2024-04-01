@@ -189,15 +189,15 @@ namespace EC
     float noiseFloor_dB = -28.5;
 
     /** Constructor
-     * @param audioSource  Read the audio samples from there.
+     * @param analogPin  Pin for reading the audio signal.
      * @param ledStrip  The LED strip.
      * @param drawingFct  Pointer to a function for rendering the VU on the LED strip.
      */
-    LowLevelAudioPlaygroundVU(float &audioSource,
+    LowLevelAudioPlaygroundVU(uint8_t analogPin,
                               FastLedStrip ledStrip,
                               DrawingFct drawingFct)
         : AnimationModelBase(10, ledStrip, false, 50),
-          _audioSource(audioSource), _drawingFct(drawingFct)
+          _analogPin(analogPin), _drawingFct(drawingFct)
     {
       // Calculating the average value every 10ms, resulting in 100Hz refresh rate.
       // The LED strip is also updated every 10ms, resulting in 100 "FPS" for the VU.
@@ -218,8 +218,9 @@ namespace EC
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      _sampleAvgSum += fabs(_audioSource);
-      _sampleRmsSum += square(_audioSource);
+      const float audioSample = _adcNormalizer.process(analogRead(_analogPin));
+      _sampleAvgSum += fabs(audioSample);
+      _sampleRmsSum += square(audioSample);
       ++_sampleCount;
 
       AnimationModelBase::processAnimation(currentMillis, wasModified);
@@ -310,7 +311,8 @@ namespace EC
     }
 
   private:
-    float &_audioSource;
+    const uint8_t _analogPin;
+    AdcSampleNormalizer _adcNormalizer;
     DrawingFct _drawingFct;
 
     uint16_t _sampleCount = 0;

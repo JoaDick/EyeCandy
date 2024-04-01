@@ -135,3 +135,14 @@ namespace EC
   //------------------------------------------------------------------------------
 
 } // namespace EC
+
+/** Convenience template for Patterns that have no other arguments beside the LED strip.
+ * @see AnimationSceneMakerFct
+ */
+template <class AnimationType>
+void make_Pattern(EC::SetupEnv &env)
+{
+  env.add(new AnimationType(env.strip()));
+}
+
+//------------------------------------------------------------------------------

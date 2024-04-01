@@ -75,205 +75,169 @@ uint16_t animationDuration = defaultAnimationDuration;
 
 // ---------- Animations ----------
 
-void makeBalls(EC::AnimationScene &scene)
+void make_Balls(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::BouncingBalls<>(strip, false));
+    env.add(new EC::BouncingBalls<>(env.strip(), false));
 }
 
-void makeBlur(EC::AnimationScene &scene)
+void make_Blur(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::Blur(strip));
-    // autoMode = false;
+    env.add(new EC::Blur(env.strip()));
 }
 
-void makeBubbles(EC::AnimationScene &scene)
+void make_Bubbles(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::Pacifica(strip));
-    scene.append(new EC::BgFadeToBlack(strip, true, 150));
-    scene.append(new EC::Bubbles(strip, true));
+    env.add(new EC::Pacifica(env.strip()));
+    env.add(new EC::BgFadeToBlack(env.strip(), true, 150));
+    env.add(new EC::Bubbles(env.strip(), true));
 }
 
-void makeFire(EC::AnimationScene &scene)
+void make_Fire(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    auto fire = scene.append(new EC::Fire2012<NUM_LEDS>(strip));
-    scene.append(new EC::Fire2012Changer<NUM_LEDS>(*fire));
+    auto &fire = env.add(new EC::Fire2012<NUM_LEDS>(env.strip()));
+    env.add(new EC::Fire2012Changer<NUM_LEDS>(fire));
 }
 
-void makeFireAndBalls(EC::AnimationScene &scene)
+void make_FireAndBalls(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
+    auto &fire = env.add(new EC::Fire2012<NUM_LEDS>(env.strip()));
+    fire.COOLING = 155;
+    fire.SPARKING = 75;
+    fire.setModelUpdatePeriod(10);
 
-    auto fire = scene.append(new EC::Fire2012<NUM_LEDS>(strip));
-    fire->COOLING = 155;
-    fire->SPARKING = 75;
-    fire->setModelUpdatePeriod(10);
-
-    scene.append(new EC::BouncingBalls<>(strip.getReversedStrip(), true));
+    env.add(new EC::BouncingBalls<>(env.strip().getReversedStrip(), true));
 }
 
-void makeFireworks(EC::AnimationScene &scene)
+void make_Fireworks(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::Firework<>(strip, false, 1500));
-    scene.append(new EC::Firework<>(strip, true, 3100));
-    scene.append(new EC::Firework<>(strip, true, 4700));
-    scene.append(new EC::Firework<>(strip, true, 6300));
-    scene.append(new EC::Firework<>(strip, true, 7900));
+    env.add(new EC::Firework<>(env.strip(), false, 1500));
+    env.add(new EC::Firework<>(env.strip(), true, 3100));
+    env.add(new EC::Firework<>(env.strip(), true, 4700));
+    env.add(new EC::Firework<>(env.strip(), true, 6300));
+    env.add(new EC::Firework<>(env.strip(), true, 7900));
 }
 
-void makeFlare(EC::AnimationScene &scene)
+void make_Flare(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
     const uint16_t fireLedCount = NUM_LEDS / 2 + NUM_LEDS / 10;
-    EC::FastLedStrip fireStrip = strip.getSubStrip(0, fireLedCount, true);
+    EC::FastLedStrip fireStrip = env.strip().getSubStrip(0, fireLedCount, true);
 
-    auto fire = scene.append(new EC::Fire2012<NUM_LEDS>(fireStrip));
-    fire->SPARKING = 75;
-    fire->setModelUpdatePeriod(10);
+    auto &fire = env.add(new EC::Fire2012<NUM_LEDS>(fireStrip));
+    fire.SPARKING = 75;
+    fire.setModelUpdatePeriod(10);
 
-    scene.append(new EC::Kaleidoscope(strip));
+    env.add(new EC::Kaleidoscope(env.strip()));
 }
 
-void makeFloatingBlobs(EC::AnimationScene &scene)
+void make_FloatingBlobs(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::FloatingBlobs(strip));
-    // autoMode = false;
+    env.add(new EC::FloatingBlobs(env.strip()));
 }
 
-void makeLavalamp(EC::AnimationScene &scene)
+void make_Lavalamp(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::Lavalamp(strip));
-    // autoMode = false;
+    env.add(new EC::Lavalamp(env.strip()));
 }
 
-void makeMeteorGlitter(EC::AnimationScene &scene)
+void make_Pacifica(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::Meteor(strip, false));
-    scene.append(new EC::Glitter(strip, true, CRGB(255, 224, 80), 15));
-    // autoMode = false;
+    env.add(new EC::Pacifica(env.strip()));
 }
 
-void makePacifica(EC::AnimationScene &scene)
+void make_Pride(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::Pacifica(strip));
+    env.add(new EC::Pride2015(env.strip()));
 }
 
-void makePride(EC::AnimationScene &scene)
+void make_PrideMirror(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::Pride2015(strip));
+    env.add(new EC::Pride2015(env.strip().getHalfStrip(true)));
+    env.add(new EC::Kaleidoscope(env.strip()));
 }
 
-void makePrideMirror(EC::AnimationScene &scene)
+void make_Rainbow(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::Pride2015(strip.getHalfStrip(true)));
-    scene.append(new EC::Kaleidoscope(strip));
+    env.add(new EC::Rainbow(env.strip()));
 }
 
-void makeRainbow(EC::AnimationScene &scene)
+void make_RainbowBuiltin(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::Rainbow(strip));
+    env.add(new EC::RainbowBuiltin(env.strip()));
 }
 
-void makeRainbowBuiltin(EC::AnimationScene &scene)
+void make_RainbowDrips(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::RainbowBuiltin(strip));
+    env.add(new EC::RainbowDrips(env.strip()));
 }
 
-void makeRainbowDrips(EC::AnimationScene &scene)
+void make_RainbowTwinkle(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::RainbowDrips(strip));
-    // autoMode = false;
+    auto &rainbow = env.add(new EC::RainbowTwinkle(env.strip()));
+    rainbow.color.bpm = 10.0;
 }
 
-void makeRainbowTwinkle(EC::AnimationScene &scene)
+void make_RgbBlocks(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    auto rainbow = scene.append(new EC::RainbowTwinkle(strip));
-    rainbow->color.bpm = 10.0;
+    env.add(new EC::RgbBlocks(env.strip()));
 }
 
-void makeRgbBlocks(EC::AnimationScene &scene)
+void make_Twinkles(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::RgbBlocks(strip));
+    env.add(new EC::Twinkles(env.strip(), false));
 }
 
-void makeTwinkles(EC::AnimationScene &scene)
+void make_Waterfall(EC::SetupEnv &env)
 {
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::Twinkles(strip, false));
-}
-
-void makeWaterfall(EC::AnimationScene &scene)
-{
-    EC::FastLedStrip strip(leds, NUM_LEDS);
-
-    scene.append(new EC::Waterfall(strip));
+    env.add(new EC::Waterfall(env.strip()));
 }
 
 //------------------------------------------------------------------------------
 
-EC::AnimationSceneBuilderFct allAnimations[] = {
-    &makeTwinkles,
-    &makeRainbowBuiltin,
-    &makeRainbow,
-    // &makeFloatingBlobs,
-    // &makeMeteorGlitter,
-    &makeRainbowTwinkle,
-    &makeBlur,
-    &makePride,
-    &makePrideMirror,
-    // &makeRainbowDrips,
-    &makePacifica,
-    &makeBubbles,
-    // &makeWaterfall,
-    // &makeLavalamp,
-    &makeBalls,
-    &makeFire,
-    &makeFireAndBalls,
-    &makeFlare,
-    // &makeFireworks,
-    &makeRgbBlocks,
+EC::AnimationSceneMakerFct allAnimations[] = {
+    &make_Twinkles,
+    &make_RainbowBuiltin,
+    &make_Rainbow,
+    // &make_ColorClouds,
+    // &make_FloatingBlobs,
+    // &make_KITT,
+    // &make_MeteorGlitter,
+    // &make_RetroPartyLight,
+    // &make_BallLightning,
+    // &make_UnicornMeteor,
+    &make_RainbowTwinkle,
+    &make_Blur,
+    &make_Pride,
+    &make_PrideMirror,
+    // &make_RainbowDrips,
+    &make_Pacifica,
+    &make_Bubbles,
+    // &make_Waterfall,
+    // &make_Lavalamp,
+    &make_Balls,
+    &make_Fire,
+    &make_FireAndBalls,
+    &make_Flare,
+    // &make_Fireworks,
+    &make_RgbBlocks,
     nullptr};
 
-#if (0)
-EC::AnimationChanger animationChanger(allAnimations);
-#else
-EC::AnimationChangerSoft animationChanger(allAnimations);
-#endif
+//------------------------------------------------------------------------------
+
+EC::SetupEnv animationSetupEnv({leds, NUM_LEDS});
+EC::AnimationChangerSoft2 animationChanger(animationSetupEnv, allAnimations);
 
 //------------------------------------------------------------------------------
+
+/*
+
+Sketch uses 20574 bytes (63%) of program storage space. Maximum is 32256 bytes.
+Global variables use 939 bytes (45%) of dynamic memory, leaving 1109 bytes for local variables. Maximum is 2048 bytes.
+
+Baseline:
+Sketch uses 20272 bytes (62%) of program storage space. Maximum is 32256 bytes.
+Global variables use 931 bytes (45%) of dynamic memory, leaving 1117 bytes for local variables. Maximum is 2048 bytes.
+
+*/
 
 void handleAnimationChange(uint32_t currentMillis = millis())
 {
