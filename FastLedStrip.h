@@ -320,7 +320,10 @@ namespace EC
     iterator begin() { return &m_ledArray[0]; }
     iterator end() { return &m_ledArray[getSize()]; }
 
-    static FastLedStrip GetNULL() { return FastLedStrip(); }
+    /** Get null object.
+     * @see https://en.wikipedia.org/wiki/Null_object_pattern
+     */
+    static FastLedStrip getNull() { return FastLedStrip(); }
 
   private:
     FastLedStrip() : m_ledArray(&s_trashPixel), m_sizeNrev(0) {}

@@ -42,6 +42,21 @@ namespace EC
   class SetupEnv
   {
   public:
+    /** Pointer to callback function for creating a VuSource for the AnimationScene.
+     * @param env  Environment for setting up the AnimationScene (i.e. *this).
+     */
+    using VuSourceMakerFct = VuSource &(*)(SetupEnv &env);
+
+    /** Constructor.
+     * @param ledStrip  The LED strip.
+     * @param vuSourceMakerFct  Callback function for creating the AnimationScene's VuSource.
+     */
+    explicit SetupEnv(FastLedStrip ledStrip,
+                      VuSourceMakerFct vuSourceMakerFct = nullptr)
+        : _strip(ledStrip), _makeVuSource(vuSourceMakerFct)
+    {
+    }
+
     /// Get the AnimationScene to set up.
     AnimationScene &scene() { return _scene; }
 
@@ -78,11 +93,7 @@ namespace EC
      */
     VuSource &addVuSource()
     {
-      if (!_vuSource)
-      {
-        _vuSource = &makeVuSource();
-      }
-      return *_vuSource;
+      return _makeVuSource ? _makeVuSource(*this) : VuSource::getNull();
     }
 
     /** Add a VuSource and (fading) background to the AnimationScene.
@@ -108,26 +119,10 @@ namespace EC
     UserDataType *userData = nullptr;
 #endif
 
-  protected:
-    ~SetupEnv() = default;
-
-    /** Constructor.
-     * @param ledStrip  The LED strip.
-     */
-    explicit SetupEnv(FastLedStrip ledStrip)
-        : _strip(ledStrip)
-    {
-    }
-
-    /** Create a VuSource for the Animation.
-     * Must be implemented by child classes.
-     */
-    virtual VuSource &makeVuSource() = 0;
-
   private:
     FastLedStrip _strip;
+    VuSourceMakerFct _makeVuSource;
     AnimationScene _scene;
-    VuSource *_vuSource = nullptr;
   };
 
   //------------------------------------------------------------------------------
@@ -136,35 +131,6 @@ namespace EC
    * @param env  Environment for setting up the AnimationScene.
    */
   using AnimationSceneMakerFct = void (*)(SetupEnv &env);
-
-  //------------------------------------------------------------------------------
-
-  /** Environment for setting up Animation Scenes.
-   */
-  class SetupEnvAnalogPin
-      : public SetupEnv
-  {
-  public:
-    /** Constructor.
-     * @param ledStrip  The LED strip.
-     * @param analogPin  Pin for reading the audio signal.
-     */
-    SetupEnvAnalogPin(FastLedStrip ledStrip,
-                      uint8_t analogPin)
-        : SetupEnv(ledStrip),
-          _analogPin(analogPin)
-    {
-    }
-
-  private:
-    VuSource &makeVuSource() override
-    {
-      return add(new EC::VuAnalogInputPin(_analogPin));
-    }
-
-  private:
-    const uint8_t _analogPin;
-  };
 
   //------------------------------------------------------------------------------
 

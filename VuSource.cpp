@@ -25,42 +25,24 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include <Arduino.h>
+#include "VuSource.h"
 
 //------------------------------------------------------------------------------
 
 namespace EC
 {
-
-  /** Interface for classes that provide a VU level value.
-   */
-  class VuSource
+  namespace
   {
-  public:
-    /** Get the current VU level.
-     * @return A normalized VU value between 0.0 ... 1.0, representing the current volume.
-     * @note Be aware that an overloaded / clipped / too loud audio signal may
-     * return values greater than 1.0 or lower than 0.0!
-     * @see constrainVU() to fix that.
-     */
-    virtual float getVU() = 0;
+    struct NullVuSource : public VuSource
+    {
+      float getVU() override { return 0.0; }
+    };
+  }
 
-    /** Get null object.
-     * @see https://en.wikipedia.org/wiki/Null_object_pattern
-     */
-    static VuSource &VuSource::getNull();
-
-  protected:
-    VuSource() = default;
-    VuSource(const VuSource &) = default;
-    VuSource &operator=(const VuSource &) = default;
-    ~VuSource() = default;
-  };
-
-  /// @brief Returns the given \a vuValue constrained to 0.0 ... 1.0
-  inline float constrainVU(float vuValue)
+  VuSource &VuSource::getNull()
   {
-    return constrain(vuValue, 0.0, 1.0);
+    static NullVuSource inst;
+    return inst;
   }
 
 } // namespace EC

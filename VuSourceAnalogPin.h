@@ -90,7 +90,7 @@ namespace EC
      */
     explicit VuSourceAnalogPin(float &audioSource,
                                uint16_t sampleCount = 100)
-        : VuSourceAnalogPin(0, audioSource, FastLedStrip::GetNULL(), 0, sampleCount)
+        : VuSourceAnalogPin(0, audioSource, FastLedStrip::getNull(), 0, sampleCount)
     {
     }
 

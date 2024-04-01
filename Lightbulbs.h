@@ -86,7 +86,7 @@ namespace EC
     }
 
   private:
-    FastLedStrip _strip = FastLedStrip::GetNULL();
+    FastLedStrip _strip = FastLedStrip::getNull();
     bool _lastIsOn = false;
   };
 

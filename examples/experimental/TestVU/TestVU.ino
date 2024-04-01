@@ -427,7 +427,15 @@ EC::AnimationSceneMakerFct allAnimations[] = {
 
 //------------------------------------------------------------------------------
 
-EC::SetupEnvAnalogPin animationSetupEnv({leds, NUM_LEDS}, PIN_MIC);
+#if (0)
+EC::VuAnalogInputPin globalVuSource(PIN_MIC);
+EC::VuSource &makeVuSource(EC::SetupEnv &env) { return env.add(globalVuSource); }
+#else
+EC::VuSource &makeVuSource(EC::SetupEnv &env) { return env.add(new EC::VuAnalogInputPin(PIN_MIC)); }
+#endif
+
+EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, &makeVuSource);
+
 #if (0)
 EC::AnimationChanger2 animationChanger(animationSetupEnv, allAnimations);
 #else
@@ -485,7 +493,18 @@ void handleAnimationChange(uint32_t currentMillis = millis())
 
 /*
 
-SetupEnvAnalogPin:
+Sketch uses 22730 bytes (70%) of program storage space. Maximum is 32256 bytes.
+Global variables use 887 bytes (43%) of dynamic memory, leaving 1161 bytes for local variables. Maximum is 2048 bytes.
+
+// globalVuSource:
+// Sketch uses 22840 bytes (70%) of program storage space. Maximum is 32256 bytes.
+// Global variables use 975 bytes (47%) of dynamic memory, leaving 1073 bytes for local variables. Maximum is 2048 bytes.
+
+VuSourceMakerFct:
+Sketch uses 22762 bytes (70%) of program storage space. Maximum is 32256 bytes.
+Global variables use 889 bytes (43%) of dynamic memory, leaving 1159 bytes for local variables. Maximum is 2048 bytes.
+
+SetupEnvAnalogPin (with inheritance):
 Sketch uses 22824 bytes (70%) of program storage space. Maximum is 32256 bytes.
 Global variables use 894 bytes (43%) of dynamic memory, leaving 1154 bytes for local variables. Maximum is 2048 bytes.
 
