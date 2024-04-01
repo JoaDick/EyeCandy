@@ -287,27 +287,12 @@ EC::AnimationScene mainScene;
 EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, mainScene);
 
 #if (0)
-EC::AnimationChanger2 animationChanger(animationSetupEnv, allAnimations);
+EC::AnimationChanger animationChanger(animationSetupEnv, allAnimations);
 #else
-EC::AnimationChangerSoft2 animationChanger(animationSetupEnv, allAnimations);
+EC::AnimationChangerSoft animationChanger(animationSetupEnv, allAnimations);
 #endif
 
 //------------------------------------------------------------------------------
-
-/*
-
-UnicornMeteor:
-Sketch uses 28786 bytes (89%) of program storage space. Maximum is 32256 bytes.
-Global variables use 883 bytes (43%) of dynamic memory, leaving 1165 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 28554 bytes (88%) of program storage space. Maximum is 32256 bytes.
-Global variables use 881 bytes (43%) of dynamic memory, leaving 1167 bytes for local variables. Maximum is 2048 bytes.
-
-Baseline:
-Sketch uses 28388 bytes (88%) of program storage space. Maximum is 32256 bytes.
-Global variables use 873 bytes (42%) of dynamic memory, leaving 1175 bytes for local variables. Maximum is 2048 bytes.
-
-*/
 
 void handleAnimationChange(uint32_t currentMillis = millis())
 {

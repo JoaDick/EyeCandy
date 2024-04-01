@@ -25,7 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include "experimental/SetupEnv.h"
+#include "SetupEnv.h"
 #include "VuOverlayLine.h"
 #include "VuOverlayStripe.h"
 #include "VuOverlayDot.h"

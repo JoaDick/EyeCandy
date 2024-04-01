@@ -424,9 +424,9 @@ EC::AnimationScene mainScene;
 EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, mainScene, &make_VuSource);
 
 #if (0)
-EC::AnimationChanger2 animationChanger(animationSetupEnv, allAnimations);
+EC::AnimationChanger animationChanger(animationSetupEnv, allAnimations);
 #else
-EC::AnimationChangerSoft2 animationChanger(animationSetupEnv, allAnimations);
+EC::AnimationChangerSoft animationChanger(animationSetupEnv, allAnimations);
 #endif
 
 //------------------------------------------------------------------------------
@@ -477,82 +477,6 @@ void handleAnimationChange(uint32_t currentMillis = millis())
 }
 
 //------------------------------------------------------------------------------
-
-/*
-
-Sketch uses 22618 bytes (70%) of program storage space. Maximum is 32256 bytes.
-Global variables use 889 bytes (43%) of dynamic memory, leaving 1159 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 22700 bytes (70%) of program storage space. Maximum is 32256 bytes.
-Global variables use 887 bytes (43%) of dynamic memory, leaving 1161 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 22730 bytes (70%) of program storage space. Maximum is 32256 bytes.
-Global variables use 887 bytes (43%) of dynamic memory, leaving 1161 bytes for local variables. Maximum is 2048 bytes.
-
-// globalVuSource:
-// Sketch uses 22840 bytes (70%) of program storage space. Maximum is 32256 bytes.
-// Global variables use 975 bytes (47%) of dynamic memory, leaving 1073 bytes for local variables. Maximum is 2048 bytes.
-
-VuSourceMakerFct:
-Sketch uses 22762 bytes (70%) of program storage space. Maximum is 32256 bytes.
-Global variables use 889 bytes (43%) of dynamic memory, leaving 1159 bytes for local variables. Maximum is 2048 bytes.
-
-SetupEnvAnalogPin (with inheritance):
-Sketch uses 22824 bytes (70%) of program storage space. Maximum is 32256 bytes.
-Global variables use 894 bytes (43%) of dynamic memory, leaving 1154 bytes for local variables. Maximum is 2048 bytes.
-
-AnimationChangerSoft2:
-Sketch uses 22736 bytes (70%) of program storage space. Maximum is 32256 bytes.
-Global variables use 878 bytes (42%) of dynamic memory, leaving 1170 bytes for local variables. Maximum is 2048 bytes.
----
-Sketch uses 22464 bytes (69%) of program storage space. Maximum is 32256 bytes.
-Global variables use 869 bytes (42%) of dynamic memory, leaving 1179 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 22440 bytes (69%) of program storage space. Maximum is 32256 bytes.
-Global variables use 867 bytes (42%) of dynamic memory, leaving 1181 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 22612 bytes (70%) of program storage space. Maximum is 32256 bytes.
-Global variables use 867 bytes (42%) of dynamic memory, leaving 1181 bytes for local variables. Maximum is 2048 bytes.
-
-AnimationChanger2:
-Sketch uses 22442 bytes (69%) of program storage space. Maximum is 32256 bytes.
-Global variables use 869 bytes (42%) of dynamic memory, leaving 1179 bytes for local variables. Maximum is 2048 bytes.
----
-Sketch uses 22734 bytes (70%) of program storage space. Maximum is 32256 bytes.
-Global variables use 878 bytes (42%) of dynamic memory, leaving 1170 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 22744 bytes (70%) of program storage space. Maximum is 32256 bytes.
-Global variables use 890 bytes (43%) of dynamic memory, leaving 1158 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 22762 bytes (70%) of program storage space. Maximum is 32256 bytes.
-Global variables use 890 bytes (43%) of dynamic memory, leaving 1158 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 22474 bytes (69%) of program storage space. Maximum is 32256 bytes.
-Global variables use 890 bytes (43%) of dynamic memory, leaving 1158 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 22372 bytes (69%) of program storage space. Maximum is 32256 bytes.
-Global variables use 890 bytes (43%) of dynamic memory, leaving 1158 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 22948 bytes (71%) of program storage space. Maximum is 32256 bytes.
-Global variables use 900 bytes (43%) of dynamic memory, leaving 1148 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 23078 bytes (71%) of program storage space. Maximum is 32256 bytes.
-Global variables use 900 bytes (43%) of dynamic memory, leaving 1148 bytes for local variables. Maximum is 2048 bytes.
-
-Sketch uses 22740 bytes (70%) of program storage space. Maximum is 32256 bytes.
-Global variables use 883 bytes (43%) of dynamic memory, leaving 1165 bytes for local variables. Maximum is 2048 bytes.
-
----
-
-AdcSampleNormalizer:
-Sketch uses 22756 bytes (70%) of program storage space. Maximum is 32256 bytes.
-Global variables use 883 bytes (43%) of dynamic memory, leaving 1165 bytes for local variables. Maximum is 2048 bytes.
-
-Baseline (AudioNormalizer):
-Sketch uses 22730 bytes (70%) of program storage space. Maximum is 32256 bytes.
-Global variables use 881 bytes (43%) of dynamic memory, leaving 1167 bytes for local variables. Maximum is 2048 bytes.
-
-*/
 
 void loop()
 {
@@ -700,8 +624,8 @@ void printMemoryUsage()
     Serial.println(F(" LEDs:"));
     Serial.println(F("<*> is dependant on NUM_LEDS"));
 
-    Serial.print(F("VuSourceAnalogPin = "));
-    Serial.println((int)sizeof(EC::VuSourceAnalogPin));
+    Serial.print(F("VuAnalogInputPin = "));
+    Serial.println((int)sizeof(EC::VuAnalogInputPin));
 
     Serial.print(F("VuSourcePeakHold = "));
     Serial.println((int)sizeof(EC::VuSourcePeakHold));

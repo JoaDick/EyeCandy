@@ -362,7 +362,7 @@ EC::AnimationSceneMakerFct allAnimations[] = {
 
 EC::AnimationScene mainScene;
 EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, mainScene);
-EC::AnimationChangerSoft2 animationChanger(animationSetupEnv, allAnimations);
+EC::AnimationChangerSoft animationChanger(animationSetupEnv, allAnimations);
 
 //------------------------------------------------------------------------------
 

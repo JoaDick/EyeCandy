@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include <FastLED.h>
 #include "Animation.h"
+#include "SetupEnv.h"
 
 //------------------------------------------------------------------------------
 
@@ -38,17 +39,17 @@ namespace EC
   class AnimationChanger
       : public Animation
   {
-    AnimationScene _scene;
-    AnimationSceneBuilderFct *_allAnimationBuilders;
-    uint8_t _nextIndex;
-
   public:
     /** Constructor.
+     * @param setupEnv  Setup environment for Animation Scenes.
      * @param allAnimations Array with all functions that set up an AnimationScene.
      *                      Last entry must be NULL.
      */
-    explicit AnimationChanger(AnimationSceneBuilderFct allAnimations[])
-        : _allAnimationBuilders(allAnimations)
+    AnimationChanger(SetupEnv &setupEnv,
+                     AnimationSceneMakerFct allAnimations[])
+        : _setupEnv{setupEnv},
+          _allAnimationBuilders(allAnimations)
+
     {
       selectFirst();
     }
@@ -66,11 +67,11 @@ namespace EC
     uint8_t selectNext()
     {
       const uint8_t retval = _nextIndex;
-      AnimationSceneBuilderFct animationBuilder = _allAnimationBuilders[_nextIndex];
+      AnimationSceneMakerFct animationBuilder = _allAnimationBuilders[_nextIndex];
       if (animationBuilder)
       {
-        _scene.reset();
-        animationBuilder(_scene);
+        _setupEnv.reset();
+        animationBuilder(_setupEnv);
         if (_allAnimationBuilders[++_nextIndex] == nullptr)
         {
           _nextIndex = 0;
@@ -83,8 +84,13 @@ namespace EC
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      _scene.process(currentMillis, wasModified);
+      _setupEnv.scene().process(currentMillis, wasModified);
     }
+
+  private:
+    SetupEnv &_setupEnv;
+    AnimationSceneMakerFct *_allAnimationBuilders;
+    uint8_t _nextIndex;
   };
 
   //------------------------------------------------------------------------------
@@ -97,12 +103,6 @@ namespace EC
   class AnimationChangerSoft
       : public Animation
   {
-    AnimationScene _scene;
-    AnimationSceneBuilderFct *_allAnimationBuilders;
-    AnimationSceneBuilderFct _nextAnimationBuilder = nullptr;
-    uint8_t _nextIndex;
-    uint32_t _fadingStartTime = 0;
-
   public:
     /** Maximum brightness of the LED strip.
      * This setting can be adjusted at runtime.
@@ -115,11 +115,14 @@ namespace EC
     uint16_t fadingDuration = 1000;
 
     /** Constructor.
+     * @param setupEnv  Setup environment for Animation Scenes.
      * @param allAnimations  Array with all functions that set up an AnimationScene.
      *                       Last entry must be NULL.
      */
-    explicit AnimationChangerSoft(AnimationSceneBuilderFct allAnimations[])
-        : _allAnimationBuilders(allAnimations)
+    AnimationChangerSoft(SetupEnv &setupEnv,
+                         AnimationSceneMakerFct allAnimations[])
+        : _setupEnv{setupEnv},
+          _allAnimationBuilders(allAnimations)
     {
       selectFirst();
     }
@@ -152,7 +155,7 @@ namespace EC
     /// @see Animation::processAnimation()
     void processAnimation(uint32_t currentMillis, bool &wasModified) override
     {
-      _scene.process(currentMillis, wasModified);
+      _setupEnv.scene().process(currentMillis, wasModified);
       FastLED.setBrightness(processTakeover(currentMillis));
     }
 
@@ -172,8 +175,8 @@ namespace EC
         {
           linearBrightness = 0;
           FastLED.clear();
-          _scene.reset();
-          _nextAnimationBuilder(_scene);
+          _setupEnv.reset();
+          _nextAnimationBuilder(_setupEnv);
           _nextAnimationBuilder = nullptr;
           _fadingStartTime = currentMillis;
         }
@@ -195,6 +198,13 @@ namespace EC
       const uint16_t quadBrightness = (linearBrightness * linearBrightness) >> 8;
       return map(quadBrightness, 0, 255, 0, maxBrightness);
     }
+
+  private:
+    SetupEnv &_setupEnv;
+    AnimationSceneMakerFct *_allAnimationBuilders;
+    AnimationSceneMakerFct _nextAnimationBuilder = nullptr;
+    uint8_t _nextIndex;
+    uint32_t _fadingStartTime = 0;
   };
 
 } // namespace EC

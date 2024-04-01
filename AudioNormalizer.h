@@ -32,50 +32,6 @@ SOFTWARE.
 namespace EC
 {
 
-  /** Helper class for normalizing raw ADC values from an audio signal.
-   * Normalizing means eliminating the DC offset, and scaling each sample to the
-   * defined range between -1.0 ... +1.0 (lowest / highest possible value).
-   */
-  class AudioNormalizer
-  {
-  public:
-    /** Constructor
-     * @param avgLength  Number of samples to incorporate for DC offset calculation.
-     */
-    explicit AudioNormalizer(uint16_t avgLength = 5000)
-        : _sampleAvg(avgLength, 0.5)
-    {
-    }
-
-    /** Read one value from ADC and normalize that sample.
-     * @param pin  Analog input to read from.
-     * @param maxRawValue  Maximum possible value from the ADC.
-     * @return  The normalized audio sample, without DC offset.
-     *          Output range: -1.0 ... +1.0
-     */
-    float analogRead(uint8_t pin, uint16_t maxRawValue = 1023)
-    {
-      return removeDC(::analogRead(pin) / float(maxRawValue));
-    }
-
-    /** Remove DC offset from the given \a dcSample.
-     * @param dcSample  Pre-scaled audio sample, which still contains the DC offset.
-     *                  Must already be scaled to the range 0.0 ... 1.0
-     * @return  The normalized audio sample, without DC offset.
-     *          Output range: -1.0 ... +1.0
-     */
-    float removeDC(float dcSample)
-    {
-      const float dcOffset = _sampleAvg.process(dcSample);
-      return 2.0 * (dcSample - dcOffset);
-    }
-
-  private:
-    MovingAverage _sampleAvg;
-  };
-
-  //------------------------------------------------------------------------------
-
   /** Helper class for normalizing raw ADC values from an analog input pin.
    * Normalizing means eliminating the DC offset, and scaling each sample to the defined range
    * between -1.0 ... +1.0 (lowest / highest regular value).

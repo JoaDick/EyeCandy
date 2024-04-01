@@ -47,7 +47,7 @@ namespace EC
    * - convert RMS value to a dB / full-scale value (ca. -28.5 ... +3.0 dB_FS)
    * - scale that inconvenient dB_FS value to the range 0.0 ... 1.0
    * - smooth out the last few VU values for a less twitchy appearance
-   * @note Use #AudioNormalizer for pre-processing the raw ADC values.
+   * @note Use an AudioNormalizer for pre-processing the raw ADC values.
    */
   class VuLevelHandler
       : public VuSource

@@ -229,13 +229,6 @@ namespace EC
 
   //------------------------------------------------------------------------------
 
-  /** Pointer to a function that composes an AnimationScene.
-   * @param scene  Append Animations there.
-   */
-  using AnimationSceneBuilderFct = void (*)(AnimationScene &scene);
-
-  //------------------------------------------------------------------------------
-
   /// Same as AnimationScene, but the Animations must \e not be allocated on the heap.
   class AnimationSceneStatic
       : public Animation

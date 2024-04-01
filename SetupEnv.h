@@ -113,7 +113,7 @@ namespace EC
     void reset()
     {
       _scene.reset();
-      // _strip.clear();
+      _strip.clear();
     }
 
     /** Clone this SetupEnv but with a reversed LED strip.

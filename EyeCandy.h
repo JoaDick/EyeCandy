@@ -27,13 +27,14 @@ SOFTWARE.
 
 #include "Animation.h"
 #include "AnimationChanger.h"
-
-#include "Backgrounds.h"
 #include "ColorChanger.h"
+#include "SetupEnv.h"
 
 //------------------------------------------------------------------------------
 
 // Pattern
+#include "Backgrounds.h"
+
 #include "BallLightning.h"
 #include "Blur.h"
 #include "BouncingBalls.h"
@@ -62,13 +63,14 @@ SOFTWARE.
 //------------------------------------------------------------------------------
 
 // VU
+#include "VuAnalogInputPin.h"
+#include "VuBlueprints.h"
+
 #include "DancingJellyfishVU.h"
 #include "Fire2012VU.h"
 #include "FlowingBeatVU.h"
 #include "LightbulbVU.h"
 #include "RetroPartyVU.h"
-#include "VuBlueprints.h"
-#include "VuSourceAnalogPin.h"
 
 //------------------------------------------------------------------------------
 
