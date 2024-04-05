@@ -25,6 +25,7 @@ SOFTWARE.
 
 *******************************************************************************/
 
+// General stuff
 #include "Animation.h"
 #include "AnimationChanger.h"
 #include "ColorChanger.h"
@@ -32,37 +33,12 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-// Pattern
-#include "Backgrounds.h"
-
-#include "BallLightning.h"
-#include "Blur.h"
-#include "BouncingBalls.h"
-#include "Bubbles.h"
-#include "ColorClouds.h"
-#include "Fire2012.h"
-#include "Fire2012Changer.h"
-#include "Firework.h"
-#include "FloatingBlobs.h"
-#include "Glitter.h"
-#include "Kaleidoscope.h"
-#include "KITT.h"
-#include "Lavalamp.h"
-#include "Meteor.h"
-#include "Pacifica.h"
-#include "Pride2015.h"
-#include "Rainbow.h"
-#include "RainbowBuiltin.h"
-#include "RainbowDrips.h"
-#include "RainbowTwinkle.h"
-#include "RetroPartyLight.h"
-#include "RgbBlocks.h"
-#include "Twinkles.h"
-#include "Waterfall.h"
+// Pattern stuff
+#include "PatternPresets.h"
 
 //------------------------------------------------------------------------------
 
-// VU
+// VU stuff
 #include "VuAnalogInputPin.h"
 #include "VuBlueprints.h"
 

@@ -73,122 +73,17 @@ void setup()
 const uint16_t defaultAnimationDuration = 20;
 uint16_t animationDuration = defaultAnimationDuration;
 
-// ---------- Animations ----------
+//------------------------------------------------------------------------------
 
-void make_Balls(EC::SetupEnv &env)
-{
-    env.add(new EC::BouncingBalls<>(env.strip(), false));
-}
-
-void make_Blur(EC::SetupEnv &env)
-{
-    env.add(new EC::Blur(env.strip()));
-}
-
-void make_Bubbles(EC::SetupEnv &env)
-{
-    env.add(new EC::Pacifica(env.strip()));
-    env.add(new EC::BgFadeToBlack(env.strip(), true, 150));
-    env.add(new EC::Bubbles(env.strip(), true));
-}
-
-void make_Fire(EC::SetupEnv &env)
-{
-    auto &fire = env.add(new EC::Fire2012<NUM_LEDS>(env.strip()));
-    env.add(new EC::Fire2012Changer<NUM_LEDS>(fire));
-}
-
+template <uint16_t LedCount>
 void make_FireAndBalls(EC::SetupEnv &env)
 {
-    auto &fire = env.add(new EC::Fire2012<NUM_LEDS>(env.strip()));
+    auto &fire = env.add(new EC::Fire2012<LedCount>(env.strip()));
     fire.COOLING = 155;
     fire.SPARKING = 75;
     fire.setModelUpdatePeriod(10);
 
     env.add(new EC::BouncingBalls<>(env.strip().getReversedStrip(), true));
-}
-
-void make_Fireworks(EC::SetupEnv &env)
-{
-    env.add(new EC::Firework<>(env.strip(), false, 1500));
-    env.add(new EC::Firework<>(env.strip(), true, 3100));
-    env.add(new EC::Firework<>(env.strip(), true, 4700));
-    env.add(new EC::Firework<>(env.strip(), true, 6300));
-    env.add(new EC::Firework<>(env.strip(), true, 7900));
-}
-
-void make_Flare(EC::SetupEnv &env)
-{
-    const uint16_t fireLedCount = NUM_LEDS / 2 + NUM_LEDS / 10;
-    EC::FastLedStrip fireStrip = env.strip().getSubStrip(0, fireLedCount, true);
-
-    auto &fire = env.add(new EC::Fire2012<NUM_LEDS>(fireStrip));
-    fire.SPARKING = 75;
-    fire.setModelUpdatePeriod(10);
-
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-void make_FloatingBlobs(EC::SetupEnv &env)
-{
-    env.add(new EC::FloatingBlobs(env.strip()));
-}
-
-void make_Lavalamp(EC::SetupEnv &env)
-{
-    env.add(new EC::Lavalamp(env.strip()));
-}
-
-void make_Pacifica(EC::SetupEnv &env)
-{
-    env.add(new EC::Pacifica(env.strip()));
-}
-
-void make_Pride(EC::SetupEnv &env)
-{
-    env.add(new EC::Pride2015(env.strip()));
-}
-
-void make_PrideMirror(EC::SetupEnv &env)
-{
-    env.add(new EC::Pride2015(env.strip().getHalfStrip(true)));
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-void make_Rainbow(EC::SetupEnv &env)
-{
-    env.add(new EC::Rainbow(env.strip()));
-}
-
-void make_RainbowBuiltin(EC::SetupEnv &env)
-{
-    env.add(new EC::RainbowBuiltin(env.strip()));
-}
-
-void make_RainbowDrips(EC::SetupEnv &env)
-{
-    env.add(new EC::RainbowDrips(env.strip()));
-}
-
-void make_RainbowTwinkle(EC::SetupEnv &env)
-{
-    auto &rainbow = env.add(new EC::RainbowTwinkle(env.strip()));
-    rainbow.color.bpm = 10.0;
-}
-
-void make_RgbBlocks(EC::SetupEnv &env)
-{
-    env.add(new EC::RgbBlocks(env.strip()));
-}
-
-void make_Twinkles(EC::SetupEnv &env)
-{
-    env.add(new EC::Twinkles(env.strip(), false));
-}
-
-void make_Waterfall(EC::SetupEnv &env)
-{
-    env.add(new EC::Waterfall(env.strip()));
 }
 
 //------------------------------------------------------------------------------
@@ -213,10 +108,10 @@ EC::AnimationSceneMakerFct allAnimations[] = {
     &make_Bubbles,
     // &make_Waterfall,
     // &make_Lavalamp,
-    &make_Balls,
-    &make_Fire,
-    &make_FireAndBalls,
-    &make_Flare,
+    &make_BouncingBalls,
+    &make_Fire<NUM_LEDS>,
+    &make_FireAndBalls<NUM_LEDS>,
+    &make_Flare<NUM_LEDS>,
     // &make_Fireworks,
     &make_RgbBlocks,
     nullptr};
