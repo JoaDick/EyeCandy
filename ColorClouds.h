@@ -37,33 +37,52 @@ namespace EC
       : public PatternBase
   {
   public:
-    /// Higher values make the color change slower.
-    uint8_t hueSlowdown;
+    /// Higher values make the color change faster.
+    uint8_t hueSpeed;
 
     /// Higher values "squeeze" more color gradients on the LED strip.
     uint8_t hueSqueeze;
 
-    /// Higher values make the clouds change slower.
-    uint8_t volSlowdown;
+    /// Higher values make the clouds change faster.
+    uint8_t volSpeed;
 
     /// Higher values make more clouds (but smaller ones).
     uint8_t volSqueeze;
 
-    /// Minimum brightness.
-    uint8_t volMin = 0;
+    /// Put more emphasis on the red'ish colors when true.
+    bool moreRed = true;
 
     /** Constructor.
      * @param ledStrip  The LED strip.
-     * @param slowdown  Higher values make the animation slower.
-     * @param squeeze  Higher values increase the effect density; recommended: 1 - ~10.
+     * @param speed  Higher values make the animation faster.
+     * @param squeeze  Higher values increase the effect density.
      */
     explicit ColorClouds(FastLedStrip ledStrip,
-                         uint8_t slowdown = 32,
-                         uint8_t squeeze = 4)
+                         uint8_t speed = 64,
+                         uint8_t squeeze = 64)
         : PatternBase(ledStrip),
-          hueSlowdown(slowdown), hueSqueeze(squeeze),
-          volSlowdown(slowdown / 2), volSqueeze(squeeze * 4)
+          hueSpeed(speed), hueSqueeze(squeeze),
+          volSpeed(speed), volSqueeze(squeeze)
     {
+      // hueSpeed = 255;
+      // hueSpeed = 128;
+      // hueSpeed = 3;
+      // hueSpeed = 0;
+
+      // hueSqueeze = 255;
+      // hueSqueeze = 128;
+      // hueSqueeze = 25;
+      // hueSqueeze = 0;
+
+      // volSpeed = 255;
+      // volSpeed = 128;
+      // volSpeed = 25;
+      // volSpeed = 0;
+
+      // volSqueeze = 255;
+      // volSqueeze = 128;
+      // volSqueeze = 45;
+      // volSqueeze = 0;
     }
 
   private:
@@ -71,18 +90,31 @@ namespace EC
     void showPattern(uint32_t currentMillis) override
     {
       const auto ledCount = strip.ledCount();
-      for (auto i = 0; i < ledCount; i++)
+      const uint8_t hueOffset = beat88(64) >> 8;
+
+      for (uint32_t i = 0; i < ledCount; i++)
       {
-        const uint16_t hueSD = currentMillis / (hueSlowdown + 1);
-        uint8_t hue = (3 * inoise8(i * hueSqueeze, hueSD)) / 2;
-        hue += beatsin8(2);
+        const uint32_t hueX = i * hueSqueeze * 16;
+        const uint32_t hueT = currentMillis * (1 + hueSpeed) / 4;
+        uint8_t hue = inoise16(hueX, hueT) >> 7;
+        hue += hueOffset;
+        if (moreRed)
+        {
+          hue = redShift(hue);
+        }
 
-        const uint16_t volSD = currentMillis / (volSlowdown + 1);
-        int16_t vol = 2 * inoise8(i * volSqueeze + 10000, volSD);
-        vol -= 128;
-        vol = constrain(vol, volMin, 255);
+        const uint32_t volX = i * volSqueeze * 64;
+        const uint32_t volT = currentMillis * (1 + volSpeed) / 8;
+        long vol = inoise16(volX, volT);
+        vol = map(vol, 25000, 47500, 0, 255);
+        vol = constrain(vol, 0, 255);
 
-        strip[i] = CHSV(hue, 255, vol);
+        auto &pixel = strip[i];
+        pixel = CHSV(hue, 255, vol);
+        if (int(pixel.r) + pixel.g + pixel.b <= 1)
+        {
+          pixel = CRGB::Black;
+        }
 
 #if (0) // debugging only
         strip[i] = CHSV(hue, 255, vol / 2);

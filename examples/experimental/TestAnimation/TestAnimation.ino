@@ -28,7 +28,7 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-#define PRINT_MEMORY_USAGE 1
+#define PRINT_MEMORY_USAGE 0
 #define PRINT_PATTERN_RATE 0
 
 //------------------------------------------------------------------------------
@@ -40,8 +40,8 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-// #define LED_COLOR_ORDER RGB
-// #define NUM_LEDS 50
+#define LED_COLOR_ORDER RGB
+#define NUM_LEDS 100
 #include <Animation_IO_config.h>
 
 //------------------------------------------------------------------------------
@@ -75,6 +75,17 @@ void setup()
 #if (PRINT_MEMORY_USAGE)
     printMemoryUsage();
 #endif
+
+#if (0)
+    leds[0] = CRGB(255, 0, 0);
+    leds[1] = CRGB(0, 255, 0);
+    leds[2] = CRGB(0, 255, 0);
+    leds[3] = CRGB(0, 0, 255);
+    leds[4] = CRGB(0, 0, 255);
+    leds[5] = CRGB(0, 0, 255);
+    FastLED.show();
+    delay(3000);
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -89,23 +100,24 @@ void make_VisualizeRainbow(EC::SetupEnv &env)
     auto &animation = env.add(new EC::VisualizeRGB(env.strip(), false));
     auto &changer = env.add(new EC::ColorChangerRainbow(animation.color, 6.0));
     changer.colorSource.moreRed = false;
-    // autoMode = false;
+    autoMode = false;
 }
-
-//------------------------------------------------------------------------------
+void make_NoisePlayground(EC::SetupEnv &env)
+{
+    auto &animation = env.add(new EC::NoisePlayground(env.strip(), false));
+    autoMode = false;
+}
 
 void make_AnimationTemplate(EC::SetupEnv &env)
 {
     auto &animation = env.add(new EC::AnimationTemplate(env.strip(), false));
-    // autoMode = false;
+    autoMode = false;
 }
-
-//------------------------------------------------------------------------------
 
 void make_TestAnimation(EC::SetupEnv &env)
 {
-    auto &animation = env.add(new EC::RetroPartyLight(env.strip()));
-    // autoMode = false;
+    auto &animation = env.add(new EC::NoisePlayground(env.strip(), false));
+    autoMode = false;
 }
 
 //------------------------------------------------------------------------------
@@ -113,36 +125,40 @@ void make_TestAnimation(EC::SetupEnv &env)
 EC::AnimationSceneMakerFct allAnimations[] = {
     // &make_VisualizeRainbow,
     // &make_AnimationTemplate,
-    // &make_TestAnimation,
+    // &make_NoisePlayground,
+    &make_ColorClouds_ExtraSlow,
+    &make_ColorClouds_Ambient,
+    &make_ColorClouds,
 
-    // &make_Twinkles,
-    // &make_RainbowBuiltin,
-    // &make_Rainbow,
+    &make_Twinkles,
+    &make_RainbowBuiltin,
+    &make_Rainbow,
     &make_ColorClouds,
     &make_FloatingBlobs,
-    &make_KITT,
+    // &make_KITT,
     &make_MeteorGlitter,
-    &make_RetroPartyLight,
+    // &make_RetroPartyLight,
     &make_BallLightning,
     &make_UnicornMeteor,
-    // &make_RainbowTwinkle,
+    &make_RainbowTwinkle,
     // &make_Blur,
-    // &make_Pride,
+    &make_Pride,
     &make_RainbowDrips,
     // &make_Pacifica,
     // &make_Bubbles,
-    &make_Waterfall,
+    // &make_Waterfall,
     &make_Lavalamp,
     // &make_BouncingBalls,
     &make_Fire<NUM_LEDS>,
     &make_Flare<NUM_LEDS>,
-    &make_Fireworks,
+    // &make_Fireworks,
     // &make_RgbBlocks,
     nullptr};
 
 //------------------------------------------------------------------------------
 
 EC::AnimationScene mainScene;
+// EC::SetupEnv animationSetupEnv(EC::FastLedStrip(leds, NUM_LEDS).getReversedStrip(), mainScene);
 EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, mainScene);
 
 #if (0)

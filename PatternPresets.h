@@ -87,6 +87,24 @@ inline void make_ColorClouds(EC::SetupEnv &env)
   env.add(new EC::ColorClouds(env.strip()));
 }
 
+inline void make_ColorClouds_Ambient(EC::SetupEnv &env)
+{
+  auto &clouds = env.add(new EC::ColorClouds(env.strip()));
+  clouds.hueSpeed = 3;
+  clouds.hueSqueeze = 25;
+  clouds.volSpeed = 25;
+  clouds.volSqueeze = 45;
+}
+
+inline void make_ColorClouds_ExtraSlow(EC::SetupEnv &env)
+{
+  auto &clouds = env.add(new EC::ColorClouds(env.strip()));
+  clouds.hueSpeed = 1;
+  clouds.hueSqueeze = 35;
+  clouds.volSpeed = 5;
+  clouds.volSqueeze = 40;
+}
+
 template <uint16_t LedCount>
 void make_Fire(EC::SetupEnv &env)
 {
