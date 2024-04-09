@@ -222,86 +222,31 @@ void make_VuElements6(EC::SetupEnv &env)
 
 //------------------------------------------------------------------------------
 
-void make_EjectingDotVu(EC::SetupEnv &env)
+// still needs some tweaking
+inline void make_ManyDancingDotVU(EC::SetupEnv &env)
 {
-    EC::BlueprintEjectingDotVu bp(env);
+    auto &vuLevelSource = env.addVuBackground(0);
+    // auto &levelVu = env.add(new EC::VuOverlayStripe(env.strip(), vuLevelSource, CRGB(128, 0, 0)));
+
+    float mass = 1.0;
+    float friction = 5.0;
+    for (uint8_t i = 1; i <= 8; ++i)
+    {
+        auto &vuPeakSource = env.add(new EC::VuSourcePeakForce(vuLevelSource));
+        vuPeakSource.vuPeakHandler.mass = mass;
+        vuPeakSource.vuPeakHandler.friction = friction;
+
+        bool flipped = i & 0x01;
+        // flipped = false;
+        auto &peakVu = env.add(new EC::VuOverlayRainbowStripe(env.strip().getSubStrip(0, 0, flipped), vuPeakSource));
+        peakVu.color.hueRange = 0.75;
+
+        // mass += i * 0.25;
+        friction += i * 3.5;
+        // mass += 0.75;
+        // friction += 5.0;
+    }
 }
-
-void make_CrazyVu(EC::SetupEnv &env)
-{
-    EC::BlueprintCrazyVu bp(env);
-}
-
-void make_BeyondCrazyVu(EC::SetupEnv &env)
-{
-    EC::BlueprintBeyondCrazyVu bp(env);
-}
-
-void make_BallLightningVU(EC::SetupEnv &env)
-{
-    env.add(new EC::TriggerPattern());
-    auto &vuLevelSource = env.addVuSource();
-    env.add(new EC::BallLightningVU(env.strip(), vuLevelSource));
-}
-
-void make_BlackHoleVU(EC::SetupEnv &env)
-{
-    auto workStrip = env.strip().getHalfStrip(true);
-
-    env.add(new EC::BgFadeToBlack(20, workStrip, 40));
-    env.add(new EC::BgRotate(workStrip, true));
-    auto &vuLevelSource = env.addVuSource();
-
-    auto &levelVu = env.add(new EC::VuOverlayRainbowStripe(workStrip, vuLevelSource));
-    levelVu.color.hueRange = 0.5;
-    levelVu.color.volume = 255;
-
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-void make_DancingJellyfishVU(EC::SetupEnv &env)
-{
-    auto &vuLevelSource = env.addVuBackground(EC::DancingJellyfishVU::fadeRate_default);
-    env.add(new EC::DancingJellyfishVU(env.strip(), vuLevelSource));
-}
-
-void make_FlowingBeatVU(EC::SetupEnv &env)
-{
-    env.add(new EC::TriggerPattern(EC::FlowingBeatVU::patternUpdatePeriod));
-    auto &vuLevelSource = env.addVuSource();
-    env.add(new EC::FlowingBeatVU(env.strip(), vuLevelSource));
-}
-
-void make_LightbulbVU(EC::SetupEnv &env)
-{
-    env.add(new EC::TriggerPattern());
-    auto &vuLevelSource = env.addVuSource();
-    env.add(new EC::LightbulbVU(env.strip(), vuLevelSource));
-}
-
-void make_RainingVU(EC::SetupEnv &env)
-{
-    env.add(new EC::BgFadeToBlack(20, env.strip(), 20));
-    env.add(new EC::BgRotate(env.strip(), true));
-    auto &vuLevelSource = env.addVuSource();
-
-    auto &levelVu = env.add(new EC::VuOverlayRainbowDot(env.strip(), vuLevelSource));
-    levelVu.color.hueRange = 0.67;
-    levelVu.color.volume = 192;
-
-    auto &peakGlitter = env.add(new EC::VuOverlayPeakGlitter(env.strip(), vuLevelSource));
-    peakGlitter.vuPeakHandler.peakHold = 500;
-    peakGlitter.vuPeakHandler.peakDecay = 500;
-}
-
-void make_RetroPartyVU(EC::SetupEnv &env)
-{
-    env.add(new EC::TriggerPattern());
-    auto &vuLevelSource = env.addVuSource();
-    env.add(new EC::RetroPartyVU(env.strip(), vuLevelSource));
-}
-
-//------------------------------------------------------------------------------
 
 void make_TestVU_1(EC::SetupEnv &env)
 {
@@ -396,9 +341,13 @@ EC::AnimationSceneMakerFct allAnimations[] = {
     &make_VuElements5,
     &make_VuElements6,
 
-    // &make_EjectingDotVu,
-    // &make_CrazyVu,
-    // &make_BeyondCrazyVu,
+    // &make_DoubleDancingDotVU1,
+    // &make_DoubleDancingDotVU2,
+    // &make_ManyDancingDotVU,
+
+    // &make_EjectingDotVU,
+    // &make_CrazyVU,
+    // &make_BeyondCrazyVU,
     // &make_TestVU_1,
 
     // &make_RetroPartyVU,

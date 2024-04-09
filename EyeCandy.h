@@ -31,26 +31,12 @@ SOFTWARE.
 #include "ColorChanger.h"
 #include "SetupEnv.h"
 
-//------------------------------------------------------------------------------
-
 // Pattern stuff
 #include "PatternPresets.h"
 
-//------------------------------------------------------------------------------
-
 // VU stuff
 #include "VuAnalogInputPin.h"
-#include "VuBlueprints.h"
-
-#include "DancingJellyfishVU.h"
-#include "Fire2012VU.h"
-#include "FlowingBeatVU.h"
-#include "LightbulbVU.h"
-#include "RetroPartyVU.h"
-
-//------------------------------------------------------------------------------
+#include "VuPresets.h"
 
 // Experimental / debugging / testing stuff
 #include "experimental/experimental.h"
-
-//------------------------------------------------------------------------------

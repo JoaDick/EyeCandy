@@ -124,7 +124,7 @@ namespace EC
 
   //------------------------------------------------------------------------------
 
-  struct BlueprintEjectingDotVu
+  struct BlueprintEjectingDotVU
   {
     /// Recommended fading speed for this Blueprint.
     static constexpr uint8_t fadeRate_default = 25;
@@ -136,13 +136,13 @@ namespace EC
     VuOverlayRainbowDot *vuPeakDot1;
     VuOverlayRainbowDot *vuPeakDot2;
 
-    explicit BlueprintEjectingDotVu(SetupEnv &env,
+    explicit BlueprintEjectingDotVU(SetupEnv &env,
                                     uint8_t fadeRate = fadeRate_default)
-        : BlueprintEjectingDotVu(env.strip(), env.scene(), env.addVuBackground(fadeRate))
+        : BlueprintEjectingDotVU(env.strip(), env.scene(), env.addVuBackground(fadeRate))
     {
     }
 
-    BlueprintEjectingDotVu(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
+    BlueprintEjectingDotVU(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
     {
       vuPeakSource1 = scene.append(new VuSourcePeakGravity(vuSource));
       vuPeakSource1->vuPeakHandler.a0 = -0.6;
@@ -168,7 +168,7 @@ namespace EC
 
   //------------------------------------------------------------------------------
 
-  struct BlueprintFranticVu
+  struct BlueprintFranticVU
   {
     /// Recommended fading speed for this Blueprint.
     static constexpr uint8_t fadeRate_default = 45;
@@ -186,13 +186,13 @@ namespace EC
       vuDipDot1->color.hueRange = dotVuHueRange;
     }
 
-    explicit BlueprintFranticVu(SetupEnv &env,
+    explicit BlueprintFranticVU(SetupEnv &env,
                                 uint8_t fadeRate = fadeRate_default)
-        : BlueprintFranticVu(env.strip(), env.scene(), env.addVuBackground(fadeRate))
+        : BlueprintFranticVU(env.strip(), env.scene(), env.addVuBackground(fadeRate))
     {
     }
 
-    BlueprintFranticVu(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
+    BlueprintFranticVU(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
     {
       vuPeakSource1 = scene.append(new VuSourcePeakGravity(vuSource));
       vuPeakSource1->vuPeakHandler.a0 = -0.6;
@@ -219,7 +219,7 @@ namespace EC
 
   //------------------------------------------------------------------------------
 
-  struct BlueprintCrazyVu
+  struct BlueprintCrazyVU
   {
     /// Recommended fading speed for this Blueprint.
     static constexpr uint8_t fadeRate_default = 45;
@@ -243,13 +243,13 @@ namespace EC
       vuDipDot2->color.hueRange = dotVuHueRange;
     }
 
-    explicit BlueprintCrazyVu(SetupEnv &env,
+    explicit BlueprintCrazyVU(SetupEnv &env,
                               uint8_t fadeRate = fadeRate_default)
-        : BlueprintCrazyVu(env.strip(), env.scene(), env.addVuBackground(fadeRate))
+        : BlueprintCrazyVU(env.strip(), env.scene(), env.addVuBackground(fadeRate))
     {
     }
 
-    BlueprintCrazyVu(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
+    BlueprintCrazyVU(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
     {
       vuPeakSource1 = scene.append(new VuSourcePeakGravity(vuSource));
       vuPeakSource1->vuPeakHandler.a0 = -0.6;
@@ -288,7 +288,7 @@ namespace EC
 
   //------------------------------------------------------------------------------
 
-  struct BlueprintBeyondCrazyVu
+  struct BlueprintBeyondCrazyVU
   {
     /// Recommended fading speed for this Blueprint.
     static constexpr uint8_t fadeRate_default = 45;
@@ -320,13 +320,13 @@ namespace EC
       vuDipDot3->color.hueRange = dotVuHueRange;
     }
 
-    explicit BlueprintBeyondCrazyVu(SetupEnv &env,
+    explicit BlueprintBeyondCrazyVU(SetupEnv &env,
                                     uint8_t fadeRate = fadeRate_default)
-        : BlueprintBeyondCrazyVu(env.strip(), env.scene(), env.addVuBackground(fadeRate))
+        : BlueprintBeyondCrazyVU(env.strip(), env.scene(), env.addVuBackground(fadeRate))
     {
     }
 
-    BlueprintBeyondCrazyVu(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
+    BlueprintBeyondCrazyVU(FastLedStrip strip, AnimationScene &scene, VuSource &vuSource)
     {
       vuLevelSource = scene.append(new EC::VuSourcePeakForce(vuSource));
       vuLevelSource->vuPeakHandler.mass = 0.75;

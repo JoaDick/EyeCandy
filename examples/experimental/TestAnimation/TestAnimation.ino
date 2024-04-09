@@ -40,8 +40,8 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-#define LED_COLOR_ORDER RGB
-#define NUM_LEDS 100
+// #define LED_COLOR_ORDER RGB
+// #define NUM_LEDS 50
 #include <Animation_IO_config.h>
 
 //------------------------------------------------------------------------------

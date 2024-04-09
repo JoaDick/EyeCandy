@@ -75,387 +75,6 @@ void setup()
 const uint16_t defaultAnimationDuration = 20;
 uint16_t animationDuration = defaultAnimationDuration;
 
-// ---------- VUs ----------
-
-/// Show the raw audio input as VU Animation.
-void make_RawAudioVU(EC::SetupEnv &env)
-{
-    auto &vu = env.add(new EC::RawAudioVU(PIN_MIC, {leds, NUM_LEDS}));
-    // animationDuration = 10;
-}
-
-// ---
-
-void make_DancingDotVU(EC::SetupEnv &env)
-{
-    auto &vuLevelSource = env.addVuBackground(0);
-    auto &vuPeakSource = env.add(new EC::VuSourcePeakForce(vuLevelSource));
-
-    auto &levelVu = env.add(new EC::VuOverlayRainbowLine(env.strip(), vuLevelSource));
-    levelVu.color.volume = 64;
-
-    auto &peakVu = env.add(new EC::VuOverlayStripe(env.strip(), vuPeakSource));
-}
-
-void make_DoubleDancingDotVU1(EC::SetupEnv &env)
-{
-    env.add(new EC::Pride2015(env.strip().getHalfStrip(/*true*/)));
-    env.add(new EC::Kaleidoscope(env.strip()));
-    env.add(new EC::BgFadeToBlack(env.strip(), true, 150));
-
-    auto &vuLevelSource = env.addVuSource();
-    auto &vuPeakSource = env.add(new EC::VuSourcePeakForce(vuLevelSource));
-    vuPeakSource.vuPeakHandler.mass = 0.5;
-
-    auto &vu1 = env.add(new EC::VuOverlayRainbowDot(env.strip(), vuPeakSource, vuLevelSource, 0.075));
-    vu1.color.bpm = 0.7;
-
-    auto &vu2 = env.add(new EC::VuOverlayRainbowDot(env.strip().getReversedStrip(), vuPeakSource, vuLevelSource, 0.075));
-}
-
-void make_DoubleDancingDotVU2(EC::SetupEnv &env)
-{
-    env.add(new EC::FloatingBlobs(env.strip()));
-    env.add(new EC::BgFadeToBlack(env.strip(), true, 230));
-
-    auto &vuLevelSource = env.addVuSource();
-    auto &vuPeakSource1 = env.add(new EC::VuSourcePeakForce(vuLevelSource));
-    vuPeakSource1.vuPeakHandler.coupling = 50.0;
-    auto &vuPeakSource2 = env.add(new EC::VuSourcePeakForce(vuLevelSource));
-    vuPeakSource2.vuPeakHandler.friction = 5.0;
-
-    auto &vu1 = env.add(new EC::VuOverlayRainbowDot(env.strip(), vuPeakSource1, 0.125));
-    vu1.color.bpm = 0.7;
-
-    auto &vu2 = env.add(new EC::VuOverlayRainbowDot(env.strip().getReversedStrip(), vuPeakSource2, 0.125));
-}
-
-void make_ManyDancingDotVU(EC::SetupEnv &env)
-{
-    auto &vuLevelSource = env.addVuBackground(0);
-    // auto &levelVu = env.add(new EC::VuOverlayStripe(env.strip(), vuLevelSource, CRGB(128, 0, 0)));
-
-    float mass = 1.0;
-    float friction = 5.0;
-    for (uint8_t i = 1; i <= 8; ++i)
-    {
-        auto &vuPeakSource = env.add(new EC::VuSourcePeakForce(vuLevelSource));
-        vuPeakSource.vuPeakHandler.mass = mass;
-        vuPeakSource.vuPeakHandler.friction = friction;
-
-        bool flipped = i & 0x01;
-        // flipped = false;
-        auto &peakVu = env.add(new EC::VuOverlayRainbowStripe(env.strip().getSubStrip(0, 0, flipped), vuPeakSource));
-        peakVu.color.hueRange = 0.75;
-
-        // mass += i * 0.25;
-        friction += i * 3.5;
-        // mass += 0.75;
-        // friction += 5.0;
-    }
-}
-
-void make_PeakMothsVU(EC::SetupEnv &env)
-{
-    auto &vuLevelSource = env.addVuBackground(0);
-    auto &vuLevelSource1 = env.add(new EC::VuSourcePeakForce(vuLevelSource));
-
-    auto &levelVu = env.add(new EC::VuOverlayRainbowLine(env.strip(), vuLevelSource1));
-    levelVu.color.volume = 64;
-
-    auto &peakVu1 = env.add(new EC::VuOverlayRainbowDot(env.strip(), vuLevelSource1));
-    peakVu1.color.hueRange = 0.75;
-    peakVu1.color.volume = 255;
-
-    EC::VuSource *vuSource = &vuLevelSource1.asVuSource();
-    for (uint8_t i = 1; i <= 4; ++i)
-    {
-        auto &vuPeakSource = env.add(new EC::VuSourcePeakForce(*vuSource));
-        vuPeakSource.vuPeakHandler.mass = 1.55;
-        // vuPeakSource.vuPeakHandler.friction = 10.0;
-        // vuPeakSource.vuPeakHandler.coupling = 100.0;
-
-        auto &peakVu = env.add(new EC::VuOverlayRainbowDot(env.strip(), vuPeakSource));
-        peakVu.color = peakVu1.color;
-
-        vuSource = &vuPeakSource.asVuSource();
-    }
-}
-
-// ---
-
-void make_FireVU(EC::SetupEnv &env)
-{
-    auto &fire = env.add(new EC::Fire2012<NUM_LEDS>(env.strip()));
-    auto &vuSource = env.addVuSource();
-    env.add(new EC::Fire2012VU<NUM_LEDS>(fire, vuSource));
-}
-
-// ---
-
-void make_FlareVU(EC::SetupEnv &env)
-{
-    const int16_t ledCount = env.strip().ledCount();
-    const int16_t fireLedCount = ledCount / 2 + ledCount / 10;
-    EC::FastLedStrip fireStrip = env.strip().getSubStrip(0, fireLedCount, true);
-
-    auto &fire = env.add(new EC::Fire2012<NUM_LEDS>(fireStrip));
-    fire.setModelUpdatePeriod(10);
-
-    auto &vuSource = env.addVuSource();
-    env.add(new EC::Fire2012VU<NUM_LEDS>(fire, vuSource));
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-void make_FlareDoubleVU(EC::SetupEnv &env)
-{
-    auto subEnv = env.clone_halfStrip();
-    make_FlareVU(subEnv);
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-void make_FlareInwardVU(EC::SetupEnv &env)
-{
-    EC::FastLedStrip fireStrip1 = env.strip().getHalfStrip();
-    auto &fire1 = env.add(new EC::Fire2012<NUM_LEDS>(fireStrip1));
-    fire1.setModelUpdatePeriod(11);
-
-    EC::FastLedStrip fireStrip2 = env.strip().getSubStrip(fireStrip1.ledCount(), 0, true);
-    auto &fire2 = env.add(new EC::Fire2012<NUM_LEDS>(fireStrip2));
-    fire2.setModelUpdatePeriod(13);
-
-    auto &vuSource = env.addVuSource();
-    env.add(new EC::Fire2012VU<NUM_LEDS>(fire1, vuSource));
-    env.add(new EC::Fire2012VU<NUM_LEDS>(fire2, vuSource));
-}
-
-// ---
-
-void make_BallLightningVU(EC::SetupEnv &env)
-{
-    env.add(new EC::TriggerPattern());
-    auto &vuLevelSource = env.addVuSource();
-    env.add(new EC::BallLightningVU(env.strip(), vuLevelSource));
-}
-
-// ---
-
-void make_BlackHoleVU(EC::SetupEnv &env)
-{
-    auto workStrip = env.strip().getHalfStrip(true);
-
-    env.add(new EC::BgFadeToBlack(20, workStrip, 40));
-    env.add(new EC::BgRotate(workStrip, true));
-    auto &vuLevelSource = env.addVuSource();
-
-    auto &levelVu = env.add(new EC::VuOverlayRainbowStripe(workStrip, vuLevelSource));
-    levelVu.color.hueRange = 0.5;
-    levelVu.color.volume = 255;
-
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-// ---
-
-void make_DancingJellyfishVU(EC::SetupEnv &env)
-{
-    auto &vuLevelSource = env.addVuBackground(EC::DancingJellyfishVU::fadeRate_default);
-    env.add(new EC::DancingJellyfishVU(env.strip(), vuLevelSource));
-}
-
-// ---
-
-void make_FlowingBeatVU(EC::SetupEnv &env)
-{
-    env.add(new EC::TriggerPattern(EC::FlowingBeatVU::patternUpdatePeriod));
-    auto &vuLevelSource = env.addVuSource();
-    env.add(new EC::FlowingBeatVU(env.strip(), vuLevelSource));
-}
-
-// ---
-
-void make_LightbulbVU(EC::SetupEnv &env)
-{
-    env.add(new EC::TriggerPattern());
-    auto &vuLevelSource = env.addVuSource();
-    env.add(new EC::LightbulbVU(env.strip(), vuLevelSource));
-}
-
-// ---
-
-void make_MeteorTrailVU(EC::SetupEnv &env)
-{
-    env.add(new EC::BgMeteorFadeToBlack(env.strip(), false));
-    auto &vuLevelSource = env.addVuSource();
-    auto &levelVu = env.add(new EC::VuOverlayRainbowStripe(env.strip(), vuLevelSource));
-    levelVu.color.hueRange = 0.67;
-    levelVu.color.volume = 255;
-}
-
-// ---
-
-void make_PeakGlitterVU(EC::SetupEnv &env)
-{
-    auto &vuSource = env.addVuBackground(EC::VuOverlayPeakGlitter::fadeRate_default);
-    env.add(new EC::VuOverlayPeakGlitter(env.strip(), vuSource));
-}
-
-// ---
-
-void make_RainingVU(EC::SetupEnv &env)
-{
-    env.add(new EC::BgFadeToBlack(20, env.strip(), 20));
-    env.add(new EC::BgRotate(env.strip(), true));
-    auto &vuLevelSource = env.addVuSource();
-
-    auto &levelVu = env.add(new EC::VuOverlayRainbowDot(env.strip(), vuLevelSource));
-    levelVu.color.hueRange = 0.67;
-    levelVu.color.volume = 192;
-
-    auto &peakGlitter = env.add(new EC::VuOverlayPeakGlitter(env.strip(), vuLevelSource));
-    peakGlitter.vuPeakHandler.peakHold = 500;
-    peakGlitter.vuPeakHandler.peakDecay = 500;
-}
-
-// ---
-
-void make_RetroPartyVU(EC::SetupEnv &env)
-{
-    env.add(new EC::TriggerPattern());
-    auto &vuLevelSource = env.addVuSource();
-    env.add(new EC::RetroPartyVU(env.strip(), vuLevelSource));
-}
-
-// ---
-
-void make_RainbowBallVU(EC::SetupEnv &env)
-{
-    EC::BlueprintRainbowVU bp(env);
-    bp.peakSource->vuPeakHandler.presetPunchedBall();
-    // bp.setVuRange(0.67);
-}
-
-void make_RainbowBalllVU_inward(EC::SetupEnv &env)
-{
-    auto subEnv = env.clone_halfStrip();
-    make_RainbowBallVU(subEnv);
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-void make_RainbowBalllVU_outward(EC::SetupEnv &env)
-{
-    auto subEnv = env.clone_halfStrip(true);
-    make_RainbowBallVU(subEnv);
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-// ---
-
-void make_RainbowBubbleVU(EC::SetupEnv &env)
-{
-    EC::BlueprintRainbowVU bp(env);
-    bp.peakSource->vuPeakHandler.presetFloatingBubble();
-    bp.setVuRange(0.67);
-}
-
-void make_RainbowBubbleVU_inward(EC::SetupEnv &env)
-{
-    auto subEnv = env.clone_halfStrip();
-    make_RainbowBubbleVU(subEnv);
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-void make_RainbowBubbleVU_outward(EC::SetupEnv &env)
-{
-    auto subEnv = env.clone_halfStrip(true);
-    make_RainbowBubbleVU(subEnv);
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-// ---
-
-void make_EjectingDotVu(EC::SetupEnv &env)
-{
-    EC::BlueprintEjectingDotVu bp(env);
-}
-
-void make_EjectingDotVu_inward(EC::SetupEnv &env)
-{
-    auto subEnv = env.clone_halfStrip();
-    make_EjectingDotVu(subEnv);
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-void make_EjectingDotVu_outward(EC::SetupEnv &env)
-{
-    auto subEnv = env.clone_halfStrip(true);
-    make_EjectingDotVu(subEnv);
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-// ---
-
-void make_FranticVu(EC::SetupEnv &env)
-{
-    EC::BlueprintFranticVu bp(env);
-}
-
-void make_FranticVu_inward(EC::SetupEnv &env)
-{
-    auto subEnv = env.clone_halfStrip();
-    make_FranticVu(subEnv);
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-void make_FranticVu_outward(EC::SetupEnv &env)
-{
-    auto subEnv = env.clone_halfStrip(true);
-    make_FranticVu(subEnv);
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-// ---
-
-void make_CrazyVu(EC::SetupEnv &env)
-{
-    EC::BlueprintCrazyVu bp(env);
-}
-
-void make_CrazyVu_inward(EC::SetupEnv &env)
-{
-    auto subEnv = env.clone_halfStrip();
-    make_CrazyVu(subEnv);
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-void make_CrazyVu_outward(EC::SetupEnv &env)
-{
-    auto subEnv = env.clone_halfStrip(true);
-    make_CrazyVu(subEnv);
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-// ---
-
-void make_BeyondCrazyVu(EC::SetupEnv &env)
-{
-    EC::BlueprintBeyondCrazyVu bp(env);
-}
-
-void make_BeyondCrazyVu_inward(EC::SetupEnv &env)
-{
-    auto subEnv = env.clone_halfStrip();
-    make_BeyondCrazyVu(subEnv);
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
-void make_BeyondCrazyVu_outward(EC::SetupEnv &env)
-{
-    auto subEnv = env.clone_halfStrip(true);
-    make_BeyondCrazyVu(subEnv);
-    env.add(new EC::Kaleidoscope(env.strip()));
-}
-
 // ---------- VU sequence ----------
 
 void make_VuIntro1(EC::SetupEnv &env)
@@ -538,31 +157,34 @@ void make_VuSequence16(EC::SetupEnv &env)
     // animationDuration = 15;
 }
 
-void make_VuSequence16a(EC::SetupEnv &env)
-{
-    make_ManyDancingDotVU(env);
-    // animationDuration = 15;
-}
-
 void make_VuSequence17(EC::SetupEnv &env)
 {
-    make_FireVU(env);
+    make_FireVU<NUM_LEDS>(env);
     animationDuration = 30;
 }
 
 void make_VuSequence18(EC::SetupEnv &env)
 {
-    make_FlareInwardVU(env);
+    make_FlareInwardVU<NUM_LEDS>(env);
 }
 
 void make_VuSequence19(EC::SetupEnv &env)
 {
-    make_FlareVU(env);
+    make_FlareVU<NUM_LEDS>(env);
 }
 
 void make_VuSequence20(EC::SetupEnv &env)
 {
-    make_FlareDoubleVU(env);
+    make_FlareDoubleVU<NUM_LEDS>(env);
+}
+
+//------------------------------------------------------------------------------
+
+/// Show the raw audio input as VU Animation.
+void make_RawAudioVU(EC::SetupEnv &env)
+{
+    auto &vu = env.add(new EC::RawAudioVU(PIN_MIC, {leds, NUM_LEDS}));
+    // animationDuration = 10;
 }
 
 //------------------------------------------------------------------------------
@@ -579,35 +201,34 @@ EC::AnimationSceneMakerFct allAnimations[] = {
 
     &make_RainbowBallVU,
     &make_RainbowBubbleVU,
-    &make_EjectingDotVu,
+    &make_EjectingDotVU,
 
     &make_RainbowBalllVU_inward,
     &make_RainbowBubbleVU_inward,
-    &make_EjectingDotVu_inward,
+    &make_EjectingDotVU_inward,
 
     // &make_RainbowBalllVU_outward,
     // &make_RainbowBubbleVU_outward,
-    // &make_EjectingDotVu_outward,
+    // &make_EjectingDotVU_outward,
 
     &make_MeteorTrailVU,
 
-    &make_FranticVu,
-    &make_CrazyVu,
-    &make_BeyondCrazyVu,
+    &make_FranticVU,
+    &make_CrazyVU,
+    &make_BeyondCrazyVU,
 
-    // &make_FranticVu_inward,
-    // &make_CrazyVu_inward,
-    // &make_BeyondCrazyVu_inward,
+    // &make_FranticVU_inward,
+    // &make_CrazyVU_inward,
+    // &make_BeyondCrazyVU_inward,
 
-    // &make_FranticVu_outward,
-    // &make_CrazyVu_outward,
-    &make_BeyondCrazyVu_outward,
+    // &make_FranticVU_outward,
+    // &make_CrazyVU_outward,
+    &make_BeyondCrazyVU_outward,
 
     &make_VuSequence13,
     &make_VuSequence14,
     // &make_VuSequence15,
     &make_VuSequence16,
-    // &make_VuSequence16a,
 
     &make_RetroPartyVU,
     &make_LightbulbVU,
