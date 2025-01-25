@@ -77,12 +77,7 @@ void setup()
 #endif
 
 #if (0)
-    leds[0] = CRGB(255, 0, 0);
-    leds[1] = CRGB(0, 255, 0);
-    leds[2] = CRGB(0, 255, 0);
-    leds[3] = CRGB(0, 0, 255);
-    leds[4] = CRGB(0, 0, 255);
-    leds[5] = CRGB(0, 0, 255);
+    EC::dumpPixelColorOrder({leds, NUM_LEDS}, 5);
     FastLED.show();
     delay(3000);
 #endif
@@ -116,15 +111,17 @@ void make_AnimationTemplate(EC::SetupEnv &env)
 
 void make_TestAnimation(EC::SetupEnv &env)
 {
-    auto &animation = env.add(new EC::NoisePlayground(env.strip(), false));
+    auto &animation = env.add(new EC::StripYardstick(env.strip()));
+    // auto &animation = env.add(new EC::BgFillColor(env.strip(), CRGB::White));
     autoMode = false;
 }
 
 //------------------------------------------------------------------------------
 
 EC::AnimationSceneMakerFct allAnimations[] = {
-    // &make_VisualizeRainbow,
     // &make_AnimationTemplate,
+    &make_TestAnimation,
+    // &make_VisualizeRainbow,
     // &make_NoisePlayground,
     &make_ColorClouds_ExtraSlow,
     &make_ColorClouds_Ambient,

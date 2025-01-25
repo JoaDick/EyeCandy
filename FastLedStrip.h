@@ -360,7 +360,7 @@ namespace EC
 
   /** Fading function for Meteor and BgMeteorFadeToBlack Animation.
    * The individual LEDs of the strip are faded randomly (instead of all at once).
-   * @param ledStrip  The LED strip.
+   * @param strip  The LED strip.
    * @param chance  Chance of fading a LED (0 = never, 255 = always).
    * @param fadeBy  Fading speed: Lower value = longer glowing.
    */
@@ -380,6 +380,7 @@ namespace EC
   /** Helper function for rendering an oftentimes used Pattern background.
    * Depending on the setting of \a fadeBy, it makes either a fading background, or a solid
    * black background.
+   * @param strip  The LED strip.
    * @param fadeBy  Fading speed: Lower value = longer glowing; 0 = black background.
    */
   inline void showDefaultPattern(FastLedStrip &strip, uint8_t fadeBy)
@@ -396,9 +397,18 @@ namespace EC
 
   //------------------------------------------------------------------------------
 
-  /** Visualize the RGB portions of the given \a color at the beginning of the strip.
-   * Only for debugging / experimenting.
+  /** Helper to visualize the RGB portions of the given \a color at the beginning of the strip.
+   * Mainly for debugging / experimenting.
    */
-  void dumpRGB(FastLedStrip &strip, CRGB color, uint8_t size = 2, int16_t startIndex = -1);
+  void dumpRGB(FastLedStrip &strip, CRGB color, uint8_t blockSize = 2, int16_t startIndex = 0);
+
+  /** Helper to identify the color order (RGB, GRB, ...) of the LED strip.
+   * This draws a (small) red, (medium) green and (large) blue block at the start of the strip.
+   * Mainly for debugging / experimenting.
+   * Inspired by https://github.com/FastLED/FastLED/blob/master/examples/RGBCalibrate/RGBCalibrate.ino
+   * @param strip  The LED strip.
+   * @param blockSize  Size of the smallest block; 0 = autodetect (to utilize the entire strip)
+   */
+  void dumpPixelColorOrder(FastLedStrip strip, uint16_t blockSize = 0);
 
 } // namespace EC

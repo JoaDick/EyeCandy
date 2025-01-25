@@ -50,7 +50,7 @@ namespace EC
     uint8_t volSqueeze;
 
     /// Put more emphasis on the red'ish colors when true.
-    bool moreRed = true;
+    bool moreRed = false;
 
     /** Constructor.
      * @param ledStrip  The LED strip.

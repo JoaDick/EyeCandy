@@ -268,17 +268,29 @@ namespace EC
 
   //------------------------------------------------------------------------------
 
-  void dumpRGB(FastLedStrip &strip, CRGB color, uint8_t size, int16_t startIndex)
+  void dumpRGB(FastLedStrip &strip, CRGB color, uint8_t blockSize, int16_t startIndex)
   {
-    strip.lineRel(startIndex, 1 + 4 * (size + 1), CRGB::Black);
+    strip.lineRel(startIndex, 1 + 4 * (blockSize + 1), CRGB::Black);
     startIndex++;
-    strip.lineRel(startIndex, size, color);
-    startIndex += (size + 1);
-    strip.lineRel(startIndex, size, CRGB(color.r, 0, 0));
-    startIndex += (size + 1);
-    strip.lineRel(startIndex, size, CRGB(0, color.g, 0));
-    startIndex += (size + 1);
-    strip.lineRel(startIndex, size, CRGB(0, 0, color.b));
+    strip.lineRel(startIndex, blockSize, color);
+    startIndex += (blockSize + 1);
+    strip.lineRel(startIndex, blockSize, CRGB(color.r, 0, 0));
+    startIndex += (blockSize + 1);
+    strip.lineRel(startIndex, blockSize, CRGB(0, color.g, 0));
+    startIndex += (blockSize + 1);
+    strip.lineRel(startIndex, blockSize, CRGB(0, 0, color.b));
+  }
+
+  void dumpPixelColorOrder(FastLedStrip strip, uint16_t blockSize = 0)
+  {
+    if (blockSize == 0)
+    {
+      blockSize = strip.ledCount() / 6;
+    }
+    strip.clear();
+    strip.lineRel(0, blockSize, CRGB(128, 0, 0));
+    strip.lineRel(blockSize, 2 * blockSize, CRGB(0, 128, 0));
+    strip.lineRel(3 * blockSize, 3 * blockSize, CRGB(0, 0, 128));
   }
 
 } // namespace EC

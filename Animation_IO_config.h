@@ -4,8 +4,24 @@
 
 #ifndef NUM_LEDS
 // Number of LEDs in the strip.
-#define NUM_LEDS 90
+#define NUM_LEDS 120
 #endif
+
+// Enable one of these according to your LED strip.
+#ifndef LED_COLOR_ORDER
+// #define LED_COLOR_ORDER RGB
+// #define LED_COLOR_ORDER RBG
+#define LED_COLOR_ORDER GRB
+// #define LED_COLOR_ORDER GBR
+// #define LED_COLOR_ORDER BRG
+// #define LED_COLOR_ORDER BGR
+#endif
+
+#ifndef LED_TYPE
+#define LED_TYPE WS2812B
+#endif
+
+//------------------------------------------------------------------------------
 
 // Data pin for LED strip.
 #ifndef LED_PIN
@@ -63,22 +79,6 @@
 #else
 #error "No pin for microphone defined"
 #endif
-#endif
-
-//------------------------------------------------------------------------------
-
-// Enable one of these according to your LED strip.
-#ifndef LED_COLOR_ORDER
-// #define LED_COLOR_ORDER RGB
-// #define LED_COLOR_ORDER RBG
-#define LED_COLOR_ORDER GRB
-// #define LED_COLOR_ORDER GBR
-// #define LED_COLOR_ORDER BRG
-// #define LED_COLOR_ORDER BGR
-#endif
-
-#ifndef LED_TYPE
-#define LED_TYPE WS2812B
 #endif
 
 //------------------------------------------------------------------------------
