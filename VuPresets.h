@@ -63,9 +63,9 @@ inline void make_BeyondCrazyVU_outward(EC::SetupEnv &env)
   env.add(new EC::Kaleidoscope(env.strip()));
 }
 
-inline void make_BlackHoleVU(EC::SetupEnv &env)
+inline void make_BlackHoleVU(EC::SetupEnv &env, bool inward)
 {
-  auto workStrip = env.strip().getHalfStrip(true);
+  auto workStrip = env.strip().getHalfStrip(inward);
 
   env.add(new EC::BgFadeToBlack(20, workStrip, 40));
   env.add(new EC::BgRotate(workStrip, true));
@@ -76,6 +76,16 @@ inline void make_BlackHoleVU(EC::SetupEnv &env)
   levelVu.color.volume = 255;
 
   env.add(new EC::Kaleidoscope(env.strip()));
+}
+
+inline void make_BlackHoleVU(EC::SetupEnv &env)
+{
+  make_BlackHoleVU(env, true);
+}
+
+inline void make_BlackAntiHoleVU(EC::SetupEnv &env)
+{
+  make_BlackHoleVU(env, false);
 }
 
 inline void make_CrazyVU(EC::SetupEnv &env)
@@ -220,6 +230,20 @@ inline void make_FlowingBeatVU(EC::SetupEnv &env)
   env.add(new EC::FlowingBeatVU(env.strip(), vuLevelSource));
 }
 
+inline void make_FlowingBeatVU_inward(EC::SetupEnv &env)
+{
+  auto subEnv = env.clone_halfStrip(true);
+  make_FlowingBeatVU(subEnv);
+  env.add(new EC::Kaleidoscope(env.strip()));
+}
+
+inline void make_FlowingBeatVU_outward(EC::SetupEnv &env)
+{
+  auto subEnv = env.clone_halfStrip();
+  make_FlowingBeatVU(subEnv);
+  env.add(new EC::Kaleidoscope(env.strip()));
+}
+
 inline void make_FranticVU(EC::SetupEnv &env)
 {
   EC::BlueprintFranticVU bp(env);
@@ -343,6 +367,20 @@ inline void make_RainingVU(EC::SetupEnv &env)
   auto &peakGlitter = env.add(new EC::VuOverlayPeakGlitter(env.strip(), vuLevelSource));
   peakGlitter.vuPeakHandler.peakHold = 500;
   peakGlitter.vuPeakHandler.peakDecay = 500;
+}
+
+inline void make_RainingVU_inward(EC::SetupEnv &env)
+{
+  auto subEnv = env.clone_halfStrip(true);
+  make_RainingVU(subEnv);
+  env.add(new EC::Kaleidoscope(env.strip()));
+}
+
+inline void make_RainingVU_outward(EC::SetupEnv &env)
+{
+  auto subEnv = env.clone_halfStrip();
+  make_RainingVU(subEnv);
+  env.add(new EC::Kaleidoscope(env.strip()));
 }
 
 inline void make_RetroPartyVU(EC::SetupEnv &env)

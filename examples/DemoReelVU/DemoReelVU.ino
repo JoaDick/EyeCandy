@@ -228,14 +228,19 @@ EC::AnimationSceneMakerFct allAnimations[] = {
     &make_VuSequence13,
     &make_VuSequence14,
     // &make_VuSequence15,
-    &make_VuSequence16,
+    &make_VuSequence16, // ?
 
     &make_RetroPartyVU,
     &make_LightbulbVU,
     &make_RainingVU,
-    // &make_BlackHoleVU,
+    // &make_RainingVU_inward,
+    &make_RainingVU_outward,
+    &make_BlackHoleVU,
+    // &make_BlackAntiHoleVU,
     &make_DancingJellyfishVU,
-    &make_FlowingBeatVU,
+    // &make_FlowingBeatVU,
+    &make_FlowingBeatVU_outward,
+    // &make_FlowingBeatVU_inward,
     // &make_BallLightningVU,
 
     &make_VuSequence17,
