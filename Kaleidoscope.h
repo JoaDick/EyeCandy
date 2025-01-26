@@ -60,12 +60,10 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      if (wasModified)
-      {
-        _strip.copyUp(mirrored);
-      }
+      _strip.copyUp(mirrored);
+      return 0;
     }
 
   private:

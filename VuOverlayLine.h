@@ -63,12 +63,10 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      if (!wasModified)
-        return;
-
       _strip.n_lineRel(0.0, _vuSource.getVU(), color);
+      return 0;
     }
 
   private:

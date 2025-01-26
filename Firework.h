@@ -36,62 +36,64 @@ namespace EC
   /// Default value for #Firework::fadeRate
   inline uint8_t Firework_fadeRate_default() { return 50; }
 
-  /// Default value for #Firework::launchDelay
-  inline uint16_t Firework_launchDelay_default() { return 900; }
-
   /** A Firework Animation.
    * @tparam PARTICLE_COUNT Number of effect particles.
    */
   template <uint8_t PARTICLE_COUNT = 5>
   class Firework
-      : public AnimationModelBase
+      : public AnimationBase
   {
   public:
     /// Delay (in ms) before relaunching the Particles.
-    uint16_t launchDelay = Firework_launchDelay_default();
+    uint16_t launchDelay;
 
     /** Constructor
      * @param ledStrip  The LED strip.
      * @param overlayMode  Set to true when Animation shall be an Overlay.
-     * @param launchDelay  Multiples of 1500 give a nice effect.
+     * @param launchDelay  Multiples of ca. 1500 give a nice effect.
      */
     Firework(FastLedStrip ledStrip,
              bool overlayMode,
-             uint16_t launchDelay = Firework_launchDelay_default())
-        : AnimationModelBase(10, ledStrip, overlayMode, Firework_fadeRate_default()),
+             uint16_t launchDelay)
+        : AnimationBase(ledStrip, overlayMode, Firework_fadeRate_default()),
           launchDelay(launchDelay)
     {
-#ifdef FIREWORK_DEBUG
-      // setPatternUpdatePeriod(20);
-#endif
     }
 
   private:
 #ifdef FIREWORK_DEBUG
     /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    uint8_t showPattern(uint32_t currentMillis) override
     {
-      AnimationBase::showDefaultPattern();
+      AnimationBase::showPattern(currentMillis);
       _particles[0].dump();
+      return 0;
+      // return 20;
     }
 #endif
 
     /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
-      for (uint8_t i = 0; i < PARTICLE_COUNT; ++i)
+      if (_lastMillis != 0)
       {
-        _particles[i].show(strip);
+        updateParticles(currentMillis);
+        for (uint8_t i = 0; i < PARTICLE_COUNT; ++i)
+        {
+          _particles[i].show(strip);
+        }
       }
+
+      _lastMillis = currentMillis;
     }
 
-    /// @see AnimationModelBase::updateModel()
-    void updateModel(uint32_t currentMillis) override
+    void updateParticles(uint32_t currentMillis)
     {
+      const uint32_t delta_t = currentMillis - _lastMillis;
       bool mustLaunch = true;
       for (uint8_t i = 0; i < PARTICLE_COUNT; ++i)
       {
-        _particles[i].update(getModelUpdatePeriod());
+        _particles[i].update(delta_t);
         if (_particles[i].getState() != FireworkParticle::STATE_IDLE)
         {
           mustLaunch = false;
@@ -119,6 +121,7 @@ namespace EC
   private:
     FireworkParticle::Config _particleConfig;
     FireworkParticle _particles[PARTICLE_COUNT];
+    uint32_t _lastMillis = 0;
     uint32_t _launchTime = 0;
   };
 

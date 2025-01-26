@@ -63,6 +63,7 @@ namespace EC
 
   //------------------------------------------------------------------------------
 
+#if (EC_NEEDS_REWORK)
   /** Display the raw audio samples as VU.
    * Useful e.g. for roughly checking the audio level at the analog input pin -
    * because that signal is also used as audio source for all other VUs. \n
@@ -70,7 +71,7 @@ namespace EC
    * low than saturated (clipping).
    */
   class RawAudioVU
-      : public AnimationBase
+      : public AnimationBaseOLD
   {
   public:
     /** Set to true for logging audio samples over serial line (via Teleplot).
@@ -86,15 +87,17 @@ namespace EC
      */
     RawAudioVU(uint8_t analogPin,
                FastLedStrip ledStrip)
-        : AnimationBase(ledStrip, false, 25),
+        : AnimationBaseOLD(ledStrip, false, 25),
           _analogPin(analogPin)
     {
     }
 
   private:
-    /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    /// @see Animation::processAnimationOLD()
+    void processAnimationOLD(uint32_t currentMillis, bool &wasModified) override
     {
+      // !!! Won't work anymore !!!
+
       const float audioSample = _adcNormalizer.process(analogRead(_analogPin));
       float sample = (audioSample + 1.0) / 2.0;
 
@@ -113,7 +116,7 @@ namespace EC
       }
 #endif
 
-      AnimationBase::processAnimation(currentMillis, wasModified);
+      AnimationBaseOLD::processAnimationOLD(currentMillis, wasModified);
     }
 
   private:
@@ -121,9 +124,11 @@ namespace EC
     AdcSampleNormalizer _adcNormalizer;
     float _lastSample = 0.5;
   };
+#endif
 
   //------------------------------------------------------------------------------
 
+#if (EC_NEEDS_REWORK)
   /** A VU as playground for exploring low level audio processing.
    * @note This VU doesn't manipulate the LED strip by itself.
    * Instead, it requires a custom function (provided via constructor) for
@@ -132,7 +137,7 @@ namespace EC
    * behind the scenes.
    */
   class LowLevelAudioPlaygroundVU
-      : public AnimationModelBase
+      : public AnimationModelBaseOLD
   {
   public:
     /// Signature of the function for rendering the VU on the LED strip.
@@ -196,12 +201,12 @@ namespace EC
     LowLevelAudioPlaygroundVU(uint8_t analogPin,
                               FastLedStrip ledStrip,
                               DrawingFct drawingFct)
-        : AnimationModelBase(10, ledStrip, false, 50),
+        : AnimationModelBaseOLD(10, ledStrip, false, 50),
           _analogPin(analogPin), _drawingFct(drawingFct)
     {
       // Calculating the average value every 10ms, resulting in 100Hz refresh rate.
       // The LED strip is also updated every 10ms, resulting in 100 "FPS" for the VU.
-      // -- Note: That's the default value; see AnimationBase::patternUpdatePeriod.
+      // -- Note: That's the default value; see AnimationBaseOLD::patternUpdatePeriod.
 
       vuPeakHandlerAvg.peakHold = 750;
       vuPeakHandlerAvg.peakDecay = 2500;
@@ -215,18 +220,20 @@ namespace EC
     }
 
   private:
-    /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    /// @see Animation::processAnimationOLD()
+    void processAnimationOLD(uint32_t currentMillis, bool &wasModified) override
     {
+      // !!! Won't work anymore !!!
+
       const float audioSample = _adcNormalizer.process(analogRead(_analogPin));
       _sampleAvgSum += fabs(audioSample);
       _sampleRmsSum += square(audioSample);
       ++_sampleCount;
 
-      AnimationModelBase::processAnimation(currentMillis, wasModified);
+      AnimationModelBaseOLD::processAnimationOLD(currentMillis, wasModified);
     }
 
-    /// @see AnimationModelBase::updateModel()
+    /// @see AnimationModelBaseOLD::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
       if (_sampleCount == 0)
@@ -287,7 +294,7 @@ namespace EC
       _sampleRmsSum = 0.0;
     }
 
-    /// @see AnimationBase::showOverlay()
+    /// @see AnimationBaseOLD::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
       _drawingFct(strip, *this);
@@ -319,6 +326,7 @@ namespace EC
     float _sampleAvgSum = 0.0;
     float _sampleRmsSum = 0.0;
   };
+#endif
 
   //------------------------------------------------------------------------------
 

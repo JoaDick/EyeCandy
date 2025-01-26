@@ -52,6 +52,7 @@ EC::Firework<PARTICLE_COUNT> firework4(mainStrip, true, 6300);
 EC::Firework<PARTICLE_COUNT> firework5(mainStrip, true, 7900);
 
 EC::AnimationSceneStatic animationScene;
+EC::AnimationUpdateHandler animationHandler(animationScene);
 
 //------------------------------------------------------------------------------
 
@@ -78,7 +79,7 @@ void setup()
 
 void loop()
 {
-    if (animationScene.process())
+    if (animationHandler.process(millis()))
     {
         FastLED.show();
     }

@@ -47,6 +47,7 @@ EC::Pride2015 pride2015(prideStrip);
 EC::Kaleidoscope kaleidoscopeOverlay(mainStrip);
 
 EC::AnimationSceneStatic animationScene;
+EC::AnimationUpdateHandler animationHandler(animationScene);
 
 //------------------------------------------------------------------------------
 
@@ -78,7 +79,7 @@ void loop()
     updateColor();
     updateSpeed();
 
-    if (animationScene.process())
+    if (animationHandler.process(millis()))
     {
         FastLED.show();
     }

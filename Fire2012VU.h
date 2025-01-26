@@ -67,12 +67,10 @@ namespace EC
   private:
 #ifndef FIRE2012VU_DEBUG
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      if (wasModified)
-      {
-        updateFireConfig(currentMillis);
-      }
+      updateFireConfig(currentMillis);
+      return 0;
     }
 #else
     /// @see AnimationBase::showOverlay()

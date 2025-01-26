@@ -72,9 +72,10 @@ namespace EC
 
   private:
     /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    uint8_t showPattern(uint32_t currentMillis) override
     {
       fill_rainbow(strip.ledArray(), strip.ledCount(), _hue, deltahue);
+      return 0;
     }
 
     /// @see AnimationModelBase::updateModel()

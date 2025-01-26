@@ -45,17 +45,19 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit FloatingBlobs(FastLedStrip ledStrip)
-        : PatternBase(ledStrip, 10)
+        : PatternBase(ledStrip)
     {
     }
 
   private:
-    /// @see PatternBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
       blobs.process(strip);
       strip.blur(75);
       strip.blur(150);
+
+      return 10;
     }
   };
 

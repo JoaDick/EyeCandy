@@ -52,11 +52,8 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      if (!wasModified)
-        return;
-
       /// COOLING: How much does the air cool as it rises?
       /// Less cooling = taller flames.  More cooling = shorter flames.
       /// suggested range 20-100
@@ -66,6 +63,8 @@ namespace EC
       /// Higher chance = more roaring fire.  Lower chance = more flickery fire.
       /// suggested range 50-200.
       _fire.SPARKING = beatsin8(bpm_SPARKING, 50, 150);
+
+      return 0;
     }
 
   private:

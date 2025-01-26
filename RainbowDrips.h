@@ -49,13 +49,12 @@ namespace EC
         : AnimationModelBase(100, ledStrip),
           color(1.0)
     {
-      setPatternUpdatePeriod(40);
       color.moreRed = false;
     }
 
   private:
     /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    uint8_t showPattern(uint32_t currentMillis) override
     {
       color.update();
       strip.fadeToBlack(1);
@@ -66,6 +65,8 @@ namespace EC
         strip.pixel(ledPos) = color /*[float(ledPos) / strip.ledCount()]*/;
       }
       strip.blur(beatsin8(11, 100, 172));
+
+      return 40;
     }
 
     /// @see AnimationModelBase::updateModel()

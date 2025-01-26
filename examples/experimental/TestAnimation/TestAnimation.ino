@@ -33,7 +33,7 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-// #define EC_DEFAULT_UPDATE_PERIOD 20
+// #define EC_DEFAULT_FRAMETIME 20
 
 #include <EyeCandy.h>
 #include <ButtonHandler.h>
@@ -120,7 +120,7 @@ void make_TestAnimation(EC::SetupEnv &env)
 
 EC::AnimationSceneMakerFct allAnimations[] = {
     // &make_AnimationTemplate,
-    &make_TestAnimation,
+    // &make_TestAnimation,
     // &make_VisualizeRainbow,
     // &make_NoisePlayground,
     &make_ColorClouds_ExtraSlow,
@@ -163,6 +163,8 @@ EC::AnimationChanger animationChanger(animationSetupEnv, allAnimations);
 #else
 EC::AnimationChangerSoft animationChanger(animationSetupEnv, allAnimations);
 #endif
+
+EC::AnimationUpdateHandler animationHandler(animationChanger);
 
 //------------------------------------------------------------------------------
 
@@ -219,7 +221,7 @@ void loop()
 
     handleAnimationChange(currentMillis);
 
-    if (animationChanger.process(currentMillis))
+    if (animationHandler.process(currentMillis))
     {
 #if (0)
         static bool toggleFlag = false;

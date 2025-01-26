@@ -55,19 +55,27 @@ namespace EC
     }
 
   private:
-    /// @see PatternBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      fadeLightBy(strip.ledArray(), strip.ledCount(), 25);
-      for (uint8_t i = 0; i < DROPLET_COUNT; ++i)
+      if (_lastMillis != 0)
       {
-        _droplets[i].update(getPatternUpdatePeriod());
-        _droplets[i].show(strip);
+        const uint32_t delta_t = currentMillis - _lastMillis;
+        fadeLightBy(strip.ledArray(), strip.ledCount(), 25);
+        for (uint8_t i = 0; i < DROPLET_COUNT; ++i)
+        {
+          _droplets[i].update(delta_t);
+          _droplets[i].show(strip);
+        }
       }
+
+      _lastMillis = currentMillis;
+      return 0;
     }
 
   private:
     WaterfallDroplet _droplets[DROPLET_COUNT];
+    uint32_t _lastMillis = 0;
   };
 
 } // namespace EC

@@ -69,12 +69,10 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      if (wasModified)
-      {
-        vuPeakHandler.process(_vuSource.getVU(), currentMillis);
-      }
+      vuPeakHandler.process(_vuSource.getVU(), currentMillis);
+      return 0;
     }
 
   private:

@@ -76,11 +76,8 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      if (!wasModified)
-        return;
-
       color.update();
 
       const float vuLevel = _vuSource.getVU();
@@ -104,6 +101,8 @@ namespace EC
       // _debugStrip.n_pixel(colorVolume) = CRGB(32, 32, 32);
       _debugStrip.n_pixel(colorOffset) = CRGB(64, 64, 0);
 #endif
+
+      return patternUpdatePeriod;
     }
 
   private:

@@ -47,15 +47,16 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     explicit Pacifica(FastLedStrip ledStrip)
-        : PatternBase(ledStrip, 20)
+        : PatternBase(ledStrip)
     {
     }
 
   private:
-    /// @see PatternBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
       pacifica_loop(currentMillis);
+      return 20;
     }
 
     //////////////////////////////////////////////////////////////////////////

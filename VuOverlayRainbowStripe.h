@@ -76,11 +76,8 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      if (!wasModified)
-        return;
-
       color.update();
       const float vuLevel = _vuLevelSource.getVU();
       const float colorVuLevel = _vuCcolorSource.getVU();
@@ -91,6 +88,8 @@ namespace EC
       }
       _strip.n_lineRel(vuLevel, _lastVuLevel - vuLevel, color[colorVuLevel]);
       _lastVuLevel = vuLevel;
+
+      return 0;
     }
 
   private:

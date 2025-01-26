@@ -107,6 +107,7 @@ EC::AnimationSceneMakerFct allAnimations[] = {
 EC::AnimationScene mainScene;
 EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, mainScene);
 EC::AnimationChangerSoft animationChanger(animationSetupEnv, allAnimations);
+EC::AnimationUpdateHandler animationHandler(animationChanger);
 
 //------------------------------------------------------------------------------
 
@@ -163,7 +164,7 @@ void loop()
 
     handleAnimationChange(currentMillis);
 
-    if (animationChanger.process(currentMillis))
+    if (animationHandler.process(currentMillis))
     {
         FastLED.show();
     }

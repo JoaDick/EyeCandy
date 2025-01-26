@@ -66,7 +66,7 @@ namespace EC
 
   private:
     /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    uint8_t showPattern(uint32_t currentMillis) override
     {
       static const CRGB colorTable[_blockCount] =
           {
@@ -90,6 +90,8 @@ namespace EC
       {
         strip.fill(CRGB::Black);
       }
+
+      return 0;
     }
 
     /// @see AnimationModelBase::updateModel()

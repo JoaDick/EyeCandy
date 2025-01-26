@@ -86,8 +86,8 @@ namespace EC
     }
 
   private:
-    /// @see PatternBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
       const auto ledCount = strip.ledCount();
       const uint8_t hueOffset = beat88(64) >> 8;
@@ -125,6 +125,8 @@ namespace EC
         }
 #endif
       }
+
+      return 0;
     }
 
   private:

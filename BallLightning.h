@@ -115,8 +115,8 @@ namespace EC
     }
 
   private:
-    /// @see PatternBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
       // let the ball overshoot a bit to compensate for inoise8()'s limited output range
       const float overshoot = 0.1;
@@ -130,6 +130,7 @@ namespace EC
 
       // render the ball
       _ball.show(strip, smoothedPos, size, color);
+      return 0;
     }
 
   private:
@@ -143,7 +144,7 @@ namespace EC
    * Best used as standalone VU; doesn't work well with overlays.
    */
   class BallLightningVU
-      : public Animation
+      : public PatternBase
   {
   public:
     /// Color source of the VU.
@@ -155,7 +156,7 @@ namespace EC
      */
     BallLightningVU(FastLedStrip ledStrip,
                     VuSource &vuSource)
-        : _strip(ledStrip), _vuSource(vuSource)
+        : PatternBase(ledStrip), _vuSource(vuSource)
     {
     }
 
@@ -163,11 +164,8 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      if (!wasModified)
-        return;
-
       color.update();
 
       const float vuLevel = _vuSource.getVU();
@@ -180,11 +178,11 @@ namespace EC
       color.volume = colorVolume * 255;
       const float colorOffset = vuLevelAvg - vuDeltaAvg;
 
-      _ball.show(_strip, vuLevelAvg, 0.9 * vuDeltaAvg, color[colorOffset]);
+      _ball.show(strip, vuLevelAvg, 0.9 * vuDeltaAvg, color[colorOffset]);
+      return 0;
     }
 
   private:
-    FastLedStrip _strip;
     VuSource &_vuSource;
     LightningBallEngine _ball;
     MovingAverage _vuLevelAvg{12};

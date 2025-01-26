@@ -62,16 +62,15 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      if (!wasModified)
-        return;
-
       float vuLevel = _vuSource.getVU();
       vuLevel *= 1.1; // to make the red bulb flash a bit more often
       uint16_t bulbPattern = 1 << uint8_t(vuLevel * 9);
       --bulbPattern;
       lightbulbArray.show(bulbPattern);
+
+      return 0;
     }
 
   private:

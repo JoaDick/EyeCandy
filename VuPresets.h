@@ -39,7 +39,7 @@ SOFTWARE.
 
 inline void make_BallLightningVU(EC::SetupEnv &env)
 {
-  env.add(new EC::TriggerPattern());
+  // env.add(new EC::TriggerPattern());
   auto &vuLevelSource = env.addVuSource();
   env.add(new EC::BallLightningVU(env.strip(), vuLevelSource));
 }
@@ -68,7 +68,7 @@ inline void make_BlackHoleVU(EC::SetupEnv &env, bool inward)
   auto workStrip = env.strip().getHalfStrip(inward);
 
   env.add(new EC::BgFadeToBlack(20, workStrip, 40));
-  env.add(new EC::BgRotate(workStrip, true));
+  env.add(new EC::BgRotate(workStrip));
   auto &vuLevelSource = env.addVuSource();
 
   auto &levelVu = env.add(new EC::VuOverlayRainbowStripe(workStrip, vuLevelSource));
@@ -128,7 +128,7 @@ inline void make_DoubleDancingDotVU1(EC::SetupEnv &env)
 {
   env.add(new EC::Pride2015(env.strip().getHalfStrip(/*true*/)));
   env.add(new EC::Kaleidoscope(env.strip()));
-  env.add(new EC::BgFadeToBlack(env.strip(), true, 150));
+  env.add(new EC::BgFadeToBlack(env.strip(), 150));
 
   auto &vuLevelSource = env.addVuSource();
   auto &vuPeakSource = env.add(new EC::VuSourcePeakForce(vuLevelSource));
@@ -143,7 +143,7 @@ inline void make_DoubleDancingDotVU1(EC::SetupEnv &env)
 inline void make_DoubleDancingDotVU2(EC::SetupEnv &env)
 {
   env.add(new EC::FloatingBlobs(env.strip()));
-  env.add(new EC::BgFadeToBlack(env.strip(), true, 230));
+  env.add(new EC::BgFadeToBlack(env.strip(), 230));
 
   auto &vuLevelSource = env.addVuSource();
   auto &vuPeakSource1 = env.add(new EC::VuSourcePeakForce(vuLevelSource));
@@ -225,7 +225,6 @@ void make_FlareInwardVU(EC::SetupEnv &env)
 
 inline void make_FlowingBeatVU(EC::SetupEnv &env)
 {
-  env.add(new EC::TriggerPattern(EC::FlowingBeatVU::patternUpdatePeriod));
   auto &vuLevelSource = env.addVuSource();
   env.add(new EC::FlowingBeatVU(env.strip(), vuLevelSource));
 }
@@ -265,14 +264,14 @@ inline void make_FranticVU_outward(EC::SetupEnv &env)
 
 inline void make_LightbulbVU(EC::SetupEnv &env)
 {
-  env.add(new EC::TriggerPattern());
+  // env.add(new EC::TriggerPattern());
   auto &vuLevelSource = env.addVuSource();
   env.add(new EC::LightbulbVU(env.strip(), vuLevelSource));
 }
 
 inline void make_MeteorTrailVU(EC::SetupEnv &env)
 {
-  env.add(new EC::BgMeteorFadeToBlack(env.strip(), false));
+  env.add(new EC::BgMeteorFadeToBlack(env.strip()));
   auto &vuLevelSource = env.addVuSource();
   auto &levelVu = env.add(new EC::VuOverlayRainbowStripe(env.strip(), vuLevelSource));
   levelVu.color.hueRange = 0.67;
@@ -357,7 +356,7 @@ inline void make_RainbowBubbleVU_outward(EC::SetupEnv &env)
 inline void make_RainingVU(EC::SetupEnv &env)
 {
   env.add(new EC::BgFadeToBlack(20, env.strip(), 20));
-  env.add(new EC::BgRotate(env.strip(), true));
+  env.add(new EC::BgRotate(env.strip()));
   auto &vuLevelSource = env.addVuSource();
 
   auto &levelVu = env.add(new EC::VuOverlayRainbowDot(env.strip(), vuLevelSource));
@@ -385,7 +384,7 @@ inline void make_RainingVU_outward(EC::SetupEnv &env)
 
 inline void make_RetroPartyVU(EC::SetupEnv &env)
 {
-  env.add(new EC::TriggerPattern());
+  // env.add(new EC::TriggerPattern());
   auto &vuLevelSource = env.addVuSource();
   env.add(new EC::RetroPartyVU(env.strip(), vuLevelSource));
 }

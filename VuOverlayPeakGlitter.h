@@ -72,11 +72,8 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      if (!wasModified)
-        return;
-
       if (vuPeakHandler.process(_vuSource.getVU(), currentMillis))
       {
         const float vuLevel = vuPeakHandler.getVU();
@@ -86,6 +83,8 @@ namespace EC
         _strip.n_pixel(vuLevel + vuOvershoot) = color;
         _lastVuLevel = vuLevel;
       }
+
+      return 0;
     }
 
   private:

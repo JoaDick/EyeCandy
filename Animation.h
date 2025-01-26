@@ -29,12 +29,15 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-#ifndef EC_DEFAULT_UPDATE_PERIOD
-/** Default period (in ms) for updating the LED strip's Pattern.
+#ifndef EC_DEFAULT_FRAMETIME
+/** Default delay between updates of the LED strip (in ms).
  * This default value of 10ms will result in a LED strip refresh rate of 100Hz.
  */
-#define EC_DEFAULT_UPDATE_PERIOD 10
+// TODO: change to 20ms / 50Hz
+#define EC_DEFAULT_FRAMETIME 10
 #endif
+
+#define EC_NEEDS_REWORK 1
 
 //------------------------------------------------------------------------------
 
@@ -55,18 +58,7 @@ namespace EC
     /// Destructor.
     virtual ~Animation() = default;
 
-    /** Process the Animation.
-     * Must be called frequently by the main loop.
-     * @retval false  No changes to the LED strip.
-     * @retval true   LED strip was updated.
-     */
-    bool process()
-    {
-      bool wasModified = false;
-      processAnimation(millis(), wasModified);
-      return wasModified;
-    }
-
+#if (EC_NEEDS_REWORK)
     /** Process the Animation (with external timing source).
      * Must be called frequently by the main loop.
      * Use this method this when you're having multiple Animations, where all of
@@ -75,43 +67,30 @@ namespace EC
      * @retval false  No changes to the LED strip.
      * @retval true   LED strip was updated.
      */
-    bool process(uint32_t currentMillis)
+    bool processOLD(uint32_t currentMillis)
     {
       bool wasModified = false;
-      processAnimation(currentMillis, wasModified);
+      processAnimationOLD(currentMillis, wasModified);
       return wasModified;
     }
+#endif
 
-    /** Process the Animation.
-     * Must be called frequently by the main loop.
-     * @param wasModified  Shall be true when the LED strip was already modified,
-     * e.g. by a previous Animation. Internally used as trigger to render the
-     * Overlay content (if supported).
-     * Its value is set to true when the Animation changed the strip's content.
+    /** Process the Animation (and update the LEDs).
+     * Must be called by the main loop when it's time to render the Animation on the LED strip.
+     * @param currentMillis  Current timestamp; usually the returnvalue of millis().
+     * @return Frametime, a.k.a. delay before calling this method again (in ms).
+     *         Returning 0 means default frametime shall be used.
+     * @see EC_DEFAULT_FRAMETIME
      */
-    void process(bool &wasModified)
+    uint8_t process(uint32_t currentMillis)
     {
-      processAnimation(millis(), wasModified);
-    }
-
-    /** Process the Animation (with external timing source).
-     * Must be called frequently by the main loop.
-     * Use this method this when you're having multiple Animations, where all of
-     * them shall be processed based on the same external timer source.
-     * @param currentMillis  Returnvalue of millis() for synchronized timing.
-     * @param wasModified  Shall be true when the LED strip was already modified,
-     * e.g. by a previous Animation. Internally used as trigger to render the
-     * Overlay content (if supported).
-     * Its value is set to true when the Animation changed the strip's content.
-     */
-    void process(uint32_t currentMillis, bool &wasModified)
-    {
-      processAnimation(currentMillis, wasModified);
+      return processAnimation(currentMillis);
     }
 
   protected:
     Animation() = default;
 
+#if (EC_NEEDS_REWORK)
     /** Process the Animation.
      * This method must be implemented by all child classes.
      * @param currentMillis  Current time, i.e. the returnvalue of millis().
@@ -120,12 +99,64 @@ namespace EC
      * Overlay content (if supported).
      * Its value shall be set to true when the Animation changed the strip's content.
      */
-    virtual void processAnimation(uint32_t currentMillis, bool &wasModified) = 0;
+    virtual void processAnimationOLD(uint32_t currentMillis, bool &wasModified)
+    {
+      if (wasModified)
+      {
+        processAnimation(currentMillis);
+      }
+    }
+#endif
+
+    /** Process the Animation (and update the LEDs).
+     * This method must be implemented by all child classes.
+     * @param currentMillis  Current time, i.e. the returnvalue of millis().
+     * @return Frametime, a.k.a. delay before calling this method again (in ms).
+     *         Returning 0 means default frametime shall be used.
+     * @see EC_DEFAULT_FRAMETIME
+     */
+    virtual uint8_t processAnimation(uint32_t currentMillis) = 0;
 
   private:
     friend class AnimationScene;
     friend class AnimationSceneStatic;
     Animation *nextAnimation = nullptr;
+  };
+
+  /// Small helper for updating a given Animation when its time has come.
+  class AnimationUpdateHandler
+  {
+  public:
+    /** Constructor.
+     * @param animation  The Animation to take care of.
+     */
+    explicit AnimationUpdateHandler(Animation &animation)
+        : _animation(animation)
+    {
+    }
+
+    /** Process the Animation.
+     * To be called frequently by every main loop cycle.
+     * Calls the Animation's process() method only when it is time for an update.
+     * @param currentMillis  Current time, i.e. the returnvalue of millis().
+     * @retval false  No changes to the LED strip.
+     * @retval true   LED strip was updated.
+     */
+    bool process(uint32_t currentMillis)
+    {
+      if (currentMillis < _nextMillis)
+      {
+        return false;
+      }
+
+      const auto frametime = _animation.process(currentMillis);
+      _nextMillis = currentMillis + (frametime ? frametime : EC_DEFAULT_FRAMETIME);
+      return true;
+    }
+
+  private:
+    Animation &_animation;
+    uint32_t _nextMillis = 0;
   };
 
   //------------------------------------------------------------------------------
@@ -192,9 +223,9 @@ namespace EC
     class Proxy : public Animation
     {
       Animation &_staticAnimation;
-      void processAnimation(uint32_t currentMillis, bool &wasModified) override
+      uint8_t processAnimation(uint32_t currentMillis) override
       {
-        _staticAnimation.process(currentMillis, wasModified);
+        return _staticAnimation.processAnimation(currentMillis);
       }
 
     public:
@@ -203,14 +234,22 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
+      uint8_t retval = 0;
+
       Animation *animation = _animationListHead;
       while (animation)
       {
-        animation->process(currentMillis, wasModified);
+        const auto frametime = animation->processAnimation(currentMillis);
         animation = animation->nextAnimation;
+        if (retval == 0)
+        {
+          retval = frametime;
+        }
       }
+
+      return retval;
     }
 
     void storeAnimation(Animation *animation)
@@ -266,14 +305,22 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
+      uint8_t retval = 0;
+
       Animation *animation = _animationListHead;
       while (animation)
       {
-        animation->process(currentMillis, wasModified);
+        const auto frametime = animation->processAnimation(currentMillis);
         animation = animation->nextAnimation;
+        if (retval == 0)
+        {
+          retval = frametime;
+        }
       }
+
+      return retval;
     }
 
     void storeAnimation(Animation *animation)

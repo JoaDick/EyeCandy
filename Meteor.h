@@ -89,9 +89,10 @@ namespace EC
 
   private:
     /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    uint8_t showPattern(uint32_t currentMillis) override
     {
       meteorFadeToBlack(strip, fadeChance, fadeBy);
+      return 0;
     }
 
     /// @see AnimationBase::showOverlay()

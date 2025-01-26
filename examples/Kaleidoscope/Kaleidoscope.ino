@@ -46,7 +46,7 @@ EC::FastLedStrip mainStrip(leds, NUM_LEDS);
 EC::FastLedStrip workingStrip = mainStrip.getHalfStrip();
 
 // the background pattern (explicitly)
-EC::BgFadeToBlack background(workingStrip, false, 50);
+EC::BgFadeToBlack background(workingStrip, 50);
 // the main animation (as overlay)
 EC::Meteor mainAnimation(workingStrip, true, 20, 0.05);
 // overlay for adding some glitter (in the lower part only)
@@ -56,6 +56,7 @@ EC::Glitter glitterOverlay(workingStrip.getHalfStrip(), true);
 EC::Kaleidoscope kaleidoscopeOverlay(mainStrip);
 
 EC::AnimationSceneStatic animationScene;
+EC::AnimationUpdateHandler animationHandler(animationScene);
 
 //------------------------------------------------------------------------------
 
@@ -85,7 +86,7 @@ void setup()
 
 void loop()
 {
-    if (animationScene.process())
+    if (animationHandler.process(millis()))
     {
         EVERY_N_SECONDS(15)
         {

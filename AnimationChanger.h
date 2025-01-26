@@ -82,9 +82,9 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      _setupEnv.scene().process(currentMillis, wasModified);
+      return _setupEnv.scene().process(currentMillis);
     }
 
   private:
@@ -153,10 +153,10 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      _setupEnv.scene().process(currentMillis, wasModified);
       FastLED.setBrightness(processTakeover(currentMillis));
+      return _setupEnv.scene().process(currentMillis);
     }
 
     uint8_t processTakeover(uint32_t currentMillis)

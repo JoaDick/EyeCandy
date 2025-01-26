@@ -78,7 +78,7 @@ inline void make_BouncingBalls(EC::SetupEnv &env)
 inline void make_Bubbles(EC::SetupEnv &env)
 {
   env.add(new EC::Pacifica(env.strip()));
-  env.add(new EC::BgFadeToBlack(env.strip(), true, 150));
+  env.add(new EC::BgFadeToBlack(env.strip(), 150));
   env.add(new EC::Bubbles(env.strip(), true));
 }
 

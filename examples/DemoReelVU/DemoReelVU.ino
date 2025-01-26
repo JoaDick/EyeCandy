@@ -119,7 +119,7 @@ void make_VuIntro6(EC::SetupEnv &env)
 #if (1)
     auto &vuLevelSource = env.addVuBackground(50);
 #else
-    env.add(new EC::BgMeteorFadeToBlack(env.strip(), false));
+    env.add(new EC::BgMeteorFadeToBlack(env.strip()));
     auto &vuLevelSource = env.addVuSource();
 #endif
     auto &vuPeakSource = env.add(new EC::VuSourcePeakGravity(vuLevelSource));
@@ -255,6 +255,7 @@ EC::VuSource &makeVuSource(EC::SetupEnv &env) { return env.add(new EC::VuAnalogI
 EC::AnimationScene mainScene;
 EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, mainScene, &makeVuSource);
 EC::AnimationChangerSoft animationChanger(animationSetupEnv, allAnimations);
+EC::AnimationUpdateHandler animationHandler(animationChanger);
 
 //------------------------------------------------------------------------------
 
@@ -311,7 +312,7 @@ void loop()
 
     handleAnimationChange(currentMillis);
 
-    if (animationChanger.process(currentMillis))
+    if (animationHandler.process(currentMillis))
     {
         FastLED.show();
     }

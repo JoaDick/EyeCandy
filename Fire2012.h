@@ -126,16 +126,16 @@ namespace EC
     explicit Fire2012(FastLedStrip ledStrip)
         : AnimationModelBase(Fire2012_modelUpdatePeriod_default(), ledStrip)
     {
-      setPatternUpdatePeriod(1000 / FRAMES_PER_SECOND);
     }
 
   private:
     /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    uint8_t showPattern(uint32_t currentMillis) override
     {
       // Add entropy to random number generator; we use a lot of it.
       random16_add_entropy(random());
       Fire2012WithPalette(); // run simulation frame, using palette colors
+      return 1000 / FRAMES_PER_SECOND;
     }
 
     // Fire2012 by Mark Kriegsman, July 2012

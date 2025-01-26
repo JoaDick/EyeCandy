@@ -66,8 +66,8 @@ namespace EC
     }
 
   private:
-    /// @see PatternBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
       color.update();
       strip.fadeToBlack(fadeRate);
@@ -80,6 +80,8 @@ namespace EC
           pixel = color;
         }
       }
+
+      return 0;
     }
   };
 

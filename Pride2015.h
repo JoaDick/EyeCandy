@@ -62,8 +62,8 @@ namespace EC
     }
 
   private:
-    /// @see PatternBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
       uint8_t sat8 = beatsin88(87, 220, 250);
       uint8_t brightdepth = beatsin88(341, 96, 224);
@@ -103,6 +103,8 @@ namespace EC
 
         nblend(strip[pixelnumber], newcolor, 64);
       }
+
+      return 0;
     }
   };
 

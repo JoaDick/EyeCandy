@@ -68,6 +68,7 @@ EC::RgbBlocks rgbBlocks(rgbBlocksStrip);
 EC::Meteor movingDotOverlay(movingDotStrip, true);
 
 EC::AnimationSceneStatic animationScene;
+EC::AnimationUpdateHandler animationHandler(animationScene);
 
 //------------------------------------------------------------------------------
 
@@ -99,7 +100,7 @@ void loop()
     updateColor();
     updateSpeed();
 
-    if (animationScene.process())
+    if (animationHandler.process(millis()))
     {
         FastLED.show();
     }

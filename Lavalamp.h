@@ -69,8 +69,8 @@ namespace EC
     }
 
   private:
-    /// @see PatternBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
 #if (EC_LAVALAMP_DEBUG)
       strip.fill(CRGB::Black);
@@ -146,6 +146,8 @@ namespace EC
       strip.n_lineAbs(1.0, _ceiling.pos(), color);
       strip.blur(75);
 #endif
+
+      return 0;
     }
 
   private:

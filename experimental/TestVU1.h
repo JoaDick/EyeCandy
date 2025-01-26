@@ -35,10 +35,11 @@ SOFTWARE.
 namespace EC
 {
 
+#if (EC_NEEDS_REWORK)
   /** A playground for VU testing during EyeCandy development.
    */
   class TestVU1
-      : public AnimationBase
+      : public AnimationBaseOLD
   {
   public:
     /// Signature of the function for rendering the VU on the LED strip.
@@ -70,7 +71,7 @@ namespace EC
             FastLedStrip ledStrip,
             DrawingFct drawingFct,
             uint8_t fadeRate = 0)
-        : AnimationBase(ledStrip, false, fadeRate),
+        : AnimationBaseOLD(ledStrip, false, fadeRate),
           _analogPin(analogPin), drawingFct(drawingFct)
     {
       vuPeakHandler.peakHold = 600;
@@ -82,15 +83,17 @@ namespace EC
     }
 
   private:
-    /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    /// @see Animation::processAnimationOLD()
+    void processAnimationOLD(uint32_t currentMillis, bool &wasModified) override
     {
+      // !!! Won't work anymore !!!
+
       const float audioSample = _adcNormalizer.process(analogRead(_analogPin));
       vuLevelHandler.addSample(audioSample);
-      AnimationBase::processAnimation(currentMillis, wasModified);
+      AnimationBaseOLD::processAnimationOLD(currentMillis, wasModified);
     }
 
-    /// @see AnimationBase::showOverlay()
+    /// @see AnimationBaseOLD::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
       const float rawVuLevel = vuLevelHandler.capture();
@@ -116,5 +119,6 @@ namespace EC
     const uint8_t _analogPin;
     AdcSampleNormalizer _adcNormalizer;
   };
+#endif
 
 } // namespace EC

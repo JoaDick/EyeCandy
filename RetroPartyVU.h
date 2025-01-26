@@ -125,11 +125,8 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      if (!wasModified)
-        return;
-
       const float vuLevelRaw = _vuSource.getVU();
       const float vuLevelBeat = _beatDetector.process(vuLevelRaw, currentMillis);
       if (vuLevelBeat > 0.0)
@@ -150,6 +147,8 @@ namespace EC
       }
 
 #endif
+
+      return 0;
     }
 
   private:

@@ -34,7 +34,7 @@ SOFTWARE.
 
 //------------------------------------------------------------------------------
 
-// #define EC_DEFAULT_UPDATE_PERIOD 20
+// #define EC_DEFAULT_FRAMETIME 20
 #define EC_ENABLE_VU_RANGE_EXTENDER_BYPASS 1
 
 #include <EyeCandy.h>
@@ -314,7 +314,7 @@ void make_RangeExtenderInternals(EC::SetupEnv &env)
 
 void make_DraftVU(EC::SetupEnv &env)
 {
-    env.add(new EC::TriggerPattern(EC::FlowingBeatVU::patternUpdatePeriod));
+    // env.add(new EC::TriggerPattern(EC::FlowingBeatVU::patternUpdatePeriod));
     auto &vuLevelSource = env.addVuSource();
 
 #if (0)
@@ -378,6 +378,8 @@ EC::AnimationChanger animationChanger(animationSetupEnv, allAnimations);
 EC::AnimationChangerSoft animationChanger(animationSetupEnv, allAnimations);
 #endif
 
+EC::AnimationUpdateHandler animationHandler(animationChanger);
+
 //------------------------------------------------------------------------------
 
 void handleAnimationChange(uint32_t currentMillis = millis())
@@ -433,7 +435,7 @@ void loop()
 
     handleAnimationChange(currentMillis);
 
-    if (animationChanger.process(currentMillis))
+    if (animationHandler.process(currentMillis))
     {
         FastLED.show();
 #if (PRINT_PATTERN_RATE)

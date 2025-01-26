@@ -34,7 +34,7 @@ namespace EC
 
   /// A test Pattern that visualizes the RGB portions of its \a color property.
   class VisualizeRGB
-      : public AnimationModelBase
+      : public PatternBase
   {
   public:
     /** Color to visualize.
@@ -48,20 +48,14 @@ namespace EC
      */
     explicit VisualizeRGB(FastLedStrip ledStrip,
                           CRGB color = CRGB(64, 64, 64))
-        : AnimationModelBase(10, ledStrip, false),
+        : PatternBase(ledStrip),
           color(color)
     {
     }
 
   private:
-    /// @see AnimationModelBase::updateModel()
-    void updateModel(uint32_t currentMillis) override
-    {
-      // update color property here (when not done through a ColorChanger)
-    }
-
-    /// @see AnimationBase::showOverlay()
-    void showOverlay(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
       const uint8_t minCol = 6;
 
@@ -74,6 +68,7 @@ namespace EC
       visualizeColor(5 / 8.0, color.b, CRGB(0, 0, 255));
 
       visualizeColor(7 / 8.0, 255, color);
+      return 0;
     }
 
     void visualizeColor(float pos, uint8_t value, CRGB col, float size = 0.2)

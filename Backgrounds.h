@@ -35,10 +35,10 @@ namespace EC
   //------------------------------------------------------------------------------
 
   /** A Pattern that renders all LEDs with the same color.
-   * Mainly intended as example, but can also be used in combination with Overlays.
+   * Can be used standalone, or as base Pattern in combination with other Overlays.
    */
   class BgFillColor
-      : public AnimationBase
+      : public PatternBase
   {
   public:
     /// Fill LED strip with this color.
@@ -50,31 +50,34 @@ namespace EC
      */
     BgFillColor(FastLedStrip ledStrip,
                 CRGB color)
-        : AnimationBase(ledStrip, false), color(color)
+        : PatternBase(ledStrip), color(color), _frametime(0)
     {
     }
 
     /** Constructor with a custom update rate.
      * Use this only if you have an urgent reason for a different update rate
-     * than EC_DEFAULT_UPDATE_PERIOD.
-     * @param patternUpdatePeriod  Period (in ms) for calling showPattern().
+     * than EC_DEFAULT_FRAMETIME.
+     * @param frametime  Delay (in ms) between updates of the LED strip.
      * @param ledStrip  The LED strip.
      * @param color  Fill LED strip with this color.
      */
-    BgFillColor(uint8_t patternUpdatePeriod,
+    BgFillColor(uint8_t frametime,
                 FastLedStrip ledStrip,
                 CRGB color)
-        : AnimationBase(ledStrip), color(color)
+        : PatternBase(ledStrip), color(color), _frametime(frametime)
     {
-      setPatternUpdatePeriod(patternUpdatePeriod);
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
       strip.fill(color);
+      return _frametime;
     }
+
+  private:
+    const uint8_t _frametime;
   };
 
   //------------------------------------------------------------------------------
@@ -84,48 +87,48 @@ namespace EC
    * Useful e.g. for dimming the underlying Pattern in an AnimationScene.
    */
   class BgFadeToBlack
-      : public AnimationBase
+      : public PatternBase
   {
   public:
+    /** Fading speed.
+     * Lower value = longer glowing; 0 = solid black background.
+     */
+    uint8_t fadeRate;
+
     /** Constructor.
      * @param ledStrip  The LED strip.
-     * @param overlayMode  Set to \c true when the Animation shall be an Overlay.
      * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
      */
     BgFadeToBlack(FastLedStrip ledStrip,
-                  bool overlayMode,
                   uint8_t fadeRate)
-        : AnimationBase(ledStrip, overlayMode, fadeRate)
+        : PatternBase(ledStrip), fadeRate(fadeRate), _frametime(0)
     {
     }
 
     /** Constructor for Pattern with a custom update rate.
      * Use this only if you have an urgent reason for a different update rate
-     * than EC_DEFAULT_UPDATE_PERIOD.
-     * @param patternUpdatePeriod  Period (in ms) for calling showPattern().
+     * than EC_DEFAULT_FRAMETIME.
+     * @param frametime  Delay (in ms) between updates of the LED strip.
      * @param ledStrip  The LED strip.
      * @param fadeRate  Fading speed: Lower value = longer glowing; 0 = black background.
      */
-    BgFadeToBlack(uint8_t patternUpdatePeriod,
+    BgFadeToBlack(uint8_t frametime,
                   FastLedStrip ledStrip,
                   uint8_t fadeRate)
-        : AnimationBase(ledStrip, false, fadeRate)
+        : PatternBase(ledStrip), fadeRate(fadeRate), _frametime(frametime)
     {
-      setPatternUpdatePeriod(patternUpdatePeriod);
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
-    {
-      // must be empty
-    }
-
-    /// @see AnimationBase::showOverlay()
-    void showOverlay(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
       showDefaultPattern(strip, fadeRate);
+      return _frametime;
     }
+
+  private:
+    const uint8_t _frametime;
   };
 
   //------------------------------------------------------------------------------
@@ -138,7 +141,7 @@ namespace EC
    * Can be used as Overlay, or as base Pattern in combination with other Overlays.
    */
   class BgMeteorFadeToBlack
-      : public AnimationBase
+      : public PatternBase
   {
   public:
     /// Chance of fading a LED (0 = never, 255 = always).
@@ -149,51 +152,48 @@ namespace EC
 
     /** Constructor.
      * @param ledStrip  The LED strip.
-     * @param overlayMode  Set to \c true when the Animation shall be an Overlay.
      * @param fadeChance  Chance of fading a LED (0 = never, 255 = always).
      * @param fadeBy  Fading speed: Lower value = longer glowing.
      */
     BgMeteorFadeToBlack(FastLedStrip ledStrip,
-                        bool overlayMode,
                         uint8_t fadeChance = 32,
                         uint8_t fadeBy = 96)
-        : AnimationBase(ledStrip, overlayMode, 0),
+        : PatternBase(ledStrip),
           fadeChance(fadeChance),
-          fadeBy(fadeBy)
+          fadeBy(fadeBy),
+          _frametime(0)
     {
     }
 
     /** Constructor for Pattern with a custom update rate.
      * Use this only if you have an urgent reason for a different update rate
-     * than EC_DEFAULT_UPDATE_PERIOD.
-     * @param patternUpdatePeriod  Period (in ms) for calling showPattern().
+     * than EC_DEFAULT_FRAMETIME.
+     * @param frametime  Delay (in ms) between updates of the LED strip.
      * @param ledStrip  The LED strip.
      * @param fadeChance  Chance of fading a LED (0 = never, 255 = always).
      * @param fadeBy  Fading speed: Lower value = longer glowing.
      */
-    BgMeteorFadeToBlack(uint8_t patternUpdatePeriod,
+    BgMeteorFadeToBlack(uint8_t frametime,
                         FastLedStrip ledStrip,
                         uint8_t fadeChance = 32,
                         uint8_t fadeBy = 96)
-        : AnimationBase(ledStrip),
+        : PatternBase(ledStrip),
           fadeChance(fadeChance),
-          fadeBy(fadeBy)
+          fadeBy(fadeBy),
+          _frametime(frametime)
     {
-      setPatternUpdatePeriod(patternUpdatePeriod);
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
-    {
-      // must be empty
-    }
-
-    /// @see AnimationBase::showOverlay()
-    void showOverlay(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
       meteorFadeToBlack(strip, fadeChance, fadeBy);
+      return _frametime;
     }
+
+  private:
+    const uint8_t _frametime;
   };
 
   //------------------------------------------------------------------------------
@@ -202,7 +202,7 @@ namespace EC
    * Can be used as Overlay, or as base Pattern in combination with other Overlays.
    */
   class BgRotate
-      : public AnimationBase
+      : public PatternBase
   {
   public:
     /** Rotating distance & direction.
@@ -213,52 +213,51 @@ namespace EC
 
     /** Constructor.
      * @param ledStrip  The LED strip.
-     * @param overlayMode  Set to \c true when the Animation shall be an Overlay.
      * @param distance  Rotating distance & direction: posive values rotate upward (from begin to
      *                  end), negative values rotate downward (from end to begin).
      */
-    BgRotate(FastLedStrip ledStrip,
-             bool overlayMode,
-             int16_t distance = -1)
-        : AnimationBase(ledStrip, overlayMode),
-          distance(distance)
+    explicit BgRotate(FastLedStrip ledStrip,
+                      int16_t distance = -1)
+        : PatternBase(ledStrip),
+          distance(distance),
+          _frametime(0)
     {
     }
 
     /** Constructor for Pattern with a custom update rate.
      * Use this only if you have an urgent reason for a different update rate
-     * than EC_DEFAULT_UPDATE_PERIOD.
-     * @param patternUpdatePeriod  Period (in ms) for calling showPattern().
+     * than EC_DEFAULT_FRAMETIME.
+     * @param frametime  Delay (in ms) between updates of the LED strip.
      * @param ledStrip  The LED strip.
      * @param distance  Rotating distance & direction: posive values rotate upward (from begin to
      *                  end), negative values rotate downward (from end to begin).
      */
-    BgRotate(uint8_t patternUpdatePeriod,
+    BgRotate(uint8_t frametime,
              FastLedStrip ledStrip,
              int16_t distance = -1)
-        : AnimationBase(ledStrip),
-          distance(distance)
+        : PatternBase(ledStrip),
+          distance(distance),
+          _frametime(frametime)
     {
-      setPatternUpdatePeriod(patternUpdatePeriod);
     }
 
   private:
-    /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
-    {
-      // must be empty
-    }
-
-    /// @see AnimationBase::showOverlay()
-    void showOverlay(uint32_t currentMillis) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
       strip.shift(distance);
+      return _frametime;
     }
+
+  private:
+    const uint8_t _frametime;
   };
 
   //------------------------------------------------------------------------------
 
-  /** A pseudo-Pattern that just triggers subsequent Overlays.
+  /** A pseudo-Animation for determining a specific frametime.
+   * Use this only if you have an urgent reason for a specific update rate other
+   * than EC_DEFAULT_FRAMETIME.
    * It does _not_ manipulate the LED strip.
    */
   class TriggerPattern
@@ -266,22 +265,22 @@ namespace EC
   {
   public:
     /** Constructor.
-     * @param patternUpdatePeriod  Period (in ms) for triggering the Overlays.
-     * Change this only if you have an urgent reason for a different update rate.
+     * @param frametime  Delay (in ms) between updates of the LED strip.
      */
-    explicit TriggerPattern(uint8_t patternUpdatePeriod = EC_DEFAULT_UPDATE_PERIOD)
-        : _patternUpdateTimer(patternUpdatePeriod)
+    explicit TriggerPattern(uint8_t frametime)
+        : _frametime(frametime)
     {
     }
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      wasModified = _patternUpdateTimer.process(currentMillis);
+      return _frametime;
     }
 
-    AnimationTimer _patternUpdateTimer;
+  private:
+    const uint8_t _frametime;
   };
 
   //------------------------------------------------------------------------------

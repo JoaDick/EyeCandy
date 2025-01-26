@@ -105,7 +105,7 @@ namespace EC
      */
     VuSource &addVuBackground(uint8_t fadeRate)
     {
-      _scene.append(new BgFadeToBlack(_strip, false, fadeRate));
+      _scene.append(new BgFadeToBlack(_strip, fadeRate));
       return addVuSource();
     }
 

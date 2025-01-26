@@ -47,15 +47,16 @@ namespace EC
      * @param ledStrip  The LED strip.
      */
     Blur(FastLedStrip ledStrip)
-        : PatternBase(ledStrip),
-          NUM_LEDS(strip.ledCount())
+        : PatternBase(ledStrip)
     {
     }
 
   private:
-    /// @see PatternBase::showPattern()
-    void showPattern(uint32_t ms) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t ms) override
     {
+      const uint16_t NUM_LEDS = strip.ledCount();
+
       uint8_t blurAmount = dim8_raw(beatsin8(3, 64, 192)); // A sinewave at 3 BPS with values ranging from 64 to 192.
       strip.blur(blurAmount);                              // Apply some blurring to whatever's already on the strip, which will eventually go black.
 
@@ -68,9 +69,9 @@ namespace EC
       strip[(j + k) / 2] = CHSV(ms / 41, 200, 255);
       strip[(k + i) / 2] = CHSV(ms / 73, 200, 255);
       strip[(k + i + j) / 3] = CHSV(ms / 53, 200, 255);
-    }
 
-    const uint16_t NUM_LEDS;
+      return 0;
+    }
   };
 
 } // namespace EC

@@ -67,8 +67,9 @@ namespace EC
 // --> but then also consider changing the base class to PatternBase
 #if (0)
     /// @see AnimationBase::showPattern()
-    void showPattern(uint32_t currentMillis) override
+    uint8_t showPattern(uint32_t currentMillis) override
     {
+      return 0;
     }
 #endif
 

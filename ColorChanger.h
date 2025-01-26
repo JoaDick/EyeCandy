@@ -71,13 +71,11 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      if (wasModified)
-      {
-        colorSource.update();
-        _targetColor = colorSource.getColor();
-      }
+      colorSource.update();
+      _targetColor = colorSource.getColor();
+      return 0;
     }
 
   private:
@@ -111,12 +109,10 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      if (wasModified)
-      {
-        _targetColor = colorSource.getColor();
-      }
+      _targetColor = colorSource.getColor();
+      return 0;
     }
 
   private:
@@ -164,12 +160,10 @@ namespace EC
 
   private:
     /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      if (wasModified)
-      {
-        _targetColor = colorSource.getColor();
-      }
+      _targetColor = colorSource.getColor();
+      return 0;
     }
 
   private:

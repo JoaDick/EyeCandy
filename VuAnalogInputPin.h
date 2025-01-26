@@ -37,6 +37,7 @@ SOFTWARE.
 namespace EC
 {
 
+#if (EC_NEEDS_REWORK)
   /** An Animation-Worker for calculating the current VU level from an analog input pin.
    * This worker should be treated like an Overlay, meaning that the VU value is \e not updated
    * until the underlying Pattern triggered an update.
@@ -71,9 +72,11 @@ namespace EC
     }
 
   private:
-    /// @see Animation::processAnimation()
-    void processAnimation(uint32_t currentMillis, bool &wasModified) override
+    /// @see Animation::processAnimationOLD()
+    void processAnimationOLD(uint32_t currentMillis, bool &wasModified) override
     {
+      // !!! Won't work anymore !!!
+
       const float audioSample = _adcNormalizer.process(analogRead(_analogPin));
       vuLevelHandler.addSample(audioSample);
 
@@ -83,9 +86,16 @@ namespace EC
       }
     }
 
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
+    {
+      return 0;
+    }
+
   private:
     const uint8_t _analogPin;
     AdcSampleNormalizer _adcNormalizer;
   };
+#endif
 
 } // namespace EC
