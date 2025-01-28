@@ -52,7 +52,7 @@ namespace EC
      */
     VuPeakHandler vuPeakHandler;
 
-    /// Make this class usable as a VuSource.
+    /// Make this class usable as a VuSource (to circumvent multiple inheritance).
     operator VuSource &() { return asVuSource(); }
     VuSource &asVuSource() { return vuPeakHandler; }
 

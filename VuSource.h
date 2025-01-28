@@ -63,4 +63,11 @@ namespace EC
     return constrain(vuValue, 0.0, 1.0);
   }
 
+  /// A very lightweight helper to buffer a VU value, and provide it as VuSource.
+  struct BufferingVuSource : public VuSource
+  {
+    float vuValue = 0.0;
+    float getVU() override { return vuValue; }
+  };
+
 } // namespace EC

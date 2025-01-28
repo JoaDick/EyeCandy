@@ -3,7 +3,7 @@
 
 MIT License
 
-Copyright (c) 2024 Joachim Dick
+Copyright (c) 2025 Joachim Dick
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -25,7 +25,6 @@ SOFTWARE.
 
 *******************************************************************************/
 
-#include <Arduino.h>
 #include "Animation.h"
 #include "AudioNormalizer.h"
 #include "VuLevelHandler.h"
@@ -37,12 +36,12 @@ SOFTWARE.
 namespace EC
 {
 
-#if (EC_NEEDS_REWORK)
   /** An Animation-Worker for calculating the current VU level from an analog input pin.
-   * This worker should be treated like an Overlay, meaning that the VU value is \e not updated
-   * until the underlying Pattern triggered an update.
+   * Create a (static) instance in your sketch, and pass that to SetupEnv when it requests for a
+   * VuSource via callback.
+   * Call readAudioSample() from the main loop as often as possible to capture audio samples.
    */
-  class VuAnalogInputPin
+  class AnalogPinVuSource
       : public Animation
   {
   public:
@@ -56,46 +55,43 @@ namespace EC
      */
     VuRangeExtender vuRangeExtender;
 
-    /// Make this class usable as a VuSource.
+    /// Make this class usable as a VuSource (to circumvent multiple inheritance).
     operator VuSource &() { return asVuSource(); }
-    VuSource &asVuSource() { return vuRangeExtender; }
+    VuSource &asVuSource() { return _vuBuffer; }
 
     /** Constructor.
      * @param analogPin  Pin for reading the audio signal.
      * @param sampleCount  Number of audio samples to integrate for calculating the VU level.
      */
-    explicit VuAnalogInputPin(uint8_t analogPin,
-                              uint16_t sampleCount = 100)
-        : vuLevelHandler(sampleCount),
-          _analogPin(analogPin)
+    explicit AnalogPinVuSource(uint8_t analogPin,
+                               uint16_t sampleCount = 100)
+        : vuLevelHandler(sampleCount), _analogPin(analogPin)
     {
+    }
+
+    /** Read an audio sample from the analog input pin.
+     * This method shall be called from the main loop as often as possible (i.e. in every cycle).
+     */
+    void readAudioSample()
+    {
+      const float audioSample = _adcNormalizer.process(analogRead(_analogPin));
+      vuLevelHandler.addSample(audioSample);
     }
 
   private:
-    /// @see Animation::processAnimationOLD()
-    void processAnimationOLD(uint32_t currentMillis, bool &wasModified) override
-    {
-      // !!! Won't work anymore !!!
-
-      const float audioSample = _adcNormalizer.process(analogRead(_analogPin));
-      vuLevelHandler.addSample(audioSample);
-
-      if (wasModified)
-      {
-        vuRangeExtender.process(vuLevelHandler.capture());
-      }
-    }
-
     /// @see Animation::processAnimation()
     uint8_t processAnimation(uint32_t currentMillis) override
     {
+      // just capture and store the current VU value
+      const float rawVuValue = vuLevelHandler.capture();
+      _vuBuffer.vuValue = vuRangeExtender.process(rawVuValue);
       return 0;
     }
 
   private:
     const uint8_t _analogPin;
     AdcSampleNormalizer _adcNormalizer;
+    BufferingVuSource _vuBuffer;
   };
-#endif
 
 } // namespace EC

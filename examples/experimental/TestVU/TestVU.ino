@@ -362,12 +362,8 @@ EC::AnimationSceneMakerFct allAnimations[] = {
 
 //------------------------------------------------------------------------------
 
-#if (0)
-EC::VuAnalogInputPin globalVuSource(PIN_MIC);
-EC::VuSource &make_VuSource(EC::SetupEnv &env) { return env.add(globalVuSource); }
-#else
-EC::VuSource &make_VuSource(EC::SetupEnv &env) { return env.add(new EC::VuAnalogInputPin(PIN_MIC)); }
-#endif
+EC::AnalogPinVuSource vuSource(PIN_MIC);
+EC::VuSource &make_VuSource(EC::SetupEnv &env) { return env.add(vuSource); }
 
 EC::AnimationScene mainScene;
 EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, mainScene, &make_VuSource);
@@ -434,6 +430,8 @@ void loop()
     const uint32_t currentMillis = millis();
 
     handleAnimationChange(currentMillis);
+
+    vuSource.readAudioSample();
 
     if (animationHandler.process(currentMillis))
     {
@@ -575,8 +573,8 @@ void printMemoryUsage()
     Serial.println(F(" LEDs:"));
     Serial.println(F("<*> is dependant on NUM_LEDS"));
 
-    Serial.print(F("VuAnalogInputPin = "));
-    Serial.println((int)sizeof(EC::VuAnalogInputPin));
+    Serial.print(F("AnalogPinVuSource = "));
+    Serial.println((int)sizeof(EC::AnalogPinVuSource));
 
     Serial.print(F("VuSourcePeakHold = "));
     Serial.println((int)sizeof(EC::VuSourcePeakHold));

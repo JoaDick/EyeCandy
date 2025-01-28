@@ -35,7 +35,7 @@ SOFTWARE.
 #include "PatternPresets.h"
 
 // VU stuff
-#include "VuAnalogInputPin.h"
+#include "AnalogPinVuSource.h"
 #include "VuPresets.h"
 
 // Experimental / debugging / testing stuff

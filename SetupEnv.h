@@ -28,7 +28,7 @@ SOFTWARE.
 #include "Animation.h"
 #include "Backgrounds.h"
 #include "FastLedStrip.h"
-#include "VuAnalogInputPin.h"
+#include "VuSource.h"
 
 //------------------------------------------------------------------------------
 
