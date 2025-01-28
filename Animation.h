@@ -37,8 +37,6 @@ SOFTWARE.
 #define EC_DEFAULT_FRAMETIME 10
 #endif
 
-#define EC_NEEDS_REWORK 1
-
 //------------------------------------------------------------------------------
 
 namespace EC
@@ -58,23 +56,6 @@ namespace EC
     /// Destructor.
     virtual ~Animation() = default;
 
-#if (EC_NEEDS_REWORK)
-    /** Process the Animation (with external timing source).
-     * Must be called frequently by the main loop.
-     * Use this method this when you're having multiple Animations, where all of
-     * them shall be processed based on the same external timer source.
-     * @param currentMillis  Returnvalue of millis() for synchronized timing.
-     * @retval false  No changes to the LED strip.
-     * @retval true   LED strip was updated.
-     */
-    bool processOLD(uint32_t currentMillis)
-    {
-      bool wasModified = false;
-      processAnimationOLD(currentMillis, wasModified);
-      return wasModified;
-    }
-#endif
-
     /** Process the Animation (and update the LEDs).
      * Must be called by the main loop when it's time to render the Animation on the LED strip.
      * @param currentMillis  Current timestamp; usually the returnvalue of millis().
@@ -89,24 +70,6 @@ namespace EC
 
   protected:
     Animation() = default;
-
-#if (EC_NEEDS_REWORK)
-    /** Process the Animation.
-     * This method must be implemented by all child classes.
-     * @param currentMillis  Current time, i.e. the returnvalue of millis().
-     * \a wasModified is true when the LED strip was already modified,
-     * e.g. by a previous Animation. Internally used as trigger to render the
-     * Overlay content (if supported).
-     * Its value shall be set to true when the Animation changed the strip's content.
-     */
-    virtual void processAnimationOLD(uint32_t currentMillis, bool &wasModified)
-    {
-      if (wasModified)
-      {
-        processAnimation(currentMillis);
-      }
-    }
-#endif
 
     /** Process the Animation (and update the LEDs).
      * This method must be implemented by all child classes.

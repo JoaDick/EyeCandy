@@ -38,7 +38,7 @@ namespace EC
    * the beginning of the LED strip, 1.0 represents the end.
    */
   class VuOverlayStripe
-      : public Animation
+      : public PatternBase
   {
   public:
     /** Draw the VU Overlay with this color.
@@ -54,7 +54,7 @@ namespace EC
     VuOverlayStripe(FastLedStrip ledStrip,
                     VuSource &vuSource,
                     CRGB color = CRGB(0, 64, 0))
-        : color(color), _strip(ledStrip),
+        : PatternBase(ledStrip), color(color),
           _vuSource(vuSource)
     {
     }
@@ -71,14 +71,13 @@ namespace EC
       {
         _lastVuLevel = vuLevel;
       }
-      _strip.n_lineRel(vuLevel, _lastVuLevel - vuLevel, color);
+      strip.n_lineRel(vuLevel, _lastVuLevel - vuLevel, color);
       _lastVuLevel = vuLevel;
 
       return 0;
     }
 
   private:
-    FastLedStrip _strip;
     VuSource &_vuSource;
     float _lastVuLevel = 0.0;
   };

@@ -48,11 +48,6 @@ namespace EC
       : public Animation
   {
   public:
-    /** Period (in ms) for triggering the VU Overlay.
-     * Use as constructor argument for TriggerPattern when setting up the AnimationScene.
-     */
-    static const uint8_t patternUpdatePeriod = 20;
-
     /// Color source of the VU.
     ColorWheel color{1.0, -0.75};
 
@@ -102,7 +97,7 @@ namespace EC
       _debugStrip.n_pixel(colorOffset) = CRGB(64, 64, 0);
 #endif
 
-      return patternUpdatePeriod;
+      return 20;
     }
 
   private:

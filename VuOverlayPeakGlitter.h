@@ -38,7 +38,7 @@ namespace EC
    * @note The actual VU value is obtained from the given VuSource.
    */
   class VuOverlayPeakGlitter
-      : public Animation
+      : public PatternBase
   {
   public:
     /** Default fading speed.
@@ -62,7 +62,7 @@ namespace EC
     VuOverlayPeakGlitter(FastLedStrip ledStrip,
                          VuSource &vuSource,
                          CRGB color = CRGB::White)
-        : color(color), _strip(ledStrip), _vuSource(vuSource)
+        : PatternBase(ledStrip), color(color), _vuSource(vuSource)
     {
       vuPeakHandler.peakHold = 20;
       vuPeakHandler.peakDecay = 0;
@@ -80,7 +80,7 @@ namespace EC
         // let it overshoot a little bit so that it doesn't mess up with a peak dot
         const float delta = (vuLevel - _lastVuLevel);
         const float vuOvershoot = delta / 8.0;
-        _strip.n_pixel(vuLevel + vuOvershoot) = color;
+        strip.n_pixel(vuLevel + vuOvershoot) = color;
         _lastVuLevel = vuLevel;
       }
 
@@ -88,7 +88,6 @@ namespace EC
     }
 
   private:
-    FastLedStrip _strip;
     VuSource &_vuSource;
     float _lastVuLevel = 0.0;
   };

@@ -40,7 +40,7 @@ namespace EC
    * the beginning of the LED strip, 1.0 represents the end.
    */
   class VuOverlayRainbowDot
-      : public Animation
+      : public PatternBase
   {
   public:
     /// Color source of the VU.
@@ -77,7 +77,7 @@ namespace EC
                         VuSource &vuLevelSource,
                         VuSource &vuColorSource,
                         float size = 0.0)
-        : color(1.0, 0.33), size(size), _strip(ledStrip),
+        : PatternBase(ledStrip), color(1.0, 0.33), size(size),
           _vuLevelSource(vuLevelSource), _vuCcolorSource(vuColorSource)
     {
       color.hueOffset = 128;
@@ -102,11 +102,11 @@ namespace EC
       {
         if (size > 0.0)
         {
-          _strip.n_lineRel(vuLevel, -size, color[colorVuLevel]);
+          strip.n_lineRel(vuLevel, -size, color[colorVuLevel]);
         }
         else
         {
-          _strip.n_pixel(vuLevel) = color[colorVuLevel];
+          strip.n_pixel(vuLevel) = color[colorVuLevel];
         }
       }
 
@@ -114,7 +114,6 @@ namespace EC
     }
 
   private:
-    FastLedStrip _strip;
     VuSource &_vuLevelSource;
     VuSource &_vuCcolorSource;
   };

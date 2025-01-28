@@ -39,7 +39,6 @@ SOFTWARE.
 
 inline void make_BallLightningVU(EC::SetupEnv &env)
 {
-  // env.add(new EC::TriggerPattern());
   auto &vuLevelSource = env.addVuSource();
   env.add(new EC::BallLightningVU(env.strip(), vuLevelSource));
 }
@@ -264,7 +263,6 @@ inline void make_FranticVU_outward(EC::SetupEnv &env)
 
 inline void make_LightbulbVU(EC::SetupEnv &env)
 {
-  // env.add(new EC::TriggerPattern());
   auto &vuLevelSource = env.addVuSource();
   env.add(new EC::LightbulbVU(env.strip(), vuLevelSource));
 }
@@ -384,7 +382,6 @@ inline void make_RainingVU_outward(EC::SetupEnv &env)
 
 inline void make_RetroPartyVU(EC::SetupEnv &env)
 {
-  // env.add(new EC::TriggerPattern());
   auto &vuLevelSource = env.addVuSource();
   env.add(new EC::RetroPartyVU(env.strip(), vuLevelSource));
 }

@@ -39,7 +39,7 @@ namespace EC
    * the beginning of the LED strip, 1.0 represents the end.
    */
   class VuOverlayRainbowLine
-      : public Animation
+      : public PatternBase
   {
   public:
     /// Color source of the VU.
@@ -62,7 +62,7 @@ namespace EC
     VuOverlayRainbowLine(FastLedStrip ledStrip,
                          VuSource &vuLevelSource,
                          VuSource &vuColorSource)
-        : color(1.0, 0.33), _strip(ledStrip),
+        : PatternBase(ledStrip), color(1.0, 0.33),
           _vuLevelSource(vuLevelSource), _vuCcolorSource(vuColorSource)
     {
       color.volume = 128;
@@ -82,13 +82,12 @@ namespace EC
       const float vuLevel = _vuLevelSource.getVU();
       const float colorVuLevel = _vuCcolorSource.getVU();
 
-      _strip.n_lineRel(0.0, vuLevel, color[colorVuLevel]);
+      strip.n_lineRel(0.0, vuLevel, color[colorVuLevel]);
 
       return 0;
     }
 
   private:
-    FastLedStrip _strip;
     VuSource &_vuLevelSource;
     VuSource &_vuCcolorSource;
   };

@@ -251,9 +251,10 @@ EC::AnimationSceneMakerFct allAnimations[] = {
 
 //------------------------------------------------------------------------------
 
-EC::VuSource &makeVuSource(EC::SetupEnv &env) { return env.add(new EC::VuAnalogInputPin(PIN_MIC)); }
+EC::AnalogPinVuSource vuSource(PIN_MIC);
+EC::VuSource &make_VuSource(EC::SetupEnv &env) { return env.add(vuSource); }
 EC::AnimationScene mainScene;
-EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, mainScene, &makeVuSource);
+EC::SetupEnv animationSetupEnv({leds, NUM_LEDS}, mainScene, &make_VuSource);
 EC::AnimationChangerSoft animationChanger(animationSetupEnv, allAnimations);
 EC::AnimationUpdateHandler animationHandler(animationChanger);
 
@@ -311,6 +312,8 @@ void loop()
     const uint32_t currentMillis = millis();
 
     handleAnimationChange(currentMillis);
+
+    vuSource.readAudioSample();
 
     if (animationHandler.process(currentMillis))
     {

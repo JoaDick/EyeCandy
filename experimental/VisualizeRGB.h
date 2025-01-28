@@ -68,6 +68,7 @@ namespace EC
       visualizeColor(5 / 8.0, color.b, CRGB(0, 0, 255));
 
       visualizeColor(7 / 8.0, 255, color);
+
       return 0;
     }
 

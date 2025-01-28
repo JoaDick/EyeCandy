@@ -130,6 +130,7 @@ namespace EC
 
       // render the ball
       _ball.show(strip, smoothedPos, size, color);
+
       return 0;
     }
 
@@ -179,6 +180,7 @@ namespace EC
       const float colorOffset = vuLevelAvg - vuDeltaAvg;
 
       _ball.show(strip, vuLevelAvg, 0.9 * vuDeltaAvg, color[colorOffset]);
+
       return 0;
     }
 

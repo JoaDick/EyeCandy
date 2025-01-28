@@ -35,11 +35,10 @@ SOFTWARE.
 namespace EC
 {
 
-#if (EC_NEEDS_REWORK)
   /** A playground for VU testing during EyeCandy development.
    */
   class TestVU1
-      : public AnimationBaseOLD
+      : public AnimationBase
   {
   public:
     /// Signature of the function for rendering the VU on the LED strip.
@@ -71,7 +70,7 @@ namespace EC
             FastLedStrip ledStrip,
             DrawingFct drawingFct,
             uint8_t fadeRate = 0)
-        : AnimationBaseOLD(ledStrip, false, fadeRate),
+        : AnimationBase(ledStrip, false, fadeRate),
           _analogPin(analogPin), drawingFct(drawingFct)
     {
       vuPeakHandler.peakHold = 600;
@@ -83,17 +82,17 @@ namespace EC
     }
 
   private:
-    /// @see Animation::processAnimationOLD()
-    void processAnimationOLD(uint32_t currentMillis, bool &wasModified) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      // !!! Won't work anymore !!!
-
       const float audioSample = _adcNormalizer.process(analogRead(_analogPin));
       vuLevelHandler.addSample(audioSample);
-      AnimationBaseOLD::processAnimationOLD(currentMillis, wasModified);
+
+      AnimationBase::processAnimation(currentMillis);
+      return 1; // update as often as possible (i.e. every millisecond)
     }
 
-    /// @see AnimationBaseOLD::showOverlay()
+    /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
       const float rawVuLevel = vuLevelHandler.capture();
@@ -119,6 +118,5 @@ namespace EC
     const uint8_t _analogPin;
     AdcSampleNormalizer _adcNormalizer;
   };
-#endif
 
 } // namespace EC

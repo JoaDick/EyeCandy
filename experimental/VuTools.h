@@ -63,7 +63,6 @@ namespace EC
 
   //------------------------------------------------------------------------------
 
-#if (EC_NEEDS_REWORK)
   /** Display the raw audio samples as VU.
    * Useful e.g. for roughly checking the audio level at the analog input pin -
    * because that signal is also used as audio source for all other VUs. \n
@@ -71,7 +70,7 @@ namespace EC
    * low than saturated (clipping).
    */
   class RawAudioVU
-      : public AnimationBaseOLD
+      : public PatternBase
   {
   public:
     /** Set to true for logging audio samples over serial line (via Teleplot).
@@ -87,16 +86,15 @@ namespace EC
      */
     RawAudioVU(uint8_t analogPin,
                FastLedStrip ledStrip)
-        : AnimationBaseOLD(ledStrip, false, 25),
-          _analogPin(analogPin)
+        : PatternBase(ledStrip), _analogPin(analogPin)
     {
     }
 
   private:
-    /// @see Animation::processAnimationOLD()
-    void processAnimationOLD(uint32_t currentMillis, bool &wasModified) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      // !!! Won't work anymore !!!
+      strip.fadeToBlack(25);
 
       const float audioSample = _adcNormalizer.process(analogRead(_analogPin));
       float sample = (audioSample + 1.0) / 2.0;
@@ -116,7 +114,7 @@ namespace EC
       }
 #endif
 
-      AnimationBaseOLD::processAnimationOLD(currentMillis, wasModified);
+      return 1; // update as often as possible (i.e. every millisecond)
     }
 
   private:
@@ -124,11 +122,9 @@ namespace EC
     AdcSampleNormalizer _adcNormalizer;
     float _lastSample = 0.5;
   };
-#endif
 
   //------------------------------------------------------------------------------
 
-#if (EC_NEEDS_REWORK)
   /** A VU as playground for exploring low level audio processing.
    * @note This VU doesn't manipulate the LED strip by itself.
    * Instead, it requires a custom function (provided via constructor) for
@@ -137,7 +133,7 @@ namespace EC
    * behind the scenes.
    */
   class LowLevelAudioPlaygroundVU
-      : public AnimationModelBaseOLD
+      : public AnimationModelBase
   {
   public:
     /// Signature of the function for rendering the VU on the LED strip.
@@ -201,12 +197,10 @@ namespace EC
     LowLevelAudioPlaygroundVU(uint8_t analogPin,
                               FastLedStrip ledStrip,
                               DrawingFct drawingFct)
-        : AnimationModelBaseOLD(10, ledStrip, false, 50),
+        : AnimationModelBase(10, ledStrip, false, 15),
           _analogPin(analogPin), _drawingFct(drawingFct)
     {
       // Calculating the average value every 10ms, resulting in 100Hz refresh rate.
-      // The LED strip is also updated every 10ms, resulting in 100 "FPS" for the VU.
-      // -- Note: That's the default value; see AnimationBaseOLD::patternUpdatePeriod.
 
       vuPeakHandlerAvg.peakHold = 750;
       vuPeakHandlerAvg.peakDecay = 2500;
@@ -220,20 +214,19 @@ namespace EC
     }
 
   private:
-    /// @see Animation::processAnimationOLD()
-    void processAnimationOLD(uint32_t currentMillis, bool &wasModified) override
+    /// @see Animation::processAnimation()
+    uint8_t processAnimation(uint32_t currentMillis) override
     {
-      // !!! Won't work anymore !!!
-
       const float audioSample = _adcNormalizer.process(analogRead(_analogPin));
       _sampleAvgSum += fabs(audioSample);
       _sampleRmsSum += square(audioSample);
       ++_sampleCount;
 
-      AnimationModelBaseOLD::processAnimationOLD(currentMillis, wasModified);
+      AnimationModelBase::processAnimation(currentMillis);
+      return 1; // update as often as possible (i.e. every millisecond)
     }
 
-    /// @see AnimationModelBaseOLD::updateModel()
+    /// @see AnimationModelBase::updateModel()
     void updateModel(uint32_t currentMillis) override
     {
       if (_sampleCount == 0)
@@ -294,7 +287,7 @@ namespace EC
       _sampleRmsSum = 0.0;
     }
 
-    /// @see AnimationBaseOLD::showOverlay()
+    /// @see AnimationBase::showOverlay()
     void showOverlay(uint32_t currentMillis) override
     {
       _drawingFct(strip, *this);
@@ -326,7 +319,6 @@ namespace EC
     float _sampleAvgSum = 0.0;
     float _sampleRmsSum = 0.0;
   };
-#endif
 
   //------------------------------------------------------------------------------
 

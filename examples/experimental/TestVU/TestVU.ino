@@ -95,6 +95,7 @@ void make_RawAudioVU(EC::SetupEnv &env)
     // vu.enableTeleplot = true;
 
     // animationDuration = 10;
+    // autoMode = false;
 }
 
 //------------------------------------------------------------------------------
@@ -314,7 +315,6 @@ void make_RangeExtenderInternals(EC::SetupEnv &env)
 
 void make_DraftVU(EC::SetupEnv &env)
 {
-    // env.add(new EC::TriggerPattern(EC::FlowingBeatVU::patternUpdatePeriod));
     auto &vuLevelSource = env.addVuSource();
 
 #if (0)
